@@ -1,7 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.core.TalonSwerve.SwerveModuleConstants;
 
 public class RobotMap {
   public static class ElevatorMap {
@@ -20,7 +18,6 @@ public class RobotMap {
       public static final int DRIVE_ID = 7;
       public static final int ROTATOR_ID = 8;
       public static final double ANGULAR_OFFSET = 0;
-
     }
 
     /* Front Right Module - Module 1 */
@@ -45,6 +42,7 @@ public class RobotMap {
       public static final double ANGULAR_OFFSET = 0;
     }
   }
+
   public static class TankDriveMap {
     public static final int leftFrontMaster = 0;
     public static final int leftBackMaster = 1;
