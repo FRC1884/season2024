@@ -3,7 +3,7 @@ package frc.robot.layout;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.core.swerve.SwerveConstants;
+import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
 import frc.robot.core.util.controllers.GameController;

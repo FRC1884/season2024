@@ -1,4 +1,8 @@
-package frc.robot.core.swerve.MAXSwerve;
+package frc.robot.core.MAXSwerve;
+
+import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,7 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.core.swerve.MAXSwerve.MaxSwerveConstants.*;
+import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 
 public abstract class MAXSwerve extends SubsystemBase {
 
@@ -24,7 +28,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private MAXSwerveModule fl, fr, bl, br;
-  private ADIS16470_IMU gyro;
+  private WPI_Pigeon2 gyro;
 
   SwerveDriveOdometry odometry =
       new SwerveDriveOdometry(
@@ -35,12 +39,12 @@ public abstract class MAXSwerve extends SubsystemBase {
           });
 
   public MAXSwerve(
-      ADIS16470_IMU imu,
+      WPI_Pigeon2 pigeon,
       MAXSwerveModule fl,
       MAXSwerveModule fr,
       MAXSwerveModule bl,
       MAXSwerveModule br) {
-    this.gyro = imu;
+    this.gyro = pigeon;
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;

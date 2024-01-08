@@ -1,7 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.core.swerve.SwerveModuleConstants;
+import frc.robot.core.TalonSwerve.SwerveModuleConstants;
 
 public class RobotMap {
   public static class ElevatorMap {
