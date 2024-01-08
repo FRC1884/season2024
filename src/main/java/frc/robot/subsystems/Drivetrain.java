@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MAXSwerve;
+import frc.robot.core.MAXSwerve.MAXSwerveModule;
 import frc.robot.core.TalonSwerve.Swerve;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 
@@ -45,6 +46,8 @@ public class Drivetrain extends MAXSwerve {
     return instance;
   }
 
+
+  
   /**
    * This constructor is intentionally left private. <br>
    * <b>Do <i>not</i> attempt to create new instances of any subsystem using the constructor.</b>
@@ -54,10 +57,11 @@ public class Drivetrain extends MAXSwerve {
   private Drivetrain() {
     super(
         DriveMap.PIGEON_ID,
-        DriveMap.FrontLeft.CONSTANTS,
-        DriveMap.FrontRight.CONSTANTS,
-        DriveMap.BackLeft.CONSTANTS,
-        DriveMap.BackRight.CONSTANTS);
+        new MAXSwerveModule(DriveMap.FrontLeft.DRIVE_ID, DriveMap.FrontLeft.ROTATOR_ID, DriveMap.FrontLeft.ANGULAR_OFFSET),
+        new MAXSwerveModule(DriveMap.FrontRight.DRIVE_ID, DriveMap.FrontRight.ROTATOR_ID, DriveMap.FrontRight.ANGULAR_OFFSET),
+        new MAXSwerveModule(DriveMap.BackLeft.DRIVE_ID, DriveMap.BackLeft.ROTATOR_ID, DriveMap.BackLeft.ANGULAR_OFFSET),
+        new MAXSwerveModule(DriveMap.BackRight.DRIVE_ID, DriveMap.BackRight.ROTATOR_ID, DriveMap.BackRight.ANGULAR_OFFSET)
+    );
   }
 
   /**

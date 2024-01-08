@@ -19,10 +19,8 @@ public class RobotMap {
     public static final class FrontLeft {
       public static final int DRIVE_ID = 7;
       public static final int ROTATOR_ID = 8;
-      public static final int ENCODER_ID = 23;
-      public static final Rotation2d OFFSET = Rotation2d.fromDegrees(28);
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_ID, ROTATOR_ID, ENCODER_ID, OFFSET);
+      public static final double ANGULAR_OFFSET = 0;
+
     }
 
     /* Front Right Module - Module 1 */
@@ -30,32 +28,23 @@ public class RobotMap {
       public static final int DRIVE_ID = 3;
       public static final int ROTATOR_ID = 4;
       public static final int ENCODER_ID = 12;
-      public static final Rotation2d OFFSET = Rotation2d.fromDegrees(230);
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_ID, ROTATOR_ID, ENCODER_ID, OFFSET);
+      public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Left Module - Module 2 */
     public static final class BackLeft {
       public static final int DRIVE_ID = 36;
       public static final int ROTATOR_ID = 37;
-      public static final int ENCODER_ID = 13;
-      public static final Rotation2d OFFSET = Rotation2d.fromDegrees(100);
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_ID, ROTATOR_ID, ENCODER_ID, OFFSET);
+      public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {
       public static final int DRIVE_ID = 5;
       public static final int ROTATOR_ID = 6;
-      public static final int ENCODER_ID = 11;
-      public static final Rotation2d OFFSET = Rotation2d.fromDegrees(342);
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_ID, ROTATOR_ID, ENCODER_ID, OFFSET);
+      public static final double ANGULAR_OFFSET = 0;
     }
   }
-
   public static class TankDriveMap {
     public static final int leftFrontMaster = 0;
     public static final int leftBackMaster = 1;
