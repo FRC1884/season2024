@@ -15,12 +15,18 @@ public abstract class DriverMap extends CommandMap {
 
   abstract ChassisSpeeds getChassisSpeeds();
 
+  abstract double getSwerveXSpeed();
+
+  abstract double getSwerveYSpeed();
+
+  abstract double getSwerveRot();
+
   abstract JoystickButton getTestButton();
 
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
-      drivetrain.setDefaultCommand(drivetrain.driveCommand(this::getChassisSpeeds));
+      drivetrain.setDefaultCommand(drivetrain.driveCommand(getSwerveXSpeed(),getSwerveYSpeed(),getSwerveRot()));
     }
   }
 

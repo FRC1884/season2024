@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
+import frc.robot.core.MAXSwerve.MAXSwerve;
 import frc.robot.core.TalonSwerve.Swerve;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 
@@ -30,7 +31,7 @@ import frc.robot.core.TalonSwerve.SwerveConstants;
  * this season, which this class extends). As of now, this includes basic driving and odometry, so
  * you don't need to reinvent the wheel.
  */
-public class Drivetrain extends Swerve {
+public class Drivetrain extends MAXSwerve {
   private static Drivetrain instance;
 
   /**
@@ -87,7 +88,9 @@ public class Drivetrain extends Swerve {
               thetaController.calculate(
                   getPose().getRotation().getRadians(), targetPose.getRotation().getRadians());
 
-          drive(ChassisSpeeds.fromFieldRelativeSpeeds(sX, sY, sR, getPose().getRotation()), true);
+          //need to get rotpos? felt cute now might delete later (ꈍᴗꈍ)♡
+          //drive(ChassisSpeeds.fromFieldRelativeSpeeds(sX, sY, sR, getPose().getRotation()), true);
+          drive(sX, sY, sR, true, true);
         },
         interrupted -> {
           xController.close();

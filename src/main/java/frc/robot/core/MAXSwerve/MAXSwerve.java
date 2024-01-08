@@ -1,5 +1,7 @@
 package frc.robot.core.MAXSwerve;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
@@ -14,6 +16,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 
@@ -39,12 +44,14 @@ public abstract class MAXSwerve extends SubsystemBase {
           });
 
   public MAXSwerve(
-      WPI_Pigeon2 pigeon,
+      int pigeon_id,
       MAXSwerveModule fl,
       MAXSwerveModule fr,
       MAXSwerveModule bl,
       MAXSwerveModule br) {
-    this.gyro = pigeon;
+    this.gyro = new WPI_Pigeon2(pigeon_id);
+    gyro.configFactoryDefault();
+    zeroGyro();
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;
@@ -160,6 +167,10 @@ public abstract class MAXSwerve extends SubsystemBase {
     br.setDesiredState(swerveModuleStates[3]);
   }
 
+  public Command driveCommand(double xSpeed, double ySpeed, double rotSpeed) {
+    return new RepeatCommand(new RunCommand(() -> this.drive(xSpeed, ySpeed, rotSpeed, true, true), this));
+  }
+
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {
     fl.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -193,6 +204,10 @@ public abstract class MAXSwerve extends SubsystemBase {
   /** Zeros the heading of the robot */
   public void ZeroHeading() {
     gyro.reset();
+  }
+
+  public void zeroGyro() {
+    gyro.setYaw(0);
   }
 
   /**

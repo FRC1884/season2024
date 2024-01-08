@@ -24,6 +24,24 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
 
   @Override
+  public double getSwerveXSpeed() 
+  {
+    return controller.getAxis(Axis.AXIS_LEFT_X) * SwerveConstants.MAX_VELOCITY;
+  }
+
+  @Override
+  public double getSwerveYSpeed()
+  {
+    return controller.getAxis(Axis.AXIS_LEFT_Y) * SwerveConstants.MAX_VELOCITY;
+  }
+
+  @Override
+  public double getSwerveRot()
+  {
+    return controller.getAxis(Axis.AXIS_RIGHT_X) * SwerveConstants.MAX_ANGULAR_VELOCITY;
+  }
+
+  @Override
   public JoystickButton getTestButton() {
     return controller.getButton(Button.BUTTON_B);
   }
