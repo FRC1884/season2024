@@ -1,14 +1,14 @@
 package frc.robot.subsystems;
 
-import static frc.robot.core.swerve.SwerveConstants.*;
+import static frc.robot.core.TalonSwerve.SwerveConstants.*;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
-import frc.robot.core.swerve.Swerve;
-import frc.robot.core.swerve.SwerveConstants;
+import frc.robot.core.TalonSwerve.Swerve;
+import frc.robot.core.TalonSwerve.SwerveConstants;
 
 /**
  * <b>Use {@link #getInstance()} to access all subsystems.</b><br>

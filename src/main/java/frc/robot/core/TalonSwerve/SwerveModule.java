@@ -1,4 +1,4 @@
-package frc.robot.core.swerve;
+package frc.robot.core.TalonSwerve;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;

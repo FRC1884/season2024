@@ -1,4 +1,4 @@
-package frc.robot.core.swerve.MAXSwerve;
+package frc.robot.core.MAXSwerve;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
@@ -9,7 +9,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.core.swerve.MAXSwerve.MaxSwerveConstants.*;
+import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 
 public class MAXSwerveModule {
   private final CANSparkMax m_drivingSparkMax;

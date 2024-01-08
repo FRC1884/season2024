@@ -1,4 +1,4 @@
-package frc.robot.core.swerve.MAXSwerve;
+package frc.robot.core.MAXSwerve;
 
 public class MAXSwerveUtils {
   /**
