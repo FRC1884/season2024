@@ -26,7 +26,8 @@ public abstract class DriverMap extends CommandMap {
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
-      drivetrain.setDefaultCommand(drivetrain.driveCommand(getSwerveXSpeed(),getSwerveYSpeed(),getSwerveRot()));
+      drivetrain.setDefaultCommand(
+          drivetrain.driveCommand(getSwerveXSpeed(), getSwerveYSpeed(), getSwerveRot()));
     }
   }
 

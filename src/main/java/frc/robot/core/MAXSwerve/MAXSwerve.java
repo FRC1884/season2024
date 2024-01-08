@@ -162,7 +162,8 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public Command driveCommand(double xSpeed, double ySpeed, double rotSpeed) {
-    return new RepeatCommand(new RunCommand(() -> this.drive(xSpeed, ySpeed, rotSpeed, true, true), this));
+    return new RepeatCommand(
+        new RunCommand(() -> this.drive(xSpeed, ySpeed, rotSpeed, true, true), this));
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
