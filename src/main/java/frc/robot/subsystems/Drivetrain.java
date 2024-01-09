@@ -2,8 +2,17 @@ package frc.robot.subsystems;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.*;
 
+import java.util.function.BooleanSupplier;
+
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MAXSwerve;
@@ -115,6 +124,41 @@ public class Drivetrain extends MAXSwerve {
         this);
   }
 
+  public BooleanSupplier getShouldFlip()
+  {
+    return () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                  };
+  }
+
+   public Command followPathCommand(String pathName) {
+        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+
+        return new FollowPathHolonomic(
+                path,
+                this::getPose, // Robot pose supplier
+                this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        4.5, // Max module speed, in m/s
+                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                this::getShouldFlip(),
+                this // Reference to this subsystem to set requirements
+        );
+    }
+  
   /**
    * The base method to follow a PathPlanner path.
    *
@@ -124,19 +168,19 @@ public class Drivetrain extends MAXSwerve {
    *     the very first path you follow in Autonomous.
    * @return a Command that follows the path.
    */
-  //  private Command followTrajectoryCommand(Supplier<PathPlannerPath> traj, boolean isFirstPath) {
-  //    // Create PIDControllers for each movement (and set default values)
-  //    PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
-  //    PIDConstants rotationConstants = new PIDConstants(1.0, 0.0, 0.0);
-  //
-  //    PathFollowingController dc =
-  //        new PPHolonomicDriveController(translationConstants, rotationConstants, 0.0, 0.0);
-  //    Supplier<ChassisSpeeds> csS = KINEMATICS::toChassisSpeeds;
-  //    Consumer<ChassisSpeeds> csC = ChassisSpeeds -> drive(ChassisSpeeds, true);
-  //
-  //    return new FollowPathCommand(
-  //        traj.get(), this::getPose, csS, csC, dc, new ReplanningConfig(), this);
-  //  }
+   //private Command followTrajectoryCommand(Supplier<PathPlannerPath> traj, boolean isFirstPath) {
+     // Create PIDControllers for each movement (and set default values)
+    // PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
+    // PIDConstants rotationConstants = new PIDConstants(1.0, 0.0, 0.0);
+  
+    // PathFollowingController dc =
+     //    new PPHolonomicDriveController(translationConstants, rotationConstants, 0.0, 0.0);
+   //  Supplier<ChassisSpeeds> csS = KINEMATICS::toChassisSpeeds;
+    // Consumer<ChassisSpeeds> csC = ChassisSpeeds -> drive(ChassisSpeeds, true);
+  
+    // return new FollowPathCommand(
+      //   traj.get(), this::getPose, csS, csC, dc, new ReplanningConfig(), this);
+  // }
 
   /**
    * @see #followTrajectoryCommand(Supplier, boolean)

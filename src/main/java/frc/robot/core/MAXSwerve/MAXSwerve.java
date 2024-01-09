@@ -1,5 +1,7 @@
 package frc.robot.core.MAXSwerve;
 
+import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
+
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
+import frc.robot.core.TalonSwerve.SwerveConstants;
 
 public abstract class MAXSwerve extends SubsystemBase {
 
@@ -159,6 +162,23 @@ public abstract class MAXSwerve extends SubsystemBase {
     fr.setDesiredState(swerveModuleStates[1]);
     bl.setDesiredState(swerveModuleStates[2]);
     br.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public void driveWithChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    var swerveModuleStates =
+        MaxSwerveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
+    fl.setDesiredState(swerveModuleStates[0]);
+    fr.setDesiredState(swerveModuleStates[1]);
+    bl.setDesiredState(swerveModuleStates[2]);
+    br.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public ChassisSpeeds getChassisSpeeds()
+  {
+    ChassisSpeeds speeds = KINEMATICS.toChassisSpeeds(fl.getState(),fr.getState(),bl.getState(),br.getState());
+    return speeds;
   }
 
   public Command driveCommand(double xSpeed, double ySpeed, double rotSpeed) {
