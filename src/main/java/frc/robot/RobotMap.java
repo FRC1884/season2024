@@ -1,6 +1,5 @@
 package frc.robot;
 
-
 public class RobotMap {
   public static class ElevatorMap {
     public static final int master = 4;
