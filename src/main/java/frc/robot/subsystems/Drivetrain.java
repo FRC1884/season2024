@@ -2,17 +2,8 @@ package frc.robot.subsystems;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.*;
 
-import java.util.function.BooleanSupplier;
-
-import com.pathplanner.lib.commands.FollowPathHolonomic;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MAXSwerve;
@@ -123,7 +114,7 @@ public class Drivetrain extends MAXSwerve {
         /* or getPose().getTranslation().getDistance(targetPose.getTranslation()) < 0.1 ?*/
         this);
   }
-  
+
   /**
    * The base method to follow a PathPlanner path.
    *
@@ -133,18 +124,18 @@ public class Drivetrain extends MAXSwerve {
    *     the very first path you follow in Autonomous.
    * @return a Command that follows the path.
    */
-   //private Command followTrajectoryCommand(Supplier<PathPlannerPath> traj, boolean isFirstPath) {
-     // Create PIDControllers for each movement (and set default values)
-    // PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
-    // PIDConstants rotationConstants = new PIDConstants(1.0, 0.0, 0.0);
-  
-    // PathFollowingController dc =
-     //    new PPHolonomicDriveController(translationConstants, rotationConstants, 0.0, 0.0);
-   //  Supplier<ChassisSpeeds> csS = KINEMATICS::toChassisSpeeds;
-    // Consumer<ChassisSpeeds> csC = ChassisSpeeds -> drive(ChassisSpeeds, true);
-  
-    // return new FollowPathCommand(
-      //   traj.get(), this::getPose, csS, csC, dc, new ReplanningConfig(), this);
+  // private Command followTrajectoryCommand(Supplier<PathPlannerPath> traj, boolean isFirstPath) {
+  // Create PIDControllers for each movement (and set default values)
+  // PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
+  // PIDConstants rotationConstants = new PIDConstants(1.0, 0.0, 0.0);
+
+  // PathFollowingController dc =
+  //    new PPHolonomicDriveController(translationConstants, rotationConstants, 0.0, 0.0);
+  //  Supplier<ChassisSpeeds> csS = KINEMATICS::toChassisSpeeds;
+  // Consumer<ChassisSpeeds> csC = ChassisSpeeds -> drive(ChassisSpeeds, true);
+
+  // return new FollowPathCommand(
+  //   traj.get(), this::getPose, csS, csC, dc, new ReplanningConfig(), this);
   // }
 
   /**

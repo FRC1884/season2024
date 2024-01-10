@@ -1,7 +1,6 @@
 package frc.robot.auto.modes;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.core.MAXSwerve.MAXSwerve;
 import frc.robot.subsystems.Drivetrain;
 
 public class TestPath extends SequentialCommandGroup {
@@ -19,7 +18,6 @@ public class TestPath extends SequentialCommandGroup {
         //             .alongWith(new RunCommand(() -> elevatorArm.moveElevator(-0.7))
         //                         .until(() -> elevatorArm.getBottomSwitch())),
         // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.DEFAULT),
-        maxswerve.followPathCommand(path)
-        );
+        maxswerve.followPathCommand(path));
   }
 }
