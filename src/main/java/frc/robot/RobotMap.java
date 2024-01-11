@@ -69,21 +69,34 @@ public class RobotMap {
   }
 
   public static class VisionConfig{
+    //Limelight
     public static final String POSE_LIMELIGHT = "pose_limelight";
     public static final String NN_LIMELIGHT = "nn_limelight";
     public static final int aprilTagPipeline = 1;
     public static final int noteDetectorPipeline = 2;
+
+    //Photonvision
+    private static final String POSE_PHOTON = "pose_photoncamera";
+    //Translation Values (location relative to robot center)
+    private static final double CAM_X = 0.5; // Forward: camera To Robot XMeters
+    private static final double CAM_Y = 0.0; // Right: camera To Robot YMeters
+    private static final double CAM_Z = 0.2; // Up: camera To Robot ZMeters
+
+    //Rotation mounting angles (roll-pitch-yaw) in RADIANS
+    private static final double CAM_ROLL_RADIANS = 0.0; // camera Roll Radians
+    private static final double CAM_PITCH_RADIANS = 0.2618; // camera Pitch Radians
+    private static final double CAM_YAW_RADIANS = 0.0; // camera Yaw Radians
   }
 
   public static class PoseConfig{
     // Increase these numbers to trust your model's state estimates less.
-    public final double kPositionStdDevX = 0.1;
-    public final double kPositionStdDevY = 0.1;
-    public final double kPositionStdDevTheta = 10;
+    public static final double kPositionStdDevX = 0.1;
+    public static final double kPositionStdDevY = 0.1;
+    public static final double kPositionStdDevTheta = 10;
 
     // Increase these numbers to trust global measurements from vision less.
-    public final double kVisionStdDevX = 5;
-    public final double kVisionStdDevY = 5;
-    public final double kVisionStdDevTheta = 500;
+    public static final double kVisionStdDevX = 5;
+    public static final double kVisionStdDevY = 5;
+    public static final double kVisionStdDevTheta = 500;
   }
 }

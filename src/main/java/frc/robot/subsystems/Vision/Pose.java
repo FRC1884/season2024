@@ -14,28 +14,39 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
+import frc.robot.core.TalonSwerve.SwerveConstants;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Vision.Vision;
 
 
 /** Reports our expected, desired, and actual poses to dashboards */
 public class Pose extends SubsystemBase {
     //PoseConfig config;
-    PoseTelemetry telemetry;
-    Pose2d odometryPose = new Pose2d();
-    Pose2d desiredPose = new Pose2d();
-    Pose2d estimatePose = new Pose2d();
+    private PoseTelemetry telemetry;
+    private Pose2d odometryPose = new Pose2d();
+    private Pose2d desiredPose = new Pose2d();
+    private Pose2d estimatePose = new Pose2d();
 
     private final SwerveDrivePoseEstimator poseEstimator;
 
-    public Pose() {
+    private static Pose instance;
+
+    public static Pose getInstance() {
+        if (instance == null) instance = new Pose();
+    return instance;
+    }
+
+    private Pose() {
         //config = new PoseConfig();
         telemetry = new PoseTelemetry(this);
 
+        //Maxswerve Version from MAXSwerve.java in core
         poseEstimator =
                 new SwerveDrivePoseEstimator(
-                        Robot.swerve.config.swerveKinematics,
-                        Robot.core.getRotation(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
-                        Robot.swerve.getPositions(),
+                        MaxSwerveConstants.kDriveKinematics,
+                        Drivetrain.getInstance().getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
+                        Drivetrain.getInstance().getModulePositions(),
                         new Pose2d(),
                         createStateStdDevs(
                                 PoseConfig.kPositionStdDevX,
@@ -45,18 +56,46 @@ public class Pose extends SubsystemBase {
                                 PoseConfig.kVisionStdDevX,
                                 PoseConfig.kVisionStdDevY,
                                 PoseConfig.kVisionStdDevTheta));
+
+        //SDS Swerve Version from Swerve.java in core
+        /*
+        poseEstimator =
+                new SwerveDrivePoseEstimator(
+                        SwerveConstants.KINEMATICS,
+                        Drivetrain.getInstance().getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
+                        Drivetrain.getInstance().getModulePositions(),
+                        new Pose2d(),
+                        createStateStdDevs(
+                                PoseConfig.kPositionStdDevX,
+                                PoseConfig.kPositionStdDevY,
+                                PoseConfig.kPositionStdDevTheta),
+                        createVisionMeasurementStdDevs(
+                                PoseConfig.kVisionStdDevX,
+                                PoseConfig.kVisionStdDevY,
+                                PoseConfig.kVisionStdDevTheta));
+         */
     }
 
     @Override
     public void periodic() {
-        //updateOdometryEstimate();
-        // Robot.vision.update();
-        setEstimatedPose(getPosition());
+        updateOdometryEstimate(); //Updates using wheel encoder data only
+        if (isEstimateReady(Vision.getInstance().visionBotPose())){ // Does making so many bot pose variables impact accuracy?
+            addVisionMeasurement(Vision.getInstance().visionBotPose(), Vision.getInstance().getTotalLatency());
+        }
+        //Robot.vision.update();
+
+        //setEstimatedPose(getPosition());
         //setOdometryPose(Robot.swerve.getPoseMeters());
 
-        // telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
+        //Update Pose Estimator
+        // if (conditions)
+
+        //addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds)
+
+
+        //telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
         telemetry.updatePoseOnField("OdometryPose", odometryPose);
-        telemetry.updatePoseOnField("EstimatedPose", estimatePose);
+        telemetry.updatePoseOnField("EstimatedPose", estimatePose); //Need to uncomment and fix to work here.
         
     }
 
@@ -84,6 +123,34 @@ public class Pose extends SubsystemBase {
     //     }
     // }
 
+    /**
+     * Helper method for comparing vision pose against odometry pose. Does not account for difference in rotation.
+     * Will return false vision if it sees no targets or if the vision estimated pose is too far
+     * from the odometry estimate
+     *
+     * @return whether or not pose should be added to estimate or not
+     */
+    public boolean isEstimateReady(Pose2d pose) {
+        /* Disregard Vision if there are no targets in view */
+        if (!Vision.getInstance().visionAccurate()) { // visionAccurate method sees if Apriltags present in Vision.java
+            return false;
+        }
+
+        /* Disregard Vision if odometry has not been set to vision pose yet in teleopInit*/
+        // Pose2d odometryPose = Robot.core.TalonSwerve.getPoseMeters();
+
+        if (odometryPose.getX() <= 0.3
+                && odometryPose.getY() <= 0.3
+                && odometryPose.getRotation().getDegrees() <= 1) {
+            return false;
+        }
+        return (Math.abs(pose.getX() - odometryPose.getX()) <= 1)
+                && (Math.abs(pose.getY() - odometryPose.getY())
+                        <= 1); // this can be tuned to find a threshold that helps us remove jumping vision poses
+    }
+
+
+
     /** Sets the Odometry Pose to the given pose */
     public void setOdometryPose(Pose2d pose) {
         odometryPose = pose;
@@ -103,21 +170,33 @@ public class Pose extends SubsystemBase {
         estimatePose = pose;
     }
 
+    
+    /** Moved from Vision class --> LSAO: THIS SHOULD BE A POSE CLASS POWER, NOT A VISION POWER*/
+    /* 
+    public void resetEstimatedPose() {
+        Robot.pose.resetPoseEstimate(botPose);
+    }
+    */
+
+
     /** Updates the field relative position of the robot. */
+    //Lsao Jan 11: Changed naming to match Drivetrain file - methods have same name for both MaxSwerve.java and Swerve.java
     public void updateOdometryEstimate() {
-        poseEstimator.update(Robot.swerve.getRotation(), Robot.swerve.getPositions());
+        poseEstimator.update(Drivetrain.getInstance().getYaw(), Drivetrain.getInstance().getModulePositions());
     }
 
     /**
-     * reset the pose estimator
+     * reset the pose estimator - Fix these during session
      *
      * @param poseMeters
      */
+    /*
     public void resetPoseEstimate(Pose2d poseMeters) {
-        Robot.swerve.odometry.resetOdometry(poseMeters);
+        Drivetrain.resetOdometry(poseMeters);
         poseEstimator.resetPosition(
                 Robot.swerve.getRotation(), Robot.swerve.getPositions(), poseMeters);
     }
+     
 
     public void resetHeading(Rotation2d angle) {
         Robot.swerve.odometry.resetHeading(angle);
@@ -127,6 +206,7 @@ public class Pose extends SubsystemBase {
     public void resetLocationEstimate(Translation2d translation) {
         resetPoseEstimate(new Pose2d(translation, estimatePose.getRotation()));
     }
+    */
 
     /**
      * Gets the pose of the robot at the current time as estimated by the poseEstimator.
