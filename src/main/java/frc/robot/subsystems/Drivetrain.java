@@ -125,28 +125,6 @@ public class Drivetrain extends MAXSwerve {
                 this);
     }
 
-  /**
-   * The base method to follow a PathPlanner path.
-   *
-   * @param traj a {@link Supplier} for the {@link PathPlannerPath} to follow. This should be
-   *     generated in the UI or on-the-fly.
-   * @param isFirstPath whether this path is the first one the robot follows. Set this to true for
-   *     the very first path you follow in Autonomous.
-   * @return a Command that follows the path.
-   */
-  // private Command followTrajectoryCommand(Supplier<PathPlannerPath> traj, boolean isFirstPath) {
-  // Create PIDControllers for each movement (and set default values)
-  // PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
-  // PIDConstants rotationConstants = new PIDConstants(1.0, 0.0, 0.0);
-
-  // PathFollowingController dc =
-  //    new PPHolonomicDriveController(translationConstants, rotationConstants, 0.0, 0.0);
-  //  Supplier<ChassisSpeeds> csS = KINEMATICS::toChassisSpeeds;
-  // Consumer<ChassisSpeeds> csC = ChassisSpeeds -> drive(ChassisSpeeds, true);
-
-  // return new FollowPathCommand(
-  //   traj.get(), this::getPose, csS, csC, dc, new ReplanningConfig(), this);
-  // }
     /**
      * @see #followPathCommand(Supplier)
      * @param pathName a String representing the name of the path. These should be automatically added to
