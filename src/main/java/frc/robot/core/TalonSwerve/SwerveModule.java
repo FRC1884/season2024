@@ -76,12 +76,8 @@ public class SwerveModule {
                 .angle; // Prevent rotating module if speed is less then 1%. Prevents Jittering.
 
     rotator.setControl(
-            new PositionVoltage(
-                    Conversions.degreesToFalcon(
-                            angle.getDegrees(), SwerveConstants.ANGLE_GEAR_RATIO
-                    )
-            )
-    );
+        new PositionVoltage(
+            Conversions.degreesToFalcon(angle.getDegrees(), SwerveConstants.ANGLE_GEAR_RATIO)));
     lastAngle = angle;
   }
 

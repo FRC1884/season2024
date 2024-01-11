@@ -1,5 +1,7 @@
 package frc.robot.core.MAXSwerve;
 
+import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -16,10 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import java.util.function.BooleanSupplier;
-
-import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
 public abstract class MAXSwerve extends SubsystemBase {
 
@@ -81,12 +80,18 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   /**
-   * Method to drive the robot using a {@link ChassisSpeeds} object.
-   * This overload is chiefly for ease of use with PathPlanner.
+   * Method to drive the robot using a {@link ChassisSpeeds} object. This overload is chiefly for
+   * ease of use with PathPlanner.
+   *
    * @param chassisSpeeds the ROBOT-CENTRIC speeds to follow
    */
   public void drivePP(ChassisSpeeds chassisSpeeds) {
-    drive(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, false, true);
+    drive(
+        chassisSpeeds.vxMetersPerSecond,
+        chassisSpeeds.vyMetersPerSecond,
+        chassisSpeeds.omegaRadiansPerSecond,
+        false,
+        true);
   }
 
   /**
@@ -218,17 +223,16 @@ public abstract class MAXSwerve extends SubsystemBase {
         path,
         this::getPose, // Robot pose supplier
         this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this
-            ::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
-                                      // ChassisSpeeds
+        this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+        // ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-                                         // your Constants class
+            // your Constants class
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
             4.5, // Max module speed, in m/s
             0.4, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig() // Default path replanning config. See the API for the options
-                                   // here
+            // here
             ),
         getShouldFlip(),
         this // Reference to this subsystem to set requirements
