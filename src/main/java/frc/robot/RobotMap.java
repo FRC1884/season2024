@@ -67,4 +67,23 @@ public class RobotMap {
     public static final int DRIVER_JOYSTICK = 0;
     public static final int OPERATOR_JOYSTICK = 1;
   }
+
+  public static class VisionConfig{
+    public static final String POSE_LIMELIGHT = "pose_limelight";
+    public static final String NN_LIMELIGHT = "nn_limelight";
+    public static final int aprilTagPipeline = 1;
+    public static final int noteDetectorPipeline = 2;
+  }
+
+  public static class PoseConfig{
+    // Increase these numbers to trust your model's state estimates less.
+    public final double kPositionStdDevX = 0.1;
+    public final double kPositionStdDevY = 0.1;
+    public final double kPositionStdDevTheta = 10;
+
+    // Increase these numbers to trust global measurements from vision less.
+    public final double kVisionStdDevX = 5;
+    public final double kVisionStdDevY = 5;
+    public final double kVisionStdDevTheta = 500;
+  }
 }

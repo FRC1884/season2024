@@ -8,10 +8,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
+import edu.wpi.first.wpilibj.Timer;
 
 
 /** Reports our expected, desired, and actual poses to dashboards */
@@ -31,7 +34,7 @@ public class Pose extends SubsystemBase {
         poseEstimator =
                 new SwerveDrivePoseEstimator(
                         Robot.swerve.config.swerveKinematics,
-                        Robot.core..getRotation(), // 8maybe* TO DO Make and Odometry class with easy methods for odometry
+                        Robot.core.getRotation(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
                         Robot.swerve.getPositions(),
                         new Pose2d(),
                         createStateStdDevs(
@@ -46,10 +49,10 @@ public class Pose extends SubsystemBase {
 
     @Override
     public void periodic() {
-        updateOdometryEstimate();
+        //updateOdometryEstimate();
         // Robot.vision.update();
         setEstimatedPose(getPosition());
-        setOdometryPose(Robot.swerve.getPoseMeters());
+        //setOdometryPose(Robot.swerve.getPoseMeters());
 
         // telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
         telemetry.updatePoseOnField("OdometryPose", odometryPose);
@@ -213,4 +216,16 @@ public class Pose extends SubsystemBase {
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
     }
+
+    /* 
+    public static Command resetHeading(Rotation2d heading) {
+        return new InstantCommand(() -> Robot.pose.resetHeading(heading));
+    }
+
+    public static Command resetHeading(double headingDeg) {
+        return new InstantCommand(
+                () -> Robot.pose.resetHeading(Rotation2d.fromDegrees(headingDeg)));
+    }
+    */
+    
 }

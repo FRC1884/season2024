@@ -1,3 +1,4 @@
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
@@ -54,18 +55,21 @@ public class VisionCommands {
         }
     }
     */
+    
 
-    /**
+    /*
      * @param limelight name of limelight to control in {@link VisionConfig}
      * @param pipelineIndex use pipeline indexes in {@link VisionConfig}
-     */
+     
     public static Command setLimelightPipeline(String limelight, int pipelineIndex) {
         return new InstantCommand(
                         () -> Robot.vision.setLimelightPipeline(limelight, pipelineIndex),
                         Robot.vision)
                 .ignoringDisable(true);
     }
+    */
 
+    /* 
     public static Command setCubeNodePipeline() {
         return setLimelightPipeline("", VisionConfig.aprilTagPipeline);
     }
@@ -81,4 +85,5 @@ public class VisionCommands {
     public static Command setCubeDetectPipeline() {
         return setLimelightPipeline("", VisionConfig.cubeDetectorPipeline);
     }
+    */
 }

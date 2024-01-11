@@ -23,6 +23,12 @@ import frc.robot.RobotMap.VisionConfig;
 
 import java.text.DecimalFormat;
 
+/*
+ * This class requires MAJOR CLEANUP. There needs to be a proper pyramid of hierarchy. Vision should NOT be able to control anything related to pose. It should only 
+ * broadcast its current pose, if it has one, for use by the Pose class. Vision --> Pose. Vision should NEVER be able to control robot odometry.
+ *
+ */
+
 public class Vision extends SubsystemBase {
     public Pose2d botPose;
     public boolean visionIntegrated = false;
@@ -39,13 +45,13 @@ public class Vision extends SubsystemBase {
     public double detectHorizontalOffset = 0;
     public double detectVerticalOffset = 0;
 
-    private Pose3d botPose3d; // Uses the limelight rotation instead of the gyro rotation
+    //private Pose3d botPose3d; // Uses the limelight rotation instead of the gyro rotation - Limelight helpers had autoconversion!
     //private Pair<Pose3d, Double> photonVisionPose;
     private int targetSeenCount = 0;
     //private boolean targetSeen, visionStarted, initialized = false;
     private boolean aimTarget = false;
     private boolean detectTarget = false;
-    private frc.robot.subsystems.Vision.LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
+    private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
 
     // testing
     private final DecimalFormat df = new DecimalFormat();
@@ -59,10 +65,10 @@ public class Vision extends SubsystemBase {
     private Vision() {
         setName("Vision");
         botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
-        botPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
-        targetSeenCount = 0;
-        aimHorizontalOffset = 0;
-        aimVerticalOffset = 0;
+        //botPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+        // targetSeenCount = 0;
+        // aimHorizontalOffset = 0;
+        // aimVerticalOffset = 0;
 
         // configure both limelights
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
@@ -79,7 +85,7 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        /* update feed status by looking for an empty json */
+        /*Ensures empty json not fed to pipeline*/
         apriltagLimelightConnected =
                 !NetworkTableInstance.getDefault()
                         .getTable(VisionConfig.POSE_LIMELIGHT)
@@ -94,13 +100,19 @@ public class Vision extends SubsystemBase {
                         .getString("")
                         .equals("");
 
-        // checkTargetHistory();
-
+        //checkTargetHistory();
         if (apriltagLimelightConnected) {
-            jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
-            aimHorizontalOffset = LimelightHelpers.getTX(VisionConfig.POSE_LIMELIGHT);
-            aimVerticalOffset = LimelightHelpers.getTY(VisionConfig.POSE_LIMELIGHT);
-            aimTarget = LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
+            if () {
+                jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
+            }
+            
+            //aimHorizontalOffset = jsonResults.results.getTX();
+            //aimVerticalOffset = jsonResults.getTY();
+            //aimTarget = LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
+
+            //Lsao: UPDATE THE ESTIMATED VISION POSE OF THE ROBOT
+            
+
             // Robot.log.logger.recordOutput("aimLL-VertOffset", aimVerticalOffset);
             // RobotTelemetry.print("aimLL-VertOffset: " + aimVerticalOffset);
         }
@@ -141,39 +153,47 @@ public class Vision extends SubsystemBase {
      * standard deviation values if 1) odometry has been overridden by vision at least once and 2)
      * vision estimate is within 1 meter of odometry
      */
-    public void update() {
-        /* Limelight Pose Estimation Retrieval */
-        double latency = 0;
-        double[] poseArray = LimelightHelpers.getLimelightNTDoubleArray(null, "botpose");
 
-        if (poseArray.length > 0) {
-            latency =
-                    (DriverStation.getAlliance() == Alliance.Blue)
-                            ? LimelightHelpers.getBotPose_wpiBlue(null)[6]
-                            : LimelightHelpers.getBotPose_wpiRed(null)[
-                                    6]; // may need to add LimelightHelpers json parsing delay?
-            botPose3d = chooseAlliance();
-            botPose = toPose2d(botPose3d);
-            /* Adding Limelight estimate if in teleop enabled */
-            if (DriverStation.isTeleopEnabled()) {
-                if (visionAccurate()) {
-                    // if (!FollowOnTheFlyPath.OTF) poseOverriden = true;
-                    canUseAutoPilot = true;
-                    // } else if (isEstimateReady(botPose) && FollowOnTheFlyPath.OTF) {
-                    // this can't be done in the command itself because of how addVisionMeasurement
-                    // is called internally
-                    Robot.pose.addVisionMeasurement(botPose, latency); //TODO see where pose is stored
-                    poseOverriden = false;
-                    canUseAutoPilot = true;
-                } else {
-                    poseOverriden = false;
-                    // if (!FollowOnTheFlyPath.OTF) canUseAutoPilot = false;
-                }
-            } else {
-                poseOverriden = false;
-                canUseAutoPilot = false;
-            }
-        }
+    /*Limelight Pose Estimation Retrieval */
+
+    //LSAO: THIS METHOD IS SO SUSS. ALL BOTPOSE CALLING SHOULD BE DONE IN PERIODIC SO THAT THE FRESHEST DATA IS THE ONLY STUFF BEING PROCESSED
+    //SPECTRUM WROTE IN THEIR BLOG ABOUT HAVING VISION BE OFF BY 10-20cm WHICH COULD BE CAUSED BY BAD PRACTICE OF DATA PARSING (different limelight frames could be seen)
+
+    // public void update() {
+        
+    //     double latency = 0;
+    //     double[] poseArray = LimelightHelpers.getLimelightNTDoubleArray(null, "botpose");
+
+    //     if (poseArray.length > 0) {
+    //         /** 
+    //         latency =
+    //                 (DriverStation.getAlliance() == Alliance.Blue)
+    //                         ? LimelightHelpers.getBotPose_wpiBlue(null)[6]
+    //                         : LimelightHelpers.getBotPose_wpiRed(null)[
+    //                                 6]; // may need to add LimelightHelpers json parsing delay?
+    //         */
+    //         botPose = LimelightHelpers.getBotPose2d(VisionConfig.POSE_LIMELIGHT);
+    //         /* Adding Limelight estimate if in teleop enabled */
+    //         if (DriverStation.isTeleopEnabled()) {
+    //             if (visionAccurate()) {
+    //                 // if (!FollowOnTheFlyPath.OTF) poseOverriden = true;
+    //                 canUseAutoPilot = true;
+    //                 // } else if (isEstimateReady(botPose) && FollowOnTheFlyPath.OTF) {
+    //                 // this can't be done in the command itself because of how addVisionMeasurement
+    //                 // is called internally
+    //                 //Robot.pose.addVisionMeasurement(botPose, latency); //TODO see where pose is stored
+    //                 poseOverriden = false;
+    //                 canUseAutoPilot = true;
+    //             } else {
+    //                 poseOverriden = false;
+    //                 // if (!FollowOnTheFlyPath.OTF) canUseAutoPilot = false;
+    //             }
+    //         } else {
+    //             poseOverriden = false;
+    //             canUseAutoPilot = false;
+    //         }
+    //     }
+        
 
         /* PhotonVision Pose Estimation Retrieval */
         // if (photonVision != null) {
@@ -187,8 +207,8 @@ public class Vision extends SubsystemBase {
         //                 getTimestampSeconds(photonVisionPose.getSecond().doubleValue()));
         //     }
         // }
-        printDebug(poseArray);
-    }
+    //     printDebug(poseArray);
+    // }
 
     /**
      * REQUIRES ACCURATE POSE ESTIMATION. Uses trigonometric functions to calculate the angle
@@ -224,14 +244,14 @@ public class Vision extends SubsystemBase {
     //     // be predictable probably meaning the trig is wrong
     // }
 
-    /** Resets estimated pose to vision pose */
+    /** Resets estimated pose to vision pose LSAO: THIS SHOULD BE A POSE CLASS POWER, NOT A VISION POWER*/
     public void resetEstimatedPose() {
         Robot.pose.resetPoseEstimate(botPose);
     }
 
     /** @return if vision should be trusted more than estimated pose */
     public boolean visionAccurate() {
-        return isValidPose(botPose) && (isInMap() || multipleTargetsInView());
+        return isValidPose() && (isInMap() || multipleTargetsInView());
     }
 
     public boolean isInMap() {
@@ -247,10 +267,10 @@ public class Vision extends SubsystemBase {
      * @return Transform2d representing the x and y distance components between the robot and the
      *     hybrid spot
      */
-    private Transform2d getTransformToHybrid(int hybridSpot) {
+    /*private Transform2d getTransformToHybrid(int hybridSpot) {
         Pose2d hybridPose = VisionConfig.hybridSpots[hybridSpot];
         return Robot.pose.getEstimatedPose().minus(hybridPose);
-    }
+    }*/
 
     /** @return whether the camera sees multiple tags or not */
     public boolean multipleTargetsInView() {
@@ -264,17 +284,20 @@ public class Vision extends SubsystemBase {
         return false;
     }
 
+    /* TODO rewrite for neural network alignment
     public double getDistanceToTarget() {
         double angleToGoal =
                 Units.degreesToRadians(VisionConfig.limelightAngle + aimVerticalOffset);
         return (VisionConfig.tagHeight - VisionConfig.limelightLensHeight) / Math.tan(angleToGoal);
     }
+     */
 
     /**
      * Returns the corresponding limelight pose for the alliance in DriverStation.java
      *
      * @return Pose3d corresponding to blue or red alliance
      */
+    /*
     public Pose3d chooseAlliance() {
         if (DriverStation.getAlliance() == Alliance.Blue) {
             return LimelightHelpers.getBotPose3d_wpiBlue(null);
@@ -284,11 +307,12 @@ public class Vision extends SubsystemBase {
         DriverStation.reportWarning("Invalid Team", false);
         return null;
     }
+     */
 
     /** @return whether or not vision sees a tag */
-    public boolean isValidPose(Pose2d pose) {
+    public boolean isValidPose() {
         /* Disregard Vision if there are no targets in view */
-        if (!LimelightHelpers.getTV(null)) {
+        if (!LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT)) {
             return false;
         } else {
             return true;
@@ -304,12 +328,13 @@ public class Vision extends SubsystemBase {
      */
     public boolean isEstimateReady(Pose2d pose) {
         /* Disregard Vision if there are no targets in view */
-        if (!LimelightHelpers.getTV(null)) {
+        if (!isValidPose()) {
             return false;
         }
 
         /* Disregard Vision if odometry has not been set to vision pose yet in teleopInit*/
         Pose2d odometryPose = Robot.core.TalonSwerve.getPoseMeters();
+
         if (odometryPose.getX() <= 0.3
                 && odometryPose.getY() <= 0.3
                 && odometryPose.getRotation().getDegrees() <= 1) {
@@ -317,11 +342,10 @@ public class Vision extends SubsystemBase {
         }
         return (Math.abs(pose.getX() - odometryPose.getX()) <= 1)
                 && (Math.abs(pose.getY() - odometryPose.getY())
-                        <= 1); // this can be tuned to find a threshold that helps us remove
-        // jumping
-        // vision poses
+                        <= 1); // this can be tuned to find a threshold that helps us remove jumping vision poses
     }
 
+    //LSao: I do not this the Pose3d to 2d converter is needed. It is built into Limelight helpers
     /**
      * Converts a vision pose3d object to a pose2d object Also replaces the rotational component to
      * be the gyro rotation as this stays consistent throughout the match and does not need to be
@@ -330,10 +354,10 @@ public class Vision extends SubsystemBase {
      * @param pose3d vision pose3d
      * @return modified pose2d
      */
-    public Pose2d toPose2d(Pose3d pose3d) {
+    /*public Pose2d toPose2d(Pose3d pose3d) {
         Pose2d pose2d = botPose3d.toPose2d();
         return new Pose2d(pose2d.getTranslation(), Robot.pose.getHeading());
-    }
+    }*/
 
     /**
      * Gets the camera capture time in seconds.
@@ -345,12 +369,14 @@ public class Vision extends SubsystemBase {
         return Timer.getFPGATimestamp() - (latencyMillis / 1000d);
     }
 
+     
     /**
      * Creates Pose3d object from raw limelight values sent through NetworkTables
      *
      * @param cameraConfig the camera config
      * @return the camera pair
      */
+    /* 
     public Pose3d createBotPose3d(double[] values) {
         return new Pose3d(
                 new Translation3d(values[0], values[1], values[2]),
@@ -359,6 +385,7 @@ public class Vision extends SubsystemBase {
                         Units.degreesToRadians(values[4]),
                         Units.degreesToRadians(values[5])));
     }
+    */
 
     /**
      * Gets if limelight has seen a target at least once. Attempts to disregard erroneous targets by
@@ -366,6 +393,7 @@ public class Vision extends SubsystemBase {
      *
      * @return true if limelight has seen a valid target at least once
      */
+    /* 
     public void checkTargetHistory() {
         // may need to use a sepearate count to avoid a consecutive loop check
         if (LimelightHelpers.getTV(null)) {
@@ -375,16 +403,17 @@ public class Vision extends SubsystemBase {
         }
         targetSeen = targetSeenCount > 2; // has been seen for 3 loops
     }
+    */
 
     public double getHorizontalOffset(String limelight) {
-        if (limelight.equals(VisionConfig.DETECT_LL)) {
+        if (limelight.equals(VisionConfig.NN_LIMELIGHT)) {
             return detectHorizontalOffset;
         }
         return aimHorizontalOffset;
     }
 
     public double getVerticalOffset(String limelight) {
-        if (limelight.equals(VisionConfig.DETECT_LL)) {
+        if (limelight.equals(VisionConfig.NN_LIMELIGHT)) {
             return detectVerticalOffset;
         }
         return aimVerticalOffset;
@@ -399,30 +428,35 @@ public class Vision extends SubsystemBase {
      * @param pipelineIndex use pipeline indexes in {@link VisionConfig}
      */
     public void setLimelightPipeline(String limelight, int pipelineIndex) {
-        LimelightHelpers.setPipelineIndex(VisionConfig.DEFAULT_LL, pipelineIndex);
-        LimelightHelpers.setPipelineIndex(VisionConfig.DETECT_LL, pipelineIndex);
+        LimelightHelpers.setPipelineIndex(VisionConfig.NN_LIMELIGHT, pipelineIndex);
+        LimelightHelpers.setPipelineIndex(VisionConfig.NN_LIMELIGHT, pipelineIndex);
     }
 
     /**
      * @param limelight name of limelight to check see {@link VisionConfig}
      * @return if current LL pipeline is on cube or cone detector
      */
+    /* 
     public boolean isDetectorPipeline(String limelight) {
         double currentPipeline = LimelightHelpers.getCurrentPipelineIndex(limelight);
         return currentPipeline == VisionConfig.coneDetectorPipeline
                 || currentPipeline == VisionConfig.cubeDetectorPipeline;
     }
+    */
 
+    /*
     public boolean isReflectivePipeline(String limelight) {
         double currentPipeline = LimelightHelpers.getCurrentPipelineIndex(limelight);
         return currentPipeline == VisionConfig.reflectivePipeline;
     }
+    */
 
     /**
      * Prints the vision, estimated, and odometry pose to SmartDashboard
      *
      * @param values the array of limelight raw values
      */
+    /*
     public void printDebug(double[] poseArray) {
         if (poseArray.length > 0) {
             SmartDashboard.putString("LimelightX", df.format(botPose3d.getTranslation().getX()));
@@ -443,6 +477,7 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putString(
                 "EstimatedPoseTheta", df.format(Robot.pose.getHeading().getDegrees()));
     }
+     */
 
     /**
      * Prints useful debug information for theta aiming calculations
@@ -453,6 +488,7 @@ public class Vision extends SubsystemBase {
      * @param omega
      * @param theta
      */
+    /*
     private void aimingPrintDebug(
             Transform2d transform, double hyp, double beta, double omega, double theta) {
         System.out.println(
@@ -472,4 +508,5 @@ public class Vision extends SubsystemBase {
             System.out.println(" needed new theta: " + df.format(theta));
         }
     }
+     */
 }
