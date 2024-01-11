@@ -1,8 +1,6 @@
 package frc.robot.core.MAXSwerve;
 
-import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
-
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -11,19 +9,17 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
+
 import java.util.function.BooleanSupplier;
+
+import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
 public abstract class MAXSwerve extends SubsystemBase {
 
@@ -36,7 +32,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private MAXSwerveModule fl, fr, bl, br;
-  private WPI_Pigeon2 gyro;
+  private Pigeon2 gyro;
 
   SwerveDriveOdometry odometry =
       new SwerveDriveOdometry(
@@ -52,8 +48,8 @@ public abstract class MAXSwerve extends SubsystemBase {
       MAXSwerveModule fr,
       MAXSwerveModule bl,
       MAXSwerveModule br) {
-    this.gyro = new WPI_Pigeon2(pigeon_id);
-    gyro.configFactoryDefault();
+    this.gyro = new Pigeon2(pigeon_id);
+    gyro.getConfigurator().DefaultTimeoutSeconds = 50;
     zeroGyro();
     this.fl = fl;
     this.fr = fr;
@@ -82,6 +78,15 @@ public abstract class MAXSwerve extends SubsystemBase {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         },
         pose);
+  }
+
+  /**
+   * Method to drive the robot using a {@link ChassisSpeeds} object.
+   * This overload is chiefly for ease of use with PathPlanner.
+   * @param chassisSpeeds the ROBOT-CENTRIC speeds to follow
+   */
+  public void drivePP(ChassisSpeeds chassisSpeeds) {
+    drive(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, false, true);
   }
 
   /**

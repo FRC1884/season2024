@@ -3,9 +3,25 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
+/**
+ * This is the Catapul-- umm... Flywheel subsystem for the 2024 season.
+ * Throughout the season, add everything shooting here. <br>
+ * <br>
+ * Think:
+ *
+ * <ul>
+ * <li>pitch control for adjusting the launch angle,
+ * <li>LUT-based power setpoints,
+ * <li>closed-loop control to regain rotational momentum quickly,
+ * <li>whatever else you'd like!
+ * </ul>
+ */
 public class ExampleFlywheel extends SubsystemBase {
   private static ExampleFlywheel instance;
 
@@ -54,5 +70,13 @@ public class ExampleFlywheel extends SubsystemBase {
     // follower_pidController.setIZone(kIz);
     // follower_pidController.setFF(kFF);
     // follower_pidController.setOutputRange(kMinOutput, kMaxOutput);
+  }
+
+  public Command runFlywheel(double power) {
+    final double powerNorm = Math.min(power, 1.0);
+    return new InstantCommand(() -> {
+      leader_pidController.setReference(powerNorm, CANSparkMax.ControlType.kVelocity);
+      follower_pidController.setReference(powerNorm, CANSparkMax.ControlType.kVelocity);
+    });
   }
 }

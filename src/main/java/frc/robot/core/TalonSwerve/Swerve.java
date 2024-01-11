@@ -1,6 +1,6 @@
 package frc.robot.core.TalonSwerve;
 
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public abstract class Swerve extends SubsystemBase {
   private SwerveDriveOdometry odometry;
   private SwerveModule[] modules;
-  private WPI_Pigeon2 gyro;
+  private Pigeon2 gyro;
 
   public Swerve(
       int pigeon_id,
@@ -27,8 +27,8 @@ public abstract class Swerve extends SubsystemBase {
       SwerveModuleConstants fr,
       SwerveModuleConstants bl,
       SwerveModuleConstants br) {
-    gyro = new WPI_Pigeon2(pigeon_id);
-    gyro.configFactoryDefault();
+    gyro = new Pigeon2(pigeon_id);
+    gyro.getConfigurator().DefaultTimeoutSeconds = 50;
     zeroGyro();
 
     modules =
@@ -117,8 +117,8 @@ public abstract class Swerve extends SubsystemBase {
 
   public Rotation2d getYaw() {
     return (SwerveConstants.INVERT_GYRO)
-        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
-        : Rotation2d.fromDegrees(gyro.getYaw());
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw().getValue())
+        : Rotation2d.fromDegrees(gyro.getYaw().getValue());
   }
 
   @Override
