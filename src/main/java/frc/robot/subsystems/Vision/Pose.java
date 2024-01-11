@@ -79,13 +79,14 @@ public class Pose extends SubsystemBase {
     @Override
     public void periodic() {
         updateOdometryEstimate(); //Updates using wheel encoder data only
+        //Updates using the vision estimate
         if (isEstimateReady(Vision.getInstance().visionBotPose())){ // Does making so many bot pose variables impact accuracy?
             addVisionMeasurement(Vision.getInstance().visionBotPose(), Vision.getInstance().getTotalLatency());
         }
         //Robot.vision.update();
 
         //setEstimatedPose(getPosition());
-        //setOdometryPose(Robot.swerve.getPoseMeters());
+        setOdometryPose(Drivetrain.getInstance().getPose());
 
         //Update Pose Estimator
         // if (conditions)
@@ -209,7 +210,8 @@ public class Pose extends SubsystemBase {
     */
 
     /**
-     * Gets the pose of the robot at the current time as estimated by the poseEstimator.
+     * Gets the pose of the robot at the current time as estimated by the poseEstimator. 
+     * This includes vision and odometry combined together.
      *
      * @return The estimated robot pose in meters.
      */
