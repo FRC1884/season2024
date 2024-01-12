@@ -146,7 +146,7 @@ public class Drivetrain extends MAXSwerve {
   public Command followPathCommand(Supplier<PathPlannerPath> pathSupplier) {
     return new FollowPathHolonomic(
         pathSupplier.get(),
-        this::getPose, // Robot pose supplier - TODO replace this with vision corrected pose from Pose.java
+        this::getPose, // Robot pose supplier - TODO replace this with vision corrected pose from Pose.java (Pose.getInstance().getPosition())
         () ->
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 KINEMATICS.toChassisSpeeds(),
