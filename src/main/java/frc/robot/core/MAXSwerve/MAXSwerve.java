@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.core.TalonSwerve.SwerveConstants;
+
 import java.util.function.BooleanSupplier;
 
 public abstract class MAXSwerve extends SubsystemBase {
@@ -64,6 +66,16 @@ public abstract class MAXSwerve extends SubsystemBase {
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
+  }
+
+  //Lsao Jan 11: Added this getter method for SwerveDrivePoseEstimator constructor in Pose.java
+  public SwerveModulePosition[] getModulePositions() {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    positions[0] = fl.getPosition();
+    positions[1] = fr.getPosition();
+    positions[2] = bl.getPosition();
+    positions[3] = br.getPosition();
+    return positions;
   }
 
   public Pose2d getPose() {
@@ -285,6 +297,13 @@ public abstract class MAXSwerve extends SubsystemBase {
    */
   public double getHeading() {
     return Rotation2d.fromDegrees(gyro.getAngle()).getDegrees();
+  }
+
+  //Added getter method for SwerveDrivePoseEstimator in Swerve.java
+  public Rotation2d getYaw() {
+    return (SwerveConstants.INVERT_GYRO)
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw().getValue())
+        : Rotation2d.fromDegrees(gyro.getYaw().getValue());
   }
 
   /**
