@@ -85,14 +85,9 @@ public class Pose extends SubsystemBase {
         }
         //Robot.vision.update();
 
-        //setEstimatedPose(getPosition());
+        //Update for telemetry
+        setEstimatedPose(getPosition());
         setOdometryPose(Drivetrain.getInstance().getPose());
-
-        //Update Pose Estimator
-        // if (conditions)
-
-        //addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds)
-
 
         //telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
         telemetry.updatePoseOnField("OdometryPose", odometryPose);
@@ -186,6 +181,28 @@ public class Pose extends SubsystemBase {
         poseEstimator.update(Drivetrain.getInstance().getYaw(), Drivetrain.getInstance().getModulePositions());
     }
 
+        /**
+     * Add a vision measurement to the PoseEstimator. This will correct the odometry pose estimate
+     * while still accounting for measurement noise.
+     *
+     * <p>This method can be called as infrequently as you want, as long as you are calling {@link
+     * SwerveDrivePoseEstimator#update} every loop.
+     *
+     * <p>To promote stability of the pose estimate and make it robust to bad vision data, we
+     * recommend only adding vision measurements that are already within one meter or so of the
+     * current pose estimate.
+     *
+     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+     * @param timestampSeconds The timestamp of the vision measurement in seconds. Note that if you
+     *     don't use your own time source by calling {@link SwerveDrivePoseEstimator#updateWithTime}
+     *     then you must use a timestamp with an epoch since FPGA startup (i.e. the epoch of this
+     *     timestamp is the same epoch as Timer.getFPGATimestamp.) This means that you should use
+     *     Timer.getFPGATimestamp as your time source or sync the epochs.
+     */
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+    }
+
     /**
      * reset the pose estimator - Fix these during session
      *
@@ -277,27 +294,7 @@ public class Pose extends SubsystemBase {
         return VecBuilder.fill(x, y, Units.degreesToRadians(theta));
     }
 
-    /**
-     * Add a vision measurement to the PoseEstimator. This will correct the odometry pose estimate
-     * while still accounting for measurement noise.
-     *
-     * <p>This method can be called as infrequently as you want, as long as you are calling {@link
-     * SwerveDrivePoseEstimator#update} every loop.
-     *
-     * <p>To promote stability of the pose estimate and make it robust to bad vision data, we
-     * recommend only adding vision measurements that are already within one meter or so of the
-     * current pose estimate.
-     *
-     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
-     * @param timestampSeconds The timestamp of the vision measurement in seconds. Note that if you
-     *     don't use your own time source by calling {@link SwerveDrivePoseEstimator#updateWithTime}
-     *     then you must use a timestamp with an epoch since FPGA startup (i.e. the epoch of this
-     *     timestamp is the same epoch as Timer.getFPGATimestamp.) This means that you should use
-     *     Timer.getFPGATimestamp as your time source or sync the epochs.
-     */
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
-    }
+
 
     /* 
     public static Command resetHeading(Rotation2d heading) {
