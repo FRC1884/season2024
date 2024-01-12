@@ -23,13 +23,18 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getTestButton();
 
+  abstract JoystickButton getFollowAprilTagButton();
+
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(getSwerveXSpeed(), getSwerveYSpeed(), getSwerveRot()));
+          getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
     }
   }
+
+  
 
   @Override
   public void registerCommands() {
