@@ -96,7 +96,7 @@ public class Vision extends SubsystemBase {
         // jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT); TODO - is
         // json dump more accurate?
         // Update Vision robotpose
-        botPose = LimelightHelpers.getBotPose2d(VisionConfig.POSE_LIMELIGHT);
+        botPose = LimelightHelpers.getPose2d(VisionConfig.POSE_LIMELIGHT);
         totalLatency =
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
@@ -120,6 +120,15 @@ public class Vision extends SubsystemBase {
     // this method can call update() if vision pose estimation needs to be updated in
     // Vision.java
   }
+
+  // method to find target location to remain one meter in front of AprilTag
+public Pose2d getTargetRobotPose_RobotSpace(){
+  Pose2d aprilTagPosition = LimelightHelpers.getTargetPose2d(VisionConfig.POSE_LIMELIGHT);
+  double targetX = aprilTagPosition.getX() + 1;
+  double targetY = aprilTagPosition.getY();
+  Rotation2d targetRotation2d = aprilTagPosition.getRotation();
+  return new Pose2d(targetX, targetY, targetRotation2d);
+}
 
   // APRILTAG HELPER METHODS
 
