@@ -74,6 +74,15 @@ public abstract class MAXSwerve extends SubsystemBase {
         });
   }
 
+  public SwerveModulePosition[] getModulePositions() {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    positions[0] = fl.getPosition();
+    positions[1] = fr.getPosition();
+    positions[2] = bl.getPosition();
+    positions[3] = br.getPosition();
+    return positions;
+  }
+
   public Pose2d getPose() {
     return odometry.getPoseMeters();
   }
@@ -283,7 +292,7 @@ public abstract class MAXSwerve extends SubsystemBase {
           new PathPlannerPath(PathPlannerPath.bezierFromPoses(getPose(),getPose()), null, null) // null vaules because these are to be obtained from vision when that is finished
         ), this);
   }
-  
+
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {
     fl.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -330,6 +339,12 @@ public abstract class MAXSwerve extends SubsystemBase {
    */
   public double getHeading() {
     return Rotation2d.fromDegrees(gyro.getAngle()).getDegrees();
+  }
+
+  public Rotation2d getYaw() {
+    return (SwerveConstants.INVERT_GYRO)
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
+        : Rotation2d.fromDegrees(gyro.getYaw());
   }
 
   /**
