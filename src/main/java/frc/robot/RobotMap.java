@@ -76,16 +76,16 @@ public class RobotMap {
     public static final int noteDetectorPipeline = 2;
 
     // Photonvision
-    private static final String POSE_PHOTON = "pose_photoncamera";
+    public static final String POSE_PHOTON_1 = "photon-cam1";
     // Translation Values (location relative to robot center)
-    private static final double CAM_X = 0.5; // Forward: camera To Robot XMeters
-    private static final double CAM_Y = 0.0; // Right: camera To Robot YMeters
-    private static final double CAM_Z = 0.2; // Up: camera To Robot ZMeters
+    public static final double CAM_1_X = 0.5; // Forward: camera To Robot XMeters
+    public static final double CAM_1_Y = 0.0; // Right: camera To Robot YMeters
+    public static final double CAM_1_Z = 0.2; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
-    private static final double CAM_ROLL_RADIANS = 0.0; // camera Roll Radians
-    private static final double CAM_PITCH_RADIANS = 0.2618; // camera Pitch Radians
-    private static final double CAM_YAW_RADIANS = 0.0; // camera Yaw Radians
+    public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
+    public static final double CAM_1_PITCH_RADIANS = 0.2618; // camera Pitch Radians
+    public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians
   }
 
   public static class PoseConfig {
