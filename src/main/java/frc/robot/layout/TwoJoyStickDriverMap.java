@@ -69,8 +69,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
 
   @Override
-  public JoystickButton getSpeakerOrSourceButton()
-  {
+  public JoystickButton getSpeakerOrSourceButton() {
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
 

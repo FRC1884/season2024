@@ -2,12 +2,8 @@ package frc.robot.core.MAXSwerve;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
-import java.util.function.BooleanSupplier;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -220,10 +216,10 @@ public abstract class MAXSwerve extends SubsystemBase {
     };
   }
 
-   public Command followPathCommand(String pathName) {
-        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-        return followPathCommand(path);
-    }
+  public Command followPathCommand(String pathName) {
+    PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+    return followPathCommand(path);
+  }
 
   public Command followPathCommand(PathPlannerPath pathName) {
 
@@ -261,20 +257,23 @@ public abstract class MAXSwerve extends SubsystemBase {
             this));
   }
 
-  public Command navigate(Pose2d targetPose)
-  {
-    return new RunCommand(() -> this.followPathCommand(
-          new PathPlannerPath(PathPlannerPath.bezierFromPoses(getPose(),targetPose), null, null) // null vaules because these are to be obtained from vision when that is finished
-        ), this);
+  public Command navigate(Pose2d targetPose) {
+    return new RunCommand(
+        () ->
+            this.followPathCommand(
+                new PathPlannerPath(
+                    PathPlannerPath.bezierFromPoses(getPose(), targetPose),
+                    null,
+                    null) // null vaules because these are to be obtained from vision when that is
+                          // finished
+                ),
+        this);
   }
 
-  public Command goSpeakerOrSource(boolean hasNote)
-  {
-    if(hasNote)
-    {
-        return navigate(getPose());
-    }
-    else{
+  public Command goSpeakerOrSource(boolean hasNote) {
+    if (hasNote) {
+      return navigate(getPose());
+    } else {
       return navigate(getPose());
     }
   }
@@ -343,13 +342,9 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 }
 
-
-
-
-
 // Control.ButtonPressed(Event e){
 //  String command = e.getLabel(); //take me to source
- 
+
 // if (command = "takeMEToSource"){
 //   Pose currentlocation = robot.getLocation();
 //   Pose destination = PoseCollection.getInstance().getDestinationPose("Source");
@@ -357,5 +352,4 @@ public abstract class MAXSwerve extends SubsystemBase {
 
 // }
 
-
-//}
+// }
