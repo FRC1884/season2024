@@ -1,7 +1,12 @@
 package frc.robot.subsystems.Vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
@@ -9,6 +14,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 import java.text.DecimalFormat;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /*
  * This class requires MAJOR CLEANUP. There needs to be a proper pyramid of hierarchy. Vision should NOT be able to control anything related to pose. It should only
@@ -22,6 +31,11 @@ public class Vision extends SubsystemBase {
   private boolean visionIntegrated = false;
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
+  private PhotonCamera photonCam_1;
+  private boolean photon_1_HasTargets;
+  private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+  private PhotonPoseEstimator photonPoseEstimator;
+  private Transform3d robotToCam;
 
   /** For LEDs */
   private boolean poseOverriden = false;
@@ -69,6 +83,10 @@ public class Vision extends SubsystemBase {
 
     /* PhotonVision Setup -- uncomment if running PhotonVision*/
     // photonVision = new PhotonVision();
+    photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
+    photon_1_HasTargets = false;
+    photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCam_1, robotToCam);
+    robotToCam = new Transform3d(new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z), new Rotation3d(VisionConfig.CAM_1_ROLL_RADIANS, VisionConfig.CAM_1_PITCH_RADIANS, VisionConfig.CAM_1_YAW_RADIANS)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
     // printing purposes
     df.setMaximumFractionDigits(2);
