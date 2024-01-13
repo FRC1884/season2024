@@ -44,32 +44,27 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
 
   @Override
-  public JoystickButton getFollowAprilTagButton()
-  {
+  public JoystickButton getFollowAprilTagButton() {
     return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
-  public JoystickButton getSourceToSpeakerButton()
-  {
+  public JoystickButton getSourceToSpeakerButton() {
     return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
-  public JoystickButton getSourceToAmpButton()
-  {
+  public JoystickButton getSourceToAmpButton() {
     return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
-  public JoystickButton getSpeakerToSourceButton()
-  {
+  public JoystickButton getSpeakerToSourceButton() {
     return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
-  public JoystickButton getSpeakerToStageButton()
-  {
+  public JoystickButton getSpeakerToStageButton() {
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 

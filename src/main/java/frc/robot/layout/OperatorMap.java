@@ -14,11 +14,11 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getTestButton();
 
-abstract JoystickButton getIntakeButton();
+  abstract JoystickButton getIntakeButton();
 
   @Override
   public void registerCommands() {
-    if(ExampleConfig.Subsystems.INTAKE_ENABLED){
+    if (ExampleConfig.Subsystems.INTAKE_ENABLED) {
       KonsMotors newMotors = KonsMotors.getInstance();
       getIntakeButton().onTrue(!newMotors.isRunning() ? newMotors.run() : newMotors.kill());
     }

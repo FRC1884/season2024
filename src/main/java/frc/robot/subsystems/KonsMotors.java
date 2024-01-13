@@ -2,12 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.function.BooleanSupplier;
 
 /** An intake subsystem that utilizes sensor input. */
 public class KonsMotors extends SubsystemBase {
@@ -23,9 +19,9 @@ public class KonsMotors extends SubsystemBase {
   private CANSparkMax motorTwo;
 
   public KonsMotors() {
-motorTwo.follow(motorOne, true);
-motorOne.set(0);
-running = false;
+    motorTwo.follow(motorOne, true);
+    motorOne.set(0);
+    running = false;
   }
 
   /**
@@ -38,11 +34,21 @@ running = false;
    *     robot
    */
   public Command run() {
-    return new InstantCommand( () -> {motorOne.set(1.0); running = true;});
+    return new InstantCommand(
+        () -> {
+          motorOne.set(1.0);
+          running = true;
+        });
   }
+
   public Command kill() {
-    return new InstantCommand( () -> {motorOne.set(0); running = false;});
+    return new InstantCommand(
+        () -> {
+          motorOne.set(0);
+          running = false;
+        });
   }
+
   public boolean isRunning() {
     return running;
   }

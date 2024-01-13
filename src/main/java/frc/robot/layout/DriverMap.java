@@ -38,13 +38,12 @@ public abstract class DriverMap extends CommandMap {
       var drivetrain = Drivetrain.getInstance();
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(getSwerveXSpeed(), getSwerveYSpeed(), getSwerveRot()));
-          getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
-          getSourceToSpeakerButton().onTrue(drivetrain.goSourceToSpeaker());
-          getSourceToAmpButton().onTrue(drivetrain.goSourceToAmp());
-          getSpeakerToSourceButton().onTrue(drivetrain.goSpeakerToSource());
-          getSpeakerToStageButton().onTrue(drivetrain.goSpeakerToStage());
+      getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
+      getSourceToSpeakerButton().onTrue(drivetrain.goSourceToSpeaker());
+      getSourceToAmpButton().onTrue(drivetrain.goSourceToAmp());
+      getSpeakerToSourceButton().onTrue(drivetrain.goSpeakerToSource());
+      getSpeakerToStageButton().onTrue(drivetrain.goSpeakerToStage());
     }
-
   }
 
   @Override
