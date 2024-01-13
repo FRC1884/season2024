@@ -5,7 +5,9 @@ import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -221,22 +223,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
    public Command followPathCommand(String pathName) {
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-
-        return new FollowPathHolonomic(
-                path,
-                this::getPose, // Robot pose supplier
-                this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
-                getShouldFlip(),
-                this // Reference to this subsystem to set requirements
-        );
+        return followPathCommand(path);
     }
 
     public Command followPathCommand(PathPlannerPath pathName) {
@@ -265,32 +252,22 @@ public abstract class MAXSwerve extends SubsystemBase {
         ), this));
   }
 
-  public Command goSourceToSpeaker()
+  public Command navigate(Pose2d targetPose)
   {
     return new RunCommand(() -> this.followPathCommand(
-          new PathPlannerPath(PathPlannerPath.bezierFromPoses(getPose(),getPose()), null, null) // null vaules because these are to be obtained from vision when that is finished
+          new PathPlannerPath(PathPlannerPath.bezierFromPoses(getPose(),targetPose), null, null) // null vaules because these are to be obtained from vision when that is finished
         ), this);
   }
 
-  public Command goSourceToAmp()
+  public Command goSpeakerOrSource(boolean hasNote)
   {
-    return new RunCommand(() -> this.followPathCommand(
-          new PathPlannerPath(PathPlannerPath.bezierFromPoses(getPose(),getPose()), null, null) // null vaules because these are to be obtained from vision when that is finished
-        ), this);
-  }
-
-  public Command goSpeakerToSource()
-  {
-    return new RunCommand(() -> this.followPathCommand(
-          new PathPlannerPath(PathPlannerPath.bezierFromPoses(getPose(),getPose()), null, null) // null vaules because these are to be obtained from vision when that is finished
-        ), this);
-  }
-
-  public Command goSpeakerToStage()
-  {
-    return new RunCommand(() -> this.followPathCommand(
-          new PathPlannerPath(PathPlannerPath.bezierFromPoses(getPose(),getPose()), null, null) // null vaules because these are to be obtained from vision when that is finished
-        ), this);
+    if(hasNote)
+    {
+        return navigate(getPose());
+    }
+    else{
+      return navigate(getPose());
+    }
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
@@ -356,3 +333,20 @@ public abstract class MAXSwerve extends SubsystemBase {
     return gyro.getRate() * (MaxSwerveConstants.kGyroReversed ? -1.0 : 1.0);
   }
 }
+
+
+
+
+
+// Control.ButtonPressed(Event e){
+//  String command = e.getLabel(); //take me to source
+ 
+// if (command = "takeMEToSource"){
+//   Pose currentlocation = robot.getLocation();
+//   Pose destination = PoseCollection.getInstance().getDestinationPose("Source");
+//   Robot.getInstance().navigate(currentLocation, destination);
+
+// }
+
+
+//}
