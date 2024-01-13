@@ -4,9 +4,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.modes.*;
 
 public enum AutoModeList {
-  DO_NOTHING(new DoNothing()),
-  LIFT_AND_LOWER_ELEVATOR(new LiftAndLowerElevator()),
-  TESTPATH(new TestPath());
+  DO_NOTHING(new DoNothing());
 
   private final SequentialCommandGroup autoCommand;
 

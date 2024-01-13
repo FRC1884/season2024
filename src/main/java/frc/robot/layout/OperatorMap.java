@@ -16,11 +16,15 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getIntakeButton();
 
-  @Override
-  public void registerCommands() {
+  private void registerIntake() {
     if (ExampleConfig.Subsystems.INTAKE_ENABLED) {
       KonsMotors newMotors = KonsMotors.getInstance();
       getIntakeButton().onTrue(newMotors.run());
     }
+  }
+
+  @Override
+  public void registerCommands() {
+    registerIntake();
   }
 }
