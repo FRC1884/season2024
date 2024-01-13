@@ -70,8 +70,8 @@ public class RobotMap {
 
   public static class VisionConfig {
     // Limelight
-    public static final String POSE_LIMELIGHT = "pose_limelight";
-    public static final String NN_LIMELIGHT = "nn_limelight";
+    public static final String POSE_LIMELIGHT = "limelight-pose";
+    public static final String NN_LIMELIGHT = "limelight-nn";
     public static final int aprilTagPipeline = 1;
     public static final int noteDetectorPipeline = 2;
 

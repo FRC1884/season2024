@@ -615,7 +615,7 @@ public class LimelightHelpers {
   }
 
   /**
-   * Gets the Pose2d for easy use with Odometry vision pose estimator (addVisionMeasurement)
+   * Gets the Pose2d of the robot with the apriltag as the origin
    *
    * @param limelightName
    * @return
