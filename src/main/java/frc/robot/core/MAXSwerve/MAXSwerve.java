@@ -277,6 +277,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     else{
       return navigate(getPose());
     }
+  }
 
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {

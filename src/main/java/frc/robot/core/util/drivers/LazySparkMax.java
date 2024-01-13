@@ -22,7 +22,6 @@ public class LazySparkMax extends CANSparkMax {
     return mLeader;
   }
 
-  @Override
   public REVLibError follow(final CANSparkMax leader) {
     mLeader = leader;
     return super.follow(leader);
