@@ -6,7 +6,7 @@ import frc.robot.subsystems.Drivetrain;
 public class FollowAprilTag extends SequentialCommandGroup {
   public FollowAprilTag() {
 
-    var maxswerve = Drivetrain.getInstance();
-    addCommands(maxswerve.followAprilTagCommand());
+    // var maxswerve = Drivetrain.getInstance();
+    // addCommands(maxswerve.followAprilTagCommand());
   }
 }

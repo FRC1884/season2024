@@ -8,7 +8,7 @@ public class TestPath extends SequentialCommandGroup {
     String path = "Test Path";
 
     var maxswerve = Drivetrain.getInstance();
-    addCommands(
+    addCommands();
         // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.MID),
         // new RunCommand(() -> elevatorArm.moveElevator(0.7))
         //             .until(() -> elevatorArm.getTopSwitch()),
@@ -18,6 +18,5 @@ public class TestPath extends SequentialCommandGroup {
         //             .alongWith(new RunCommand(() -> elevatorArm.moveElevator(-0.7))
         //                         .until(() -> elevatorArm.getBottomSwitch())),
         // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.DEFAULT),
-        maxswerve.followPathCommand(path));
   }
 }
