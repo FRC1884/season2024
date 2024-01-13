@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    
+
     CommandScheduler.getInstance().cancelAll();
     OI.getInstance().registerCommands();
   }

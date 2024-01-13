@@ -1,6 +1,5 @@
 package frc.robot.layout;
 
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ExampleConfig;
@@ -46,7 +45,7 @@ public abstract class DriverMap extends CommandMap {
           .onTrue(
               drivetrain.goSpeakerOrSource(
                   false)); // boolean arguement set as false as function to determine if robot is
-                           // holding note has not been created yet
+      // holding note has not been created yet
     }
   }
 

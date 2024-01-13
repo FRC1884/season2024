@@ -34,9 +34,9 @@ public class OI {
         new HashMap<
             String,
             Command>()); // TODO no idea if this works or not. Theoretically the hashmap of strings
-                         // and commands takes the string input from the waypoints in the path and
-                         // associates that to the command that you want to run, but thats just a
-                         // theory, a game theory.
+    // and commands takes the string input from the waypoints in the path and
+    // associates that to the command that you want to run, but thats just a
+    // theory, a game theory.
     new TwoJoyStickDriverMap(driver).registerCommands();
     new TwoJoyStickOperatorMap(operator).registerCommands();
   }

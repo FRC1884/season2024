@@ -265,7 +265,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     PathPlannerPath.bezierFromPoses(getPose(), targetPose),
                     null,
                     null) // null vaules because these are to be obtained from vision when that is
-                          // finished
+                // finished
                 ),
         this);
   }
