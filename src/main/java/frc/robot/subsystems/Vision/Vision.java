@@ -123,7 +123,6 @@ public class Vision extends SubsystemBase {
     // Vision.java
   }
 
-
   // method to find target location to remain one meter in front of AprilTag
   public Pose2d getTargetRobotPose_RobotSpace() {
     Pose2d aprilTagPosition = LimelightHelpers.getTargetPose2d(VisionConfig.POSE_LIMELIGHT);
