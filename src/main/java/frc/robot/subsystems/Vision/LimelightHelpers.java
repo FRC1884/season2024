@@ -618,7 +618,7 @@ public class LimelightHelpers {
     return 1.0 == getLimelightNTDouble(limelightName, "tv");
   }
 
-   /**
+  /**
    * Gets the Pose2d for easy use with Odometry vision pose estimator (addVisionMeasurement)
    *
    * @param limelightName
@@ -629,8 +629,6 @@ public class LimelightHelpers {
     double[] result = getBotPose(limelightName);
     return toPose2D(result);
   }
-
-  
 
   /////
   /////

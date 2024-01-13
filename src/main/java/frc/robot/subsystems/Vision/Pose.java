@@ -141,7 +141,7 @@ public class Pose extends SubsystemBase {
     return (Math.abs(pose.getX() - odometryPose.getX()) <= 1)
         && (Math.abs(pose.getY() - odometryPose.getY())
             <= 1); // this can be tuned to find a threshold that helps us remove jumping vision
-                   // poses
+    // poses
   }
 
   /** Sets the Odometry Pose to the given pose */
