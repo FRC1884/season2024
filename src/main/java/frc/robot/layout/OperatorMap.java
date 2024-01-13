@@ -20,7 +20,7 @@ public abstract class OperatorMap extends CommandMap {
   public void registerCommands() {
     if (ExampleConfig.Subsystems.INTAKE_ENABLED) {
       KonsMotors newMotors = KonsMotors.getInstance();
-      getIntakeButton().onTrue(!newMotors.isRunning() ? newMotors.run() : newMotors.kill());
+      getIntakeButton().onTrue(newMotors.run());
     }
   }
 }

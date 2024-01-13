@@ -1,9 +1,12 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap.MotorMap;
 
 /** An intake subsystem that utilizes sensor input. */
 public class KonsMotors extends SubsystemBase {
@@ -19,11 +22,17 @@ public class KonsMotors extends SubsystemBase {
   private CANSparkFlex motorTwo;
 
   public KonsMotors() {
+    motorOne = new CANSparkFlex(MotorMap.MOTOR_ID_1, MotorType.kBrushless);
+    motorTwo = new CANSparkFlex(MotorMap.MOTOR_ID_2, MotorType.kBrushless);
     motorTwo.follow(motorOne, true);
     motorOne.set(0);
     running = false;
   }
 
+  public void runMotors() {
+    double speed = motorOne.get() == 0 ? 0.1 : 0;
+    motorOne.set(speed);
+  }
   /**
    * A Command that runs the intake at some power unless a note has been collected and is in the
    * robot.
@@ -34,22 +43,8 @@ public class KonsMotors extends SubsystemBase {
    *     robot
    */
   public Command run() {
-    return new InstantCommand(
-        () -> {
-          motorOne.set(1.0);
-          running = true;
-        });
+    return new InstantCommand(this::runMotors);
   }
 
-  public Command kill() {
-    return new InstantCommand(
-        () -> {
-          motorOne.set(0);
-          running = false;
-        });
-  }
 
-  public boolean isRunning() {
-    return running;
-  }
 }
