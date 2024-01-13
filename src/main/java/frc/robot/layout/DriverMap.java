@@ -30,11 +30,9 @@ public abstract class DriverMap extends CommandMap {
       var drivetrain = Drivetrain.getInstance();
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(getSwerveXSpeed(), getSwerveYSpeed(), getSwerveRot()));
-          getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
+      getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
     }
   }
-
-  
 
   @Override
   public void registerCommands() {
