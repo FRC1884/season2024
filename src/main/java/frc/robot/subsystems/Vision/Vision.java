@@ -51,7 +51,7 @@ public class Vision extends SubsystemBase {
     return instance;
   }
 
-  //TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
+  // TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
   private Vision() {
     setName("Vision");
     botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
@@ -96,7 +96,7 @@ public class Vision extends SubsystemBase {
       if (visionAccurate()) {
         // jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT); TODO - is
         // json dump more accurate?
-        // Update Vision robotpose - need to read more about coordinate systems centered 
+        // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field
         botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
         totalLatency =

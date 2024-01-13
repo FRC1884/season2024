@@ -626,8 +626,6 @@ public class LimelightHelpers {
     return toPose2D(result);
   }
 
-  
-
   public static boolean getTV(String limelightName) {
     return 1.0 == getLimelightNTDouble(limelightName, "tv");
   }
