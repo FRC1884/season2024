@@ -43,10 +43,9 @@ public abstract class DriverMap extends CommandMap {
           getSourceToAmpButton().onTrue(drivetrain.goSourceToAmp());
           getSpeakerToSourceButton().onTrue(drivetrain.goSpeakerToSource());
           getSpeakerToStageButton().onTrue(drivetrain.goSpeakerToStage());
-;    }
-  }
+    }
 
-  
+  }
 
   @Override
   public void registerCommands() {

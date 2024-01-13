@@ -142,31 +142,7 @@ public class Drivetrain extends MAXSwerve {
    * @see #followPathCommand(String)
    * @param pathSupplier a Supplier that gives
    * @return a Command that follows the path.
-   */
-  // public Command followPathCommand(Supplier<PathPlannerPath> pathSupplier) {
-  //   return new FollowPathHolonomic(
-  //       pathSupplier.get(),
-  //       this
-  //           ::getPose, // Robot pose supplier - TODO replace this with vision corrected pose from
-  //                      // Pose.java (Pose.getInstance().getPosition())
-  //       () ->
-  //           ChassisSpeeds.fromFieldRelativeSpeeds(
-  //               KINEMATICS.toChassisSpeeds(),
-  //               new Rotation2d(getHeading())), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-  //       this::drivePP, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-  //       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-  //           // your Constants class
-  //           new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-  //           new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-  //           4.5, // Max module speed, in m/s
-  //           0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-  //           new ReplanningConfig() // Default path replanning config. See the API for the options
-  //           // here
-  //           ),
-  //       () -> {
-  //         // Boolean supplier that controls when the path will be mirrored for the red alliance
-  //         // This will flip the path being followed to the red side of the field.
-  //         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    */
 
   //         var alliance = DriverStation.getAlliance();
   //         if (alliance.isPresent()) {

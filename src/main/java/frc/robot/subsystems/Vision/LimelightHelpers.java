@@ -603,19 +603,31 @@ public class LimelightHelpers {
   }
 
   /**
-   * Gets the Pose2d for easy use with Odometry vision pose estimator (addVisionMeasurement)
+   * Gets the Pose2d of the target AprilTag
    *
    * @param limelightName
    * @return
    */
-  public static Pose2d getBotPose2d(String limelightName) {
+  public static Pose2d getTargetPose2d(String limelightName) {
 
-    double[] result = getBotPose(limelightName);
+    double[] result = getTargetPose_RobotSpace(limelightName);
     return toPose2D(result);
   }
 
   public static boolean getTV(String limelightName) {
     return 1.0 == getLimelightNTDouble(limelightName, "tv");
+  }
+
+  /**
+   * Gets the Pose2d for easy use with Odometry vision pose estimator (addVisionMeasurement)
+   *
+   * @param limelightName
+   * @return
+   */
+  public static Pose2d getPose2d(String limelightName) {
+
+    double[] result = getBotPose(limelightName);
+    return toPose2D(result);
   }
 
   /////
