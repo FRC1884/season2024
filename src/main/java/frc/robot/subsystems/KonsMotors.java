@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,6 +32,7 @@ public class KonsMotors extends SubsystemBase {
     double speed = motorOne.get() == 0 ? 0.1 : 0;
     motorOne.set(speed);
   }
+
   /**
    * A Command that runs the intake at some power unless a note has been collected and is in the
    * robot.
@@ -45,6 +45,4 @@ public class KonsMotors extends SubsystemBase {
   public Command run() {
     return new InstantCommand(this::runMotors);
   }
-
-
 }
