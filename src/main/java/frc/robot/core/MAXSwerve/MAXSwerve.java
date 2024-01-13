@@ -2,7 +2,7 @@ package frc.robot.core.MAXSwerve;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -11,13 +11,18 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import java.util.function.BooleanSupplier;
 
@@ -32,7 +37,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private MAXSwerveModule fl, fr, bl, br;
-  private Pigeon2 gyro;
+  private WPI_Pigeon2 gyro;
 
   SwerveDriveOdometry odometry =
       new SwerveDriveOdometry(
@@ -48,8 +53,8 @@ public abstract class MAXSwerve extends SubsystemBase {
       MAXSwerveModule fr,
       MAXSwerveModule bl,
       MAXSwerveModule br) {
-    this.gyro = new Pigeon2(pigeon_id);
-    gyro.getConfigurator().DefaultTimeoutSeconds = 50;
+    this.gyro = new WPI_Pigeon2(pigeon_id);
+    gyro.configFactoryDefault();
     zeroGyro();
     this.fl = fl;
     this.fr = fr;
@@ -67,7 +72,6 @@ public abstract class MAXSwerve extends SubsystemBase {
         });
   }
 
-  // Lsao Jan 11: Added this getter method for SwerveDrivePoseEstimator constructor in Pose.java
   public SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
     positions[0] = fl.getPosition();
@@ -88,21 +92,6 @@ public abstract class MAXSwerve extends SubsystemBase {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         },
         pose);
-  }
-
-  /**
-   * Method to drive the robot using a {@link ChassisSpeeds} object. This overload is chiefly for
-   * ease of use with PathPlanner.
-   *
-   * @param chassisSpeeds the ROBOT-CENTRIC speeds to follow
-   */
-  public void drivePP(ChassisSpeeds chassisSpeeds) {
-    drive(
-        chassisSpeeds.vxMetersPerSecond,
-        chassisSpeeds.vyMetersPerSecond,
-        chassisSpeeds.omegaRadiansPerSecond,
-        false,
-        true);
   }
 
   /**
@@ -234,20 +223,110 @@ public abstract class MAXSwerve extends SubsystemBase {
         path,
         this::getPose, // Robot pose supplier
         this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
-        // ChassisSpeeds
+        this
+            ::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+                                      // ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-            // your Constants class
+                                         // your Constants class
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
             4.5, // Max module speed, in m/s
             0.4, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig() // Default path replanning config. See the API for the options
-            // here
+                                   // here
             ),
         getShouldFlip(),
         this // Reference to this subsystem to set requirements
         );
+  }
+
+  public Command followPathCommand(PathPlannerPath pathName) {
+
+    return new FollowPathHolonomic(
+        pathName,
+        this::getPose, // Robot pose supplier
+        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this
+            ::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+                                      // ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
+                                         // your Constants class
+            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+            4.5, // Max module speed, in m/s
+            0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options
+                                   // here
+            ),
+        getShouldFlip(),
+        this // Reference to this subsystem to set requirements
+        );
+  }
+
+  public Command followAprilTagCommand() {
+    return new RepeatCommand(
+        new RunCommand(
+            () ->
+                this.followPathCommand(
+                    new PathPlannerPath(
+                        PathPlannerPath.bezierFromPoses(getPose(), getPose()),
+                        null,
+                        null) // null vaules because these are to be obtained from vision when that
+                              // is finished
+                    ),
+            this));
+  }
+
+  public Command goSourceToSpeaker() {
+    return new RunCommand(
+        () ->
+            this.followPathCommand(
+                new PathPlannerPath(
+                    PathPlannerPath.bezierFromPoses(getPose(), getPose()),
+                    null,
+                    null) // null vaules because these are to be obtained from vision when that is
+                          // finished
+                ),
+        this);
+  }
+
+  public Command goSourceToAmp() {
+    return new RunCommand(
+        () ->
+            this.followPathCommand(
+                new PathPlannerPath(
+                    PathPlannerPath.bezierFromPoses(getPose(), getPose()),
+                    null,
+                    null) // null vaules because these are to be obtained from vision when that is
+                          // finished
+                ),
+        this);
+  }
+
+  public Command goSpeakerToSource() {
+    return new RunCommand(
+        () ->
+            this.followPathCommand(
+                new PathPlannerPath(
+                    PathPlannerPath.bezierFromPoses(getPose(), getPose()),
+                    null,
+                    null) // null vaules because these are to be obtained from vision when that is
+                          // finished
+                ),
+        this);
+  }
+
+  public Command goSpeakerToStage() {
+    return new RunCommand(
+        () ->
+            this.followPathCommand(
+                new PathPlannerPath(
+                    PathPlannerPath.bezierFromPoses(getPose(), getPose()),
+                    null,
+                    null) // null vaules because these are to be obtained from vision when that is
+                          // finished
+                ),
+        this);
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
@@ -298,11 +377,10 @@ public abstract class MAXSwerve extends SubsystemBase {
     return Rotation2d.fromDegrees(gyro.getAngle()).getDegrees();
   }
 
-  // Added getter method for SwerveDrivePoseEstimator in Swerve.java
   public Rotation2d getYaw() {
     return (SwerveConstants.INVERT_GYRO)
-        ? Rotation2d.fromDegrees(360 - gyro.getYaw().getValue())
-        : Rotation2d.fromDegrees(gyro.getYaw().getValue());
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
+        : Rotation2d.fromDegrees(gyro.getYaw());
   }
 
   /**
