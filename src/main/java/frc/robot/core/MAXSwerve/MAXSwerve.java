@@ -270,13 +270,12 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public Command goSpeakerOrSource(boolean hasNote)
   {
-    if(hasNote)
-    {
-        return navigate(getPose());
-    }
-    else{
+    if (hasNote) {
+      return navigate(getPose());
+    } else {
       return navigate(getPose());
     }
+  }
 
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {
