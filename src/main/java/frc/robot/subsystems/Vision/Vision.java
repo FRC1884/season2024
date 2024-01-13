@@ -33,7 +33,7 @@ public class Vision extends SubsystemBase {
   private boolean NNLimelightConnected = false;
   private PhotonCamera photonCam_1;
   private boolean photon_1_HasTargets;
-  private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+  private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator photonPoseEstimator;
   private Transform3d robotToCam;
 
@@ -74,19 +74,28 @@ public class Vision extends SubsystemBase {
     // targetSeenCount = 0;
     // aimHorizontalOffset = 0;
     // aimVerticalOffset = 0;
-
-    // configure both limelights
-    LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
-    LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
-    setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.aprilTagPipeline);
-    setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
-
-    /* PhotonVision Setup -- uncomment if running PhotonVision*/
-    // photonVision = new PhotonVision();
-    photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
-    photon_1_HasTargets = false;
-    photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCam_1, robotToCam);
-    robotToCam = new Transform3d(new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z), new Rotation3d(VisionConfig.CAM_1_ROLL_RADIANS, VisionConfig.CAM_1_PITCH_RADIANS, VisionConfig.CAM_1_YAW_RADIANS)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+    
+    //Changes vision mode between limelight and photonvision for easy switching
+    if (VisionConfig.isLimelightMode) {
+      // configure both limelights
+      LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
+      LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
+      setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.aprilTagPipeline);
+      setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
+    }
+    else { //Configure photonvision camera
+      photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
+      photon_1_HasTargets = false;
+      try {
+      aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+      }
+      catch (Exception e){
+      System.out.println("Field layout not found");
+      }
+      //Mounting information of photoncamera
+      robotToCam = new Transform3d(new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z), 
+        new Rotation3d(VisionConfig.CAM_1_ROLL_RADIANS, VisionConfig.CAM_1_PITCH_RADIANS, VisionConfig.CAM_1_YAW_RADIANS));
+    }
 
     // printing purposes
     df.setMaximumFractionDigits(2);

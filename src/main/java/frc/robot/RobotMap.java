@@ -69,6 +69,8 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
+    public static final boolean isLimelightMode = true; 
+
     // Limelight
     public static final String POSE_LIMELIGHT = "limelight-pose";
     public static final String NN_LIMELIGHT = "limelight-nn";
