@@ -2,7 +2,8 @@ package frc.robot.core.MAXSwerve;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import java.util.function.BooleanSupplier;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -37,7 +38,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private MAXSwerveModule fl, fr, bl, br;
-  private WPI_Pigeon2 gyro;
+  private Pigeon2 gyro;
 
   SwerveDriveOdometry odometry =
       new SwerveDriveOdometry(
@@ -53,8 +54,8 @@ public abstract class MAXSwerve extends SubsystemBase {
       MAXSwerveModule fr,
       MAXSwerveModule bl,
       MAXSwerveModule br) {
-    this.gyro = new WPI_Pigeon2(pigeon_id);
-    gyro.configFactoryDefault();
+    this.gyro = new Pigeon2(pigeon_id);
+    gyro.getConfigurator().DefaultTimeoutSeconds = 50;
     zeroGyro();
     this.fl = fl;
     this.fr = fr;
@@ -379,8 +380,8 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public Rotation2d getYaw() {
     return (SwerveConstants.INVERT_GYRO)
-        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
-        : Rotation2d.fromDegrees(gyro.getYaw());
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw().getValue())
+        : Rotation2d.fromDegrees(gyro.getYaw().getValue());
   }
 
   /**
