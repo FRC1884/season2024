@@ -2,7 +2,7 @@ package frc.robot.core.MAXSwerve;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -37,7 +37,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private MAXSwerveModule fl, fr, bl, br;
-  private WPI_Pigeon2 gyro;
+  private Pigeon2 gyro;
 
   SwerveDriveOdometry odometry =
       new SwerveDriveOdometry(
@@ -53,8 +53,8 @@ public abstract class MAXSwerve extends SubsystemBase {
       MAXSwerveModule fr,
       MAXSwerveModule bl,
       MAXSwerveModule br) {
-    this.gyro = new WPI_Pigeon2(pigeon_id);
-    gyro.configFactoryDefault();
+    this.gyro = new Pigeon2(pigeon_id);
+    gyro.getConfigurator().DefaultTimeoutSeconds = 50;
     zeroGyro();
     this.fl = fl;
     this.fr = fr;
@@ -223,17 +223,16 @@ public abstract class MAXSwerve extends SubsystemBase {
         path,
         this::getPose, // Robot pose supplier
         this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this
-            ::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
-                                      // ChassisSpeeds
+        this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+        // ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-                                         // your Constants class
+            // your Constants class
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
             4.5, // Max module speed, in m/s
             0.4, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig() // Default path replanning config. See the API for the options
-                                   // here
+            // here
             ),
         getShouldFlip(),
         this // Reference to this subsystem to set requirements
@@ -246,17 +245,16 @@ public abstract class MAXSwerve extends SubsystemBase {
         pathName,
         this::getPose, // Robot pose supplier
         this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this
-            ::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
-                                      // ChassisSpeeds
+        this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+        // ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-                                         // your Constants class
+            // your Constants class
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
             4.5, // Max module speed, in m/s
             0.4, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig() // Default path replanning config. See the API for the options
-                                   // here
+            // here
             ),
         getShouldFlip(),
         this // Reference to this subsystem to set requirements
@@ -272,7 +270,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                         PathPlannerPath.bezierFromPoses(getPose(), getPose()),
                         null,
                         null) // null vaules because these are to be obtained from vision when that
-                              // is finished
+                    // is finished
                     ),
             this));
   }
@@ -285,7 +283,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     PathPlannerPath.bezierFromPoses(getPose(), getPose()),
                     null,
                     null) // null vaules because these are to be obtained from vision when that is
-                          // finished
+                // finished
                 ),
         this);
   }
@@ -298,7 +296,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     PathPlannerPath.bezierFromPoses(getPose(), getPose()),
                     null,
                     null) // null vaules because these are to be obtained from vision when that is
-                          // finished
+                // finished
                 ),
         this);
   }
@@ -311,7 +309,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     PathPlannerPath.bezierFromPoses(getPose(), getPose()),
                     null,
                     null) // null vaules because these are to be obtained from vision when that is
-                          // finished
+                // finished
                 ),
         this);
   }
@@ -324,7 +322,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     PathPlannerPath.bezierFromPoses(getPose(), getPose()),
                     null,
                     null) // null vaules because these are to be obtained from vision when that is
-                          // finished
+                // finished
                 ),
         this);
   }
@@ -379,8 +377,8 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public Rotation2d getYaw() {
     return (SwerveConstants.INVERT_GYRO)
-        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
-        : Rotation2d.fromDegrees(gyro.getYaw());
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw().getValue())
+        : Rotation2d.fromDegrees(gyro.getYaw().getValue());
   }
 
   /**
