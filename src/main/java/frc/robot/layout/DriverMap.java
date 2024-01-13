@@ -44,10 +44,10 @@ public abstract class DriverMap extends CommandMap {
       var drivetrain = Drivetrain.getInstance();
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(getSwerveXSpeed(), getSwerveYSpeed(), getSwerveRot()));
-          getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
-          getSpeakerOrSourceButton().onTrue(drivetrain.goSpeakerOrSource(false)); //boolean arguement set as false as function to determine if robot is holding note has not been created yet
-    }
+      getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
+      getSpeakerOrSourceButton().onTrue(drivetrain.goSpeakerOrSource(false)); //boolean arguement set as false as function to determine if robot is holding note has not been created yet
 
+    }
   }
 
   @Override
