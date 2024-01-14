@@ -69,23 +69,40 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
+    public static final boolean isLimelightMode = true; 
+    public static final boolean isNeuralNet = false;
+
     // Limelight
     public static final String POSE_LIMELIGHT = "limelight-pose";
     public static final String NN_LIMELIGHT = "limelight-nn";
     public static final int aprilTagPipeline = 1;
     public static final int noteDetectorPipeline = 2;
 
+    public static final double POSE_LIME_X = 0.1; //Forward - Meters
+    public static final double POSE_LIME_Y = 0.1; //Side
+    public static final double POSE_LIME_Z = 0.1; //Up
+    public static final double POSE_LIME_PITCH = 0.1; //NEED to find units
+    public static final double POSE_LIME_ROLL = 0.1;
+    public static final double POSE_LIME_YAW = 0.1;
+    
+    public static final double NN_LIME_X = 0.1;
+    public static final double NN_LIME_Y = 0.1;
+    public static final double NN_LIME_Z = 0.1;
+    public static final double NN_LIME_PITCH = 0.1;
+    public static final double NN_LIME_ROLL = 0.1;
+    public static final double NN_LIME_YAW = 0.1; 
+
     // Photonvision
-    private static final String POSE_PHOTON = "pose_photoncamera";
+    public static final String POSE_PHOTON_1 = "photon-cam1";
     // Translation Values (location relative to robot center)
-    private static final double CAM_X = 0.5; // Forward: camera To Robot XMeters
-    private static final double CAM_Y = 0.0; // Right: camera To Robot YMeters
-    private static final double CAM_Z = 0.2; // Up: camera To Robot ZMeters
+    public static final double CAM_1_X = 0.5; // Forward: camera To Robot XMeters
+    public static final double CAM_1_Y = 0.0; // Right: camera To Robot YMeters
+    public static final double CAM_1_Z = 0.2; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
-    private static final double CAM_ROLL_RADIANS = 0.0; // camera Roll Radians
-    private static final double CAM_PITCH_RADIANS = 0.2618; // camera Pitch Radians
-    private static final double CAM_YAW_RADIANS = 0.0; // camera Yaw Radians
+    public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
+    public static final double CAM_1_PITCH_RADIANS = 0.2618; // camera Pitch Radians
+    public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians
   }
 
   public static class PoseConfig {

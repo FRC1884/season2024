@@ -1,7 +1,12 @@
 package frc.robot.subsystems.Vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
@@ -9,6 +14,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 import java.text.DecimalFormat;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /*
  * This class requires MAJOR CLEANUP. There needs to be a proper pyramid of hierarchy. Vision should NOT be able to control anything related to pose. It should only
@@ -22,6 +31,11 @@ public class Vision extends SubsystemBase {
   private boolean visionIntegrated = false;
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
+  private PhotonCamera photonCam_1;
+  private boolean photon_1_HasTargets;
+  private AprilTagFieldLayout aprilTagFieldLayout;
+  private PhotonPoseEstimator photonPoseEstimator;
+  private Transform3d robotToCam;
 
   /** For LEDs */
   private boolean poseOverriden = false;
@@ -60,15 +74,38 @@ public class Vision extends SubsystemBase {
     // targetSeenCount = 0;
     // aimHorizontalOffset = 0;
     // aimVerticalOffset = 0;
+    
+    //Changes vision mode between limelight and photonvision for easy switching
+    if (VisionConfig.isLimelightMode) {
+      // configure both limelights
+      LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
+      setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.aprilTagPipeline);
+      LimelightHelpers.setCameraPose_RobotSpace(VisionConfig.POSE_LIMELIGHT, VisionConfig.POSE_LIME_X, VisionConfig.POSE_LIME_Y, VisionConfig.POSE_LIME_Z, 
+                                                VisionConfig.POSE_LIME_ROLL, VisionConfig.POSE_LIME_PITCH, VisionConfig.POSE_LIME_YAW);
+      
+      if (VisionConfig.isNeuralNet){
+        LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
+        setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
+        LimelightHelpers.setCameraPose_RobotSpace(VisionConfig.NN_LIMELIGHT, VisionConfig.NN_LIME_X, VisionConfig.NN_LIME_Y, VisionConfig.NN_LIME_Z, 
+                                                  VisionConfig.NN_LIME_ROLL, VisionConfig.NN_LIME_PITCH, VisionConfig.NN_LIME_YAW);
+      }
 
-    // configure both limelights
-    LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
-    LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
-    setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.aprilTagPipeline);
-    setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
+    }
+    else { //Configure photonvision camera
+      photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
+      photon_1_HasTargets = false;
+      try {
+      aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+      }
+      catch (Exception e){
+      System.out.println("Field layout not found");
+      }
+      //Mounting information of photoncamera for making PhotonPoseEstimator object
+      robotToCam = new Transform3d(new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z), 
+        new Rotation3d(VisionConfig.CAM_1_ROLL_RADIANS, VisionConfig.CAM_1_PITCH_RADIANS, VisionConfig.CAM_1_YAW_RADIANS));
+      //TODO for 9th graders - create PhotonPoseEstimator object
 
-    /* PhotonVision Setup -- uncomment if running PhotonVision*/
-    // photonVision = new PhotonVision();
+    }
 
     // printing purposes
     df.setMaximumFractionDigits(2);
