@@ -70,12 +70,27 @@ public class RobotMap {
 
   public static class VisionConfig {
     public static final boolean isLimelightMode = true; 
+    public static final boolean isNeuralNet = false;
 
     // Limelight
     public static final String POSE_LIMELIGHT = "limelight-pose";
     public static final String NN_LIMELIGHT = "limelight-nn";
     public static final int aprilTagPipeline = 1;
     public static final int noteDetectorPipeline = 2;
+
+    public static final double POSE_LIME_X = 0.1; //Forward - Meters
+    public static final double POSE_LIME_Y = 0.1; //Side
+    public static final double POSE_LIME_Z = 0.1; //Up
+    public static final double POSE_LIME_PITCH = 0.1; //NEED to find units
+    public static final double POSE_LIME_ROLL = 0.1;
+    public static final double POSE_LIME_YAW = 0.1;
+    
+    public static final double NN_LIME_X = 0.1;
+    public static final double NN_LIME_Y = 0.1;
+    public static final double NN_LIME_Z = 0.1;
+    public static final double NN_LIME_PITCH = 0.1;
+    public static final double NN_LIME_ROLL = 0.1;
+    public static final double NN_LIME_YAW = 0.1; 
 
     // Photonvision
     public static final String POSE_PHOTON_1 = "photon-cam1";

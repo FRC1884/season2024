@@ -79,9 +79,17 @@ public class Vision extends SubsystemBase {
     if (VisionConfig.isLimelightMode) {
       // configure both limelights
       LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
-      LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
       setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.aprilTagPipeline);
-      setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
+      LimelightHelpers.setCameraPose_RobotSpace(VisionConfig.POSE_LIMELIGHT, VisionConfig.POSE_LIME_X, VisionConfig.POSE_LIME_Y, VisionConfig.POSE_LIME_Z, 
+                                                VisionConfig.POSE_LIME_ROLL, VisionConfig.POSE_LIME_PITCH, VisionConfig.POSE_LIME_YAW);
+      
+      if (VisionConfig.isNeuralNet){
+        LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
+        setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
+        LimelightHelpers.setCameraPose_RobotSpace(VisionConfig.NN_LIMELIGHT, VisionConfig.NN_LIME_X, VisionConfig.NN_LIME_Y, VisionConfig.NN_LIME_Z, 
+                                                  VisionConfig.NN_LIME_ROLL, VisionConfig.NN_LIME_PITCH, VisionConfig.NN_LIME_YAW);
+      }
+
     }
     else { //Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
@@ -92,9 +100,11 @@ public class Vision extends SubsystemBase {
       catch (Exception e){
       System.out.println("Field layout not found");
       }
-      //Mounting information of photoncamera
+      //Mounting information of photoncamera for making PhotonPoseEstimator object
       robotToCam = new Transform3d(new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z), 
         new Rotation3d(VisionConfig.CAM_1_ROLL_RADIANS, VisionConfig.CAM_1_PITCH_RADIANS, VisionConfig.CAM_1_YAW_RADIANS));
+      //TODO for 9th graders - create PhotonPoseEstimator object
+
     }
 
     // printing purposes
