@@ -117,14 +117,10 @@ public class RobotMap {
     public static final double kVisionStdDevTheta = 500;
   }
 
-  public static class MotorMap {
+  public static class PrototypeMap {
     public static final int MOTOR_ID_1 = 1;
     public static final int MOTOR_ID_2 = 8;
-  }
-
-  public static class PrototypeMap {
-    public static final int MOTOR_ID_1 = -1;
-    public static final int MOTOR_ID_2 = -1;
-    public static final int MOTOR_ID_3 = -1;
+    public static final int MOTOR_ID_3 = 1;
+    public static final int MOTOR_ID_4 = 8;
   }
 }
