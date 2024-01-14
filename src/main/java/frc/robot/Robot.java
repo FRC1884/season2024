@@ -83,7 +83,6 @@ public class Robot extends TimedRobot {
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
     var prototypeTest = PrototypeTest.getInstance();
-
   }
 
   /** This function is called periodically during test mode. */
