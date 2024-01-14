@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
+import frc.robot.subsystems.PrototypeTest;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,6 +24,7 @@ public class Robot extends TimedRobot {
     // TODO put auto chooser here. make sure to use the one from
     // robot/auto/selector/AutoModeSelector.java
     ctreConfigs = new CTREConfigs();
+    enableLiveWindowInTest(true);
     OI.getInstance();
     var autoModeSelector = AutoModeSelector.getInstance();
   }
@@ -78,7 +80,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
+    var prototypeTest = PrototypeTest.getInstance();
+
+  }
 
   /** This function is called periodically during test mode. */
   @Override
