@@ -100,7 +100,8 @@ public class Vision extends SubsystemBase {
             VisionConfig.NN_LIME_YAW);
       }
 
-    } else { // Configure photonvision camera
+    } 
+    if (VisionConfig.isPhotonVisionMode) { //Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       photon_1_HasTargets = false;
       try {
@@ -143,7 +144,7 @@ public class Vision extends SubsystemBase {
             .equals("");
 
     // checkTargetHistory();
-    if (apriltagLimelightConnected) {
+    if (VisionConfig.isLimelightMode && apriltagLimelightConnected) {
       if (visionAccurate()) {
         // jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT); TODO - is
         // json dump more accurate?
@@ -174,7 +175,12 @@ public class Vision extends SubsystemBase {
     // Vision.java
   }
 
-  // method to find target location to remain one meter in front of AprilTag
+  public Pose2d getRobotPose2d_TargetSpace(){
+    return LimelightHelpers.getBotPose2d_TargetSpace(VisionConfig.POSE_LIMELIGHT);
+  }
+  
+
+  // method to find target location to remain one meter in front of AprilTag - needs to use .transformBy
   public Pose2d getTargetRobotPose_RobotSpace() {
     Pose2d aprilTagPosition = LimelightHelpers.getTargetPose2d(VisionConfig.POSE_LIMELIGHT);
     double targetX = aprilTagPosition.getX() + 1;

@@ -70,6 +70,7 @@ public class RobotMap {
 
   public static class VisionConfig {
     public static final boolean isLimelightMode = true;
+    public static final boolean isPhotonVisionMode = false;
     public static final boolean isNeuralNet = false;
 
     // Limelight
