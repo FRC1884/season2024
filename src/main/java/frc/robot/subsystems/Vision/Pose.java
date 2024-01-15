@@ -13,16 +13,10 @@ import frc.robot.RobotMap.PoseConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Drivetrain;
 
+import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
+
 /** Reports our expected, desired, and actual poses to dashboards */
 public class Pose extends SubsystemBase {
-  // PoseConfig config;
-  private PoseTelemetry telemetry;
-  private Pose2d odometryPose = new Pose2d();
-  private Pose2d desiredPose = new Pose2d();
-  private Pose2d estimatePose = new Pose2d();
-
-  private final SwerveDrivePoseEstimator poseEstimator;
-
   private static Pose instance;
 
   public static Pose getInstance() {
@@ -30,17 +24,28 @@ public class Pose extends SubsystemBase {
     return instance;
   }
 
+  // PoseConfig config;
+  private PoseTelemetry telemetry;
+  private Pose2d odometryPose = new Pose2d();
+  private Pose2d desiredPose = new Pose2d();
+  private Pose2d estimatePose = new Pose2d();
+
+  private final SwerveDrivePoseEstimator poseEstimator;
+  private final Drivetrain drivetrain;
+
   private Pose() {
     // config = new PoseConfig();
     telemetry = new PoseTelemetry(this);
+
+    drivetrain = Drivetrain.getInstance();
 
     // Maxswerve Version from MAXSwerve.java in core
     poseEstimator =
         new SwerveDrivePoseEstimator(
             MaxSwerveConstants.kDriveKinematics,
-            Drivetrain.getInstance()
+            drivetrain
                 .getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
-            Drivetrain.getInstance().getModulePositions(),
+            drivetrain.getModulePositions(),
             new Pose2d(),
             createStateStdDevs(
                 PoseConfig.kPositionStdDevX,
@@ -84,7 +89,7 @@ public class Pose extends SubsystemBase {
 
     // Update for telemetry
     setEstimatedPose(getPosition());
-    setOdometryPose(Drivetrain.getInstance().getPose());
+    setOdometryPose(drivetrain.getPose());
 
     // telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
     telemetry.updatePoseOnField("OdometryPose", odometryPose);
@@ -163,38 +168,14 @@ public class Pose extends SubsystemBase {
     estimatePose = pose;
   }
 
-  /** Moved from Vision class --> LSAO: THIS SHOULD BE A POSE CLASS POWER, NOT A VISION POWER */
-  /*
-  public void resetEstimatedPose() {
-      Robot.pose.resetPoseEstimate(botPose);
-  }
-  */
-
   /** Updates the field relative position of the robot. */
-  // Lsao Jan 11: Changed naming to match Drivetrain file - methods have same name for both
-  // MaxSwerve.java and Swerve.java
   public void updateOdometryEstimate() {
     poseEstimator.update(
-        Drivetrain.getInstance().getYaw(), Drivetrain.getInstance().getModulePositions());
+        drivetrain.getYaw(), drivetrain.getModulePositions());
   }
 
   /**
-   * Add a vision measurement to the PoseEstimator. This will correct the odometry pose estimate
-   * while still accounting for measurement noise.
-   *
-   * <p>This method can be called as infrequently as you want, as long as you are calling {@link
-   * SwerveDrivePoseEstimator#update} every loop.
-   *
-   * <p>To promote stability of the pose estimate and make it robust to bad vision data, we
-   * recommend only adding vision measurements that are already within one meter or so of the
-   * current pose estimate.
-   *
-   * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
-   * @param timestampSeconds The timestamp of the vision measurement in seconds. Note that if you
-   *     don't use your own time source by calling {@link SwerveDrivePoseEstimator#updateWithTime}
-   *     then you must use a timestamp with an epoch since FPGA startup (i.e. the epoch of this
-   *     timestamp is the same epoch as Timer.getFPGATimestamp.) This means that you should use
-   *     Timer.getFPGATimestamp as your time source or sync the epochs.
+   * @see edu.wpi.first.math.estimator.PoseEstimator#addVisionMeasurement(Pose2d, double)
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
     poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
@@ -205,23 +186,20 @@ public class Pose extends SubsystemBase {
    *
    * @param poseMeters
    */
-  /*
   public void resetPoseEstimate(Pose2d poseMeters) {
-      Drivetrain.resetOdometry(poseMeters);
       poseEstimator.resetPosition(
-              Robot.swerve.getRotation(), Robot.swerve.getPositions(), poseMeters);
+              drivetrain.getYaw(), drivetrain.getModulePositions(), poseMeters);
+      drivetrain.resetOdometry(poseMeters);
   }
 
-
   public void resetHeading(Rotation2d angle) {
-      Robot.swerve.odometry.resetHeading(angle);
+      drivetrain.resetOdometry(new Pose2d(drivetrain.getPose().getTranslation(), angle));
       resetPoseEstimate(new Pose2d(estimatePose.getTranslation(), angle));
   }
 
   public void resetLocationEstimate(Translation2d translation) {
-      resetPoseEstimate(new Pose2d(translation, estimatePose.getRotation()));
+      resetPoseEstimate(new Pose2d(translation, new Rotation2d(0)));
   }
-  */
 
   /**
    * Gets the pose of the robot at the current time as estimated by the poseEstimator. This includes
@@ -273,8 +251,8 @@ public class Pose extends SubsystemBase {
    * @param s std for all module positions in meters per sec
    * @return the Vector of standard deviations need for the poseEstimator
    */
-  public Vector<N5> createLocalMeasurementStdDevs(double theta, double p) {
-    return VecBuilder.fill(Units.degreesToRadians(theta), p, p, p, p);
+  public Vector<N5> createLocalMeasurementStdDevs(double theta, double s) {
+    return VecBuilder.fill(Units.degreesToRadians(theta), s, s, s, s);
   }
 
   /**
@@ -290,16 +268,4 @@ public class Pose extends SubsystemBase {
   public Vector<N3> createVisionMeasurementStdDevs(double x, double y, double theta) {
     return VecBuilder.fill(x, y, Units.degreesToRadians(theta));
   }
-
-  /*
-  public static Command resetHeading(Rotation2d heading) {
-      return new InstantCommand(() -> Robot.pose.resetHeading(heading));
-  }
-
-  public static Command resetHeading(double headingDeg) {
-      return new InstantCommand(
-              () -> Robot.pose.resetHeading(Rotation2d.fromDegrees(headingDeg)));
-  }
-  */
-
 }
