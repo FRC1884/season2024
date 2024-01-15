@@ -13,8 +13,6 @@ import frc.robot.RobotMap.PoseConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Drivetrain;
 
-import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
-
 /** Reports our expected, desired, and actual poses to dashboards */
 public class Pose extends SubsystemBase {
   private static Pose instance;
@@ -171,8 +169,7 @@ public class Pose extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometryEstimate() {
-    poseEstimator.update(
-        drivetrain.getYaw(), drivetrain.getModulePositions());
+    poseEstimator.update(drivetrain.getYaw(), drivetrain.getModulePositions());
   }
 
   /**
@@ -188,18 +185,17 @@ public class Pose extends SubsystemBase {
    * @param poseMeters
    */
   public void resetPoseEstimate(Pose2d poseMeters) {
-      poseEstimator.resetPosition(
-              drivetrain.getYaw(), drivetrain.getModulePositions(), poseMeters);
-      drivetrain.resetOdometry(poseMeters);
+    poseEstimator.resetPosition(drivetrain.getYaw(), drivetrain.getModulePositions(), poseMeters);
+    drivetrain.resetOdometry(poseMeters);
   }
 
   public void resetHeading(Rotation2d angle) {
-      drivetrain.resetOdometry(new Pose2d(drivetrain.getPose().getTranslation(), angle));
-      resetPoseEstimate(new Pose2d(estimatePose.getTranslation(), angle));
+    drivetrain.resetOdometry(new Pose2d(drivetrain.getPose().getTranslation(), angle));
+    resetPoseEstimate(new Pose2d(estimatePose.getTranslation(), angle));
   }
 
   public void resetLocationEstimate(Translation2d translation) {
-      resetPoseEstimate(new Pose2d(translation, new Rotation2d(0)));
+    resetPoseEstimate(new Pose2d(translation, new Rotation2d(0)));
   }
 
   /**
