@@ -24,8 +24,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
-import java.util.function.BooleanSupplier;
 import frc.robot.subsystems.Vision.Vision;
+import java.util.function.BooleanSupplier;
 
 public abstract class MAXSwerve extends SubsystemBase {
 
@@ -250,7 +250,9 @@ public abstract class MAXSwerve extends SubsystemBase {
             () ->
                 this.followPathCommand(
                     new PathPlannerPath(
-                        PathPlannerPath.bezierFromPoses(Vision.getInstance().getRobotPose2d_TargetSpace(), new Pose2d(1.0, 0.0, new Rotation2d())), //Need to make this better
+                        PathPlannerPath.bezierFromPoses(
+                            Vision.getInstance().getRobotPose2d_TargetSpace(),
+                            new Pose2d(1.0, 0.0, new Rotation2d())), // Need to make this better
                         null,
                         null) // null vaules because these are to be obtained from vision when that
                     // is finished

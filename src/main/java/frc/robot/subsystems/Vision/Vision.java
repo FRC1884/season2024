@@ -99,9 +99,8 @@ public class Vision extends SubsystemBase {
             VisionConfig.NN_LIME_PITCH,
             VisionConfig.NN_LIME_YAW);
       }
-
-    } 
-    if (VisionConfig.isPhotonVisionMode) { //Configure photonvision camera
+    }
+    if (VisionConfig.isPhotonVisionMode) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       photon_1_HasTargets = false;
       try {
@@ -175,12 +174,12 @@ public class Vision extends SubsystemBase {
     // Vision.java
   }
 
-  public Pose2d getRobotPose2d_TargetSpace(){
+  public Pose2d getRobotPose2d_TargetSpace() {
     return LimelightHelpers.getBotPose2d_TargetSpace(VisionConfig.POSE_LIMELIGHT);
   }
-  
 
-  // method to find target location to remain one meter in front of AprilTag - needs to use .transformBy
+  // method to find target location to remain one meter in front of AprilTag - needs to use
+  // .transformBy
   public Pose2d getTargetRobotPose_RobotSpace() {
     Pose2d aprilTagPosition = LimelightHelpers.getTargetPose2d(VisionConfig.POSE_LIMELIGHT);
     double targetX = aprilTagPosition.getX() + 1;
