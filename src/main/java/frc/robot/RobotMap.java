@@ -127,7 +127,6 @@ public class RobotMap {
        */
       MULTI_TAG_PNP_ON_COPROCESSOR,
     }
-
   }
 
   public static class PoseConfig {

@@ -74,9 +74,11 @@ public class Pose extends SubsystemBase {
   public void periodic() {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
-    if (isEstimateReady(Vision.getInstance().visionBotPose())) { // Does making so many bot pose variables impact accuracy?
+    if (isEstimateReady(
+        Vision.getInstance()
+            .visionBotPose())) { // Does making so many bot pose variables impact accuracy?
       addVisionMeasurement(
-          Vision.getInstance().visionBotPose(), 
+          Vision.getInstance().visionBotPose(),
           Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency()));
     }
     // Robot.vision.update();

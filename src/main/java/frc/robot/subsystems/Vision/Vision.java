@@ -3,7 +3,6 @@ package frc.robot.subsystems.Vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -15,8 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 import java.text.DecimalFormat;
-
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -124,7 +121,9 @@ public class Vision extends SubsystemBase {
                   VisionConfig.CAM_1_PITCH_RADIANS,
                   VisionConfig.CAM_1_YAW_RADIANS));
       // TODO for 9th graders - create PhotonPoseEstimator object
-      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCam_1, robotToCam);
+      photonPoseEstimator =
+          new PhotonPoseEstimator(
+              aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCam_1, robotToCam);
     }
 
     // printing purposes
@@ -156,8 +155,9 @@ public class Vision extends SubsystemBase {
         // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field
         botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-        limeLatency = LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
-                + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);   
+        limeLatency =
+            LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
+                + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
       }
 
       // aimHorizontalOffset = jsonResults.results.getTX();
@@ -181,17 +181,14 @@ public class Vision extends SubsystemBase {
     if (VisionConfig.isPhotonVisionMode) {
       var result = photonCam_1.getLatestResult();
       if (result.hasTargets()) {
-        //totalLatency = result.getTimestampSeconds();
+        // totalLatency = result.getTimestampSeconds();
         var update = photonPoseEstimator.update();
-        //Pose3d currentPose3d = update.estimatedPose; 
-        //botPose = currentPose3d.toPose2d();
+        // Pose3d currentPose3d = update.estimatedPose;
+        // botPose = currentPose3d.toPose2d();
 
-        
       }
     }
   }
-
-
 
   public Pose2d getRobotPose2d_TargetSpace() {
     return LimelightHelpers.getBotPose2d_TargetSpace(VisionConfig.POSE_LIMELIGHT);
