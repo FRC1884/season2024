@@ -3,6 +3,7 @@ package frc.robot.subsystems.Vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -14,8 +15,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 import java.text.DecimalFormat;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /*
  * This class requires MAJOR CLEANUP. There needs to be a proper pyramid of hierarchy. Vision should NOT be able to control anything related to pose. It should only
@@ -25,7 +29,8 @@ import org.photonvision.PhotonPoseEstimator;
 
 public class Vision extends SubsystemBase {
   private Pose2d botPose;
-  private double totalLatency;
+  private double timestamp;
+  private double limeLatency;
   private boolean visionIntegrated = false;
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
@@ -67,7 +72,8 @@ public class Vision extends SubsystemBase {
   private Vision() {
     setName("Vision");
     botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
-    totalLatency = 0;
+    timestamp = 0.0;
+    limeLatency = 0.0;
     // botPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
     // targetSeenCount = 0;
     // aimHorizontalOffset = 0;
@@ -118,7 +124,7 @@ public class Vision extends SubsystemBase {
                   VisionConfig.CAM_1_PITCH_RADIANS,
                   VisionConfig.CAM_1_YAW_RADIANS));
       // TODO for 9th graders - create PhotonPoseEstimator object
-
+      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCam_1, robotToCam);
     }
 
     // printing purposes
@@ -150,10 +156,8 @@ public class Vision extends SubsystemBase {
         // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field
         botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-        totalLatency =
-            LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
-                + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
-        // TO DO  - add latency tracker
+        limeLatency = LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
+                + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);   
       }
 
       // aimHorizontalOffset = jsonResults.results.getTX();
@@ -172,7 +176,22 @@ public class Vision extends SubsystemBase {
     }
     // this method can call update() if vision pose estimation needs to be updated in
     // Vision.java
+
+    // Photonvision Result
+    if (VisionConfig.isPhotonVisionMode) {
+      var result = photonCam_1.getLatestResult();
+      if (result.hasTargets()) {
+        //totalLatency = result.getTimestampSeconds();
+        var update = photonPoseEstimator.update();
+        //Pose3d currentPose3d = update.estimatedPose; 
+        //botPose = currentPose3d.toPose2d();
+
+        
+      }
+    }
   }
+
+
 
   public Pose2d getRobotPose2d_TargetSpace() {
     return LimelightHelpers.getBotPose2d_TargetSpace(VisionConfig.POSE_LIMELIGHT);
@@ -234,7 +253,7 @@ public class Vision extends SubsystemBase {
   }
 
   public double getTotalLatency() {
-    return totalLatency;
+    return limeLatency;
   }
 
   // TODO Pose2d MAP SHOULD GO IN DRIVETRAIN
