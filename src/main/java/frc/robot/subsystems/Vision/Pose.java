@@ -10,6 +10,7 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.PoseConfig;
+import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Drivetrain;
 
@@ -77,14 +78,14 @@ public class Pose extends SubsystemBase {
   public void periodic() {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
-    if (isEstimateReady(
-        Vision.getInstance()
-            .visionBotPose())) { // Does making so many bot pose variables impact accuracy?
-      addVisionMeasurement(
-          Vision.getInstance().visionBotPose(),
-          Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency()));
+    if (VisionConfig.isLimelightMode){ //Limelight mode
+      Pose2d currentPose = Vision.getInstance().visionBotPose();
+      double currentTimestamp = Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
+      if (isEstimateReady(currentPose)) { // Does making so many bot pose variables impact accuracy?
+        addVisionMeasurement(currentPose, currentTimestamp);
+      }
     }
-    // Robot.vision.update();
+    //TODO Photonvision mode
 
     // Update for telemetry
     setEstimatedPose(getPosition());
