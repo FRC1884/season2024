@@ -9,35 +9,34 @@ public class RobotMap {
   }
 
   public static class DriveMap {
-    public static final int PIGEON_ID = 9;
+    public static final int PIGEON_ID = 30;
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
     public static final class FrontLeft {
-      public static final int DRIVE_ID = 7;
-      public static final int ROTATOR_ID = 8;
+      public static final int DRIVE_ID = 8;
+      public static final int ROTATOR_ID = 7;
       public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Front Right Module - Module 1 */
     public static final class FrontRight {
-      public static final int DRIVE_ID = 3;
-      public static final int ROTATOR_ID = 4;
-      public static final int ENCODER_ID = 12;
+      public static final int DRIVE_ID = 5;
+      public static final int ROTATOR_ID = 6;
       public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Left Module - Module 2 */
     public static final class BackLeft {
-      public static final int DRIVE_ID = 36;
-      public static final int ROTATOR_ID = 37;
+      public static final int DRIVE_ID = 2;
+      public static final int ROTATOR_ID = 1;
       public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {
-      public static final int DRIVE_ID = 5;
-      public static final int ROTATOR_ID = 6;
+      public static final int DRIVE_ID = 3;
+      public static final int ROTATOR_ID = 4;
       public static final double ANGULAR_OFFSET = 0;
     }
   }

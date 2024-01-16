@@ -7,7 +7,7 @@ import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
 import frc.robot.core.util.controllers.GameController;
-
+import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 public class TwoJoyStickDriverMap extends DriverMap {
 
   public TwoJoyStickDriverMap(GameController controller) {
@@ -25,17 +25,18 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveXSpeed() {
-    return controller.getAxis(Axis.AXIS_LEFT_X) * SwerveConstants.MAX_VELOCITY;
+    System.out.println(controller.getAxis(Axis.AXIS_LEFT_X));
+    return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
   @Override
   public double getSwerveYSpeed() {
-    return controller.getAxis(Axis.AXIS_LEFT_Y) * SwerveConstants.MAX_VELOCITY;
+    return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
   @Override
   public double getSwerveRot() {
-    return controller.getAxis(Axis.AXIS_RIGHT_X) * SwerveConstants.MAX_ANGULAR_VELOCITY;
+    return controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed;
   }
 
   @Override

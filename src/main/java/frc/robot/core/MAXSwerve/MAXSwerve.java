@@ -2,7 +2,7 @@ package frc.robot.core.MAXSwerve;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -40,34 +40,35 @@ public abstract class MAXSwerve extends SubsystemBase {
   private MAXSwerveModule fl, fr, bl, br;
   private Pigeon2 gyro;
 
-  SwerveDriveOdometry odometry =
-      new SwerveDriveOdometry(
-          MaxSwerveConstants.kDriveKinematics,
-          Rotation2d.fromDegrees(gyro.getAngle()),
-          new SwerveModulePosition[] {
-            fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
-          });
+  SwerveDriveOdometry odometry;
 
   public MAXSwerve(
       int pigeon_id,
       MAXSwerveModule fl,
       MAXSwerveModule fr,
       MAXSwerveModule bl,
-      MAXSwerveModule br) {
+      MAXSwerveModule br){
     this.gyro = new Pigeon2(pigeon_id);
-    gyro.getConfigurator().DefaultTimeoutSeconds = 50;
+    // gyro.getConfigurator().DefaultTimeoutSeconds = 50;
     zeroGyro();
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;
     this.br = br;
+
+    odometry = new SwerveDriveOdometry(
+          MaxSwerveConstants.kDriveKinematics,
+          Rotation2d.fromDegrees(gyro.getYaw()),
+          new SwerveModulePosition[] {
+            fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
+          });
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
     odometry.update(
-        Rotation2d.fromDegrees(gyro.getAngle()),
+        Rotation2d.fromDegrees(gyro.getYaw()),
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
@@ -88,7 +89,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(
-        Rotation2d.fromDegrees(gyro.getAngle()),
+        Rotation2d.fromDegrees(gyro.getYaw()),
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         },
@@ -109,6 +110,8 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     double xSpeedCommanded;
     double ySpeedCommanded;
+
+
 
     if (rateLimit) {
       // Convert XY to polar for rate limiting
@@ -164,6 +167,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = currentRotation * MaxSwerveConstants.kMaxAngularSpeed;
 
+    System.out.println(xSpeedDelivered);
     var swerveModuleStates =
         MaxSwerveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
@@ -171,7 +175,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     xSpeedDelivered,
                     ySpeedDelivered,
                     rotDelivered,
-                    Rotation2d.fromDegrees(gyro.getAngle()))
+                    Rotation2d.fromDegrees(gyro.getYaw()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
@@ -313,7 +317,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   /** Zeros the heading of the robot */
   public void ZeroHeading() {
-    gyro.reset();
+    gyro.setYaw(0);
   }
 
   public void zeroGyro() {
@@ -326,24 +330,26 @@ public abstract class MAXSwerve extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(gyro.getAngle()).getDegrees();
+    return Rotation2d.fromDegrees(gyro.getYaw()).getDegrees();
   }
 
   public Rotation2d getYaw() {
     return (SwerveConstants.INVERT_GYRO)
-        ? Rotation2d.fromDegrees(360 - gyro.getYaw().getValue())
-        : Rotation2d.fromDegrees(gyro.getYaw().getValue());
-  }
-
-  /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second
-   */
-  public double getTurnRate() {
-    return gyro.getRate() * (MaxSwerveConstants.kGyroReversed ? -1.0 : 1.0);
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
+        : Rotation2d.fromDegrees(gyro.getYaw());
   }
 }
+
+
+//   /**
+//    * Returns the turn rate of the robot.
+//    *
+//    * @return The turn rate of the robot, in degrees per second
+//    */
+//   public double getTurnRate() {
+//     return gyro.getRate() * (MaxSwerveConstants.kGyroReversed ? -1.0 : 1.0);
+//   }
+// }
 
 // Control.ButtonPressed(Event e){
 //  String command = e.getLabel(); //take me to source

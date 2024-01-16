@@ -2,7 +2,6 @@ package frc.robot.auto.selector;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.auto.modes.TestPath;
 
 public class AutoModeSelector {
   private static AutoModeSelector instance;
@@ -13,8 +12,6 @@ public class AutoModeSelector {
     }
     return instance;
   }
-
-  private final TestPath testPath = new TestPath();
 
   private final SendableChooser<Command> modeChooserRed;
   private final SendableChooser<Command> modeChooserBlue;

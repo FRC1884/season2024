@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MAXSwerve;
 import frc.robot.core.MAXSwerve.MAXSwerveModule;
-import frc.robot.core.TalonSwerve.Swerve;
-import frc.robot.core.TalonSwerve.SwerveConstants;
 
 /**
  * <b>Use {@link #getInstance()} to access all subsystems.</b><br>
