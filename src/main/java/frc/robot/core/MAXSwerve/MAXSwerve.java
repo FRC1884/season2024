@@ -47,7 +47,7 @@ public abstract class MAXSwerve extends SubsystemBase {
       MAXSwerveModule fl,
       MAXSwerveModule fr,
       MAXSwerveModule bl,
-      MAXSwerveModule br){
+      MAXSwerveModule br) {
     this.gyro = new Pigeon2(pigeon_id);
     // gyro.getConfigurator().DefaultTimeoutSeconds = 50;
     zeroGyro();
@@ -56,12 +56,13 @@ public abstract class MAXSwerve extends SubsystemBase {
     this.bl = bl;
     this.br = br;
 
-    odometry = new SwerveDriveOdometry(
-          MaxSwerveConstants.kDriveKinematics,
-          Rotation2d.fromDegrees(gyro.getYaw()),
-          new SwerveModulePosition[] {
-            fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
-          });
+    odometry =
+        new SwerveDriveOdometry(
+            MaxSwerveConstants.kDriveKinematics,
+            Rotation2d.fromDegrees(gyro.getYaw()),
+            new SwerveModulePosition[] {
+              fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
+            });
   }
 
   @Override
@@ -110,8 +111,6 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     double xSpeedCommanded;
     double ySpeedCommanded;
-
-
 
     if (rateLimit) {
       // Convert XY to polar for rate limiting
@@ -339,7 +338,6 @@ public abstract class MAXSwerve extends SubsystemBase {
         : Rotation2d.fromDegrees(gyro.getYaw());
   }
 }
-
 
 //   /**
 //    * Returns the turn rate of the robot.
