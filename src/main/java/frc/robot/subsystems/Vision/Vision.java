@@ -3,6 +3,7 @@ package frc.robot.subsystems.Vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -26,7 +27,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class Vision extends SubsystemBase {
   private Pose2d botPose;
-  private double timestamp;
+  private double photonTimestamp;
   private double limeLatency;
   private boolean visionIntegrated = false;
   private boolean apriltagLimelightConnected = false;
@@ -69,7 +70,7 @@ public class Vision extends SubsystemBase {
   private Vision() {
     setName("Vision");
     botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
-    timestamp = 0.0;
+    photonTimestamp = 0.0;
     limeLatency = 0.0;
     // botPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
     // targetSeenCount = 0;
@@ -178,16 +179,22 @@ public class Vision extends SubsystemBase {
     // Vision.java
 
     // Photonvision Result
+    // The documentation for this is here:
+    // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
+    // The example code was missing, and we came up with this:
     if (VisionConfig.isPhotonVisionMode) {
       var result = photonCam_1.getLatestResult();
       if (result.hasTargets()) {
-        // totalLatency = result.getTimestampSeconds();
         var update = photonPoseEstimator.update();
-        // Pose3d currentPose3d = update.estimatedPose;
-        // botPose = currentPose3d.toPose2d();
-
+        Pose3d currentPose3d = update.get().estimatedPose;
+        botPose = currentPose3d.toPose2d();
+        photonTimestamp = update.get().timestampSeconds;
       }
     }
+  }
+
+  public double getPhotonTimestamp() {
+    return photonTimestamp;
   }
 
   public Pose2d getRobotPose2d_TargetSpace() {
