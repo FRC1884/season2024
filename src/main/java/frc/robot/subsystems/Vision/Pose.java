@@ -78,14 +78,15 @@ public class Pose extends SubsystemBase {
   public void periodic() {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
-    if (VisionConfig.isLimelightMode){ //Limelight mode
+    if (VisionConfig.isLimelightMode) { // Limelight mode
       Pose2d currentPose = Vision.getInstance().visionBotPose();
-      double currentTimestamp = Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
+      double currentTimestamp =
+          Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
       if (isEstimateReady(currentPose)) { // Does making so many bot pose variables impact accuracy?
         addVisionMeasurement(currentPose, currentTimestamp);
       }
     }
-    //TODO Photonvision mode
+    // TODO Photonvision mode
 
     // Update for telemetry
     setEstimatedPose(getPosition());

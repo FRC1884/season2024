@@ -179,20 +179,21 @@ public class Vision extends SubsystemBase {
     // Vision.java
 
     // Photonvision Result
-    // The documentation for this is here: https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
+    // The documentation for this is here:
+    // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
     // The example code was missing, and we came up with this:
     if (VisionConfig.isPhotonVisionMode) {
       var result = photonCam_1.getLatestResult();
-      if (result.hasTargets()) { 
+      if (result.hasTargets()) {
         var update = photonPoseEstimator.update();
-        Pose3d currentPose3d = update.get().estimatedPose; 
+        Pose3d currentPose3d = update.get().estimatedPose;
         botPose = currentPose3d.toPose2d();
         photonTimestamp = update.get().timestampSeconds;
       }
     }
   }
 
-  public double getPhotonTimestamp(){
+  public double getPhotonTimestamp() {
     return photonTimestamp;
   }
 
