@@ -3,6 +3,7 @@ package frc.robot.core.util.controllers;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.core.util.MathUtils;
+import frc.robot.core.util.SimpleDeadBand;
 
 public class GameController extends Joystick {
   public static final double DEADZONE = 0.1;
@@ -25,8 +26,8 @@ public class GameController extends Joystick {
 
   public double getAxis(ButtonMap.Axis axis) {
     double value = this.getRawAxis(map.axisMap().get(axis));
-
-    return function.on(value, DEADZONE);
+    return SimpleDeadBand.signSquare(SimpleDeadBand.deadband(value, DEADZONE));
+    // return function.on(value, DEADZONE);
   }
 
   public double getTrigger(ButtonMap.Trigger trigger) {
