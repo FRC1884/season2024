@@ -1,11 +1,8 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.layout.TwoJoyStickDriverMap;
 import frc.robot.layout.TwoJoyStickOperatorMap;
-import java.util.HashMap;
 
 public class OI {
   private static OI instance;
@@ -33,7 +30,7 @@ public class OI {
     // NamedCommands.registerCommands(
     //     new HashMap<
     //         String,
-            // Command>()); // TODO no idea if this works or not. Theoretically the hashmap of strings
+    // Command>()); // TODO no idea if this works or not. Theoretically the hashmap of strings
     // and commands takes the string input from the waypoints in the path and
     // associates that to the command that you want to run, but thats just a
     // theory, a game theory.

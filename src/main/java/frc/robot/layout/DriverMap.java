@@ -54,7 +54,7 @@ public abstract class DriverMap extends CommandMap {
     }
   }
 
-  private void registerTestSub(){
+  private void registerTestSub() {
     var t = test.getInstance();
     t.setDefaultCommand(t.testCommand(() -> getSwerveXSpeed()));
   }
@@ -63,6 +63,5 @@ public abstract class DriverMap extends CommandMap {
   public void registerCommands() {
     registerDrivetrain();
     getSpeakerOrSourceButton().onTrue(new PrintCommand("Hello"));
-  
   }
 }

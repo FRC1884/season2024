@@ -28,9 +28,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
-import frc.robot.subsystems.Vision.Vision;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public abstract class MAXSwerve extends SubsystemBase {
@@ -46,13 +44,9 @@ public abstract class MAXSwerve extends SubsystemBase {
   private MAXSwerveModule fl, fr, bl, br;
   private Pigeon2 gyro;
   private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-   GenericEntry distanceEntry =
-      tab.add("Distance to target", 0)
-         .getEntry();
-
+  GenericEntry distanceEntry = tab.add("Distance to target", 0).getEntry();
 
   SwerveDriveOdometry odometry;
-
 
   public MAXSwerve(
       int pigeon_id,
@@ -67,7 +61,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     this.fr = fr;
     this.bl = bl;
     this.br = br;
-    
+  
         
 
     odometry =
@@ -87,7 +81,6 @@ public abstract class MAXSwerve extends SubsystemBase {
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
-    
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -179,9 +172,9 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    
+
     double ySpeedDelivered = ySpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    
+
     double rotDelivered = currentRotation * MaxSwerveConstants.kMaxAngularSpeed;
     var swerveModuleStates =
         MaxSwerveConstants.kDriveKinematics.toSwerveModuleStates(
@@ -194,7 +187,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
-    
+
     fl.setDesiredState(swerveModuleStates[0]);
     fr.setDesiredState(swerveModuleStates[1]);
     bl.setDesiredState(swerveModuleStates[2]);
@@ -220,9 +213,11 @@ public abstract class MAXSwerve extends SubsystemBase {
     return speeds;
   }
 
-  public Command driveCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> rotSpeed) {
+  public Command driveCommand(
+      Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> rotSpeed) {
     return new RepeatCommand(
-        new RunCommand(() -> this.drive(xSpeed.get(), ySpeed.get(), rotSpeed.get(), true, true), this));
+        new RunCommand(
+            () -> this.drive(xSpeed.get(), ySpeed.get(), rotSpeed.get(), true, true), this));
   }
 
   public BooleanSupplier getShouldFlip() {
