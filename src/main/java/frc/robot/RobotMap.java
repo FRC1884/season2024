@@ -146,4 +146,11 @@ public class RobotMap {
     public static final int MOTOR_ID_3 = 1;
     public static final int MOTOR_ID_4 = 8;
   }
+  public static class ShooterMap{
+   public static final int deviceID = 1; 
+   public static final int deviceID2 = 1; 
+   public static final double launchSpeed = 1;
+   public static final double feedSpeed = 1;
+   public static final double shootDelay = 1;
+   }
 }
