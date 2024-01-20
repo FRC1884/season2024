@@ -1,11 +1,29 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class RobotMap {
   public static class ElevatorMap {
     public static final int master = 4;
     public static final int slave = 5;
 
     public static final int limitSwitch = 0;
+  }
+
+  public enum PoseMap {
+    SOURCE_BLUE(new Pose2d(0, 0, new Rotation2d(0)));
+
+    private final Pose2d targetPose;
+
+    PoseMap(Pose2d targetPose){
+      this.targetPose = targetPose;
+    }
+
+    public Pose2d getTargetPose()
+    {
+      return targetPose;
+    }
   }
 
   public static class DriveMap {
@@ -30,8 +48,8 @@ public class RobotMap {
     public static final class BackLeft {
       public static final int DRIVE_ID = 2;
       public static final int ROTATOR_ID = 1;
-      public static final double ANGULAR_OFFSET = Math.PI / 2;
-    }
+      public static final double ANGULAR_OFFSET = -Math.PI / 2;
+    } 
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {

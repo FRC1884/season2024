@@ -11,6 +11,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -66,7 +67,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     this.fr = fr;
     this.bl = bl;
     this.br = br;
-  
+    
         
 
     odometry =
@@ -99,6 +100,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
+    System.out.println(odometry.getPoseMeters());
     return odometry.getPoseMeters();
   }
 
@@ -211,8 +213,10 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public ChassisSpeeds getChassisSpeeds() {
+
     ChassisSpeeds speeds =
         KINEMATICS.toChassisSpeeds(fl.getState(), fr.getState(), bl.getState(), br.getState());
+    
     return speeds;
   }
 
