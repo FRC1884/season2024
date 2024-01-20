@@ -37,12 +37,12 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getSpeakerOrSourceButton();
 
-
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
       drivetrain.setDefaultCommand(
-          drivetrain.driveCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+          drivetrain.driveCommand(
+              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath"));
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());

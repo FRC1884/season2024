@@ -16,12 +16,11 @@ public class RobotMap {
 
     private final Pose2d targetPose;
 
-    PoseMap(Pose2d targetPose){
+    PoseMap(Pose2d targetPose) {
       this.targetPose = targetPose;
     }
 
-    public Pose2d getTargetPose()
-    {
+    public Pose2d getTargetPose() {
       return targetPose;
     }
   }
@@ -49,7 +48,7 @@ public class RobotMap {
       public static final int DRIVE_ID = 2;
       public static final int ROTATOR_ID = 1;
       public static final double ANGULAR_OFFSET = -Math.PI / 2;
-    } 
+    }
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {
