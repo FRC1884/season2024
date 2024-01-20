@@ -146,4 +146,11 @@ public class RobotMap {
     public static final int MOTOR_ID_3 = 1;
     public static final int MOTOR_ID_4 = 8;
   }
+  public static class driveMap{
+    public static final int LF = 5;
+    public static final int LB = 2;
+    public static final int RF = 3;
+    public static final int RB = 4;
+  }
+  
 }
