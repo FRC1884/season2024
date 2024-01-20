@@ -41,8 +41,9 @@ public abstract class DriverMap extends CommandMap {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
       drivetrain.setDefaultCommand(
-          drivetrain.driveCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      
+          drivetrain.driveCommand(
+              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
       //     .onTrue(
@@ -52,7 +53,7 @@ public abstract class DriverMap extends CommandMap {
     }
   }
 
-  private void registerTestSub(){
+  private void registerTestSub() {
     var t = test.getInstance();
     t.setDefaultCommand(t.testCommand(() -> getSwerveXSpeed()));
   }
@@ -61,6 +62,5 @@ public abstract class DriverMap extends CommandMap {
   public void registerCommands() {
     registerDrivetrain();
     getSpeakerOrSourceButton().onTrue(new PrintCommand("Hello"));
-  
   }
 }

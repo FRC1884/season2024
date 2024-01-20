@@ -33,7 +33,7 @@ public class GameController extends Joystick {
     //   // TODO: handle exception
     //   System.out.println(e);
     // }
-   
+
     return SimpleDeadBand.signSquare(SimpleDeadBand.deadband(value, DEADZONE));
     // return function.on(value, DEADZONE);
   }
