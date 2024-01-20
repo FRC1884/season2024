@@ -1,12 +1,14 @@
 package frc.robot.layout;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ExampleConfig;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.kitdrivetrain;
 import frc.robot.subsystems.test;
 
 public abstract class DriverMap extends CommandMap {
@@ -16,6 +18,10 @@ public abstract class DriverMap extends CommandMap {
   }
 
   abstract ChassisSpeeds getChassisSpeeds();
+
+  abstract double getkitdrivetrainX();
+
+  abstract double getkitdrivetrainY();
 
   abstract double getSwerveXSpeed();
 
@@ -39,10 +45,10 @@ public abstract class DriverMap extends CommandMap {
 
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
-      var drivetrain = Drivetrain.getInstance();
+      var drivetrain = kitdrivetrain.getInstance();
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(
-              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+              this::getkitdrivetrainY, this::getkitdrivetrainX));
 
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
