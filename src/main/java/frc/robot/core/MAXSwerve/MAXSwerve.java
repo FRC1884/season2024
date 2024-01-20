@@ -16,16 +16,19 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
-import frc.robot.subsystems.Vision.Vision;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public abstract class MAXSwerve extends SubsystemBase {
 
@@ -39,6 +42,8 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   private MAXSwerveModule fl, fr, bl, br;
   private Pigeon2 gyro;
+  private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
+  GenericEntry distanceEntry = tab.add("Distance to target", 0).getEntry();
 
   SwerveDriveOdometry odometry;
 
@@ -163,10 +168,10 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    double rotDelivered = currentRotation * MaxSwerveConstants.kMaxAngularSpeed;
 
-    System.out.println(xSpeedDelivered);
+    double ySpeedDelivered = ySpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+
+    double rotDelivered = currentRotation * MaxSwerveConstants.kMaxAngularSpeed;
     var swerveModuleStates =
         MaxSwerveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
@@ -178,6 +183,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
+
     fl.setDesiredState(swerveModuleStates[0]);
     fr.setDesiredState(swerveModuleStates[1]);
     bl.setDesiredState(swerveModuleStates[2]);
@@ -201,9 +207,11 @@ public abstract class MAXSwerve extends SubsystemBase {
     return speeds;
   }
 
-  public Command driveCommand(double xSpeed, double ySpeed, double rotSpeed) {
+  public Command driveCommand(
+      Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> rotSpeed) {
     return new RepeatCommand(
-        new RunCommand(() -> this.drive(xSpeed, ySpeed, rotSpeed, true, true), this));
+        new RunCommand(
+            () -> this.drive(xSpeed.get(), ySpeed.get(), rotSpeed.get(), true, true), this));
   }
 
   public BooleanSupplier getShouldFlip() {
@@ -254,7 +262,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                 this.followPathCommand(
                     new PathPlannerPath(
                         PathPlannerPath.bezierFromPoses(
-                            Vision.getInstance().getRobotPose2d_TargetSpace(),
+                            // Vision.getInstance().getRobotPose2d_TargetSpace(),
                             new Pose2d(1.0, 0.0, new Rotation2d())), // Need to make this better
                         null,
                         null) // null vaules because these are to be obtained from vision when that

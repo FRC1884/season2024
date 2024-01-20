@@ -26,6 +26,14 @@ public class GameController extends Joystick {
 
   public double getAxis(ButtonMap.Axis axis) {
     double value = this.getRawAxis(map.axisMap().get(axis));
+    // System.out.println(value);
+    // try {
+    //    return this.getRawAxis(0);
+    // } catch (Exception e) {
+    //   // TODO: handle exception
+    //   System.out.println(e);
+    // }
+
     return SimpleDeadBand.signSquare(SimpleDeadBand.deadband(value, DEADZONE));
     // return function.on(value, DEADZONE);
   }

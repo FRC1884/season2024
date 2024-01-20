@@ -1,14 +1,10 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
-import frc.robot.util.SendableMotor;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,9 +26,9 @@ public class Robot extends TimedRobot {
     // robot/auto/selector/AutoModeSelector.java
     ctreConfigs = new CTREConfigs();
 
-    enableLiveWindowInTest(true);
-    OI.getInstance();
+    // enableLiveWindowInTest(true);
     var autoModeSelector = AutoModeSelector.getInstance();
+    OI.getInstance();
   }
 
   /**
@@ -67,7 +63,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-
     CommandScheduler.getInstance().cancelAll();
     OI.getInstance().registerCommands();
   }
@@ -87,13 +82,13 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    motor1 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless);
-    motor2 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
-    motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
+    //   motor1 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless);
+    //   motor2 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
+    //   motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
 
-    SendableRegistry.addLW(new SendableMotor(motor1), "Prototype", "Motor 1");
-    SendableRegistry.addLW(new SendableMotor(motor2), "Prototype", "Motor 2");
-    SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
+    //   SendableRegistry.addLW(new SendableMotor(motor1), "Prototype", "Motor 1");
+    //   SendableRegistry.addLW(new SendableMotor(motor2), "Prototype", "Motor 2");
+    //   SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
   }
 
   /** This function is called periodically during test mode. */
