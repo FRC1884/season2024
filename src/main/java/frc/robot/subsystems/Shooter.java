@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -9,59 +9,57 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.RobotMap.ShooterMap;
 
 public class Shooter {
-    private CANSparkMax launchMotor; 
-    private CANSparkMax feedMotor; 
-    private static Shooter instance; 
-    
-    
-    private Shooter(){
-        launchMotor = new CANSparkMax(ShooterMap.deviceID, MotorType.kBrushless);
-        feedMotor = new CANSparkMax(ShooterMap.deviceID2, MotorType.kBrushless);
+    private CANSparkMax launchMotor;
+    private CANSparkMax feedMotor;
+    private static Shooter instance;
+
+    private Shooter() {
+        launchMotor = new CANSparkMax(ShooterMap.LAUNCH_MOTOR_ID, MotorType.kBrushless);
+        feedMotor = new CANSparkMax(ShooterMap.FEED_MOTOR_ID, MotorType.kBrushless);
     }
-    
 
     public static Shooter getInstance() {
-        if (instance == null) instance = new Shooter(); 
-        return instance; 
-
+        if (instance == null)
+            instance = new Shooter();
+        return instance;
 
     }
-    public void setLaunchSpeed(double speed)
-    { 
+
+    public void setLaunchSpeed(double speed) {
         launchMotor.set(speed);
-        
 
     }
 
-    public void setFeedSpeed(double speed){
-        feedMotor.set(speed); 
+    public void setFeedSpeed(double speed) {
+        feedMotor.set(speed);
     }
-    public void stopMotors(){ 
+
+    public void stopMotors() {
         launchMotor.set(0);
         feedMotor.set(0);
 
     }
-    public Command runShooter(){
-            return new StartEndCommand(
-                () -> 
-                {setLaunchSpeed(-ShooterMap.launchSpeed);
+
+    public Command runShooter() {
+        return new StartEndCommand(
+                () -> {
+                    setLaunchSpeed(-ShooterMap.launchSpeed);
                     setFeedSpeed(-ShooterMap.feedSpeed);
                 },
-           () -> stopMotors());
+                () -> stopMotors());
 
-        }
-
-    public Command prepareShootCommand(){
-        return new InstantCommand(() -> setLaunchSpeed(ShooterMap.launchSpeed));
-    
     }
 
-    public Command launchNoteCommand(){
+    public Command prepareShootCommand() {
+        return new InstantCommand(() -> setLaunchSpeed(ShooterMap.launchSpeed));
+
+    }
+
+    public Command launchNoteCommand() {
         return new InstantCommand(
-            () -> 
-            {setLaunchSpeed(ShooterMap.launchSpeed);
-                setFeedSpeed(ShooterMap.feedSpeed);
-            });
+                () -> {
+                    setLaunchSpeed(ShooterMap.launchSpeed);
+                    setFeedSpeed(ShooterMap.feedSpeed);
+                });
     }
 }
-

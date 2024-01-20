@@ -17,56 +17,29 @@ public abstract class DriverMap extends CommandMap {
     super(controller);
   }
 
-  abstract ChassisSpeeds getChassisSpeeds();
+  abstract double getKitDrivetrainRot();
 
-  abstract double getkitdrivetrainX();
-
-  abstract double getkitdrivetrainY();
-
-  abstract double getSwerveXSpeed();
-
-  abstract double getSwerveYSpeed();
-
-  abstract double getSwerveRot();
-
-  abstract JoystickButton getTestButton();
-
-  abstract JoystickButton getFollowAprilTagButton();
-
-  abstract JoystickButton getSourceToSpeakerButton();
-
-  abstract JoystickButton getSourceToAmpButton();
-
-  abstract JoystickButton getSpeakerToSourceButton();
-
-  abstract JoystickButton getSpeakerToStageButton();
-
-  abstract JoystickButton getSpeakerOrSourceButton();
+  abstract double getKitDrivetrainForward();
 
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = kitdrivetrain.getInstance();
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(
-              this::getkitdrivetrainY, this::getkitdrivetrainX));
+              this::getKitDrivetrainForward, this::getKitDrivetrainRot));
 
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
-      //     .onTrue(
-      //         drivetrain.goSpeakerOrSource(
-      //             false)); // boolean arguement set as false as function to determine if robot is
+      // .onTrue(
+      // drivetrain.goSpeakerOrSource(
+      // false)); // boolean arguement set as false as function to determine if robot
+      // is
       // holding note has not been created yet
     }
-  }
-
-  private void registerTestSub() {
-    var t = test.getInstance();
-    t.setDefaultCommand(t.testCommand(() -> getSwerveXSpeed()));
   }
 
   @Override
   public void registerCommands() {
     registerDrivetrain();
-    getSpeakerOrSourceButton().onTrue(new PrintCommand("Hello"));
   }
 }

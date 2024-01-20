@@ -121,7 +121,8 @@ public class RobotMap {
       AVERAGE_BEST_TARGETS,
 
       /**
-       * Use all visible tags to compute a single pose estimate on coprocessor. This option needs to
+       * Use all visible tags to compute a single pose estimate on coprocessor. This
+       * option needs to
        * be enabled on the PhotonVision web UI as well.
        */
       MULTI_TAG_PNP_ON_COPROCESSOR,
@@ -146,18 +147,19 @@ public class RobotMap {
     public static final int MOTOR_ID_3 = 1;
     public static final int MOTOR_ID_4 = 8;
   }
-  public static class kitDriveMap{
-    public static final int LF = 5;
+
+  public static class kitDriveMap {
+    public static final int LF = 1;
     public static final int LB = 2;
     public static final int RF = 3;
     public static final int RB = 4;
   }
-  
-  public static class ShooterMap{
-   public static final int deviceID = 1; 
-   public static final int deviceID2 = 1; 
-   public static final double launchSpeed = 1;
-   public static final double feedSpeed = 1;
-   public static final double shootDelay = 1;
-   }
+
+  public static class ShooterMap {
+    public static final int LAUNCH_MOTOR_ID = 1;
+    public static final int FEED_MOTOR_ID = 2;
+    public static final double launchSpeed = 1;
+    public static final double feedSpeed = 1;
+    public static final double shootDelay = 1;
+  }
 }

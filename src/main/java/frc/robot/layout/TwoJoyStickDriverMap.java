@@ -17,73 +17,12 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
 
   @Override
-  public ChassisSpeeds getChassisSpeeds() {
-    double x = Math.pow(controller.getAxis(Axis.AXIS_LEFT_X), 1) * SwerveConstants.MAX_VELOCITY;
-    double y = Math.pow(controller.getAxis(Axis.AXIS_LEFT_Y), 1) * SwerveConstants.MAX_VELOCITY;
-    double rot = controller.getAxis(Axis.AXIS_RIGHT_X) * SwerveConstants.MAX_ANGULAR_VELOCITY * 0.7;
-
-    return ChassisSpeeds.fromFieldRelativeSpeeds(-y, -x, -rot, new Rotation2d(0, 0));
-  }
-
-  @Override
-  public double getSwerveXSpeed() {
-    System.out.println(
-        -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond);
-    return -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-  }
-
-  @Override
-  public double getSwerveYSpeed() {
-    return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-  }
-
-  @Override
-  public double getSwerveRot() {
-    return controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed;
-  }
-
-  @Override
-  public JoystickButton getTestButton() {
-    return controller.getButton(Button.BUTTON_B);
-  }
-
-  @Override
-  public JoystickButton getFollowAprilTagButton() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  public JoystickButton getSourceToSpeakerButton() {
-    return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  public JoystickButton getSourceToAmpButton() {
-    return controller.getButton(Button.BUTTON_Y);
-  }
-
-  @Override
-  public JoystickButton getSpeakerToSourceButton() {
-    return controller.getButton(Button.BUTTON_B);
-  }
-
-  @Override
-  public JoystickButton getSpeakerToStageButton() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
-  }
-
-  @Override
-  public JoystickButton getSpeakerOrSourceButton() {
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
-  }
-
-  @Override
-  public double getkitdrivetrainX(){
+  public double getKitDrivetrainRot() {
     return controller.getAxis(Axis.AXIS_RIGHT_X);
   }
 
   @Override
-  public double getkitdrivetrainY(){
+  public double getKitDrivetrainForward() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
 

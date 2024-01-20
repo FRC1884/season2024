@@ -12,29 +12,38 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.RobotMap.kitDriveMap;
+
 public class kitdrivetrain extends SubsystemBase {
     private static kitdrivetrain instance;
-    private DifferentialDrive m_Drive;
+
     public static kitdrivetrain getInstance() {
-        if (instance == null) instance = new kitdrivetrain();
+        if (instance == null)
+            instance = new kitdrivetrain();
         return instance;
     }
+    
+    private DifferentialDrive m_Drive;
+    
     private CANSparkMax leftFront;
     private CANSparkMax leftBack;
     private CANSparkMax rightFront;
     private CANSparkMax rightBack;
 
-    private static final int deviceID = 1;
 
     //constructor 
     private kitdrivetrain(){
-        leftFront = new CANSparkMax(deviceID, MotorType.kBrushless);
+        leftFront = new CANSparkMax(kitDriveMap.LF, MotorType.kBrushless);
+        leftBack = new CANSparkMax(kitDriveMap.LB, MotorType.kBrushless);
+
+        rightFront = new CANSparkMax(kitDriveMap.RF, MotorType.kBrushless);
+        rightBack = new CANSparkMax(kitDriveMap.RB, MotorType.kBrushless);
+
         leftBack.follow(leftFront);
-        rightFront = new CANSparkMax(deviceID, MotorType.kBrushless);
         rightBack.follow(rightFront);
         rightFront.setInverted(true);
 
-        DifferentialDrive m_Drive = new DifferentialDrive(leftFront, rightFront);
+        m_Drive = new DifferentialDrive(leftFront, rightFront);
     }
     public void drive(double speed, double rotation){
         m_Drive.arcadeDrive(speed, rotation);
