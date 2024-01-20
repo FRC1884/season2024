@@ -26,10 +26,10 @@ public class MaxSwerveConstants {
           new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
   // Angular offsets of the modules relative to the chassis in radians
-  public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-  public static final double kFrontRightChassisAngularOffset = 0;
-  public static final double kBackLeftChassisAngularOffset = Math.PI;
-  public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+//   public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+//   public static final double kFrontRightChassisAngularOffset = 0;
+//   public static final double kBackLeftChassisAngularOffset = Math.PI;
+//   public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
   public static final boolean kGyroReversed = false;
 

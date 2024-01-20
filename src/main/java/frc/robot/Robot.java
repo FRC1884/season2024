@@ -30,9 +30,10 @@ public class Robot extends TimedRobot {
     // robot/auto/selector/AutoModeSelector.java
     ctreConfigs = new CTREConfigs();
 
-    enableLiveWindowInTest(true);
-    OI.getInstance();
+    //enableLiveWindowInTest(true);
     var autoModeSelector = AutoModeSelector.getInstance();
+    OI.getInstance();
+    
   }
 
   /**
@@ -67,14 +68,15 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-
     CommandScheduler.getInstance().cancelAll();
     OI.getInstance().registerCommands();
+    
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
@@ -87,13 +89,13 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    motor1 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless);
-    motor2 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
-    motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
+  //   motor1 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless);
+  //   motor2 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
+  //   motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
 
-    SendableRegistry.addLW(new SendableMotor(motor1), "Prototype", "Motor 1");
-    SendableRegistry.addLW(new SendableMotor(motor2), "Prototype", "Motor 2");
-    SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
+  //   SendableRegistry.addLW(new SendableMotor(motor1), "Prototype", "Motor 1");
+  //   SendableRegistry.addLW(new SendableMotor(motor2), "Prototype", "Motor 2");
+  //   SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
   }
 
   /** This function is called periodically during test mode. */

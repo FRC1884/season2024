@@ -5,7 +5,7 @@ import frc.robot.subsystems.Drivetrain;
 
 public class TestPath extends SequentialCommandGroup {
   public TestPath() {
-    String path = "Test Path";
+    String path = "Aspirational Auto Amp Start";
 
     var maxswerve = Drivetrain.getInstance();
     addCommands(
