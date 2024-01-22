@@ -26,8 +26,6 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveXSpeed() {
-    System.out.println(
-        -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond);
     return -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
@@ -38,7 +36,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveRot() {
-    return controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed;
+    return -controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed;
   }
 
   @Override

@@ -43,7 +43,8 @@ public abstract class DriverMap extends CommandMap {
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(
               this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-
+      getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath"));
+      getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
       //     .onTrue(
