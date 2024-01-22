@@ -18,6 +18,6 @@ public class TestPath extends SequentialCommandGroup {
         //             .alongWith(new RunCommand(() -> elevatorArm.moveElevator(-0.7))
         //                         .until(() -> elevatorArm.getBottomSwitch())),
         // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.DEFAULT),
-        maxswerve.followPathCommand(path));
+        maxswerve.followPathCommand(path, true));
   }
 }

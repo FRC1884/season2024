@@ -5,6 +5,7 @@ import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -23,9 +24,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import java.util.function.BooleanSupplier;
@@ -76,6 +80,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
+    System.out.println(odometry.getPoseMeters());
     odometry.update(
         Rotation2d.fromDegrees(gyro.getYaw()),
         new SwerveModulePosition[] {
@@ -93,7 +98,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    System.out.println(odometry.getPoseMeters());
+    
     return odometry.getPoseMeters();
   }
 
@@ -234,14 +239,23 @@ public abstract class MAXSwerve extends SubsystemBase {
     };
   }
 
-  public Command followPathCommand(String pathName) {
+  public Command followPathCommand(String pathName, boolean isFirstPath) {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-    return followPathCommand(path);
+    return followPathCommand(path, isFirstPath);
   }
 
-  public Command followPathCommand(PathPlannerPath pathName) {
-
-    return new FollowPathHolonomic(
+  public Command followPathCommand(PathPlannerPath pathName, boolean isFirstPath) {
+    return new SequentialCommandGroup(
+        new InstantCommand(
+            () -> {
+              // Reset odometry for the first path you run during auto
+              if (isFirstPath) {
+                PathPoint startingPoint = pathName.getPoint(0);
+                Pose2d startingPose = new Pose2d(startingPoint.position, startingPoint.rotationTarget.getTarget());
+                this.resetOdometry(startingPose);
+              }
+            }),
+        new FollowPathHolonomic(
         pathName,
         this::getPose, // Robot pose supplier
         this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
@@ -258,7 +272,7 @@ public abstract class MAXSwerve extends SubsystemBase {
             ),
         getShouldFlip(),
         this // Reference to this subsystem to set requirements
-        );
+    ));
   }
 
   public Command followAprilTagCommand() {
@@ -271,9 +285,9 @@ public abstract class MAXSwerve extends SubsystemBase {
                             // Vision.getInstance().getRobotPose2d_TargetSpace(),
                             new Pose2d(1.0, 0.0, new Rotation2d())), // Need to make this better
                         null,
-                        null) // null vaules because these are to be obtained from vision when that
+                        null), false // null vaules because these are to be obtained from vision when that
                     // is finished
-                    ),
+                    ), 
             this));
   }
 
@@ -284,7 +298,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                 new PathPlannerPath(
                     PathPlannerPath.bezierFromPoses(getPose(), targetPose),
                     null,
-                    null) // null vaules because these are to be obtained from vision when that is
+                    null), false // null vaules because these are to be obtained from vision when that is
                 // finished
                 ),
         this);
