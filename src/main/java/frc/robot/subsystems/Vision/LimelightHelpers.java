@@ -603,12 +603,12 @@ public class LimelightHelpers {
   }
 
   /**
-   * Gets the Pose2d of the target AprilTag
+   * Gets the Pose2d of the target AprilTag 
    *
    * @param limelightName
    * @return
    */
-  public static Pose2d getTargetPose2d(String limelightName) {
+  public static Pose2d getTargetPose2d_RobotSpace(String limelightName) {
 
     double[] result = getTargetPose_RobotSpace(limelightName);
     return toPose2D(result);

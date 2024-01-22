@@ -88,6 +88,7 @@ public class RobotMap {
     public static final boolean isLimelightMode = true;
     public static final boolean isPhotonVisionMode = false;
     public static final boolean isNeuralNet = false;
+    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.0; //Max difference between vision and odometry pose estimate
 
     // Limelight
     public static final String POSE_LIMELIGHT = "limelight-pose";
@@ -120,29 +121,6 @@ public class RobotMap {
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
     public static final double CAM_1_PITCH_RADIANS = 0.2618; // camera Pitch Radians
     public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians
-
-    public enum POSE_STRATEGY {
-      /** Choose the Pose with the lowest ambiguity. */
-      LOWEST_AMBIGUITY,
-
-      /** Choose the Pose which is closest to the camera height. */
-      CLOSEST_TO_CAMERA_HEIGHT,
-
-      /** Choose the Pose which is closest to a set Reference position. */
-      CLOSEST_TO_REFERENCE_POSE,
-
-      /** Choose the Pose which is closest to the last pose calculated */
-      CLOSEST_TO_LAST_POSE,
-
-      /** Return the average of the best target poses using ambiguity as weight. */
-      AVERAGE_BEST_TARGETS,
-
-      /**
-       * Use all visible tags to compute a single pose estimate on coprocessor. This option needs to
-       * be enabled on the PhotonVision web UI as well.
-       */
-      MULTI_TAG_PNP_ON_COPROCESSOR,
-    }
   }
 
   public static class PoseConfig {
