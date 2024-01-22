@@ -23,12 +23,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import java.util.function.BooleanSupplier;
@@ -95,7 +94,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    
+
     return odometry.getPoseMeters();
   }
 
@@ -248,28 +247,31 @@ public abstract class MAXSwerve extends SubsystemBase {
               // Reset odometry for the first path you run during auto
               if (isFirstPath) {
                 PathPoint startingPoint = pathName.getPoint(0);
-                Pose2d startingPose = new Pose2d(startingPoint.position, startingPoint.rotationTarget.getTarget());
+                Pose2d startingPose =
+                    new Pose2d(startingPoint.position, startingPoint.rotationTarget.getTarget());
                 this.resetOdometry(startingPose);
               }
             }),
         new FollowPathHolonomic(
-        pathName,
-        this::getPose, // Robot pose supplier
-        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
-        // ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-            // your Constants class
-            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-            new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-            4.5, // Max module speed, in m/s
-            0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig() // Default path replanning config. See the API for the options
-            // here
-            ),
-        getShouldFlip(),
-        this // Reference to this subsystem to set requirements
-    ));
+            pathName,
+            this::getPose, // Robot pose supplier
+            this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+            // ChassisSpeeds
+            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
+                                             // in
+                // your Constants class
+                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                4.5, // Max module speed, in m/s
+                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                new ReplanningConfig() // Default path replanning config. See the API for the
+                                       // options
+                // here
+                ),
+            getShouldFlip(),
+            this // Reference to this subsystem to set requirements
+            ));
   }
 
   public Command followAprilTagCommand() {
@@ -282,9 +284,10 @@ public abstract class MAXSwerve extends SubsystemBase {
                             // Vision.getInstance().getRobotPose2d_TargetSpace(),
                             new Pose2d(1.0, 0.0, new Rotation2d())), // Need to make this better
                         null,
-                        null), false // null vaules because these are to be obtained from vision when that
+                        null),
+                    false // null vaules because these are to be obtained from vision when that
                     // is finished
-                    ), 
+                    ),
             this));
   }
 
@@ -293,9 +296,8 @@ public abstract class MAXSwerve extends SubsystemBase {
         () ->
             this.followPathCommand(
                 new PathPlannerPath(
-                    PathPlannerPath.bezierFromPoses(getPose(), targetPose),
-                    null,
-                    null), false // null vaules because these are to be obtained from vision when that is
+                    PathPlannerPath.bezierFromPoses(getPose(), targetPose), null, null),
+                false // null vaules because these are to be obtained from vision when that is
                 // finished
                 ),
         this);
