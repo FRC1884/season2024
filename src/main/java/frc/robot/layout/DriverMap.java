@@ -37,7 +37,6 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getSpeakerOrSourceButton();
 
-
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
