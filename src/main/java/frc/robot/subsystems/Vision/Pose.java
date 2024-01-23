@@ -78,15 +78,19 @@ public class Pose extends SubsystemBase {
   public void periodic() {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
-    if (VisionConfig.isLimelightMode) { // Limelight mode
-      Pose2d currentPose = Vision.getInstance().visionBotPose();
+    estimatePose = Vision.getInstance().visionBotPose();
+    if (VisionConfig.isLimelightMode && estimatePose != null) { // Limelight mode
       double currentTimestamp =
           Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
-      if (isEstimateReady(currentPose)) { // Does making so many bot pose variables impact accuracy?
-        addVisionMeasurement(currentPose, currentTimestamp);
+      if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
+        addVisionMeasurement(estimatePose, currentTimestamp);
       }
     }
-    // TODO Photonvision mode
+    // TODO Photonvision mode - Needs editing and filtering
+    if (VisionConfig.isPhotonVisionMode && estimatePose != null) { // Limelight mode
+      double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
+      addVisionMeasurement(estimatePose, photonTimestamp);
+    }
 
     // Update for telemetry
     setEstimatedPose(getPosition());
@@ -131,23 +135,15 @@ public class Pose extends SubsystemBase {
    */
   public boolean isEstimateReady(Pose2d pose) {
     /* Disregard Vision if there are no targets in view */
-    if (!Vision.getInstance()
-        .visionAccurate()) { // visionAccurate method sees if Apriltags present in Vision.java
+    if (!Vision.getInstance().visionAccurate()) { // visionAccurate method sees if Apriltags present in Vision.java
       return false;
     }
 
-    /* Disregard Vision if odometry has not been set to vision pose yet in teleopInit*/
-    // Pose2d odometryPose = Robot.core.TalonSwerve.getPoseMeters();
-
-    if (odometryPose.getX() <= 0.3
-        && odometryPose.getY() <= 0.3
-        && odometryPose.getRotation().getDegrees() <= 1) {
-      return false;
-    }
-    return (Math.abs(pose.getX() - odometryPose.getX()) <= 1)
-        && (Math.abs(pose.getY() - odometryPose.getY())
-            <= 1); // this can be tuned to find a threshold that helps us remove jumping vision
+    // Disregard measurements too far away from odometry
+    // this can be tuned to find a threshold that helps us remove jumping vision
     // poses
+    return (Math.abs(pose.getX() - odometryPose.getX()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD)
+        && (Math.abs(pose.getY() - odometryPose.getY()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
   }
 
   /** Sets the Odometry Pose to the given pose */

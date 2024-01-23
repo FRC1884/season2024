@@ -27,31 +27,24 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class Vision extends SubsystemBase {
   private Pose2d botPose;
-  private double photonTimestamp;
   private double limeLatency;
-  private boolean visionIntegrated = false;
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
+
+  private double photonTimestamp;
   private PhotonCamera photonCam_1;
-  private boolean photon_1_HasTargets;
+  private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator photonPoseEstimator;
   private Transform3d robotToCam;
 
-  /** For LEDs */
-  private boolean poseOverriden = false;
-
-  /** For Pilot Gamepad */
-  private boolean canUseAutoPilot = false;
-
+  
+  //For Note detection in the future
   private double detectHorizontalOffset = 0;
   private double detectVerticalOffset = 0;
 
-  // private Pose3d botPose3d; // Uses the limelight rotation instead of the gyro rotation -
-  // Limelight helpers had autoconversion!
-  // private Pair<Pose3d, Double> photonVisionPose;
   private int targetSeenCount = 0;
-  // private boolean targetSeen, visionStarted, initialized = false;
+
   private boolean aimTarget = false;
   private boolean detectTarget = false;
   private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
@@ -106,7 +99,7 @@ public class Vision extends SubsystemBase {
     }
     if (VisionConfig.isPhotonVisionMode) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
-      photon_1_HasTargets = false;
+      photon1HasTargets = false;
       try {
         aprilTagFieldLayout =
             AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
@@ -117,14 +110,11 @@ public class Vision extends SubsystemBase {
       robotToCam =
           new Transform3d(
               new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z),
-              new Rotation3d(
-                  VisionConfig.CAM_1_ROLL_RADIANS,
-                  VisionConfig.CAM_1_PITCH_RADIANS,
-                  VisionConfig.CAM_1_YAW_RADIANS));
+              new Rotation3d(VisionConfig.CAM_1_ROLL_RADIANS, VisionConfig.CAM_1_PITCH_RADIANS, VisionConfig.CAM_1_YAW_RADIANS));
       // TODO for 9th graders - create PhotonPoseEstimator object
       photonPoseEstimator =
           new PhotonPoseEstimator(
-              aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCam_1, robotToCam);
+              aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, photonCam_1, robotToCam);
     }
 
     // printing purposes
@@ -148,7 +138,6 @@ public class Vision extends SubsystemBase {
             .getString("")
             .equals("");
 
-    // checkTargetHistory();
     if (VisionConfig.isLimelightMode && apriltagLimelightConnected) {
       if (visionAccurate()) {
         // jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT); TODO - is
@@ -170,10 +159,12 @@ public class Vision extends SubsystemBase {
     }
 
     if (NNLimelightConnected) {
-      detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
-      detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
-      detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
+      // detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
+      if (detectTarget){
+        detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
+        detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
+      }
     }
     // this method can call update() if vision pose estimation needs to be updated in
     // Vision.java
@@ -184,7 +175,8 @@ public class Vision extends SubsystemBase {
     // The example code was missing, and we came up with this:
     if (VisionConfig.isPhotonVisionMode) {
       var result = photonCam_1.getLatestResult();
-      if (result.hasTargets()) {
+      photon1HasTargets = result.hasTargets();
+      if (photon1HasTargets) {
         var update = photonPoseEstimator.update();
         Pose3d currentPose3d = update.get().estimatedPose;
         botPose = currentPose3d.toPose2d();
@@ -197,18 +189,19 @@ public class Vision extends SubsystemBase {
     return photonTimestamp;
   }
 
+  public boolean photonHasTargets(){
+    return photon1HasTargets;
+  }
+
   public Pose2d getRobotPose2d_TargetSpace() {
     return LimelightHelpers.getBotPose2d_TargetSpace(VisionConfig.POSE_LIMELIGHT);
   }
 
-  // method to find target location to remain one meter in front of AprilTag - needs to use
-  // .transformBy
+  /**
+   * @return Pose2d of the apriltag with the robot as the origin
+   */
   public Pose2d getTargetRobotPose_RobotSpace() {
-    Pose2d aprilTagPosition = LimelightHelpers.getTargetPose2d(VisionConfig.POSE_LIMELIGHT);
-    double targetX = aprilTagPosition.getX() + 1;
-    double targetY = aprilTagPosition.getY();
-    Rotation2d targetRotation2d = aprilTagPosition.getRotation();
-    return new Pose2d(targetX, targetY, targetRotation2d);
+    return LimelightHelpers.getTargetPose2d_RobotSpace(VisionConfig.POSE_LIMELIGHT);
   }
 
   // APRILTAG HELPER METHODS
@@ -218,6 +211,7 @@ public class Vision extends SubsystemBase {
    */
   public boolean visionAccurate() {
     return isValidPose() && (isInMap() || multipleTargetsInView());
+    
   }
 
   /**
@@ -225,13 +219,16 @@ public class Vision extends SubsystemBase {
    */
   public boolean isValidPose() {
     /* Disregard Vision if there are no targets in view */
-    if (!LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT)) {
-      return false;
-    } else {
-      return true;
+    if (VisionConfig.isLimelightMode){
+        return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
     }
+    if (VisionConfig.isPhotonVisionMode){
+      return photonHasTargets();
+    }
+    return false;
   }
 
+  //This is a suss function - need to test it
   public boolean isInMap() {
     return ((botPose.getX() > 1.8 && botPose.getX() < 2.5)
         && (botPose.getY() > 0.1 && botPose.getY() < 5.49));
@@ -260,20 +257,6 @@ public class Vision extends SubsystemBase {
     return limeLatency;
   }
 
-  // TODO Pose2d MAP SHOULD GO IN DRIVETRAIN
-  /**
-   * Helper function for {@link Vision#getThetaToHybrid}
-   *
-   * @param hybridSpot 0-8 representing the 9 different hybrid spots for launching cubes to hybrid
-   *     nodes
-   * @return Transform2d representing the x and y distance components between the robot and the
-   *     hybrid spot
-   */
-  /*private Transform2d getTransformToHybrid(int hybridSpot) {
-      Pose2d hybridPose = VisionConfig.hybridSpots[hybridSpot];
-      return Robot.pose.getEstimatedPose().minus(hybridPose);
-  }*/
-
   /**
    * Gets the camera capture time in seconds.
    *
@@ -289,8 +272,7 @@ public class Vision extends SubsystemBase {
    * @param pipelineIndex use pipeline indexes in {@link VisionConfig}
    */
   public void setLimelightPipeline(String limelight, int pipelineIndex) {
-    LimelightHelpers.setPipelineIndex(VisionConfig.NN_LIMELIGHT, pipelineIndex);
-    LimelightHelpers.setPipelineIndex(VisionConfig.NN_LIMELIGHT, pipelineIndex);
+    LimelightHelpers.setPipelineIndex(limelight, pipelineIndex);
   }
 
   /**
