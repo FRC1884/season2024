@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-
-
 /**
  * The prototyping subsystem. Currently, it has support for three SparkMAX controllers. This means
  * you can test with both NEO 550s and Vortexes. In the future, it might be worth going all the way
