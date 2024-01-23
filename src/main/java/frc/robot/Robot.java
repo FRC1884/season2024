@@ -3,18 +3,12 @@ package frc.robot;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.networktables.BooleanSubscriber;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
-//import frc.robot.subsystems.PrototypeSubsystem;
+// import frc.robot.subsystems.PrototypeSubsystem;
 import frc.robot.util.SendableMotor;
 
 /**
@@ -24,122 +18,122 @@ import frc.robot.util.SendableMotor;
  * project.
  */
 public class Robot extends TimedRobot {
-    public static CTREConfigs ctreConfigs;
-    CANSparkBase motor1, motor2, motor3, motor4;
-    SendableMotor motor1Sendable, motor2Sendable, motor3Sendable, motor4Sendable;
+  public static CTREConfigs ctreConfigs;
+  CANSparkBase motor1, motor2, motor3, motor4;
+  SendableMotor motor1Sendable, motor2Sendable, motor3Sendable, motor4Sendable;
 
-    /**
-     * This function is run when the robot is first started up and should be used for any
-     * initialization code.
-     */
-    @Override
-    public void robotInit() {
-        // TODO put auto chooser here. make sure to use the one from
-        // robot/auto/selector/AutoModeSelector.java
-        ctreConfigs = new CTREConfigs();
+  /**
+   * This function is run when the robot is first started up and should be used for any
+   * initialization code.
+   */
+  @Override
+  public void robotInit() {
+    // TODO put auto chooser here. make sure to use the one from
+    // robot/auto/selector/AutoModeSelector.java
+    ctreConfigs = new CTREConfigs();
 
-        // enableLiveWindowInTest(true);
-        var autoModeSelector = AutoModeSelector.getInstance();
-        OI.getInstance();
-    }
+    // enableLiveWindowInTest(true);
+    var autoModeSelector = AutoModeSelector.getInstance();
+    OI.getInstance();
+  }
 
-    /**
-     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-     * that you want ran during disabled, autonomous, teleoperated and test.
-     *
-     * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-     * SmartDashboard integrated updating.
-     */
-    @Override
-    public void robotPeriodic() {
-        CommandScheduler.getInstance().run();
-    }
+  /**
+   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * that you want ran during disabled, autonomous, teleoperated and test.
+   *
+   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * SmartDashboard integrated updating.
+   */
+  @Override
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 
-    /**
-     * This autonomous (along with the chooser code above) shows how to select between different
-     * autonomous modes using the dashboard. The sendable chooser code works with the Java
-     * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-     * uncomment the getString line to get the auto name from the text box below the Gyro
-     *
-     * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-     * below with additional strings. If using the SendableChooser make sure to add them to the
-     * chooser code above as well.
-     */
-    @Override
-    public void autonomousInit() {}
+  /**
+   * This autonomous (along with the chooser code above) shows how to select between different
+   * autonomous modes using the dashboard. The sendable chooser code works with the Java
+   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
+   * uncomment the getString line to get the auto name from the text box below the Gyro
+   *
+   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
+   * below with additional strings. If using the SendableChooser make sure to add them to the
+   * chooser code above as well.
+   */
+  @Override
+  public void autonomousInit() {}
 
-    /** This function is called periodically during autonomous. */
-    @Override
-    public void autonomousPeriodic() {}
+  /** This function is called periodically during autonomous. */
+  @Override
+  public void autonomousPeriodic() {}
 
-    /** This function is called once when teleop is enabled. */
-    @Override
-    public void teleopInit() {
-        CommandScheduler.getInstance().cancelAll();
-        OI.getInstance().registerCommands();
-    }
+  /** This function is called once when teleop is enabled. */
+  @Override
+  public void teleopInit() {
+    CommandScheduler.getInstance().cancelAll();
+    OI.getInstance().registerCommands();
+  }
 
-    /** This function is called periodically during operator control. */
-    @Override
-    public void teleopPeriodic() {}
+  /** This function is called periodically during operator control. */
+  @Override
+  public void teleopPeriodic() {}
 
-    /** This function is called once when the robot is disabled. */
-    @Override
-    public void disabledInit() {}
+  /** This function is called once when the robot is disabled. */
+  @Override
+  public void disabledInit() {}
 
-    /** This function is called periodically when disabled. */
-    @Override
-    public void disabledPeriodic() {}
+  /** This function is called periodically when disabled. */
+  @Override
+  public void disabledPeriodic() {}
 
-    /** This function is called once when test mode is enabled. */
-    @Override
-    public void testInit() {
-        motor1 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless);
-        motor2 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
-        motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
-        motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
+  /** This function is called once when test mode is enabled. */
+  @Override
+  public void testInit() {
+    motor1 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless);
+    motor2 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
+    motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
+    motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
 
-        SendableRegistry.addLW(new SendableMotor(motor1), "Prototype", "Motor 1");
-        SendableRegistry.addLW(new SendableMotor(motor2), "Prototype", "Motor 2");
-        SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
-        SendableRegistry.addLW(new SendableMotor(motor4), "Prototype", "Motor 4");
-    }
+    SendableRegistry.addLW(new SendableMotor(motor1), "Prototype", "Motor 1");
+    SendableRegistry.addLW(new SendableMotor(motor2), "Prototype", "Motor 2");
+    SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
+    SendableRegistry.addLW(new SendableMotor(motor4), "Prototype", "Motor 4");
+  }
 
-    /** This function is called periodically during test mode. */
-    @Override
-    public void testPeriodic() {
-        if(motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
-        else motor1.set(0.0);
+  /** This function is called periodically during test mode. */
+  @Override
+  public void testPeriodic() {
+    if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
+    else motor1.set(0.0);
 
-        if(motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
-        else motor2.set(0.0);
+    if (motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
+    else motor2.set(0.0);
 
-        if(motor3Sendable.openLoopEnabled) motor3.set(motor3Sendable.m_speed);
-        else motor3.set(0.0);
+    if (motor3Sendable.openLoopEnabled) motor3.set(motor3Sendable.m_speed);
+    else motor3.set(0.0);
 
-        if(motor4Sendable.openLoopEnabled) motor4.set(motor4Sendable.m_speed);
-        else motor4.set(0.0);
+    if (motor4Sendable.openLoopEnabled) motor4.set(motor4Sendable.m_speed);
+    else motor4.set(0.0);
 
-        /*ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
-        GenericEntry shooterEnable = tab.add("Shooter Enable", false).getEntry();
+    /*ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
+    GenericEntry shooterEnable = tab.add("Shooter Enable", false).getEntry();
 
-        // Command Example assumed to be in a PIDSubsystem
-        new NetworkButton((BooleanSubscriber) shooterEnable).onTrue(new InstantCommand(PrototypeSubsystem.getInstance()::enable));
+    // Command Example assumed to be in a PIDSubsystem
+    new NetworkButton((BooleanSubscriber) shooterEnable).onTrue(new InstantCommand(PrototypeSubsystem.getInstance()::enable));
 
-        // Timed Robot Example
-        if (shooterEnable.getBoolean(false)) {
-            // Calculates the output of the PID algorithm based on the sensor reading
-            // and sends it to a motor
-            PrototypeSubsystem.getInstance().runTo(1.0)
-                    .onlyIf(() -> shooterEnable.getBoolean(false));
-        }*/
-    }
+    // Timed Robot Example
+    if (shooterEnable.getBoolean(false)) {
+        // Calculates the output of the PID algorithm based on the sensor reading
+        // and sends it to a motor
+        PrototypeSubsystem.getInstance().runTo(1.0)
+                .onlyIf(() -> shooterEnable.getBoolean(false));
+    }*/
+  }
 
-    /** This function is called once when the robot is first started up. */
-    @Override
-    public void simulationInit() {}
+  /** This function is called once when the robot is first started up. */
+  @Override
+  public void simulationInit() {}
 
-    /** This function is called periodically whilst in simulation. */
-    @Override
-    public void simulationPeriodic() {}
+  /** This function is called periodically whilst in simulation. */
+  @Override
+  public void simulationPeriodic() {}
 }
