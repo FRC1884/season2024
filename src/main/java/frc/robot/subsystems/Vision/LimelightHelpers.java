@@ -603,7 +603,7 @@ public class LimelightHelpers {
   }
 
   /**
-   * Gets the Pose2d of the target AprilTag 
+   * Gets the Pose2d of the target AprilTag
    *
    * @param limelightName
    * @return

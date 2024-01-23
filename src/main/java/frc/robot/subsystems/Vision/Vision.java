@@ -38,8 +38,7 @@ public class Vision extends SubsystemBase {
   private PhotonPoseEstimator photonPoseEstimator;
   private Transform3d robotToCam;
 
-  
-  //For Note detection in the future
+  // For Note detection in the future
   private double detectHorizontalOffset = 0;
   private double detectVerticalOffset = 0;
 
@@ -110,7 +109,10 @@ public class Vision extends SubsystemBase {
       robotToCam =
           new Transform3d(
               new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z),
-              new Rotation3d(VisionConfig.CAM_1_ROLL_RADIANS, VisionConfig.CAM_1_PITCH_RADIANS, VisionConfig.CAM_1_YAW_RADIANS));
+              new Rotation3d(
+                  VisionConfig.CAM_1_ROLL_RADIANS,
+                  VisionConfig.CAM_1_PITCH_RADIANS,
+                  VisionConfig.CAM_1_YAW_RADIANS));
       // TODO for 9th graders - create PhotonPoseEstimator object
       photonPoseEstimator =
           new PhotonPoseEstimator(
@@ -161,7 +163,7 @@ public class Vision extends SubsystemBase {
     if (NNLimelightConnected) {
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
       // detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
-      if (detectTarget){
+      if (detectTarget) {
         detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
         detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
       }
@@ -189,7 +191,7 @@ public class Vision extends SubsystemBase {
     return photonTimestamp;
   }
 
-  public boolean photonHasTargets(){
+  public boolean photonHasTargets() {
     return photon1HasTargets;
   }
 
@@ -211,7 +213,6 @@ public class Vision extends SubsystemBase {
    */
   public boolean visionAccurate() {
     return isValidPose() && (isInMap() || multipleTargetsInView());
-    
   }
 
   /**
@@ -219,16 +220,16 @@ public class Vision extends SubsystemBase {
    */
   public boolean isValidPose() {
     /* Disregard Vision if there are no targets in view */
-    if (VisionConfig.isLimelightMode){
-        return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
+    if (VisionConfig.isLimelightMode) {
+      return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
     }
-    if (VisionConfig.isPhotonVisionMode){
+    if (VisionConfig.isPhotonVisionMode) {
       return photonHasTargets();
     }
     return false;
   }
 
-  //This is a suss function - need to test it
+  // This is a suss function - need to test it
   public boolean isInMap() {
     return ((botPose.getX() > 1.8 && botPose.getX() < 2.5)
         && (botPose.getY() > 0.1 && botPose.getY() < 5.49));

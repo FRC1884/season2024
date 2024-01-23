@@ -88,7 +88,8 @@ public class RobotMap {
     public static final boolean isLimelightMode = true;
     public static final boolean isPhotonVisionMode = false;
     public static final boolean isNeuralNet = false;
-    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.0; //Max difference between vision and odometry pose estimate
+    public static final double DIFFERENCE_CUTOFF_THRESHOLD =
+        1.0; // Max difference between vision and odometry pose estimate
 
     // Limelight
     public static final String POSE_LIMELIGHT = "limelight-pose";
