@@ -1,15 +1,12 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.function.Supplier;
 import frc.robot.RobotMap.PrototypeMap;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkFlex;
 
 public class PrototypingMech extends SubsystemBase {
 
@@ -32,12 +29,11 @@ public class PrototypingMech extends SubsystemBase {
 
   public Command run(double flywheelSpeed, double otherSpeed) {
     return new RunCommand(
-      ()->{
-        flywheel1.set(flywheelSpeed);
-        flywheel2.set(-flywheelSpeed);
-        max1.set(otherSpeed);
-        max2.set(-otherSpeed);
-      }
-    );
+        () -> {
+          flywheel1.set(flywheelSpeed);
+          flywheel2.set(-flywheelSpeed);
+          max1.set(otherSpeed);
+          max2.set(-otherSpeed);
+        });
   }
 }
