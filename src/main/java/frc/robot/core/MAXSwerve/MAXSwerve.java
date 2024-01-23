@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -22,6 +23,8 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
@@ -30,6 +33,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
+import frc.robot.subsystems.Vision.Pose;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -49,6 +54,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   GenericEntry distanceEntry = tab.add("Distance to target", 0).getEntry();
 
   SwerveDriveOdometry odometry;
+  
 
   public MAXSwerve(
       int pigeon_id,
@@ -67,18 +73,24 @@ public abstract class MAXSwerve extends SubsystemBase {
     odometry =
         new SwerveDriveOdometry(
             MaxSwerveConstants.kDriveKinematics,
-            Rotation2d.fromDegrees(gyro.getYaw()),
+            getYaw(),
             new SwerveModulePosition[] {
               fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
             });
+
+   this.resetOdometry( new Pose2d(0.0,0.0, Rotation2d.fromDegrees(90)));
+    
+    
   }
+
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
     System.out.println(odometry.getPoseMeters());
+    System.out.println(getYaw());
     odometry.update(
-        Rotation2d.fromDegrees(gyro.getYaw()),
+        getYaw(),
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
@@ -100,7 +112,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(
-        Rotation2d.fromDegrees(gyro.getYaw()),
+        getYaw(),
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         },
@@ -184,7 +196,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     xSpeedDelivered,
                     ySpeedDelivered,
                     rotDelivered,
-                    Rotation2d.fromDegrees(gyro.getYaw()))
+                    Rotation2d.fromDegrees(getHeading()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
@@ -248,7 +260,7 @@ public abstract class MAXSwerve extends SubsystemBase {
               if (isFirstPath) {
                 PathPoint startingPoint = pathName.getPoint(0);
                 Pose2d startingPose =
-                    new Pose2d(startingPoint.position, startingPoint.rotationTarget.getTarget());
+                    new Pose2d(startingPoint.position, Rotation2d.fromDegrees(getYaw().getDegrees()));
                 this.resetOdometry(startingPose);
               }
             }),
@@ -256,7 +268,14 @@ public abstract class MAXSwerve extends SubsystemBase {
             pathName,
             this::getPose, // Robot pose supplier
             this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+            this::driveWithChassisSpeeds,
+            /*speeds -> driveWithChassisSpeeds(
+              new ChassisSpeeds(
+                speeds.vxMetersPerSecond * Math.cos(gyro.getYaw()) - speeds.vyMetersPerSecond * Math.sin(gyro.getYaw()),
+                speeds.vxMetersPerSecond * Math.sin(gyro.getYaw()) + speeds.vyMetersPerSecond * Math.cos(gyro.getYaw()),
+                gyro.getYaw()
+              )
+            ),*/ // Method that will drive the robot given ROBOT RELATIVE
             // ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
                 // in
