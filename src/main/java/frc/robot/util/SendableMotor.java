@@ -16,8 +16,9 @@ public class SendableMotor implements Sendable {
   private CANSparkBase m_motorController;
   private SparkPIDController closedLoopController;
 
+  public double m_speed;
   private double m_setpoint;
-  private boolean closedLoopEnabled, openLoopEnabled;
+  public boolean closedLoopEnabled, openLoopEnabled;
 
   public SendableMotor(CANSparkBase motorController) {
     m_motorController = motorController;
@@ -33,6 +34,7 @@ public class SendableMotor implements Sendable {
   }
 
   void setSpeed(double speed) {
+    m_speed = speed;
     if (openLoopEnabled) m_motorController.set(speed);
   }
 

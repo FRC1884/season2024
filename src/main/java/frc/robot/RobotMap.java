@@ -137,10 +137,13 @@ public class RobotMap {
   }
 
   public static class PrototypeMap {
-    public static final int MOTOR_ID_1 = 1;
+    public static final int MOTOR_ID_1 = 42;
     public static final int MOTOR_ID_2 = 8;
-    public static final int MOTOR_ID_3 = 1;
-    public static final int MOTOR_ID_4 = 8;
+    public static final int MOTOR_ID_3 = 2;
+    public static final int MOTOR_ID_4 = 3;
+
+    public static final double MOTOR_1_KP = 0.1;
+    public static final double MOTOR_1_KI = 0.0;
+    public static final double MOTOR_1_KD = 0.0;
   }
-  // a
 }
