@@ -3,7 +3,6 @@ package frc.robot;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -37,14 +36,16 @@ public class Robot extends TimedRobot {
     var autoModeSelector = AutoModeSelector.getInstance();
     OI.getInstance();
 
-    motor1 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless); //TODO: Make sure that it is the right Motor
+    motor1 =
+        new CANSparkFlex(
+            RobotMap.PrototypeMap.MOTOR_ID_1,
+            MotorType.kBrushless); // TODO: Make sure that it is the right Motor
     motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
     // motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
     // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
 
     motor1Sendable = new SendableMotor(motor1);
     motor2Sendable = new SendableMotor(motor2);
-    
 
     SendableRegistry.addLW(motor1Sendable, "Prototype", "Motor 1");
     SendableRegistry.addLW(motor2Sendable, "Prototype", "Motor 2");
@@ -62,9 +63,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    if(motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
+    if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
     else motor1.set(0.0);
-    if(motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
+    if (motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
     else motor2.set(0.0);
   }
 
@@ -106,9 +107,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {
-    
-  }
+  public void testInit() {}
 
   /** This function is called periodically during test mode. */
   @Override
