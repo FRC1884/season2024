@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -32,9 +33,23 @@ public class Robot extends TimedRobot {
     // robot/auto/selector/AutoModeSelector.java
     ctreConfigs = new CTREConfigs();
 
-    // enableLiveWindowInTest(true);
+    enableLiveWindowInTest(true);
     var autoModeSelector = AutoModeSelector.getInstance();
     OI.getInstance();
+
+    motor1 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless); //TODO: Make sure that it is the right Motor
+    motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
+    // motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
+    // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
+
+    motor1Sendable = new SendableMotor(motor1);
+    motor2Sendable = new SendableMotor(motor2);
+    
+
+    SendableRegistry.addLW(motor1Sendable, "Prototype", "Motor 1");
+    SendableRegistry.addLW(motor2Sendable, "Prototype", "Motor 2");
+    // SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
+    // SendableRegistry.addLW(new SendableMotor(motor4), "Prototype", "Motor 4");
   }
 
   /**
@@ -47,6 +62,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    if(motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
+    else motor1.set(0.0);
+    if(motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
+    else motor2.set(0.0);
   }
 
   /**
@@ -88,15 +107,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    motor1 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless);
-    motor2 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
-    motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
-    motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
-
-    SendableRegistry.addLW(new SendableMotor(motor1), "Prototype", "Motor 1");
-    SendableRegistry.addLW(new SendableMotor(motor2), "Prototype", "Motor 2");
-    SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
-    SendableRegistry.addLW(new SendableMotor(motor4), "Prototype", "Motor 4");
+    
   }
 
   /** This function is called periodically during test mode. */
@@ -108,11 +119,11 @@ public class Robot extends TimedRobot {
     if (motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
     else motor2.set(0.0);
 
-    if (motor3Sendable.openLoopEnabled) motor3.set(motor3Sendable.m_speed);
-    else motor3.set(0.0);
+    // if (motor3Sendable.openLoopEnabled) motor3.set(motor3Sendable.m_speed);
+    // else motor3.set(0.0);
 
-    if (motor4Sendable.openLoopEnabled) motor4.set(motor4Sendable.m_speed);
-    else motor4.set(0.0);
+    // if (motor4Sendable.openLoopEnabled) motor4.set(motor4Sendable.m_speed);
+    // else motor4.set(0.0);
 
     /*ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
     GenericEntry shooterEnable = tab.add("Shooter Enable", false).getEntry();
