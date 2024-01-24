@@ -93,7 +93,7 @@ public class RobotMap {
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137; 
 
-    // Limelight
+    // Limelight - units are meters
     public static final String POSE_LIMELIGHT = "limelight-pose";
     public static final String NN_LIMELIGHT = "limelight-nn";
     public static final int aprilTagPipeline = 1;

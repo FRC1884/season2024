@@ -142,7 +142,7 @@ public class Vision extends SubsystemBase {
 
     if (VisionConfig.isLimelightMode && apriltagLimelightConnected) {
       if (visionAccurate()) {
-        // jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT); TODO - is
+        jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
         // json dump more accurate?
         // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field
@@ -162,7 +162,7 @@ public class Vision extends SubsystemBase {
 
     if (NNLimelightConnected) {
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
-      // detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
+      detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
       if (detectTarget) {
         detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
         detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
@@ -274,6 +274,20 @@ public class Vision extends SubsystemBase {
    */
   public void setLimelightPipeline(String limelight, int pipelineIndex) {
     LimelightHelpers.setPipelineIndex(limelight, pipelineIndex);
+  }
+
+  /**
+   *
+   * @param cameraHeight distance from lens to floor of camera in meters
+   * @param cameraAngle pitch of camera in radians
+   * @param targetHeight distance from floor to center of target in meters
+   * @param targetOffsetAngle_Vertical ty entry from limelight of target crosshair (in degrees)
+   * @return the distance to the target in meters 
+   */
+  public double targetDistanceMeters(double cameraHeight, double cameraAngle, double targetHeight, double targetOffsetAngle_Vertical){
+    double angleToGoalRadians = cameraAngle + targetOffsetAngle_Vertical * (3.14159 / 180.0);
+
+    return (targetHeight - cameraHeight) / Math.tan(angleToGoalRadians);
   }
 
   /**
