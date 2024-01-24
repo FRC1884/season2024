@@ -82,8 +82,7 @@ public class Pose extends SubsystemBase {
     if (VisionConfig.isLimelightMode && estimatePose != null) { // Limelight mode
       double currentTimestamp =
           Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
-      if (isEstimateReady(
-          estimatePose)) { // Does making so many bot pose variables impact accuracy?
+      if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
         addVisionMeasurement(estimatePose, currentTimestamp);
       }
     }
@@ -99,8 +98,7 @@ public class Pose extends SubsystemBase {
 
     // telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
     telemetry.updatePoseOnField("OdometryPose", odometryPose);
-    telemetry.updatePoseOnField(
-        "EstimatedPose", estimatePose); // Need to uncomment and fix to work here.
+    telemetry.updatePoseOnField("EstimatedPose", estimatePose); // Need to uncomment and fix to work here.
   }
 
   // /**
@@ -136,8 +134,7 @@ public class Pose extends SubsystemBase {
    */
   public boolean isEstimateReady(Pose2d pose) {
     /* Disregard Vision if there are no targets in view */
-    if (!Vision.getInstance()
-        .visionAccurate()) { // visionAccurate method sees if Apriltags present in Vision.java
+    if (!Vision.getInstance().visionAccurate()) { // visionAccurate method sees if Apriltags present in Vision.java
       return false;
     }
 
@@ -145,8 +142,7 @@ public class Pose extends SubsystemBase {
     // this can be tuned to find a threshold that helps us remove jumping vision
     // poses
     return (Math.abs(pose.getX() - odometryPose.getX()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD)
-        && (Math.abs(pose.getY() - odometryPose.getY())
-            <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
+        && (Math.abs(pose.getY() - odometryPose.getY()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
   }
 
   /** Sets the Odometry Pose to the given pose */

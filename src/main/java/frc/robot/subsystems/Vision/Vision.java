@@ -116,7 +116,7 @@ public class Vision extends SubsystemBase {
       // TODO for 9th graders - create PhotonPoseEstimator object
       photonPoseEstimator =
           new PhotonPoseEstimator(
-              aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, photonCam_1, robotToCam);
+              aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCam_1, robotToCam);
     }
 
     // printing purposes
@@ -231,8 +231,8 @@ public class Vision extends SubsystemBase {
 
   // This is a suss function - need to test it
   public boolean isInMap() {
-    return ((botPose.getX() > 1.8 && botPose.getX() < 2.5)
-        && (botPose.getY() > 0.1 && botPose.getY() < 5.49));
+    return ((botPose.getX() > 0.0 && botPose.getX() <= VisionConfig.FIELD_LENGTH_METERS)
+        && (botPose.getY() > 0.0 && botPose.getY() <= VisionConfig.FIELD_WIDTH_METERS));
   }
 
   /**
