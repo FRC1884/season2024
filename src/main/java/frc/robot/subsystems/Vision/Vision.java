@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 
 /*
  * This class requires MAJOR CLEANUP. There needs to be a proper pyramid of hierarchy. Vision should NOT be able to control anything related to pose. It should only
@@ -286,9 +287,10 @@ public class Vision extends SubsystemBase {
    */
   public double targetDistanceMeters(double cameraHeight, double cameraAngle, double targetHeight, double targetOffsetAngle_Vertical){
     double angleToGoalRadians = cameraAngle + targetOffsetAngle_Vertical * (3.14159 / 180.0);
-
     return (targetHeight - cameraHeight) / Math.tan(angleToGoalRadians);
   }
+  
+  
 
   /**
    * Prints the vision, estimated, and odometry pose to SmartDashboard
