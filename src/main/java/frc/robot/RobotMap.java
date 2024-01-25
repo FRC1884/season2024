@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -142,8 +143,27 @@ public class RobotMap {
     public static final int MOTOR_ID_3 = 2;
     public static final int MOTOR_ID_4 = 3;
 
+    public static final boolean MOTOR_1_ENABLED = true;
+    public static final boolean MOTOR_2_ENABLED = true;
+    public static final boolean MOTOR_3_ENABLED = true;
+    public static final boolean MOTOR_4_ENABLED = true;
+
+    public static final Class<?> MOTOR_1_CLASS = MOTOR_1_ENABLED
+            ? CANSparkMax.class
+            : null;
+    public static final Class<?> MOTOR_2_CLASS = MOTOR_2_ENABLED
+            ? CANSparkMax.class
+            : null;
+    public static final Class<?> MOTOR_3_CLASS = MOTOR_3_ENABLED
+            ? CANSparkMax.class
+            : null;
+    public static final Class<?> MOTOR_4_CLASS = MOTOR_4_ENABLED
+            ? CANSparkMax.class
+            : null;
+
     public static final double MOTOR_1_KP = 0.1;
-    public static final double MOTOR_1_KI = 0.0;
-    public static final double MOTOR_1_KD = 0.0;
+    public static final double MOTOR_2_KP = 0.1;
+    public static final double MOTOR_3_KP = 0.1;
+    public static final double MOTOR_4_KP = 0.1;
   }
 }

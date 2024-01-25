@@ -1,17 +1,19 @@
 package frc.robot.subsystems;
 
 
-import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel;
+import com.revrobotics.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
-import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap;
 
-import static frc.robot.RobotMap.PrototypeMap.MOTOR_ID_1;
+import java.util.ArrayList;
+import java.util.function.DoubleSupplier;
+
+import static com.revrobotics.CANSparkBase.ControlType.kVelocity;
+import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
+import com.revrobotics.CANSparkBase.ControlType;
+import static frc.robot.RobotMap.PrototypeMap.*;
 
 /**
  * The prototyping subsystem. Currently, it has support for three SparkMAX controllers.
@@ -27,47 +29,86 @@ import static frc.robot.RobotMap.PrototypeMap.MOTOR_ID_1;
  * <b>To tweak these parameters, you MUST run the project in Test Mode on the Driver Station!</b>
  */
 
-/*
-public class PrototypeSubsystem extends PIDSubsystem {
+
+public class PrototypeSubsystem extends SubsystemBase {
     private static PrototypeSubsystem instance;
 
     public static PrototypeSubsystem getInstance() {
         if(instance == null) instance = new PrototypeSubsystem();
         return instance;
     }
-
-    private CANSparkFlex sparkFlex;
+    private ArrayList<CANSparkBase> motors;
 
     private PrototypeSubsystem() {
-        super(new PIDController(
-                RobotMap.PrototypeMap.MOTOR_1_KP,
-                RobotMap.PrototypeMap.MOTOR_1_KI,
-                RobotMap.PrototypeMap.MOTOR_1_KD));
-        sparkFlex = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_1, CANSparkLowLevel.MotorType.kBrushless);
+        motors = new ArrayList<>();
+
+        if(MOTOR_1_ENABLED) {
+            motors.add(
+                    MOTOR_1_CLASS.equals(CANSparkMax.class) ?
+                            new CANSparkMax(MOTOR_ID_1, kBrushless) :
+                            new CANSparkFlex(MOTOR_ID_1, kBrushless)
+            );
+            motors.get(0).getPIDController().setP(MOTOR_1_KP);
+        }
+
+        if(MOTOR_2_ENABLED) {
+            motors.add(
+                    MOTOR_2_CLASS.equals(CANSparkMax.class) ?
+                            new CANSparkMax(MOTOR_ID_2, kBrushless) :
+                            new CANSparkFlex(MOTOR_ID_2, kBrushless)
+            );
+            motors.get(1).getPIDController().setP(MOTOR_2_KP);
+        }
+
+        if(MOTOR_3_ENABLED) {
+            motors.add(
+                    MOTOR_3_CLASS.equals(CANSparkMax.class) ?
+                            new CANSparkMax(MOTOR_ID_3, kBrushless) :
+                            new CANSparkFlex(MOTOR_ID_3, kBrushless)
+            );
+            motors.get(2).getPIDController().setP(MOTOR_3_KP);
+        }
+
+        if(MOTOR_4_ENABLED) {
+            motors.add(
+                    MOTOR_4_CLASS.equals(CANSparkMax.class) ?
+                            new CANSparkMax(MOTOR_ID_4, kBrushless) :
+                            new CANSparkFlex(MOTOR_ID_4, kBrushless)
+            );
+            motors.get(3).getPIDController().setP(MOTOR_4_KP);
+        }
     }
 
-    @Override
     protected void useOutput(double output, double setpoint) {
-        sparkFlex.getPIDController().setReference(output,
-                CANSparkBase.ControlType.kVelocity);
+        for(CANSparkBase motor : motors) {
+            motor.getPIDController().setReference(output, ControlType.kVelocity);
+        }
     }
 
-    @Override
     protected double getMeasurement() {
-        return sparkFlex.getEncoder().getVelocity();
+        if(motors.size() == 1) return motors.get(0).getEncoder().getVelocity();
+        else throw new RuntimeException("Disable the remaining motors for this function!");
     }
 
-    public Command runTo(double vel) {
+    public Command set(DoubleSupplier vel1, DoubleSupplier vel2, DoubleSupplier vel3, DoubleSupplier vel4) {
+        return new RunCommand(() -> {
+            if(MOTOR_1_ENABLED) motors.get(0).set(vel1.getAsDouble());
+            if(MOTOR_2_ENABLED) motors.get(1).set(vel2.getAsDouble());
+            if(MOTOR_3_ENABLED) motors.get(2).set(vel3.getAsDouble());
+            if(MOTOR_4_ENABLED) motors.get(3).set(vel4.getAsDouble());
+        }, this);
+    }
+
+    public Command runTo(DoubleSupplier vel) {
         return new TrapezoidProfileCommand(
                 new TrapezoidProfile(
                         new TrapezoidProfile.Constraints(
-                                3.0,
-                                3.0)),
+                                42.0,
+                                6.9)),
                 setpointState -> useOutput(setpointState.velocity, setpointState.velocity),
-                () -> new TrapezoidProfile.State(0,vel),
+                () -> new TrapezoidProfile.State(0, vel.getAsDouble()),
                 TrapezoidProfile.State::new,
                 this
         );
     }
 }
-*/
