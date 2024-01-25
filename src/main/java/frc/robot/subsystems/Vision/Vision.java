@@ -18,7 +18,6 @@ import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
 
 /*
  * This class requires MAJOR CLEANUP. There needs to be a proper pyramid of hierarchy. Vision should NOT be able to control anything related to pose. It should only
@@ -117,7 +116,10 @@ public class Vision extends SubsystemBase {
       // TODO for 9th graders - create PhotonPoseEstimator object
       photonPoseEstimator =
           new PhotonPoseEstimator(
-              aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCam_1, robotToCam);
+              aprilTagFieldLayout,
+              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+              photonCam_1,
+              robotToCam);
     }
 
     // printing purposes
@@ -278,19 +280,20 @@ public class Vision extends SubsystemBase {
   }
 
   /**
-   *
    * @param cameraHeight distance from lens to floor of camera in meters
    * @param cameraAngle pitch of camera in radians
    * @param targetHeight distance from floor to center of target in meters
    * @param targetOffsetAngle_Vertical ty entry from limelight of target crosshair (in degrees)
-   * @return the distance to the target in meters 
+   * @return the distance to the target in meters
    */
-  public double targetDistanceMeters(double cameraHeight, double cameraAngle, double targetHeight, double targetOffsetAngle_Vertical){
+  public double targetDistanceMeters(
+      double cameraHeight,
+      double cameraAngle,
+      double targetHeight,
+      double targetOffsetAngle_Vertical) {
     double angleToGoalRadians = cameraAngle + targetOffsetAngle_Vertical * (3.14159 / 180.0);
     return (targetHeight - cameraHeight) / Math.tan(angleToGoalRadians);
   }
-  
-  
 
   /**
    * Prints the vision, estimated, and odometry pose to SmartDashboard

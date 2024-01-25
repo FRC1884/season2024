@@ -16,8 +16,12 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public ChassisSpeeds getChassisSpeeds() {
-    double x = Math.pow(controller.getAxis(Axis.AXIS_LEFT_Y), 1) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    double y = Math.pow(controller.getAxis(Axis.AXIS_LEFT_X), 1) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    double x =
+        Math.pow(controller.getAxis(Axis.AXIS_LEFT_Y), 1)
+            * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    double y =
+        Math.pow(controller.getAxis(Axis.AXIS_LEFT_X), 1)
+            * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
     double rot = controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed * 0.7;
 
     return ChassisSpeeds.fromFieldRelativeSpeeds(x, y, rot, new Rotation2d(0, 0));
