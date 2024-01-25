@@ -35,6 +35,7 @@ public class SendableMotor implements Sendable {
 
   void setSpeed(double speed) {
     m_speed = speed;
+    // m_motorController.set(speed);
     if (openLoopEnabled) m_motorController.set(speed);
   }
 
@@ -89,7 +90,7 @@ public class SendableMotor implements Sendable {
   @Override
   public void initSendable(SendableBuilder builder) {
     SparkPIDController closedLoopController = m_motorController.getPIDController();
-    builder.setActuator(true);
+    builder.setActuator(false);
 
     builder.addBooleanProperty("Enabled", () -> openLoopEnabled, this::enable);
     builder.addBooleanProperty("PID Enabled", () -> closedLoopEnabled, this::enablePID);

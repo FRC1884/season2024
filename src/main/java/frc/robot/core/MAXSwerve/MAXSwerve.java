@@ -67,18 +67,21 @@ public abstract class MAXSwerve extends SubsystemBase {
     odometry =
         new SwerveDriveOdometry(
             MaxSwerveConstants.kDriveKinematics,
-            Rotation2d.fromDegrees(gyro.getYaw()),
+            getYaw(),
             new SwerveModulePosition[] {
               fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
             });
+
+    this.resetOdometry(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(90)));
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
     System.out.println(odometry.getPoseMeters());
+    System.out.println(getYaw());
     odometry.update(
-        Rotation2d.fromDegrees(gyro.getYaw()),
+        getYaw(),
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
@@ -100,7 +103,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(
-        Rotation2d.fromDegrees(gyro.getYaw()),
+        getYaw(),
         new SwerveModulePosition[] {
           fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         },
@@ -184,7 +187,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                     xSpeedDelivered,
                     ySpeedDelivered,
                     rotDelivered,
-                    Rotation2d.fromDegrees(gyro.getYaw()))
+                    Rotation2d.fromDegrees(getHeading()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
@@ -248,7 +251,8 @@ public abstract class MAXSwerve extends SubsystemBase {
               if (isFirstPath) {
                 PathPoint startingPoint = pathName.getPoint(0);
                 Pose2d startingPose =
-                    new Pose2d(startingPoint.position, startingPoint.rotationTarget.getTarget());
+                    new Pose2d(
+                        startingPoint.position, Rotation2d.fromDegrees(getYaw().getDegrees()));
                 this.resetOdometry(startingPose);
               }
             }),
@@ -256,7 +260,15 @@ public abstract class MAXSwerve extends SubsystemBase {
             pathName,
             this::getPose, // Robot pose supplier
             this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
+            this::driveWithChassisSpeeds,
+            /*speeds -> driveWithChassisSpeeds(
+              new ChassisSpeeds(
+                speeds.vxMetersPerSecond * Math.cos(gyro.getYaw()) - speeds.vyMetersPerSecond * Math.sin(gyro.getYaw()),
+                speeds.vxMetersPerSecond * Math.sin(gyro.getYaw()) + speeds.vyMetersPerSecond * Math.cos(gyro.getYaw()),
+                gyro.getYaw()
+              )
+            ),*/
+            // Method that will drive the robot given ROBOT RELATIVE
             // ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
                 // in
