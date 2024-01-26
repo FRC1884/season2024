@@ -2,6 +2,7 @@ package frc.robot.core.util.controllers;
 
 import java.util.HashMap;
 
+@Deprecated
 public class Logitech implements ButtonMap {
   public enum Version {
     REGULAR,

@@ -1,31 +1,31 @@
 package frc.robot.subsystems;
 
-
-import com.revrobotics.*;
-import edu.wpi.first.math.controller.PIDController;
+import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 
-import static com.revrobotics.CANSparkBase.ControlType.kVelocity;
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
-import com.revrobotics.CANSparkBase.ControlType;
 import static frc.robot.RobotMap.PrototypeMap.*;
 
 /**
- * The prototyping subsystem. Currently, it has support for three SparkMAX controllers.
- * This means you can test with both NEO 550s and Vortexes. In the future,
- * it might be worth going all the way up to
- * {@link edu.wpi.first.wpilibj.motorcontrol.MotorController}
- * to facilitate Krakens and Falcons, too.
- * <br><br>
- * For now, this subsystem gives us the means to run mechanisms containing up to three motors
- * with dashboard-tunable parameters such as speed and feedback gains, allowing us to visualize
- * their actual performance during competition.
- * <br><br>
+ * The prototyping subsystem. Currently, it has support for three SparkMAX controllers. This means
+ * you can test with both NEO 550s and Vortexes. In the future, it might be worth going all the way
+ * up to {@link edu.wpi.first.wpilibj.motorcontrol.MotorController} to facilitate Krakens and
+ * Falcons, too. <br>
+ * <br>
+ * For now, this subsystem gives us the means to run mechanisms containing up to three motors with
+ * dashboard-tunable parameters such as speed and feedback gains, allowing us to visualize their
+ * actual performance during competition. <br>
+ * <br>
  * <b>To tweak these parameters, you MUST run the project in Test Mode on the Driver Station!</b>
  */
 

@@ -42,11 +42,11 @@ public class OI {
     // driver = new GameController(RobotMap.ControllerMap.DRIVER_JOYSTICK, new Logitech());
     driver =
         new GameController(
-            RobotMap.ControllerMap.DRIVER_JOYSTICK,
-            ExampleConfig.Controllers.getDriverController());
+            RobotMap.ControllerMap.DRIVER_JOYSTICK
+        );
     operator =
         new GameController(
-            RobotMap.ControllerMap.OPERATOR_JOYSTICK,
-            ExampleConfig.Controllers.getOperatorController());
+            RobotMap.ControllerMap.OPERATOR_JOYSTICK
+        );
   }
 }

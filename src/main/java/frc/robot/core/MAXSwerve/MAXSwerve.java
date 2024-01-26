@@ -71,8 +71,6 @@ public abstract class MAXSwerve extends SubsystemBase {
             new SwerveModulePosition[] {
               fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
             });
-
-    this.resetOdometry(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(90)));
   }
 
   @Override
