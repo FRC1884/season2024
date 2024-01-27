@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +35,7 @@ public class ExampleFlywheel extends SubsystemBase {
   // PID Controllers and Gains
   // PID can be tuned in REV Hardware client
   private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
-  private SparkPIDController leader_pidController, follower_pidController;
+  private SparkMaxPIDController leader_pidController, follower_pidController;
 
   private ExampleFlywheel() {
     leaderFlywheel = new CANSparkMax(RobotMap.FlywheelMap.LEADER_FLYWHEEL, MotorType.kBrushless);
@@ -59,10 +59,16 @@ public class ExampleFlywheel extends SubsystemBase {
     leader_pidController.setP(kP);
     leader_pidController.setI(kI);
     leader_pidController.setD(kD);
+    // leader_pidController.setIZone(kIz);
+    // leader_pidController.setFF(kFF);
+    // leader_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
     follower_pidController.setI(kI);
     follower_pidController.setP(kP);
     follower_pidController.setD(kD);
+    // follower_pidController.setIZone(kIz);
+    // follower_pidController.setFF(kFF);
+    // follower_pidController.setOutputRange(kMinOutput, kMaxOutput);
   }
 
   public Command runFlywheel(double power) {

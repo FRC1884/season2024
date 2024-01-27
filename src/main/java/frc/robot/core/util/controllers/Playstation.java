@@ -2,7 +2,6 @@ package frc.robot.core.util.controllers;
 
 import java.util.HashMap;
 
-@Deprecated
 public class Playstation implements ButtonMap {
   @Override
   public HashMap<Button, Integer> buttonMap() {

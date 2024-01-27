@@ -2,7 +2,7 @@ package frc.robot.layout;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ExampleConfig;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
@@ -23,19 +23,19 @@ public abstract class DriverMap extends CommandMap {
 
   abstract double getSwerveRot();
 
-  abstract Trigger getTestButton();
+  abstract JoystickButton getTestButton();
 
-  abstract Trigger getFollowAprilTagButton();
+  abstract JoystickButton getFollowAprilTagButton();
 
-  abstract Trigger getSourceToSpeakerButton();
+  abstract JoystickButton getSourceToSpeakerButton();
 
-  abstract Trigger getSourceToAmpButton();
+  abstract JoystickButton getSourceToAmpButton();
 
-  abstract Trigger getSpeakerToSourceButton();
+  abstract JoystickButton getSpeakerToSourceButton();
 
-  abstract Trigger getSpeakerToStageButton();
+  abstract JoystickButton getSpeakerToStageButton();
 
-  abstract Trigger getSpeakerOrSourceButton();
+  abstract JoystickButton getSpeakerOrSourceButton();
 
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
@@ -45,6 +45,7 @@ public abstract class DriverMap extends CommandMap {
               this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
+      // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
       //     .onTrue(
       //         drivetrain.goSpeakerOrSource(

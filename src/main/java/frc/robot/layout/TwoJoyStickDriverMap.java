@@ -2,8 +2,10 @@ package frc.robot.layout;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
+import frc.robot.core.util.controllers.ButtonMap.Axis;
+import frc.robot.core.util.controllers.ButtonMap.Button;
 import frc.robot.core.util.controllers.GameController;
 
 public class TwoJoyStickDriverMap extends DriverMap {
@@ -12,86 +14,67 @@ public class TwoJoyStickDriverMap extends DriverMap {
     super(controller);
   }
 
-  /** <b><i>FOR {@link frc.robot.core.TalonSwerve.Swerve}</b></i>
-   *
-   * @return a ChassisSpeeds object that represents field-centric driving directions and powers.
-   */
   @Override
   public ChassisSpeeds getChassisSpeeds() {
     double x =
-        Math.pow(controller.getLeftY(), 1)
+        Math.pow(controller.getAxis(Axis.AXIS_LEFT_Y), 1)
             * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
     double y =
-        Math.pow(controller.getLeftX(), 1)
+        Math.pow(controller.getAxis(Axis.AXIS_LEFT_X), 1)
             * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    double rot = controller.getRightX() * MaxSwerveConstants.kMaxAngularSpeed * 0.7;
+    double rot = controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed * 0.7;
 
     return ChassisSpeeds.fromFieldRelativeSpeeds(x, y, rot, new Rotation2d(0, 0));
   }
 
-  /**
-   * <b><i>FOR {@link frc.robot.core.MAXSwerve.MAXSwerve}</b></i>
-   *
-   * @return the robot-centric axial (forward/backward) power.
-   */
   @Override
   public double getSwerveXSpeed() {
-    return controller.getLeftY() * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
-  /**
-   * <b><i>FOR {@link frc.robot.core.MAXSwerve.MAXSwerve}</b></i>
-   *
-   * @return the robot-centric lateral (left-right) power.
-   */
   @Override
   public double getSwerveYSpeed() {
-    return controller.getLeftX() * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
-  /**
-   * <b><i>FOR {@link frc.robot.core.MAXSwerve.MAXSwerve}</b></i>
-   *
-   * @return the robot's up-dow-- I mean, rotational (CW-CCW) power.
-   */
   @Override
   public double getSwerveRot() {
-    return -controller.getRightX() * MaxSwerveConstants.kMaxAngularSpeed;
+    return -controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed;
   }
 
   @Override
-  public Trigger getTestButton() {
-    return controller.b();
+  public JoystickButton getTestButton() {
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
-  public Trigger getFollowAprilTagButton() {
-    return controller.a();
+  public JoystickButton getFollowAprilTagButton() {
+    return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
-  public Trigger getSourceToSpeakerButton() {
-    return controller.x();
+  public JoystickButton getSourceToSpeakerButton() {
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
-  public Trigger getSourceToAmpButton() {
-    return controller.y();
+  public JoystickButton getSourceToAmpButton() {
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
-  public Trigger getSpeakerToSourceButton() {
-    return controller.b();
+  public JoystickButton getSpeakerToSourceButton() {
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
-  public Trigger getSpeakerToStageButton() {
-    return controller.rightBumper();
+  public JoystickButton getSpeakerToStageButton() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
   @Override
-  public Trigger getSpeakerOrSourceButton() {
-    return controller.leftBumper();
+  public JoystickButton getSpeakerOrSourceButton() {
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
 
   @Override

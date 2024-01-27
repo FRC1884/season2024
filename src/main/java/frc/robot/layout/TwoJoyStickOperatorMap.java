@@ -1,7 +1,6 @@
 package frc.robot.layout;
 
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.ButtonMap.Button;
 import frc.robot.core.util.controllers.GameController;
 
@@ -11,13 +10,13 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  public Trigger getTestButton() {
-    return controller.a();
+  public JoystickButton getTestButton() {
+    return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
-  public Trigger getIntakeButton() {
-    return controller.b();
+  public JoystickButton getIntakeButton() {
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
