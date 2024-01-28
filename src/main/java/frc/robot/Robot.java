@@ -1,9 +1,6 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,20 +37,19 @@ public class Robot extends TimedRobot {
     var autoModeSelector = AutoModeSelector.getInstance();
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
+    // motor1 =
+    //     new CANSparkFlex(
+    //         RobotMap.PrototypeMap.MOTOR_ID_1,
+    //         MotorType.kBrushless); // TODO: Make sure that it is the right Motor
+    // motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
+    // // motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
+    // // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
 
-    //motor1 =
-        //new CANSparkFlex(
-            //RobotMap.PrototypeMap.MOTOR_ID_1,
-            //MotorType.kBrushless); // TODO: Make sure that it is the right Motor
-    //motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
-    // motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
-    // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
+    // motor1Sendable = new SendableMotor(motor1);
+    // motor2Sendable = new SendableMotor(motor2);
 
-    //motor1Sendable = new SendableMotor(motor1);
-    //motor2Sendable = new SendableMotor(motor2);
-
-    //SendableRegistry.addLW(motor1Sendable, "Prototype", "Motor 1");
-    //SendableRegistry.addLW(motor2Sendable, "Prototype", "Motor 2");
+    // SendableRegistry.addLW(motor1Sendable, "Prototype", "Motor 1");
+    // SendableRegistry.addLW(motor2Sendable, "Prototype", "Motor 2");
     // SendableRegistry.addLW(new SendableMotor(motor3), "Prototype", "Motor 3");
     // SendableRegistry.addLW(new SendableMotor(motor4), "Prototype", "Motor 4");
   }
@@ -69,10 +65,11 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     m_field.setRobotPose(Drivetrain.getInstance().getPose());
-    /*if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
-    else motor1.set(0.0);
-    if (motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
-    else motor2.set(0.0);*/
+  
+    // if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
+    // else motor1.set(0.0);
+    // if (motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
+    // else motor2.set(0.0);
   }
 
   /**
