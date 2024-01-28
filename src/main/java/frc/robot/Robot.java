@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Vision.PoseEstimator;
+import frc.robot.subsystems.Vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
 import frc.robot.util.SendableMotor;
 
@@ -64,7 +66,11 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    m_field.setRobotPose(Drivetrain.getInstance().getPose());
+    m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
+    if (Vision.getInstance().visionBotPose() != null){
+      m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
+    }
+    m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
   
     // if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
     // else motor1.set(0.0);
