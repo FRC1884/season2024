@@ -37,7 +37,6 @@ public class Robot extends TimedRobot {
     var autoModeSelector = AutoModeSelector.getInstance();
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
-
     // motor1 =
     //     new CANSparkFlex(
     //         RobotMap.PrototypeMap.MOTOR_ID_1,
@@ -66,6 +65,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     m_field.setRobotPose(Drivetrain.getInstance().getPose());
+  
     // if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
     // else motor1.set(0.0);
     // if (motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
