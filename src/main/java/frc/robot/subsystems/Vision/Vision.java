@@ -6,18 +6,23 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /*
@@ -48,6 +53,7 @@ public class Vision extends SubsystemBase {
   private boolean aimTarget = false;
   private boolean detectTarget = false;
   private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
+  private RobotRelativePose targetRobotRelativePose;
 
   // testing
   private final DecimalFormat df = new DecimalFormat();
@@ -150,10 +156,10 @@ public class Vision extends SubsystemBase {
         // json dump more accurate?
         // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field
-        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)) {
+        if (DriverStation.getAlliance().get() == Alliance.Blue){
           botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
         }
-        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
+        if (DriverStation.getAlliance().get() == Alliance.Red){
           botPose = LimelightHelpers.getBotPose2d_wpiRed(VisionConfig.POSE_LIMELIGHT);
         }
         limeLatency =
@@ -175,6 +181,10 @@ public class Vision extends SubsystemBase {
       if (detectTarget) {
         detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
         detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
+        double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_X, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset) ;
+        Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
+        Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, detectHorizontalOffset);
+        targetRobotRelativePose = (RobotRelativePose) camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
       }
     }
     // this method can call update() if vision pose estimation needs to be updated in
@@ -286,19 +296,51 @@ public class Vision extends SubsystemBase {
   }
 
   /**
+   * Gets target distance from the camera
    * @param cameraHeight distance from lens to floor of camera in meters
    * @param cameraAngle pitch of camera in radians
    * @param targetHeight distance from floor to center of target in meters
    * @param targetOffsetAngle_Vertical ty entry from limelight of target crosshair (in degrees)
    * @return the distance to the target in meters
    */
-  public double targetDistanceMeters(
+  public double targetDistanceMetersCamera(
       double cameraHeight,
       double cameraAngle,
       double targetHeight,
       double targetOffsetAngle_Vertical) {
     double angleToGoalRadians = cameraAngle + targetOffsetAngle_Vertical * (3.14159 / 180.0);
     return (targetHeight - cameraHeight) / Math.tan(angleToGoalRadians);
+  }
+
+   /**
+   * Gets the 
+   * @param targetDistanceMeters component of distance from camera to target
+   * @param targetOffsetAngle_Horizontal tx entry from limelight of target crosshair (in degrees)
+   * @return the translation to the target in meters
+   */
+  public Translation2d estimateCameraToTargetTranslation(double targetDistanceMeters, double targetOffsetAngle_Horizontal){
+    Rotation2d yaw = Rotation2d.fromDegrees(targetOffsetAngle_Horizontal);
+    return new Translation2d(
+      yaw.getCos() * targetDistanceMeters, yaw.getSin() * targetDistanceMeters);
+  }
+/**
+   * Gets the 
+   * @param cameraToTargetTranslation2d the translation from estimate camera to target
+   * @param targetOffsetAngle_Horizontal tx entry from limelight of target crosshair (in degrees)
+   * @return the position of the target in terms of the camera
+   */
+  public Pose2d estimateCameraToTargetPose2d(Translation2d cameraToTargetTranslation2d, double targetOffsetAngle_Horizontal){
+    return new Pose2d(cameraToTargetTranslation2d, Rotation2d.fromDegrees(targetOffsetAngle_Horizontal));
+  }
+/**
+   * Gets the 
+   * @param camToTargetPose the camera to target pose 2d
+   * @param camToRobot the transform from the x and y of the camera to the center of the robot
+   * @return the position of the robot relative to the target
+   */
+  public Pose2d camPoseToRobotRelativeTargetPose2d(Pose2d camToTargetPose, Transform2d camToRobot){
+    return camToTargetPose.transformBy(camToRobot);
+    
   }
 
   /**
