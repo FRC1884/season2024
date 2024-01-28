@@ -4,10 +4,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ExampleConfig;
+import frc.robot.RobotMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.test;
+import frc.robot.subsystems.Vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
 
@@ -43,7 +45,8 @@ public abstract class DriverMap extends CommandMap {
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(
               this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
+      //getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
+      getTestButton().onTrue(drivetrain.navigate(() -> RobotMap.Coordinates.BLUE_SPEAKER, () -> "RedSpeaker"));
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()

@@ -42,8 +42,7 @@ public class Pose extends SubsystemBase {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             MaxSwerveConstants.kDriveKinematics,
-            drivetrain
-                .getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
+            drivetrain.getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
             drivetrain.getModulePositions(),
             new Pose2d(),
             createStateStdDevs(
