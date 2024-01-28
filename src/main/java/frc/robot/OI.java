@@ -43,10 +43,10 @@ public class OI {
     driver =
         new GameController(
             RobotMap.ControllerMap.DRIVER_JOYSTICK,
-            ExampleConfig.Controllers.getDriverController());
+            Config.Controllers.getDriverController());
     operator =
         new GameController(
             RobotMap.ControllerMap.OPERATOR_JOYSTICK,
-            ExampleConfig.Controllers.getOperatorController());
+            Config.Controllers.getOperatorController());
   }
 }

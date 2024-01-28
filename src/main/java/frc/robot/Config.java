@@ -3,7 +3,7 @@ package frc.robot;
 import frc.robot.core.util.controllers.ButtonMap;
 import frc.robot.core.util.controllers.Xbox;
 
-public class ExampleConfig {
+public class Config {
   public class Subsystems {
     public static final boolean DRIVETRAIN_ENABLED = true;
     public static final boolean ELEVATOR_ENABLED = false;
