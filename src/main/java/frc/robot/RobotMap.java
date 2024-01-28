@@ -33,7 +33,8 @@ public class RobotMap {
     public static final class FrontLeft {
       public static final int DRIVE_ID = 8;
       public static final int ROTATOR_ID = 7;
-      public static final double ANGULAR_OFFSET = -Math.PI / 2;;
+      public static final double ANGULAR_OFFSET = -Math.PI / 2;
+      ;
     }
 
     /* Front Right Module - Module 1 */
@@ -54,7 +55,7 @@ public class RobotMap {
     public static final class BackRight {
       public static final int DRIVE_ID = 3;
       public static final int ROTATOR_ID = 4;
-      public static final double ANGULAR_OFFSET = Math.PI/2;
+      public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
   }
 
@@ -66,12 +67,12 @@ public class RobotMap {
   }
 
   public static final class Coordinates {
-    public static final Pose2d BLUE_SPEAKER = new Pose2d(1.45,5.52,new Rotation2d(Math.PI));
-    public static final Pose2d BLUE_AMP = new Pose2d(1.79,7.60,new Rotation2d(Math.PI/2));
-    public static final Pose2d BLUE_SOURCE = new Pose2d(15.3,1.11,Rotation2d.fromDegrees(-55));
-    public static final Pose2d RED_SPEAKER = new Pose2d(15.1,5.6,new Rotation2d(Math.PI));
-    public static final Pose2d RED_AMP = new Pose2d(14.68,7.52,new Rotation2d(Math.PI/2));
-    public static final Pose2d RED_SOURCE = new Pose2d(1.14,1.00,Rotation2d.fromDegrees(-120));
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(1.45, 5.52, new Rotation2d(Math.PI));
+    public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
+    public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
+    public static final Pose2d RED_SPEAKER = new Pose2d(15.1, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
+    public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
   }
 
   public static class TankDriveMap {

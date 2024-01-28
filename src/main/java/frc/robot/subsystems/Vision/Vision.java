@@ -150,10 +150,10 @@ public class Vision extends SubsystemBase {
         // json dump more accurate?
         // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field
-        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)){
+        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)) {
           botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-        } 
-        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)){
+        }
+        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
           botPose = LimelightHelpers.getBotPose2d_wpiRed(VisionConfig.POSE_LIMELIGHT);
         }
         limeLatency =

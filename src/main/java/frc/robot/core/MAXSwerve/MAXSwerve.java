@@ -14,8 +14,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -28,7 +26,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -36,8 +33,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
-import frc.robot.subsystems.Vision.Vision;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -80,13 +75,11 @@ public abstract class MAXSwerve extends SubsystemBase {
               fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
             });
     var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
-        this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
-      else if(alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
-        this.resetOdometry(new Pose2d(5,5.18,Rotation2d.fromDegrees(0)));
-      else
-        this.resetOdometry(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
-    
+    if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
+      this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
+    else if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
+      this.resetOdometry(new Pose2d(5, 5.18, Rotation2d.fromDegrees(0)));
+    else this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
   }
 
   @Override
@@ -258,7 +251,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public Command followPathCommand(PathPlannerPath pathName, boolean isFirstPath) {
-     return new SequentialCommandGroup(
+    return new SequentialCommandGroup(
         new InstantCommand(
             () -> {
               // Reset odometry for the first path you run during auto
@@ -319,16 +312,17 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public Command navigate(Supplier<Pose2d> targetPose, Supplier<String> pathName) {
     return followPathCommand(
-          new PathPlannerPath(
-              PathPlannerPath.bezierFromPoses(
-                
-              this.getPose(), targetPose.get()), 
-              new PathConstraints(RobotMap.SwerveConstants.MAX_VELOCITY, RobotMap.SwerveConstants.MAX_ACCELERATION, RobotMap.SwerveConstants.MAX_ANG_VELOCITY, RobotMap.SwerveConstants.MAX_ANG_ACCELERATION), 
-              new GoalEndState(0, new Rotation2d()), false), false
-          );
-
+        new PathPlannerPath(
+            PathPlannerPath.bezierFromPoses(this.getPose(), targetPose.get()),
+            new PathConstraints(
+                RobotMap.SwerveConstants.MAX_VELOCITY,
+                RobotMap.SwerveConstants.MAX_ACCELERATION,
+                RobotMap.SwerveConstants.MAX_ANG_VELOCITY,
+                RobotMap.SwerveConstants.MAX_ANG_ACCELERATION),
+            new GoalEndState(0, new Rotation2d()),
+            false),
+        false);
   }
-
 
   // public Command goSpeakerOrSource(boolean hasNote) {
   //   if (hasNote) {
