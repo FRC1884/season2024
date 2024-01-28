@@ -66,6 +66,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    // UNTESTED GLASS TELEMETRY CODE - MAY RESULTS IN NULL POINTS
     m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
     if (Vision.getInstance().visionBotPose() != null){
       m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
