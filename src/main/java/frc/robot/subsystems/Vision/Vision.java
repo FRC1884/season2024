@@ -193,7 +193,8 @@ public class Vision extends SubsystemBase {
     // Photonvision Result
     // The documentation for this is here:
     // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
-    // The example code was missing, and we came up with this:
+    // The example code was missing, and we came up with this: 
+    // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
     if (VisionConfig.isPhotonVisionMode) {
       var result = photonCam_1.getLatestResult();
       photon1HasTargets = result.hasTargets();
@@ -313,7 +314,6 @@ public class Vision extends SubsystemBase {
   }
 
    /**
-   * Gets the 
    * @param targetDistanceMeters component of distance from camera to target
    * @param targetOffsetAngle_Horizontal tx entry from limelight of target crosshair (in degrees)
    * @return the translation to the target in meters
@@ -324,7 +324,6 @@ public class Vision extends SubsystemBase {
       yaw.getCos() * targetDistanceMeters, yaw.getSin() * targetDistanceMeters);
   }
 /**
-   * Gets the 
    * @param cameraToTargetTranslation2d the translation from estimate camera to target
    * @param targetOffsetAngle_Horizontal tx entry from limelight of target crosshair (in degrees)
    * @return the position of the target in terms of the camera
@@ -333,14 +332,21 @@ public class Vision extends SubsystemBase {
     return new Pose2d(cameraToTargetTranslation2d, Rotation2d.fromDegrees(targetOffsetAngle_Horizontal));
   }
 /**
-   * Gets the 
    * @param camToTargetPose the camera to target pose 2d
    * @param camToRobot the transform from the x and y of the camera to the center of the robot
-   * @return the position of the robot relative to the target
+   * @return the position of the target relative to the robot
    */
   public Pose2d camPoseToRobotRelativeTargetPose2d(Pose2d camToTargetPose, Transform2d camToRobot){
     return camToTargetPose.transformBy(camToRobot);
     
+  }
+
+  /**
+   * RobotRelativePose of the current target
+   * @return the position of the target relative to the robot
+   */
+  public RobotRelativePose targetPoseRobotSpace(){
+    return targetRobotRelativePose;
   }
 
   /**

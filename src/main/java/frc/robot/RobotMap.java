@@ -120,8 +120,8 @@ public class RobotMap {
     public static final double POSE_LIME_X = 0.21; // Forward - Meters
     public static final double POSE_LIME_Y = 0; // Side
     public static final double POSE_LIME_Z = 0.235; // Up
-    public static final double POSE_LIME_PITCH = 30;
-    public static final double POSE_LIME_ROLL = 0.0; // NEED to find units - degrees for now
+    public static final double POSE_LIME_PITCH = 30; // NEED to find units - degrees for now
+    public static final double POSE_LIME_ROLL = 0.0; 
     public static final double POSE_LIME_YAW = 0.0;
 
     public static final double NN_LIME_X = 0.1;
