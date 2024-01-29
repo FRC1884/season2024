@@ -17,12 +17,15 @@ public class SendableMotor implements Sendable {
   private SparkPIDController closedLoopController;
 
   public double m_speed;
-  private double m_setpoint;
+  public double m_setpoint;
   public boolean closedLoopEnabled, openLoopEnabled;
 
   public SendableMotor(CANSparkBase motorController) {
     m_motorController = motorController;
     closedLoopController = motorController.getPIDController();
+    closedLoopController.setP(0.000006);
+    closedLoopController.setI(0.0000001);
+    closedLoopController.setD(0.007);
   }
 
   void enable(boolean enabled) {
@@ -35,7 +38,6 @@ public class SendableMotor implements Sendable {
 
   void setSpeed(double speed) {
     m_speed = speed;
-    // m_motorController.set(speed);
     if (openLoopEnabled) m_motorController.set(speed);
   }
 
@@ -76,11 +78,15 @@ public class SendableMotor implements Sendable {
           .setSmartMotionAllowedClosedLoopError(tolerance, m_motorController.getDeviceId());
   }
 
+  double getVelocity() {
+    double RPM = m_motorController.getEncoder().getVelocity();
+    return 2 * (Math.PI)* 0.0508 *  RPM/ 60;
+    
+  }
+
   void setSetpoint(double setpoint) {
-    if (openLoopEnabled && closedLoopEnabled) {
-      m_setpoint = setpoint;
-      closedLoopController.setReference(setpoint, ControlType.kSmartMotion);
-    }
+    m_setpoint = 2 * (Math.PI)* 0.0508 * setpoint/ 60;
+    //closedLoopController.setReference(setpoint, ControlType.kVelocity);
   }
 
   // Adds a bunch of control properties on shuffleboard
@@ -104,6 +110,8 @@ public class SendableMotor implements Sendable {
     builder.addDoubleProperty("D", closedLoopController::getD, this::setD);
     builder.addDoubleProperty("FF", closedLoopController::getFF, this::setFF);
     builder.addDoubleProperty("IZone", closedLoopController::getIZone, this::setIZone);
+
+    builder.addDoubleProperty("Velocity", () -> getVelocity(), vel->{});
 
     int id = m_motorController.getDeviceId();
 

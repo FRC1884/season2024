@@ -20,6 +20,16 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
+  public JoystickButton getRunMotorButton() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  public JoystickButton getStopMotorButton() {
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
+
+  @Override
   public void registerCommands() {
     super.registerCommands();
   }

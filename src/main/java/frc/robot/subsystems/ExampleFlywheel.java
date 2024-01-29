@@ -13,7 +13,7 @@ import frc.robot.RobotMap;
  * everything shooting here. <br>
  * <br>
  * Think:
- *
+ * 
  * <ul>
  *   <li>pitch control for adjusting the launch angle,
  *   <li>LUT-based power setpoints,
