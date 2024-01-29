@@ -91,8 +91,7 @@ public class RobotMap {
     public static final boolean isLimelightMode = false;
     public static final boolean isPhotonVisionMode = false;
     public static final boolean isNeuralNet = false;
-    public static final double DIFFERENCE_CUTOFF_THRESHOLD =
-        1.0; // Max difference between vision and odometry pose estimate
+    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.0; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
@@ -170,5 +169,9 @@ public class RobotMap {
     public static final double MOTOR_2_KP = 0.1;
     public static final double MOTOR_3_KP = 0.1;
     public static final double MOTOR_4_KP = 0.1;
+  }
+
+  public static class IntakeMap {
+    public static final int MOTOR_ID = -1; //TODO Tune
   }
 }
