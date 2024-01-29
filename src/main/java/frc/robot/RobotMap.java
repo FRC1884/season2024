@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 
 public class RobotMap {
   public static class ElevatorMap {
@@ -105,8 +106,7 @@ public class RobotMap {
     public static final boolean isLimelightMode = true;
     public static final boolean isPhotonVisionMode = false;
     public static final boolean isNeuralNet = false;
-    public static final double DIFFERENCE_CUTOFF_THRESHOLD =
-        1.0; // Max difference between vision and odometry pose estimate
+    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.0; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
@@ -120,8 +120,8 @@ public class RobotMap {
     public static final double POSE_LIME_X = 0.21; // Forward - Meters
     public static final double POSE_LIME_Y = 0; // Side
     public static final double POSE_LIME_Z = 0.235; // Up
-    public static final double POSE_LIME_PITCH = 30;
-    public static final double POSE_LIME_ROLL = 0.0; // NEED to find units - degrees for now
+    public static final double POSE_LIME_PITCH = 30; // NEED to find units - degrees for now
+    public static final double POSE_LIME_ROLL = 0.0; 
     public static final double POSE_LIME_YAW = 0.0;
 
     public static final double NN_LIME_X = 0.1;
@@ -130,6 +130,7 @@ public class RobotMap {
     public static final double NN_LIME_PITCH = 0.1;
     public static final double NN_LIME_ROLL = 0.1;
     public static final double NN_LIME_YAW = 0.1;
+    public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(POSE_LIME_X, POSE_LIME_Y, new Rotation2d());
 
     // Photonvision
     public static final String POSE_PHOTON_1 = "photon-cam1";

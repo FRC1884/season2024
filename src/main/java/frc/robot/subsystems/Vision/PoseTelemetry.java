@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import frc.robot.Robot;
 
 public class PoseTelemetry {
-  Pose pose;
+  PoseEstimator pose;
   Field2d field = new Field2d();
 
-  public PoseTelemetry(Pose pose) {
+  public PoseTelemetry(PoseEstimator pose) {
     this.pose = pose;
 
     createField();

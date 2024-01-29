@@ -15,11 +15,11 @@ import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Drivetrain;
 
 /** Reports our expected, desired, and actual poses to dashboards */
-public class Pose extends SubsystemBase {
-  private static Pose instance;
+public class PoseEstimator extends SubsystemBase {
+  private static PoseEstimator instance;
 
-  public static Pose getInstance() {
-    if (instance == null) instance = new Pose();
+  public static PoseEstimator getInstance() {
+    if (instance == null) instance = new PoseEstimator();
     return instance;
   }
 
@@ -32,7 +32,7 @@ public class Pose extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Drivetrain drivetrain;
 
-  private Pose() {
+  private PoseEstimator() {
     // config = new PoseConfig();
     telemetry = new PoseTelemetry(this);
 
@@ -42,10 +42,9 @@ public class Pose extends SubsystemBase {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             MaxSwerveConstants.kDriveKinematics,
-            drivetrain
-                .getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
+            drivetrain.getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
             drivetrain.getModulePositions(),
-            new Pose2d(),
+            drivetrain.getPose(),
             createStateStdDevs(
                 PoseConfig.kPositionStdDevX,
                 PoseConfig.kPositionStdDevY,
@@ -145,8 +144,7 @@ public class Pose extends SubsystemBase {
     // this can be tuned to find a threshold that helps us remove jumping vision
     // poses
     return (Math.abs(pose.getX() - odometryPose.getX()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD)
-        && (Math.abs(pose.getY() - odometryPose.getY())
-            <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
+        && (Math.abs(pose.getY() - odometryPose.getY()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
   }
 
   /** Sets the Odometry Pose to the given pose */
