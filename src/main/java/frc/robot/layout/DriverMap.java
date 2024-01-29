@@ -4,6 +4,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ExampleConfig;
+import frc.robot.RobotMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
@@ -23,6 +24,8 @@ public abstract class DriverMap extends CommandMap {
 
   abstract double getSwerveRot();
 
+  abstract JoystickButton getArcingButton();
+
   abstract JoystickButton getTestButton();
 
   abstract JoystickButton getFollowAprilTagButton();
@@ -40,10 +43,19 @@ public abstract class DriverMap extends CommandMap {
   private void registerDrivetrain() {
    /*  if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
-      drivetrain.setDefaultCommand(
-          drivetrain.driveCommand(
+      // drivetrain.setDefaultCommand(
+      //     drivetrain.driveCommand(
+      //         this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+      // getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
+      double targetX = 14;
+      double targetY = 5;
+      double targetAngle = Math.atan((targetY-drivetrain.getPose().getY())/(targetX-drivetrain.getPose().getX()));
+      getArcingButton().whileFalse(drivetrain.driveCommand(
               this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
+      getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(
+              this::getSwerveXSpeed,this::getSwerveYSpeed,() -> targetAngle));
+      getTestButton()
+          .onTrue(drivetrain.navigate(() -> RobotMap.Coordinates.BLUE_SPEAKER, () -> "RedSpeaker"));
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()

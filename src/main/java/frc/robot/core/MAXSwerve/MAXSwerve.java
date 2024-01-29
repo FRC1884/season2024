@@ -4,11 +4,15 @@ import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,17 +21,20 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.proto.System;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import java.util.function.BooleanSupplier;
@@ -71,15 +78,17 @@ public abstract class MAXSwerve extends SubsystemBase {
             new SwerveModulePosition[] {
               fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
             });
-
-    this.resetOdometry(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(90)));
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
+      this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
+    else if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
+      this.resetOdometry(new Pose2d(5, 5.18, Rotation2d.fromDegrees(0)));
+    else this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    //System.out.println(odometry.getPoseMeters());
-    //System.out.println(getYaw());
     odometry.update(
         getYaw(),
         new SwerveModulePosition[] {
@@ -224,6 +233,31 @@ public abstract class MAXSwerve extends SubsystemBase {
             () -> this.drive(xSpeed.get(), ySpeed.get(), rotSpeed.get(), true, true), this));
   }
 
+  public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> targetAngle) {
+    PIDController pid = new PIDController(1, 0, 0);
+    pid.setTolerance(0.2);
+    return new RepeatCommand(
+      new FunctionalCommand(
+        () -> {
+          // Init
+        },
+        () -> {
+          if (pid.calculate(this.getYaw().getDegrees(),targetAngle.get()) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
+            this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
+          } else {
+            this.drive(xSpeed.get(),ySpeed.get(),pid.calculate(this.getYaw().getDegrees(), targetAngle.get()), true, true);
+          }
+
+        },
+        interrupted -> {
+          pid.close();
+        },
+        () -> {
+          return pid.atSetpoint();
+        },
+        this));
+  }
+
   public BooleanSupplier getShouldFlip() {
     return () -> {
       // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -303,25 +337,27 @@ public abstract class MAXSwerve extends SubsystemBase {
             this));
   }
 
-  public Command navigate(Pose2d targetPose) {
-    return new RunCommand(
-        () ->
-            this.followPathCommand(
-                new PathPlannerPath(
-                    PathPlannerPath.bezierFromPoses(getPose(), targetPose), null, null),
-                false // null vaules because these are to be obtained from vision when that is
-                // finished
-                ),
-        this);
+  public Command navigate(Supplier<Pose2d> targetPose, Supplier<String> pathName) {
+    return followPathCommand(
+        new PathPlannerPath(
+            PathPlannerPath.bezierFromPoses(this.getPose(), targetPose.get()),
+            new PathConstraints(
+                RobotMap.SwerveConstants.MAX_VELOCITY,
+                RobotMap.SwerveConstants.MAX_ACCELERATION,
+                RobotMap.SwerveConstants.MAX_ANG_VELOCITY,
+                RobotMap.SwerveConstants.MAX_ANG_ACCELERATION),
+            new GoalEndState(0, new Rotation2d()),
+            false),
+        false);
   }
 
-  public Command goSpeakerOrSource(boolean hasNote) {
-    if (hasNote) {
-      return navigate(getPose());
-    } else {
-      return navigate(getPose());
-    }
-  }
+  // public Command goSpeakerOrSource(boolean hasNote) {
+  //   if (hasNote) {
+  //     return navigate(getPose(),"WithNote");
+  //   } else {
+  //     return navigate(getPose(), "NoNote");
+  //   }
+  // }
 
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {

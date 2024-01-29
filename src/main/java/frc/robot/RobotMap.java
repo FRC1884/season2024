@@ -36,29 +36,46 @@ public class RobotMap {
     public static final class FrontLeft {
       public static final int DRIVE_ID = 8;
       public static final int ROTATOR_ID = 7;
-      public static final double ANGULAR_OFFSET = 0;
+      public static final double ANGULAR_OFFSET = -Math.PI / 2;
+      ;
     }
 
     /* Front Right Module - Module 1 */
     public static final class FrontRight {
       public static final int DRIVE_ID = 5;
       public static final int ROTATOR_ID = 6;
-      public static final double ANGULAR_OFFSET = Math.PI / 2;
+      public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Left Module - Module 2 */
     public static final class BackLeft {
       public static final int DRIVE_ID = 2;
       public static final int ROTATOR_ID = 1;
-      public static final double ANGULAR_OFFSET = -Math.PI / 2;
+      public static final double ANGULAR_OFFSET = Math.PI;
     }
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {
       public static final int DRIVE_ID = 3;
       public static final int ROTATOR_ID = 4;
-      public static final double ANGULAR_OFFSET = Math.PI;
+      public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
+  }
+
+  public static final class SwerveConstants {
+    public static final double MAX_VELOCITY = 1;
+    public static final double MAX_ACCELERATION = 1;
+    public static final double MAX_ANG_VELOCITY = 1;
+    public static final double MAX_ANG_ACCELERATION = 1;
+  }
+
+  public static final class Coordinates {
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(1.45, 5.52, new Rotation2d(Math.PI));
+    public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
+    public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
+    public static final Pose2d RED_SPEAKER = new Pose2d(15.1, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
+    public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
   }
 
   public static class TankDriveMap {
@@ -102,12 +119,12 @@ public class RobotMap {
     public static final int aprilTagPipeline = 1;
     public static final int noteDetectorPipeline = 2;
 
-    public static final double POSE_LIME_X = 0.1; // Forward - Meters
-    public static final double POSE_LIME_Y = 0.1; // Side
-    public static final double POSE_LIME_Z = 0.1; // Up
-    public static final double POSE_LIME_PITCH = 0.1; // NEED to find units
-    public static final double POSE_LIME_ROLL = 0.1;
-    public static final double POSE_LIME_YAW = 0.1;
+    public static final double POSE_LIME_X = 0.21; // Forward - Meters
+    public static final double POSE_LIME_Y = 0; // Side
+    public static final double POSE_LIME_Z = 0.235; // Up
+    public static final double POSE_LIME_PITCH = 30;
+    public static final double POSE_LIME_ROLL = 0.0; // NEED to find units - degrees for now
+    public static final double POSE_LIME_YAW = 0.0;
 
     public static final double NN_LIME_X = 0.1;
     public static final double NN_LIME_Y = 0.1;
