@@ -16,6 +16,8 @@ public abstract class DriverMap extends CommandMap {
     super(controller);
   }
 
+ 
+
   abstract ChassisSpeeds getChassisSpeeds();
 
   abstract double getSwerveXSpeed();
@@ -24,19 +26,12 @@ public abstract class DriverMap extends CommandMap {
 
   abstract double getSwerveRot();
 
+   abstract JoystickButton getArcingButton();
+
   abstract JoystickButton getTestButton();
 
   abstract JoystickButton getFollowAprilTagButton();
 
-  abstract JoystickButton getSourceToSpeakerButton();
-
-  abstract JoystickButton getSourceToAmpButton();
-
-  abstract JoystickButton getSpeakerToSourceButton();
-
-  abstract JoystickButton getSpeakerToStageButton();
-
-  abstract JoystickButton getSpeakerOrSourceButton();
 
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
@@ -65,6 +60,5 @@ public abstract class DriverMap extends CommandMap {
   @Override
   public void registerCommands() {
     registerDrivetrain();
-    getSpeakerOrSourceButton().onTrue(new PrintCommand("Hello"));
   }
 }

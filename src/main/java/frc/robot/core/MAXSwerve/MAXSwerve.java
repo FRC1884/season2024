@@ -11,6 +11,8 @@ import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -207,83 +210,29 @@ public abstract class MAXSwerve extends SubsystemBase {
     br.setDesiredState(swerveModuleStates[3]);
   }
 
-   public void driveSet(
-      double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+    public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> targetAngle) {
+    PIDController pid = new PIDController(0.01, 0, 0);
+    pid.setTolerance(0.2);
+    return new RepeatCommand(
+      new FunctionalCommand(
+        () -> {
+          // Init
+        },
+        () -> {
+          if (pid.calculate(this.getYaw().getDegrees(),targetAngle.get()) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
+            this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
+          } else {
+            this.drive(xSpeed.get(),ySpeed.get(),pid.calculate(this.getYaw().getDegrees(), targetAngle.get()), true, true);
+          }
 
-    double xSpeedCommanded;
-    double ySpeedCommanded;
-
-    if (rateLimit) {
-      // Convert XY to polar for rate limiting
-      double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
-      double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
-
-      // Calculate the direction slew rate based on an estimate of the lateral acceleration
-      double directionSlewRate;
-      if (currentTranslationMag != 0.0) {
-        directionSlewRate = Math.abs(MaxSwerveConstants.kDirectionSlewRate / currentTranslationMag);
-      } else {
-        directionSlewRate =
-            500.0; // some high number that means the slew rate is effectively instantaneous
-      }
-
-      double currentTime = WPIUtilJNI.now() * 1e-6;
-      double elapsedTime = currentTime - m_prevTime;
-      double angleDif = MAXSwerveUtils.AngleDifference(inputTranslationDir, currentTranslationDir);
-      if (angleDif < 0.45 * Math.PI) {
-        currentTranslationDir =
-            MAXSwerveUtils.StepTowardsCircular(
-                currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
-        currentTranslationMag = magLimiter.calculate(inputTranslationMag);
-      } else if (angleDif > 0.85 * Math.PI) {
-        if (currentTranslationMag
-            > 1e-4) { // some small number to avoid floating-point errors with equality checking
-          // keep currentTranslationDir unchanged
-          currentTranslationMag = magLimiter.calculate(0.0);
-        } else {
-          currentTranslationDir = MAXSwerveUtils.WrapAngle(currentTranslationDir + Math.PI);
-          currentTranslationMag = magLimiter.calculate(inputTranslationMag);
-        }
-      } else {
-        currentTranslationDir =
-            MAXSwerveUtils.StepTowardsCircular(
-                currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
-        currentTranslationMag = magLimiter.calculate(0.0);
-      }
-      m_prevTime = currentTime;
-
-      xSpeedCommanded = currentTranslationMag * Math.cos(currentTranslationDir);
-      ySpeedCommanded = currentTranslationMag * Math.sin(currentTranslationDir);
-      currentRotation = rotLimiter.calculate(rot);
-
-    } else {
-      xSpeedCommanded = xSpeed;
-      ySpeedCommanded = ySpeed;
-      currentRotation = rot;
-    }
-
-    // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-
-    double ySpeedDelivered = ySpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-
-    double rotDelivered = currentRotation * MaxSwerveConstants.kMaxAngularSpeed;
-    var swerveModuleStates =
-        MaxSwerveConstants.kDriveKinematics.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeedDelivered,
-                    ySpeedDelivered,
-                    rotDelivered,
-                    Rotation2d.fromDegrees(getHeading()))
-                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
-
-    fl.setDesiredState(swerveModuleStates[0]);
-    fr.setDesiredState(swerveModuleStates[1]);
-    bl.setDesiredState(swerveModuleStates[2]);
-    br.setDesiredState(swerveModuleStates[3]);
+        },
+        interrupted -> {
+          pid.close();
+        },
+        () -> {
+          return pid.atSetpoint();
+        },
+        this));
   }
 
   public void driveWithChassisSpeeds(ChassisSpeeds chassisSpeeds) {
