@@ -16,8 +16,6 @@ public abstract class DriverMap extends CommandMap {
     super(controller);
   }
 
- 
-
   abstract ChassisSpeeds getChassisSpeeds();
 
   abstract double getSwerveXSpeed();
@@ -26,35 +24,35 @@ public abstract class DriverMap extends CommandMap {
 
   abstract double getSwerveRot();
 
-   abstract JoystickButton getArcingButton();
+  abstract JoystickButton getArcingButton();
 
   abstract JoystickButton getTestButton();
 
   abstract JoystickButton getFollowAprilTagButton();
 
-
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
       // drivetrain.setDefaultCommand(
-      //     drivetrain.driveCommand(
-      //         this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+      // drivetrain.driveCommand(
+      // this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       // getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
       double targetX = 14;
       double targetY = 5;
-      double targetAngle = Math.atan((targetY-drivetrain.getPose().getY())/(targetX-drivetrain.getPose().getX()));
+      double targetAngle = Math.atan((targetY - drivetrain.getPose().getY()) / (targetX - drivetrain.getPose().getX()));
       getArcingButton().whileFalse(drivetrain.driveCommand(
-              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+          this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(
-              this::getSwerveXSpeed,this::getSwerveYSpeed,() -> targetAngle));
+          this::getSwerveXSpeed, this::getSwerveYSpeed, () -> targetAngle));
       getTestButton()
-          .onTrue(drivetrain.navigate(() -> RobotMap.Coordinates.BLUE_SPEAKER, () -> "RedSpeaker"));
+          .onTrue(drivetrain.TestAllCommand());
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
-      //     .onTrue(
-      //         drivetrain.goSpeakerOrSource(
-      //             false)); // boolean arguement set as false as function to determine if robot is
+      // .onTrue(
+      // drivetrain.goSpeakerOrSource(
+      // false)); // boolean arguement set as false as function to determine if robot
+      // is
       // holding note has not been created yet
     }
   }
