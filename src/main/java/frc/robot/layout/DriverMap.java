@@ -36,10 +36,17 @@ public abstract class DriverMap extends CommandMap {
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
-      drivetrain.setDefaultCommand(
-          drivetrain.driveCommand(
-              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+      // drivetrain.setDefaultCommand(
+      //     drivetrain.driveCommand(
+      //         this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       // getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
+      double targetX = 14;
+      double targetY = 5;
+      double targetAngle = Math.atan((targetY-drivetrain.getPose().getY())/(targetX-drivetrain.getPose().getX()));
+      getArcingButton().whileFalse(drivetrain.driveCommand(
+              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+      getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(
+              this::getSwerveXSpeed,this::getSwerveYSpeed,() -> targetAngle));
       getTestButton()
           .onTrue(drivetrain.navigate(() -> RobotMap.Coordinates.BLUE_SPEAKER, () -> "RedSpeaker"));
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
