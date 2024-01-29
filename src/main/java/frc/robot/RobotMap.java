@@ -103,9 +103,10 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
-    public static final boolean isLimelightMode = true;
-    public static final boolean isPhotonVisionMode = false;
-    public static final boolean isNeuralNet = false;
+    public static final boolean VISION_OVERRIDE_ENABLED = true;
+    public static final boolean IS_LIMELIGHT_MODE = true;
+    public static final boolean IS_PHOTON_VISION_MODE = false;
+    public static final boolean IS_NEURAL_NET = false;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.0; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -114,8 +115,8 @@ public class RobotMap {
     // Limelight - units are meters
     public static final String POSE_LIMELIGHT = "limelight-pose";
     public static final String NN_LIMELIGHT = "limelight-nn";
-    public static final int aprilTagPipeline = 1;
-    public static final int noteDetectorPipeline = 2;
+    public static final int APRILTAG_PIPELINE = 1;
+    public static final int NOTE_DETECTOR_PIPELINE = 2;
 
     public static final double POSE_LIME_X = 0.21; // Forward - Meters
     public static final double POSE_LIME_Y = 0; // Side

@@ -33,6 +33,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
+import frc.robot.subsystems.Vision.Vision;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -78,7 +80,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
       this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     else if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
-      this.resetOdometry(new Pose2d(5, 5.18, Rotation2d.fromDegrees(0)));
+      this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     else this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
   }
 
@@ -127,6 +129,85 @@ public abstract class MAXSwerve extends SubsystemBase {
    * @param rateLimit Whether to enable rate limiting for smoother control.
    */
   public void drive(
+      double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+
+    double xSpeedCommanded;
+    double ySpeedCommanded;
+
+    if (rateLimit) {
+      // Convert XY to polar for rate limiting
+      double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
+      double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
+
+      // Calculate the direction slew rate based on an estimate of the lateral acceleration
+      double directionSlewRate;
+      if (currentTranslationMag != 0.0) {
+        directionSlewRate = Math.abs(MaxSwerveConstants.kDirectionSlewRate / currentTranslationMag);
+      } else {
+        directionSlewRate =
+            500.0; // some high number that means the slew rate is effectively instantaneous
+      }
+
+      double currentTime = WPIUtilJNI.now() * 1e-6;
+      double elapsedTime = currentTime - m_prevTime;
+      double angleDif = MAXSwerveUtils.AngleDifference(inputTranslationDir, currentTranslationDir);
+      if (angleDif < 0.45 * Math.PI) {
+        currentTranslationDir =
+            MAXSwerveUtils.StepTowardsCircular(
+                currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
+        currentTranslationMag = magLimiter.calculate(inputTranslationMag);
+      } else if (angleDif > 0.85 * Math.PI) {
+        if (currentTranslationMag
+            > 1e-4) { // some small number to avoid floating-point errors with equality checking
+          // keep currentTranslationDir unchanged
+          currentTranslationMag = magLimiter.calculate(0.0);
+        } else {
+          currentTranslationDir = MAXSwerveUtils.WrapAngle(currentTranslationDir + Math.PI);
+          currentTranslationMag = magLimiter.calculate(inputTranslationMag);
+        }
+      } else {
+        currentTranslationDir =
+            MAXSwerveUtils.StepTowardsCircular(
+                currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
+        currentTranslationMag = magLimiter.calculate(0.0);
+      }
+      m_prevTime = currentTime;
+
+      xSpeedCommanded = currentTranslationMag * Math.cos(currentTranslationDir);
+      ySpeedCommanded = currentTranslationMag * Math.sin(currentTranslationDir);
+      currentRotation = rotLimiter.calculate(rot);
+
+    } else {
+      xSpeedCommanded = xSpeed;
+      ySpeedCommanded = ySpeed;
+      currentRotation = rot;
+    }
+
+    // Convert the commanded speeds into the correct units for the drivetrain
+    double xSpeedDelivered = xSpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+
+    double ySpeedDelivered = ySpeedCommanded * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+
+    double rotDelivered = currentRotation * MaxSwerveConstants.kMaxAngularSpeed;
+    var swerveModuleStates =
+        MaxSwerveConstants.kDriveKinematics.toSwerveModuleStates(
+            fieldRelative
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                    xSpeedDelivered,
+                    ySpeedDelivered,
+                    rotDelivered,
+                    Rotation2d.fromDegrees(getHeading()))
+                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        swerveModuleStates, MaxSwerveConstants.kMaxSpeedMetersPerSecond);
+
+    fl.setDesiredState(swerveModuleStates[0]);
+    fr.setDesiredState(swerveModuleStates[1]);
+    bl.setDesiredState(swerveModuleStates[2]);
+    br.setDesiredState(swerveModuleStates[3]);
+  }
+
+   public void driveSet(
       double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
 
     double xSpeedCommanded;

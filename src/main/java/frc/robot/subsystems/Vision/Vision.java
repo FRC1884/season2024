@@ -11,10 +11,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap.VisionConfig;
@@ -43,6 +46,10 @@ public class Vision extends SubsystemBase {
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator photonPoseEstimator;
   private Transform3d robotToCam;
+  private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
+  private GenericEntry visionXDataEntry = tab.add("VisionPose X", 0).getEntry();
+  private GenericEntry visionYDataEntry = tab.add("VisionPose Y", 0).getEntry();
+  private GenericEntry visionRotDataEntry = tab.add("VisionRot Rotation", 0).getEntry();
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -77,10 +84,10 @@ public class Vision extends SubsystemBase {
     // aimVerticalOffset = 0;
 
     // Changes vision mode between limelight and photonvision for easy switching
-    if (VisionConfig.isLimelightMode) {
+    if (VisionConfig.IS_LIMELIGHT_MODE) {
       // configure both limelights
       LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
-      setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.aprilTagPipeline);
+      setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.APRILTAG_PIPELINE);
       LimelightHelpers.setCameraPose_RobotSpace(
           VisionConfig.POSE_LIMELIGHT,
           VisionConfig.POSE_LIME_X,
@@ -90,9 +97,9 @@ public class Vision extends SubsystemBase {
           VisionConfig.POSE_LIME_PITCH,
           VisionConfig.POSE_LIME_YAW);
 
-      if (VisionConfig.isNeuralNet) {
+      if (VisionConfig.IS_NEURAL_NET) {
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
-        setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
+        setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
         LimelightHelpers.setCameraPose_RobotSpace(
             VisionConfig.NN_LIMELIGHT,
             VisionConfig.NN_LIME_X,
@@ -103,7 +110,7 @@ public class Vision extends SubsystemBase {
             VisionConfig.NN_LIME_YAW);
       }
     }
-    if (VisionConfig.isPhotonVisionMode) { // Configure photonvision camera
+    if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       photon1HasTargets = false;
       try {
@@ -150,21 +157,20 @@ public class Vision extends SubsystemBase {
             .getString("")
             .equals("");
 
-    if (VisionConfig.isLimelightMode && apriltagLimelightConnected) {
+    if (VisionConfig.IS_LIMELIGHT_MODE && apriltagLimelightConnected) {
+      jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
+      botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
       if (visionAccurate()) {
-        jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
         // json dump more accurate?
         // Update Vision robotpose - need to read more about coordinate systems centered
-        // Blue alliance means origin is bottom right of the field
-        if (DriverStation.getAlliance().get() == Alliance.Blue){
-          botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-        }
-        if (DriverStation.getAlliance().get() == Alliance.Red){
-          botPose = LimelightHelpers.getBotPose2d_wpiRed(VisionConfig.POSE_LIMELIGHT);
-        }
+        // Blue alliance means origin is bottom right of the field 
         limeLatency =
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
+        visionXDataEntry.setDouble(botPose.getX());
+        visionYDataEntry.setDouble(botPose.getY());
+        visionRotDataEntry.setDouble(botPose.getRotation().getDegrees());
+
       }
 
       // aimHorizontalOffset = jsonResults.results.getTX();
@@ -195,7 +201,7 @@ public class Vision extends SubsystemBase {
     // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
     // The example code was missing, and we came up with this: 
     // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
-    if (VisionConfig.isPhotonVisionMode) {
+    if (VisionConfig.IS_PHOTON_VISION_MODE) {
       var result = photonCam_1.getLatestResult();
       photon1HasTargets = result.hasTargets();
       if (photon1HasTargets) {
@@ -240,10 +246,10 @@ public class Vision extends SubsystemBase {
    */
   public boolean isValidPose() {
     /* Disregard Vision if there are no targets in view */
-    if (VisionConfig.isLimelightMode) {
+    if (VisionConfig.IS_LIMELIGHT_MODE) {
       return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
     }
-    if (VisionConfig.isPhotonVisionMode) {
+    if (VisionConfig.IS_PHOTON_VISION_MODE) {
       return photonHasTargets();
     }
     return false;

@@ -68,9 +68,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     // UNTESTED GLASS TELEMETRY CODE - MAY RESULT IN NULL POINTERS
     m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
-    if (Vision.getInstance().visionBotPose() != null){
-      m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
-    }
+    m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
     m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
   
     // if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
@@ -101,6 +99,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
     OI.getInstance().registerCommands();
+    Drivetrain.getInstance().resetOdometry(Vision.getInstance().visionBotPose());
   }
 
   /** This function is called periodically during operator control. */
