@@ -38,7 +38,7 @@ public abstract class DriverMap extends CommandMap {
   abstract JoystickButton getSpeakerOrSourceButton();
 
   private void registerDrivetrain() {
-    if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
+   /*  if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
       drivetrain.setDefaultCommand(
           drivetrain.driveCommand(
@@ -51,8 +51,8 @@ public abstract class DriverMap extends CommandMap {
       //         drivetrain.goSpeakerOrSource(
       //             false)); // boolean arguement set as false as function to determine if robot is
       // holding note has not been created yet
-    }
-  }
+    }*/
+}
 
   private void registerTestSub() {
     var t = test.getInstance();

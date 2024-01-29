@@ -7,8 +7,8 @@ public class TestPath extends SequentialCommandGroup {
   public TestPath() {
     String path = "Aspirational Auto Amp Start";
 
-    var maxswerve = Drivetrain.getInstance();
-    addCommands(
+   // var maxswerve = Drivetrain.getInstance();
+   // addCommands(
         // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.MID),
         // new RunCommand(() -> elevatorArm.moveElevator(0.7))
         //             .until(() -> elevatorArm.getTopSwitch()),
@@ -18,6 +18,6 @@ public class TestPath extends SequentialCommandGroup {
         //             .alongWith(new RunCommand(() -> elevatorArm.moveElevator(-0.7))
         //                         .until(() -> elevatorArm.getBottomSwitch())),
         // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.DEFAULT),
-        maxswerve.followPathCommand(path, true));
+       // maxswerve.followPathCommand(path, true));
   }
 }

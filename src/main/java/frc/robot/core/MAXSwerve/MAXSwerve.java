@@ -78,8 +78,8 @@ public abstract class MAXSwerve extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    System.out.println(odometry.getPoseMeters());
-    System.out.println(getYaw());
+    //System.out.println(odometry.getPoseMeters());
+    //System.out.println(getYaw());
     odometry.update(
         getYaw(),
         new SwerveModulePosition[] {
