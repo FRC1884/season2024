@@ -97,7 +97,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    // System.out.println(odometry.getPoseMeters());
+    //System.out.println(odometry.getPoseMeters());
     // System.out.println(getYaw());
     odometry.update(
         getYaw(),
@@ -212,22 +212,24 @@ public abstract class MAXSwerve extends SubsystemBase {
     br.setDesiredState(swerveModuleStates[3]);
   }
 
-  public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> targetAngle) {
+    public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed) {
     PIDController pid = new PIDController(0.01, 0, 0);
     pid.setTolerance(0.2);
     return new RepeatCommand(
-        new FunctionalCommand(
-            () -> {
-              // Init
-            },
-            () -> {
-              if (pid.calculate(this.getYaw().getDegrees(),
-                  targetAngle.get()) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
-                this.drive(xSpeed.get(), ySpeed.get(), RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
-              } else {
-                this.drive(xSpeed.get(), ySpeed.get(), pid.calculate(this.getYaw().getDegrees(), targetAngle.get()),
-                    true, true);
-              }
+      new FunctionalCommand(
+        () -> {
+          // Init
+        },
+        () -> {
+          double targetX = 1;
+          double targetY = 0;
+          double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
+          System.out.println(targetAngle);
+          if (pid.calculate(this.getYaw().getDegrees(),targetAngle) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
+            this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
+          } else {
+            this.drive(xSpeed.get(),ySpeed.get(),pid.calculate(this.getYaw().getDegrees(), targetAngle), true, true);
+          }
 
             },
             interrupted -> {

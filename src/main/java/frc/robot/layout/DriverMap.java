@@ -1,5 +1,7 @@
 package frc.robot.layout;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -37,13 +39,10 @@ public abstract class DriverMap extends CommandMap {
       // drivetrain.driveCommand(
       // this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       // getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
-      double targetX = 14;
-      double targetY = 5;
-      double targetAngle = Math.atan((targetY - drivetrain.getPose().getY()) / (targetX - drivetrain.getPose().getX()));
       getArcingButton().whileFalse(drivetrain.driveCommand(
           this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(
-          this::getSwerveXSpeed, this::getSwerveYSpeed, () -> targetAngle));
+              this::getSwerveXSpeed,this::getSwerveYSpeed));
       getTestButton()
           .onTrue(drivetrain.TestAllCommand());
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
