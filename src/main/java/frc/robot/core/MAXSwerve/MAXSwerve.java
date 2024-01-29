@@ -11,6 +11,8 @@ import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,12 +21,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.proto.System;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -229,6 +233,31 @@ public abstract class MAXSwerve extends SubsystemBase {
     return new RepeatCommand(
         new RunCommand(
             () -> this.drive(xSpeed.get(), ySpeed.get(), rotSpeed.get(), true, true), this));
+  }
+
+  public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> targetAngle) {
+    PIDController pid = new PIDController(1, 0, 0);
+    pid.setTolerance(0.2);
+    return new RepeatCommand(
+      new FunctionalCommand(
+        () -> {
+          // Init
+        },
+        () -> {
+          if (pid.calculate(this.getYaw().getDegrees(),targetAngle.get()) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
+            this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
+          } else {
+            this.drive(xSpeed.get(),ySpeed.get(),pid.calculate(this.getYaw().getDegrees(), targetAngle.get()), true, true);
+          }
+
+        },
+        interrupted -> {
+          pid.close();
+        },
+        () -> {
+          return pid.atSetpoint();
+        },
+        this));
   }
 
   public BooleanSupplier getShouldFlip() {

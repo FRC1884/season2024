@@ -24,6 +24,8 @@ public abstract class DriverMap extends CommandMap {
 
   abstract double getSwerveRot();
 
+  abstract JoystickButton getArcingButton();
+
   abstract JoystickButton getTestButton();
 
   abstract JoystickButton getFollowAprilTagButton();
@@ -41,10 +43,13 @@ public abstract class DriverMap extends CommandMap {
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
-      drivetrain.setDefaultCommand(
-          drivetrain.driveCommand(
-              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+      // drivetrain.setDefaultCommand(
+      //     drivetrain.driveCommand(
+      //         this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       // getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
+      getArcingButton().whileFalse(drivetrain.driveCommand(
+              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+      getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(this::getSwerveXSpeed,this::getSwerveYSpeed,() -> 10.0));
       getTestButton()
           .onTrue(drivetrain.navigate(() -> RobotMap.Coordinates.BLUE_SPEAKER, () -> "RedSpeaker"));
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
