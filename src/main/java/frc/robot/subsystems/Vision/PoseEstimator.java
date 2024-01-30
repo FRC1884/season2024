@@ -163,7 +163,7 @@ public class PoseEstimator extends SubsystemBase {
   }
 
   /**
-   * Reset the pose estimator location and location in Drivetrain odometry - Fix these during session
+   * Reset the pose estimator location and Drivetrain odometry - NEEDS TO BE TESTED
    *
    * @param poseMeters
    */
