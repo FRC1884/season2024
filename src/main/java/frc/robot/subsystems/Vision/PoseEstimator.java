@@ -42,7 +42,7 @@ public class PoseEstimator extends SubsystemBase {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             MaxSwerveConstants.kDriveKinematics,
-            drivetrain.getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
+            drivetrain.getYaw(),
             drivetrain.getModulePositions(),
             drivetrain.getPose(),
             createStateStdDevs(
@@ -53,24 +53,6 @@ public class PoseEstimator extends SubsystemBase {
                 PoseConfig.kVisionStdDevX,
                 PoseConfig.kVisionStdDevY,
                 PoseConfig.kVisionStdDevTheta));
-
-    // SDS Swerve Version from Swerve.java in core
-    /*
-    poseEstimator =
-            new SwerveDrivePoseEstimator(
-                    SwerveConstants.KINEMATICS,
-                    Drivetrain.getInstance().getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
-                    Drivetrain.getInstance().getModulePositions(),
-                    new Pose2d(),
-                    createStateStdDevs(
-                            PoseConfig.kPositionStdDevX,
-                            PoseConfig.kPositionStdDevY,
-                            PoseConfig.kPositionStdDevTheta),
-                    createVisionMeasurementStdDevs(
-                            PoseConfig.kVisionStdDevX,
-                            PoseConfig.kVisionStdDevY,
-                            PoseConfig.kVisionStdDevTheta));
-     */
   }
 
   @Override
@@ -153,6 +135,7 @@ public class PoseEstimator extends SubsystemBase {
     odometryPose = pose;
   }
 
+  /** Returns the Odometry Pose from drivetrain */
   public Pose2d getOdometryPose() {
     return odometryPose;
   }
@@ -180,7 +163,7 @@ public class PoseEstimator extends SubsystemBase {
   }
 
   /**
-   * reset the pose estimator - Fix these during session
+   * Reset the pose estimator location and location in Drivetrain odometry - Fix these during session
    *
    * @param poseMeters
    */

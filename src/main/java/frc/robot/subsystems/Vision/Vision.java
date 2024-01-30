@@ -46,10 +46,21 @@ public class Vision extends SubsystemBase {
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator photonPoseEstimator;
   private Transform3d robotToCam;
+
+  //Shuffleboard telemetry - pose estimation
   private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
   private GenericEntry visionXDataEntry = tab.add("VisionPose X", 0).getEntry();
   private GenericEntry visionYDataEntry = tab.add("VisionPose Y", 0).getEntry();
-  private GenericEntry visionRotDataEntry = tab.add("VisionRot Rotation", 0).getEntry();
+  private GenericEntry visionRotDataEntry = tab.add("VisionPose Rotation", 0).getEntry();
+
+  //Shuffleboard telemtry - note detection
+  private GenericEntry visionNotePoseRobRelXEntry = tab.add("NoteX Pose Robot Space", 0).getEntry();
+  private GenericEntry visionNotePoseRobRelYEntry = tab.add("NoteY Pose Robot Space", 0).getEntry();
+  private GenericEntry visionNotePoseRobRelRotEntry = tab.add("Note Rotation Pose Robot Space", 0).getEntry();
+
+  private GenericEntry visionNotePoseFieldRelXEntry = tab.add("NoteX Pose Field Space", 0).getEntry();
+  private GenericEntry visionNotePoseFieldRelYEntry = tab.add("NoteY Pose Field Space", 0).getEntry();
+  private GenericEntry visionNotePoseFieldRelRotEntry = tab.add("Note Rotation Pose Field Space", 0).getEntry();
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -61,6 +72,7 @@ public class Vision extends SubsystemBase {
   private boolean detectTarget = false;
   private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
   private RobotRelativePose targetRobotRelativePose;
+  private FieldRelativePose noteFieldRelativePose;
 
   // testing
   private final DecimalFormat df = new DecimalFormat();
@@ -167,6 +179,7 @@ public class Vision extends SubsystemBase {
         limeLatency =
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
+        //Shuffleboard Telemetry
         visionXDataEntry.setDouble(botPose.getX());
         visionYDataEntry.setDouble(botPose.getY());
         visionRotDataEntry.setDouble(botPose.getRotation().getDegrees());
@@ -188,9 +201,22 @@ public class Vision extends SubsystemBase {
         detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
         detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
         double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_X, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset) ;
+        //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
         Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, detectHorizontalOffset);
         targetRobotRelativePose = (RobotRelativePose) camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
+        noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, (FieldRelativePose) PoseEstimator.getInstance().getPosition());
+
+        //Shuffleboard Telemetry - robot relative
+        visionNotePoseRobRelXEntry.setDouble(targetRobotRelativePose.getX());
+        visionNotePoseRobRelYEntry.setDouble(targetRobotRelativePose.getY());
+        visionNotePoseRobRelRotEntry.setDouble(targetRobotRelativePose.getRotation().getDegrees());
+
+        //Shuffleboard Telemetry - field relative
+        visionNotePoseFieldRelXEntry.setDouble(noteFieldRelativePose.getX());
+        visionNotePoseFieldRelYEntry.setDouble(noteFieldRelativePose.getY());
+        visionNotePoseFieldRelRotEntry.setDouble(noteFieldRelativePose.getRotation().getDegrees());
+
       }
     }
     // this method can call update() if vision pose estimation needs to be updated in
@@ -213,14 +239,31 @@ public class Vision extends SubsystemBase {
     }
   }
 
+  /**
+   * @return Pose2d location of note Field Relative
+   */
+  public FieldRelativePose getNotePose2d(){
+    return noteFieldRelativePose;
+  }
+
+
+  /**
+   * @return Timestamp of photonvision's latest reading
+   */
   public double getPhotonTimestamp() {
     return photonTimestamp;
   }
 
+  /**
+   * @return boolean if photonvision has targets
+   */
   public boolean photonHasTargets() {
     return photon1HasTargets;
   }
-
+  
+  /**
+   * @return RobotPose2d with the apriltag as the origin (for chase apriltag command)
+   */
   public Pose2d getRobotPose2d_TargetSpace() {
     return LimelightHelpers.getBotPose2d_TargetSpace(VisionConfig.POSE_LIMELIGHT);
   }
@@ -276,16 +319,20 @@ public class Vision extends SubsystemBase {
   }
 
   // Getter for visionBotPose - NEED TO DO TESTING TO MAKE SURE NO NULL ERRORS
+
   public Pose2d visionBotPose() {
     return botPose;
   }
 
+  /**
+   * @return the total latency of the limelight camera
+   */
   public double getTotalLatency() {
     return limeLatency;
   }
 
   /**
-   * Gets the camera capture time in seconds.
+   * Gets the camera capture time in seconds. Only used for limelight
    *
    * @param latencyMillis the latency of the camera in milliseconds
    * @return the camera capture time in seconds
@@ -353,6 +400,17 @@ public class Vision extends SubsystemBase {
    */
   public RobotRelativePose targetPoseRobotSpace(){
     return targetRobotRelativePose;
+  }
+
+  /**
+   * @param notePoseRobotRelative the RobotRelative Pose2d of the note
+   * @param botPoseFieldRelative The FieldRelative Pose2d of the robot
+   * @return the FieldRelative Pose2d of the note
+   */
+  public FieldRelativePose notePoseFieldSpace(RobotRelativePose notePoseRobotRelative, FieldRelativePose botPoseFieldRelative){
+    Transform2d noteTransform = new Transform2d(notePoseRobotRelative.getTranslation(), notePoseRobotRelative.getRotation());
+    Pose2d notePose = botPoseFieldRelative.transformBy(noteTransform);
+    return (FieldRelativePose) notePose; 
   }
 
   /**
