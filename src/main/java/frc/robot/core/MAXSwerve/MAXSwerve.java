@@ -214,7 +214,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed) {
     PIDController pid = new PIDController(0.01, 0, 0);
-    pid.setTolerance(0.2);
+    pid.setTolerance(0.1);
     return new RepeatCommand(
       new FunctionalCommand(
         () -> {
@@ -224,16 +224,22 @@ public abstract class MAXSwerve extends SubsystemBase {
           double targetX = 1;
           double targetY = 0;
           double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
+          double multiplier = 0;
+          if(Math.abs((this.getYaw().getDegrees()-targetAngle))>180)
+            multiplier = -1;
+          else
+            multiplier = 1;
           System.out.println(targetAngle);
-          if (pid.calculate(this.getYaw().getDegrees(),targetAngle) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
-            this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
+          if (Math.abs(multiplier*pid.calculate(this.getYaw().getDegrees(),targetAngle*multiplier)) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
+            this.drive(xSpeed.get(),ySpeed.get(), multiplier*RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
           } else {
-            this.drive(xSpeed.get(),ySpeed.get(),pid.calculate(this.getYaw().getDegrees(), targetAngle), true, true);
+            this.drive(xSpeed.get(),ySpeed.get(),multiplier*pid.calculate(this.getYaw().getDegrees(), targetAngle*multiplier), true, true);
           }
 
             },
             interrupted -> {
               pid.close();
+              this.drive(0.0,0.0,0.0,true,true);
             },
             () -> {
               return pid.atSetpoint();
