@@ -42,7 +42,7 @@ public class PoseEstimator extends SubsystemBase {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             MaxSwerveConstants.kDriveKinematics,
-            drivetrain.getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
+            drivetrain.getYaw(),
             drivetrain.getModulePositions(),
             drivetrain.getPose(),
             createStateStdDevs(
@@ -53,24 +53,6 @@ public class PoseEstimator extends SubsystemBase {
                 PoseConfig.kVisionStdDevX,
                 PoseConfig.kVisionStdDevY,
                 PoseConfig.kVisionStdDevTheta));
-
-    // SDS Swerve Version from Swerve.java in core
-    /*
-    poseEstimator =
-            new SwerveDrivePoseEstimator(
-                    SwerveConstants.KINEMATICS,
-                    Drivetrain.getInstance().getYaw(), // TODO *maybe*  Make and Odometry class with easy methods for odometry
-                    Drivetrain.getInstance().getModulePositions(),
-                    new Pose2d(),
-                    createStateStdDevs(
-                            PoseConfig.kPositionStdDevX,
-                            PoseConfig.kPositionStdDevY,
-                            PoseConfig.kPositionStdDevTheta),
-                    createVisionMeasurementStdDevs(
-                            PoseConfig.kVisionStdDevX,
-                            PoseConfig.kVisionStdDevY,
-                            PoseConfig.kVisionStdDevTheta));
-     */
   }
 
   @Override
@@ -81,8 +63,7 @@ public class PoseEstimator extends SubsystemBase {
     if (VisionConfig.IS_LIMELIGHT_MODE && estimatePose != null) { // Limelight mode
       double currentTimestamp =
           Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
-      if (isEstimateReady(
-          estimatePose)) { // Does making so many bot pose variables impact accuracy?
+      if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
         addVisionMeasurement(estimatePose, currentTimestamp);
       }
       //if(VisionConfig.VISION_OVERRIDE_ENABLED)
@@ -136,8 +117,7 @@ public class PoseEstimator extends SubsystemBase {
    */
   public boolean isEstimateReady(Pose2d pose) {
     /* Disregard Vision if there are no targets in view */
-    if (!Vision.getInstance()
-        .visionAccurate()) { // visionAccurate method sees if Apriltags present in Vision.java
+    if (!Vision.getInstance().visionAccurate(pose)) { // visionAccurate method sees if Apriltags present in Vision.java
       return false;
     }
 
@@ -153,6 +133,7 @@ public class PoseEstimator extends SubsystemBase {
     odometryPose = pose;
   }
 
+  /** Returns the Odometry Pose from drivetrain */
   public Pose2d getOdometryPose() {
     return odometryPose;
   }
@@ -180,7 +161,7 @@ public class PoseEstimator extends SubsystemBase {
   }
 
   /**
-   * reset the pose estimator - Fix these during session
+   * Reset the pose estimator location and Drivetrain odometry - NEEDS TO BE TESTED
    *
    * @param poseMeters
    */

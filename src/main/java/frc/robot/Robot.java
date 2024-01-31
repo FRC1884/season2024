@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
     m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
     m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
     m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
-  
+    m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
     // if (motor1Sendable.openLoopEnabled) motor1.set(motor1Sendable.m_speed);
     // else motor1.set(0.0);
     // if (motor2Sendable.openLoopEnabled) motor2.set(motor2Sendable.m_speed);
@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
     OI.getInstance().registerCommands();
-    Drivetrain.getInstance().resetOdometry(Vision.getInstance().visionBotPose());
+    PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());
   }
 
   /** This function is called periodically during operator control. */
