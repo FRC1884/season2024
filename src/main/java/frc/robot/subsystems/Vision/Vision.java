@@ -36,6 +36,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class Vision extends SubsystemBase {
   private Pose2d botPose;
+  private Pose2d tempPose;
   private double limeLatency;
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
@@ -88,6 +89,7 @@ public class Vision extends SubsystemBase {
   private Vision() {
     setName("Vision");
     botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
+    tempPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
     photonTimestamp = 0.0;
     limeLatency = 0.0;
     // botPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
@@ -171,14 +173,15 @@ public class Vision extends SubsystemBase {
 
     if (VisionConfig.IS_LIMELIGHT_MODE && apriltagLimelightConnected) {
       jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
-      botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-      if (visionAccurate()) {
+      tempPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
+      if (visionAccurate(tempPose)) {
         // json dump more accurate?
         // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field 
         limeLatency =
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
+        botPose = tempPose;
         //Shuffleboard Telemetry
         visionXDataEntry.setDouble(botPose.getX());
         visionYDataEntry.setDouble(botPose.getY());
@@ -280,8 +283,8 @@ public class Vision extends SubsystemBase {
   /**
    * @return if vision should be trusted more than estimated pose
    */
-  public boolean visionAccurate() {
-    return isValidPose() && (isInMap() || multipleTargetsInView());
+  public boolean visionAccurate(Pose2d currentPose) {
+    return isValidPose() && (isInMap(currentPose) || multipleTargetsInView());
   }
 
   /**
@@ -299,9 +302,9 @@ public class Vision extends SubsystemBase {
   }
 
   // This is a suss function - need to test it
-  public boolean isInMap() {
-    return ((botPose.getX() > 0.0 && botPose.getX() <= VisionConfig.FIELD_LENGTH_METERS)
-        && (botPose.getY() > 0.0 && botPose.getY() <= VisionConfig.FIELD_WIDTH_METERS));
+  public boolean isInMap(Pose2d currentPose) {
+    return ((currentPose.getX() > 0.0 && currentPose.getX() <= VisionConfig.FIELD_LENGTH_METERS)
+        && (currentPose.getY() > 0.0 && currentPose.getY() <= VisionConfig.FIELD_WIDTH_METERS));
   }
 
   /**

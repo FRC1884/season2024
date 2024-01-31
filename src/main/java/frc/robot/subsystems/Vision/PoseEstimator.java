@@ -63,8 +63,7 @@ public class PoseEstimator extends SubsystemBase {
     if (VisionConfig.IS_LIMELIGHT_MODE && estimatePose != null) { // Limelight mode
       double currentTimestamp =
           Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
-      if (isEstimateReady(
-          estimatePose)) { // Does making so many bot pose variables impact accuracy?
+      if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
         addVisionMeasurement(estimatePose, currentTimestamp);
       }
       //if(VisionConfig.VISION_OVERRIDE_ENABLED)
@@ -118,8 +117,7 @@ public class PoseEstimator extends SubsystemBase {
    */
   public boolean isEstimateReady(Pose2d pose) {
     /* Disregard Vision if there are no targets in view */
-    if (!Vision.getInstance()
-        .visionAccurate()) { // visionAccurate method sees if Apriltags present in Vision.java
+    if (!Vision.getInstance().visionAccurate(pose)) { // visionAccurate method sees if Apriltags present in Vision.java
       return false;
     }
 
