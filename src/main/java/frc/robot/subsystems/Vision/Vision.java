@@ -293,7 +293,10 @@ public class Vision extends SubsystemBase {
    * @return boolean if photonvision has targets
    */
   public boolean photonHasTargets() {
-    return photon1HasTargets;
+    if (photon1HasTargets || photon2HasTargets){
+      return true;
+    }
+    return false;
   }
   
   /**
