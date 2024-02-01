@@ -103,7 +103,7 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
-    public static final boolean VISION_OVERRIDE_ENABLED = true;
+    public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = true;
     public static final boolean IS_PHOTON_VISION_MODE = false;
     public static final boolean IS_NEURAL_NET = false;
@@ -144,6 +144,18 @@ public class RobotMap {
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
     public static final double CAM_1_PITCH_RADIANS = 0.2618; // camera Pitch Radians
     public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians
+
+    // Photonvision
+    public static final String POSE_PHOTON_2 = "photon-cam2";
+    // Translation Values (location relative to robot center)
+    public static final double CAM_2_X = 0.5; // Forward: camera To Robot XMeters
+    public static final double CAM_2_Y = 0.0; // Right: camera To Robot YMeters
+    public static final double CAM_2_Z = 0.2; // Up: camera To Robot ZMeters
+
+    // Rotation mounting angles (roll-pitch-yaw) in RADIANS
+    public static final double CAM_2_ROLL_RADIANS = 0.0; // camera Roll Radians
+    public static final double CAM_2_PITCH_RADIANS = 0.2618; // camera Pitch Radians
+    public static final double CAM_2_YAW_RADIANS = 0.0; // camera Yaw Radians
   }
 
   public static class PoseConfig {

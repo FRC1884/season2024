@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotMap;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
+import frc.robot.subsystems.Vision.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
 
 import java.util.function.BooleanSupplier;
@@ -338,7 +339,7 @@ public abstract class MAXSwerve extends SubsystemBase {
             () -> this.followPathCommand(
                 new PathPlannerPath(
                     PathPlannerPath.bezierFromPoses(
-                        // Vision.getInstance().getRobotPose2d_TargetSpace(),
+                        Vision.getInstance().getRobotPose2d_TargetSpace(),
                         new Pose2d(1.0, 0.0, new Rotation2d())), // Need to make this better
                     null,
                     null),
@@ -346,6 +347,27 @@ public abstract class MAXSwerve extends SubsystemBase {
             // is finished
             ),
             this));
+  }
+
+  /**
+   * Command to drive to a note detected using Vision - NEEDS TO BE REWORKED TO USE NAVIGATE
+   * @return command to generate a path On-the-fly to a note
+   */
+  public Command followNoteCommand() {
+    return followPathCommand(
+        new PathPlannerPath(
+            PathPlannerPath.bezierFromPoses(new Pose2d(PoseEstimator.getInstance().getPosition().getTranslation(),
+                                                      Rotation2d.fromDegrees(0)),
+                                            new Pose2d (Vision.getInstance().getNotePose2d().getTranslation(),
+                                                          Rotation2d.fromDegrees(0))),
+            new PathConstraints(
+                RobotMap.SwerveConstants.MAX_VELOCITY,
+                RobotMap.SwerveConstants.MAX_ACCELERATION,
+                RobotMap.SwerveConstants.MAX_ANG_VELOCITY,
+                RobotMap.SwerveConstants.MAX_ANG_ACCELERATION),
+            new GoalEndState(0, Vision.getInstance().getNotePose2d().getRotation()),
+            false),
+        false);
   }
 
   public Command navigate(Supplier<Pose2d> targetPose, Supplier<String> pathName) {

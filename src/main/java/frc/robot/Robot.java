@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
     OI.getInstance().registerCommands();
-    PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());
+    //PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());
   }
 
   /** This function is called periodically during operator control. */

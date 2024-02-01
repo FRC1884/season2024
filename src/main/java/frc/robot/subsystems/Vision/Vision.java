@@ -48,6 +48,12 @@ public class Vision extends SubsystemBase {
   private PhotonPoseEstimator photonPoseEstimator;
   private Transform3d robotToCam;
 
+  private PhotonCamera photonCam_2;
+  private boolean photon2HasTargets;
+  private PhotonPoseEstimator photonPoseEstimator_2;
+  private Transform3d robotToCam_2;  
+
+
   //Shuffleboard telemetry - pose estimation
   private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
   private GenericEntry visionXDataEntry = tab.add("VisionPose X", 0).getEntry();
@@ -133,6 +139,7 @@ public class Vision extends SubsystemBase {
       } catch (Exception e) {
         System.out.println("Field layout not found");
       }
+
       // Mounting information of photoncamera for making PhotonPoseEstimator object
       robotToCam =
           new Transform3d(
@@ -148,6 +155,22 @@ public class Vision extends SubsystemBase {
               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
               photonCam_1,
               robotToCam);
+
+      // Mounting information of photoncamera for making PhotonPoseEstimator object
+      robotToCam_2 =
+          new Transform3d(
+              new Translation3d(VisionConfig.CAM_2_X, VisionConfig.CAM_2_Y, VisionConfig.CAM_2_Z),
+              new Rotation3d(
+                  VisionConfig.CAM_2_ROLL_RADIANS,
+                  VisionConfig.CAM_2_PITCH_RADIANS,
+                  VisionConfig.CAM_2_YAW_RADIANS));
+      // TODO for 9th graders - create PhotonPoseEstimator object
+      photonPoseEstimator_2 =
+          new PhotonPoseEstimator(
+              aprilTagFieldLayout,
+              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+              photonCam_2,
+              robotToCam_2);
     }
 
     // printing purposes
@@ -231,10 +254,19 @@ public class Vision extends SubsystemBase {
     // The example code was missing, and we came up with this: 
     // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
     if (VisionConfig.IS_PHOTON_VISION_MODE) {
-      var result = photonCam_1.getLatestResult();
-      photon1HasTargets = result.hasTargets();
+      var result_1 = photonCam_1.getLatestResult();
+      photon1HasTargets = result_1.hasTargets();
+      var result_2 = photonCam_2.getLatestResult();
+      photon2HasTargets = result_2.hasTargets();
+
       if (photon1HasTargets) {
         var update = photonPoseEstimator.update();
+        Pose3d currentPose3d = update.get().estimatedPose;
+        botPose = currentPose3d.toPose2d();
+        photonTimestamp = update.get().timestampSeconds;
+      }
+      else if (photon2HasTargets){
+        var update = photonPoseEstimator_2.update();
         Pose3d currentPose3d = update.get().estimatedPose;
         botPose = currentPose3d.toPose2d();
         photonTimestamp = update.get().timestampSeconds;
