@@ -9,6 +9,7 @@ public class ExampleConfig {
     public static final boolean ELEVATOR_ENABLED = false;
     public static final boolean FLYWHEEL_ENABLED = false;
     public static final boolean INTAKE_ENABLED = false;
+    public static final boolean PROTOTYPE_ENABLED = true;
   }
 
   public class Controllers {

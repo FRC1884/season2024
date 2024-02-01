@@ -7,9 +7,11 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ExampleConfig;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.test;
 
 public abstract class DriverMap extends CommandMap {
@@ -54,11 +56,6 @@ public abstract class DriverMap extends CommandMap {
       // is
       // holding note has not been created yet
     }
-  }
-
-  private void registerTestSub() {
-    var t = test.getInstance();
-    t.setDefaultCommand(t.testCommand(() -> getSwerveXSpeed()));
   }
 
   @Override

@@ -3,6 +3,9 @@ package frc.robot.util;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
@@ -13,16 +16,15 @@ import edu.wpi.first.util.sendable.SendableBuilder;
  * <b>For this to work, you MUST run the program in Test Mode on the Driver Station!</b>
  */
 public class SendableMotor implements Sendable {
-  private CANSparkBase m_motorController;
+  private CANSparkBase motor;
   private SparkPIDController closedLoopController;
 
-  public double m_speed;
-  private double m_setpoint;
-  public boolean closedLoopEnabled, openLoopEnabled;
+  public boolean openLoopEnabled, closedLoopEnabled;
+  public double speed, setpoint;
 
-  public SendableMotor(CANSparkBase motorController) {
-    m_motorController = motorController;
-    closedLoopController = motorController.getPIDController();
+  public SendableMotor(CANSparkBase motor) {
+    this.motor = motor;
+    closedLoopController = motor.getPIDController();
   }
 
   void enable(boolean enabled) {
@@ -34,9 +36,9 @@ public class SendableMotor implements Sendable {
   }
 
   void setSpeed(double speed) {
-    m_speed = speed;
+    this.speed = speed;
     // m_motorController.set(speed);
-    if (openLoopEnabled) m_motorController.set(speed);
+    if (openLoopEnabled) motor.set(speed);
   }
 
   void setP(double p) {
@@ -61,26 +63,45 @@ public class SendableMotor implements Sendable {
 
   void setMaxVel(double vel) {
     if (openLoopEnabled && closedLoopEnabled)
-      closedLoopController.setSmartMotionMaxVelocity(vel, m_motorController.getDeviceId());
+      closedLoopController.setSmartMotionMaxVelocity(vel, motor.getDeviceId());
   }
 
   void setMaxAccel(double accel) {
     if (openLoopEnabled && closedLoopEnabled)
-      closedLoopController.setSmartMotionMaxAccel(accel, m_motorController.getDeviceId());
+      closedLoopController.setSmartMotionMaxAccel(accel, motor.getDeviceId());
   }
 
   void setTolerance(double tolerance) {
     if (openLoopEnabled && closedLoopEnabled)
-      m_motorController
+      motor
           .getPIDController()
-          .setSmartMotionAllowedClosedLoopError(tolerance, m_motorController.getDeviceId());
+          .setSmartMotionAllowedClosedLoopError(tolerance, motor.getDeviceId());
   }
 
   void setSetpoint(double setpoint) {
     if (openLoopEnabled && closedLoopEnabled) {
-      m_setpoint = setpoint;
-      closedLoopController.setReference(setpoint, ControlType.kSmartMotion);
+      this.setpoint = setpoint;
     }
+  }
+
+  public void control() {
+    if(openLoopEnabled) {
+      if(closedLoopEnabled) {
+        TrapezoidProfile.State trapezoidalSetpoint = new TrapezoidProfile(new Constraints(0, 0)).calculate(0.02,
+          new TrapezoidProfile.State(motor.getEncoder().getPosition(), motor.getEncoder().getVelocity()), 
+          new TrapezoidProfile.State(motor.getEncoder().getPosition(), setpoint));
+
+        // motor1.getPIDController()
+        //     .setReference(((trapezoidalSetpoint1.velocity/(2 * (Math.PI)* RobotMap.PrototypeMap.WHEEL_RADIUS))*60), ControlType.kVelocity);
+
+        this.motor.getPIDController()
+          .setReference(trapezoidalSetpoint.velocity + closedLoopController.getFF() * setpoint, ControlType.kVelocity);
+      }
+      
+      else motor.set(speed);
+    }
+
+    else motor.set(0.0);
   }
 
   // Adds a bunch of control properties on shuffleboard
@@ -89,31 +110,23 @@ public class SendableMotor implements Sendable {
   // Only time will tell...
   @Override
   public void initSendable(SendableBuilder builder) {
-    SparkPIDController closedLoopController = m_motorController.getPIDController();
+    SparkPIDController closedLoopController = motor.getPIDController();
     builder.setActuator(false);
 
     builder.addBooleanProperty("Enabled", () -> openLoopEnabled, this::enable);
     builder.addBooleanProperty("PID Enabled", () -> closedLoopEnabled, this::enablePID);
 
-    builder.addDoubleProperty("Speed", m_motorController::get, this::setSpeed);
+    builder.addDoubleProperty("Speed", motor::get, this::setSpeed);
 
-    builder.addDoubleProperty("Setpoint", () -> m_setpoint, this::setSetpoint);
+    builder.addDoubleProperty("Setpoint", () -> setpoint, this::setSetpoint);
 
     builder.addDoubleProperty("P", closedLoopController::getP, this::setP);
     builder.addDoubleProperty("I", closedLoopController::getI, this::setI);
     builder.addDoubleProperty("D", closedLoopController::getD, this::setD);
     builder.addDoubleProperty("FF", closedLoopController::getFF, this::setFF);
-    builder.addDoubleProperty("IZone", closedLoopController::getIZone, this::setIZone);
 
-    int id = m_motorController.getDeviceId();
-
-    builder.addDoubleProperty(
-        "MaxVel", () -> closedLoopController.getSmartMotionMaxVelocity(id), this::setMaxVel);
-    builder.addDoubleProperty(
-        "MaxAccel", () -> closedLoopController.getSmartMotionMaxAccel(id), this::setMaxAccel);
-    builder.addDoubleProperty(
-        "AllowedErr",
-        () -> closedLoopController.getSmartMotionAllowedClosedLoopError(id),
-        this::setTolerance);
+    
+    builder.addDoubleProperty("MaxVel", closedLoopController::getD, this::setMaxVel);
+    builder.addDoubleProperty("MaxAccel", closedLoopController::getFF, this::setMaxAccel);
   }
 }
