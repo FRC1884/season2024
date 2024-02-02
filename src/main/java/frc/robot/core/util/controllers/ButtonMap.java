@@ -34,7 +34,17 @@ public interface ButtonMap {
     BUTTON_SHARE,
     BUTTON_OPTIONS,
     BUTTON_START,
-    BUTTON_TOUCHPAD;
+    BUTTON_TOUCHPAD,
+    BUTTON_EXTRA_1,
+    BUTTON_EXTRA_2,
+    BUTTON_EXTRA_3,
+    BUTTON_EXTRA_4,
+    BUTTON_EXTRA_5,
+    BUTTON_EXTRA_6,
+    BUTTON_EXTRA_7,
+    BUTTON_EXTRA_8,
+    BUTTON_EXTRA_9,
+    BUTTON_EXTRA_10;
   }
 
   // Triggers
@@ -42,6 +52,7 @@ public interface ButtonMap {
     BUTTON_LEFT_TRIGGER,
     BUTTON_RIGHT_TRIGGER;
   }
+  
 
   /*
    * // Pulled from TriggerButton Class

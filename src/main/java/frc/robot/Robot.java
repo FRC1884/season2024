@@ -52,10 +52,10 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     // UNTESTED GLASS TELEMETRY CODE - MAY RESULT IN NULL POINTERS
-    m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
+    /*m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
     m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
     m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
-    m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
+    m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());*/
   }
 
   /**
