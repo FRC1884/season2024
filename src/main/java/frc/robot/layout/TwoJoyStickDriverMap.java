@@ -57,6 +57,15 @@ public class TwoJoyStickDriverMap extends DriverMap {
     return controller.getButton(Button.BUTTON_A);
   }
 
+  @Override
+  public JoystickButton getFollowNoteButton(){
+    return controller.getButton(Button.BUTTON_X);
+  }
+
+  @Override
+  public JoystickButton getResetOdometryVisionButton(){
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
 
   @Override
   public void registerCommands() {

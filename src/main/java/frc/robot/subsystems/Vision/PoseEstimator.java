@@ -8,7 +8,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
@@ -66,12 +69,19 @@ public class PoseEstimator extends SubsystemBase {
       if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
         addVisionMeasurement(estimatePose, currentTimestamp);
       }
-      //if(VisionConfig.VISION_OVERRIDE_ENABLED)
     }
     // TODO Photonvision mode - Needs editing and filtering
     if (VisionConfig.IS_PHOTON_VISION_MODE && estimatePose != null) { // Limelight mode
       double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
-      addVisionMeasurement(estimatePose, photonTimestamp);
+      if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
+        addVisionMeasurement(estimatePose, photonTimestamp);
+      }
+    }
+
+    //UNTESTED - ALWAYS SETS DRIVETRAIN ODOMETRY TO THE POSE-ESTIMATOR ODOMETRY
+    //NOT GREAT FOR ERROR CHECKING POSE ESTIMATOR! - SET TO FALSE
+    if(VisionConfig.VISION_OVERRIDE_ENABLED){
+      drivetrain.resetOdometry(getPosition());
     }
 
     // Update for telemetry
@@ -246,4 +256,13 @@ public class PoseEstimator extends SubsystemBase {
   public Vector<N3> createVisionMeasurementStdDevs(double x, double y, double theta) {
     return VecBuilder.fill(x, y, Units.degreesToRadians(theta));
   }
+
+  /**
+   * Commnad to reset odometry of drivetrain and pose esimator to the one from vision
+   * @return a command to reset the Pose Estimator and Drivetrain to the vision pose
+   */
+  public Command resetOdometryVisionCommand(){
+    return new InstantCommand(() -> resetPoseEstimate(Vision.getInstance().visionBotPose()));
+  }
+  
 }
