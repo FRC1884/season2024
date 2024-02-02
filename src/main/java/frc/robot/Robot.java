@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -21,8 +23,6 @@ import frc.robot.util.SendableMotor;
  */
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
-  CANSparkBase motor1, motor2, motor3, motor4;
-  SendableMotor motor1Sendable, motor2Sendable, motor3Sendable, motor4Sendable;
   private final Field2d m_field = new Field2d();
 
   /**
@@ -55,7 +55,9 @@ public class Robot extends TimedRobot {
     m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
     m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
     m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
-    m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
+    if (Vision.getInstance().getNotePose2d() != null){
+      m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
+    }
   }
 
   /**

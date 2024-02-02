@@ -78,8 +78,8 @@ public class Vision extends SubsystemBase {
   private boolean aimTarget = false;
   private boolean detectTarget = false;
   private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
-  private RobotRelativePose targetRobotRelativePose;
-  private FieldRelativePose noteFieldRelativePose;
+  private Pose2d targetRobotRelativePose;
+  private Pose2d noteFieldRelativePose;
 
   // testing
   private final DecimalFormat df = new DecimalFormat();
@@ -120,14 +120,6 @@ public class Vision extends SubsystemBase {
       if (VisionConfig.IS_NEURAL_NET) {
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
-        LimelightHelpers.setCameraPose_RobotSpace(
-            VisionConfig.NN_LIMELIGHT,
-            VisionConfig.NN_LIME_X,
-            VisionConfig.NN_LIME_Y,
-            VisionConfig.NN_LIME_Z,
-            VisionConfig.NN_LIME_ROLL,
-            VisionConfig.NN_LIME_PITCH,
-            VisionConfig.NN_LIME_YAW);
       }
     }
     if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
@@ -230,8 +222,8 @@ public class Vision extends SubsystemBase {
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
         Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, detectHorizontalOffset);
-        targetRobotRelativePose = (RobotRelativePose) camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
-        noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, (FieldRelativePose) PoseEstimator.getInstance().getPosition());
+        targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
+        noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, PoseEstimator.getInstance().getPosition());
 
         //Shuffleboard Telemetry - robot relative
         visionNotePoseRobRelXEntry.setDouble(targetRobotRelativePose.getX());
@@ -277,7 +269,7 @@ public class Vision extends SubsystemBase {
   /**
    * @return Pose2d location of note Field Relative
    */
-  public FieldRelativePose getNotePose2d(){
+  public Pose2d getNotePose2d(){
     return noteFieldRelativePose;
   }
 
@@ -436,7 +428,7 @@ public class Vision extends SubsystemBase {
    * RobotRelativePose of the current target
    * @return the position of the target relative to the robot
    */
-  public RobotRelativePose targetPoseRobotSpace(){
+  public Pose2d targetPoseRobotSpace(){
     return targetRobotRelativePose;
   }
 
@@ -445,10 +437,10 @@ public class Vision extends SubsystemBase {
    * @param botPoseFieldRelative The FieldRelative Pose2d of the robot
    * @return the FieldRelative Pose2d of the note
    */
-  public FieldRelativePose notePoseFieldSpace(RobotRelativePose notePoseRobotRelative, FieldRelativePose botPoseFieldRelative){
+  public Pose2d notePoseFieldSpace(Pose2d notePoseRobotRelative, Pose2d botPoseFieldRelative){
     Transform2d noteTransform = new Transform2d(notePoseRobotRelative.getTranslation(), notePoseRobotRelative.getRotation());
     Pose2d notePose = botPoseFieldRelative.transformBy(noteTransform);
-    return (FieldRelativePose) notePose; 
+    return notePose; 
   }
 
   /**
