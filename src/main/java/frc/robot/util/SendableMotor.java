@@ -8,6 +8,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.RobotMap.PrototypeMap;
 
 /**
  * The {@link Sendable} implementation for motors that allows us to send an entire motor as a
@@ -19,7 +20,7 @@ public class SendableMotor implements Sendable {
   private CANSparkBase motor;
   private SparkPIDController closedLoopController;
 
-  public boolean openLoopEnabled, closedLoopEnabled;
+  public boolean openLoopEnabled = true, closedLoopEnabled = true;
   public double speed, setpoint;
 
   public SendableMotor(CANSparkBase motor) {
@@ -83,6 +84,11 @@ public class SendableMotor implements Sendable {
       this.setpoint = setpoint;
     }
   }
+  double getVelocity(){
+    return (setpoint*2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS)/60;
+  }
+
+  void setVelocity(double velocity) {}
 
   public void control() {
     if(openLoopEnabled) {
@@ -91,11 +97,11 @@ public class SendableMotor implements Sendable {
           new TrapezoidProfile.State(motor.getEncoder().getPosition(), motor.getEncoder().getVelocity()), 
           new TrapezoidProfile.State(motor.getEncoder().getPosition(), setpoint));
 
-        // motor1.getPIDController()
-        //     .setReference(((trapezoidalSetpoint1.velocity/(2 * (Math.PI)* RobotMap.PrototypeMap.WHEEL_RADIUS))*60), ControlType.kVelocity);
-
         this.motor.getPIDController()
-          .setReference(trapezoidalSetpoint.velocity + closedLoopController.getFF() * setpoint, ControlType.kVelocity);
+          .setReference(
+            ((trapezoidalSetpoint.velocity/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS))*60),
+            //trapezoidalSetpoint.velocity + closedLoopController.getFF() * setpoint, 
+            ControlType.kVelocity);
       }
       
       else motor.set(speed);
@@ -119,6 +125,8 @@ public class SendableMotor implements Sendable {
     builder.addDoubleProperty("Speed", motor::get, this::setSpeed);
 
     builder.addDoubleProperty("Setpoint", () -> setpoint, this::setSetpoint);
+    builder.addDoubleProperty("Velocity",  this::getVelocity, this::setVelocity);
+
 
     builder.addDoubleProperty("P", closedLoopController::getP, this::setP);
     builder.addDoubleProperty("I", closedLoopController::getI, this::setI);

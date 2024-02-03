@@ -85,8 +85,11 @@ public class RobotMap {
   }
 
   public static class FlywheelMap {
-    public static final int LEADER_FLYWHEEL = -1; // FIXME Set flywheel motor ID
-    public static final int FOLLOWER_FLYWHEEL = -1; // FIXME Set flywheel motor ID
+    public static final int TOP_SHOOTER = 42; // FIXME Set flywheel motor ID
+    public static final int BOTTOM_SHOOTER = 41; // FIXME Set flywheel motor ID
+    public static final int LEFT_PIVOT = 40; // FIXME Set flywheel motor ID
+    public static final int RIGHT_PIVOT = 39; // FIXME Set flywheel motor ID
+    public static final int FEEDER = 38; // FIXME Set flywheel motor ID
   }
 
   public static class CameraMap {
@@ -172,7 +175,7 @@ public class RobotMap {
   }
 
   public static class PrototypeMap {
-    public static final boolean LIVE_WINDOW_ENABLED = true;
+    public static final boolean LIVE_WINDOW_ENABLED = false;
 
     public static final int MOTOR_ID_1 = 42;
     public static final int MOTOR_ID_2 = 8;

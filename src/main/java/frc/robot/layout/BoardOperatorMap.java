@@ -79,5 +79,20 @@ public class BoardOperatorMap extends OperatorMap {
     throw new UnsupportedOperationException("Unimplemented method 'getShootButton'");
   }
 
+  @Override
+  Trigger getBoardAxisXMinus() {
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) < -0.9);
+  }
+
+  @Override
+  Trigger getBoardAxisYMinus() {
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_Y) < -0.9);
+  }
+
+  @Override
+  Trigger getBoardAxisIdle() {
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) == 0.0 && controller.getAxis(Axis.AXIS_LEFT_Y) == 0.0);
+  }
+
   
 }

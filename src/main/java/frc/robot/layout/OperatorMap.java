@@ -26,29 +26,35 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getShootButton();
 
-  // abstract JoystickButton getBoardButtonOne();
-  // abstract JoystickButton getBoardButtonTwo();
-  // abstract JoystickButton getBoardButtonThree();
-  // abstract JoystickButton getBoardButtonFour();
-  // abstract JoystickButton getBoardButtonFive();
-  // abstract JoystickButton getBoardButtonSix();
-  // abstract JoystickButton getBoardButtonSeven();
-  // abstract JoystickButton getBoardButtonEight();
-  // abstract JoystickButton getBoardButtonNine();
-  // abstract JoystickButton getBoardButtonTen();
-  // abstract JoystickButton getBoardButtonEleven();
-  // abstract JoystickButton getBoardButtonTwelve();
-  // abstract Trigger getBoardAxisX();
-  // abstract Trigger getBoardAxisY();
-
+  abstract JoystickButton getBoardButtonOne();
+  abstract JoystickButton getBoardButtonTwo();
+  abstract JoystickButton getBoardButtonThree();
+  abstract JoystickButton getBoardButtonFour();
+  abstract JoystickButton getBoardButtonFive();
+  abstract JoystickButton getBoardButtonSix();
+  abstract JoystickButton getBoardButtonSeven();
+  abstract JoystickButton getBoardButtonEight();
+  abstract JoystickButton getBoardButtonNine();
+  abstract JoystickButton getBoardButtonTen();
+  abstract JoystickButton getBoardButtonEleven();
+  abstract JoystickButton getBoardButtonTwelve();
+  abstract Trigger getBoardAxisX();
+  abstract Trigger getBoardAxisY();
+  abstract Trigger getBoardAxisXMinus();
+  abstract Trigger getBoardAxisYMinus();
+  abstract Trigger getBoardAxisIdle();
 
 
   private void registerPrototype() {
     if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED) {
       Prototypes prototypes = Prototypes.getInstance();
-      getResetButton().onTrue(prototypes.run(0.0, 0.0, 0.0, 0.0));
-      getIntakeButton().onTrue(prototypes.run(0.0, 0.0, 1.0, 1.0));
-      getShootButton().onTrue(prototypes.run(1.0, 1.0, 0.0, 0.0));
+      // getBoardAxisX().onTrue(prototypes.run(-0.1, 0.1, 0.7, 0.0));
+      // getBoardAxisXMinus().onTrue(prototypes.run(-0.2, 0.2, 0.7, 0.0));
+      // getBoardAxisY().onTrue(prototypes.run(-0.3, 0.3, 0.7, 0.0));
+      // getBoardAxisYMinus().onTrue(prototypes.run(-0.4, 0.4, 0.7, 0.0));
+      getBoardButtonEleven().onTrue(prototypes.run(-prototypes.getRampValue(), prototypes.getRampValue(), 0.0, 0.0));
+      getBoardButtonOne().whileTrue(prototypes.run(-0.3, 0.3, 0.5, 1));
+      getBoardButtonTwo().whileTrue(prototypes.run(-0.3, 0.3, 0.5, 0));
     }
   }
 
@@ -57,19 +63,17 @@ public abstract class OperatorMap extends CommandMap {
     registerPrototype();
     // getBoardAxisX().onTrue(new PrintCommand("x-axis works"));
     // getBoardAxisY().onTrue(new PrintCommand("y-axis works"));
-    // getBoardButtonOne().whileTrue(new PrintCommand("Button 1 works"));
-    // getBoardButtonTwo().whileTrue(new PrintCommand("Button 2 works"));
-    // getBoardButtonThree().whileTrue(new PrintCommand("Button 3 works"));
-    // getBoardButtonFour().whileTrue(new PrintCommand("Button 4 works"));
-    // getBoardButtonFive().whileTrue(new PrintCommand("Button 5 works"));
-    // getBoardButtonSix().whileTrue(new PrintCommand("Button 6 works"));
-    // getBoardButtonSeven().whileTrue(new PrintCommand("Button 7 works"));
-    // getBoardButtonEight().whileTrue(new PrintCommand("Button 8 works"));
-    // getBoardButtonNine().whileTrue(new PrintCommand("Button 9 works"));
-    // getBoardButtonTen().whileTrue(new PrintCommand("Button 10 works"));
-    // getBoardButtonEleven().whileTrue(new PrintCommand("Button 11 works"));
-    // getBoardButtonTwelve().whileTrue(new PrintCommand("Button 12 works"));
-
-    
+    // getBoardButtonOne().onTrue(new PrintCommand("Button 1 works"));
+    // getBoardButtonTwo().onTrue(new PrintCommand("Button 2 works"));
+    // getBoardButtonThree().onTrue(new PrintCommand("Button 3 works"));
+    // getBoardButtonFour().onTrue(new PrintCommand("Button 4 works"));
+    // getBoardButtonFive().onTrue(new PrintCommand("Button 5 works"));
+    // getBoardButtonSix().onTrue(new PrintCommand("Button 6 works"));
+    // getBoardButtonSeven().onTrue(new PrintCommand("Button 7 works"));
+    // getBoardButtonEight().onTrue(new PrintCommand("Button 8 works"));
+    // getBoardButtonNine().onTrue(new PrintCommand("Button 9 works"));
+    // getBoardButtonTen().onTrue(new PrintCommand("Button 10 works"));
+    // getBoardButtonEleven().onTrue(new PrintCommand("Button 11 works"));
+    // getBoardButtonTwelve().onTrue(new PrintCommand("Button 12 works"));
   }
 }
