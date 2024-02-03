@@ -63,7 +63,7 @@ public class RobotMap {
   //TODO rename to path swerve constants.
   public static final class SwerveConstants {
     public static final double MAX_VELOCITY = 4.8;
-    public static final double MAX_ACCELERATION = 20;
+    public static final double MAX_ACCELERATION = 5;
     public static final double MAX_ANG_VELOCITY = 1;
     public static final double MAX_ANG_ACCELERATION = 1;
   }

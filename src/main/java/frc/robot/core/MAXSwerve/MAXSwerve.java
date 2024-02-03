@@ -362,8 +362,7 @@ public abstract class MAXSwerve extends SubsystemBase {
    * FIX: MUST BE A SUPPLIER SO IT CONTINUOUSLY UPDATES
    * @return command to generate a path On-the-fly to a note
    */
-  public Command followNoteCommand(Supplier<Pose2d> targetPose) {
-    System.out.println("patrick");
+  public Command onTheFlyPathCommand(Supplier<Pose2d> targetPose) {
     return new ProxyCommand(() -> followPathCommand(
         new PathPlannerPath(
             PathPlannerPath.bezierFromPoses(new Pose2d(this.getPose().getTranslation(),

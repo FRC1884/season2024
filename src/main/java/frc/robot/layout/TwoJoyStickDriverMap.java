@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
+import frc.robot.core.util.controllers.ButtonMap.Dpad;
 import frc.robot.core.util.controllers.GameController;
 
 public class TwoJoyStickDriverMap extends DriverMap {
@@ -29,12 +30,12 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveXSpeed() {
-    return -controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
   @Override
   public double getSwerveYSpeed() {
-    return -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
   @Override
@@ -66,7 +67,15 @@ public class TwoJoyStickDriverMap extends DriverMap {
   public JoystickButton getResetOdometryVisionButton(){
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
-
+  @Override
+  public JoystickButton getSpeakerBlueButton(){
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+ @Override
+  public JoystickButton getAmpBlueButton(){
+    return controller.getButton(Button.BUTTON_OPTIONS);
+  }
+    
   @Override
   public void registerCommands() {
     super.registerCommands();

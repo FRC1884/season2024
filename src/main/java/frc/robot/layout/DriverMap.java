@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ExampleConfig;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
@@ -40,6 +41,10 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getResetOdometryVisionButton();
 
+  abstract JoystickButton getSpeakerBlueButton();
+
+  abstract JoystickButton getAmpBlueButton();
+
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
@@ -53,8 +58,11 @@ public abstract class DriverMap extends CommandMap {
       getTestButton()
           .onTrue(drivetrain.TestAllCommand());
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
-      getFollowNoteButton().onTrue(vision.followNoteCommand());
+      getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getResetOdometryVisionButton().onTrue(PoseEstimator.getInstance().resetOdometryVisionCommand());
+      getSpeakerBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_SPEAKER));
+      getAmpBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_AMP));
+
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
       // .onTrue(
