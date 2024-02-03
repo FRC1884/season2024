@@ -268,6 +268,10 @@ public class Vision extends SubsystemBase {
         botPose = currentPose3d.toPose2d();
         photonTimestamp = update.get().timestampSeconds;
       }
+
+      visionXDataEntry.setDouble(botPose.getX());
+      visionYDataEntry.setDouble(botPose.getY());
+      visionRotDataEntry.setDouble(botPose.getRotation().getDegrees());
     }
   }
 
