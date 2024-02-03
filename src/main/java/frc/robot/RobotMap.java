@@ -106,7 +106,7 @@ public class RobotMap {
     public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = true;
     public static final boolean IS_PHOTON_VISION_MODE = false;
-    public static final boolean IS_NEURAL_NET = false;
+    public static final boolean IS_NEURAL_NET = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.0; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -118,19 +118,19 @@ public class RobotMap {
     public static final int APRILTAG_PIPELINE = 1;
     public static final int NOTE_DETECTOR_PIPELINE = 2;
 
-    public static final double POSE_LIME_X = 0.21; // Forward - Meters
-    public static final double POSE_LIME_Y = 0; // Side
-    public static final double POSE_LIME_Z = 0.235; // Up
+    public static final double POSE_LIME_X = 0.322; // Forward - Meters
+    public static final double POSE_LIME_Y = -0.274; // Side - Right is positive on the limelight
+    public static final double POSE_LIME_Z = 0.21; // Up
     public static final double POSE_LIME_PITCH = 30; // NEED to find units - degrees for now
     public static final double POSE_LIME_ROLL = 0.0; 
     public static final double POSE_LIME_YAW = 0.0;
 
-    public static final double NN_LIME_X = 0.1;
-    public static final double NN_LIME_Y = 0.1;
-    public static final double NN_LIME_Z = 0.1;
-    public static final double NN_LIME_PITCH = 0.1;
-    public static final double NN_LIME_ROLL = 0.1;
-    public static final double NN_LIME_YAW = 0.1;
+    public static final double NN_LIME_X = 0.322;
+    public static final double NN_LIME_Y = 0.234; //Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.345; // 
+    public static final double NN_LIME_PITCH = -0.349;
+    public static final double NN_LIME_ROLL = 0.0;
+    public static final double NN_LIME_YAW = 0.0;
     public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(POSE_LIME_X, POSE_LIME_Y, new Rotation2d());
 
     // Photonvision

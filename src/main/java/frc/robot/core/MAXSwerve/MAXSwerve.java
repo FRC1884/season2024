@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -60,6 +61,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   private Pigeon2 gyro;
   private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
   GenericEntry distanceEntry = tab.add("Distance to target", 0).getEntry();
+  GenericEntry rotationTargetAngleEntry = tab.add("Rotation Target Angle", 0).getEntry();
 
   SwerveDriveOdometry odometry;
 
@@ -99,7 +101,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   public void periodic() {
     // Update the odometry in the periodic block
     //System.out.println(odometry.getPoseMeters());
-    // System.out.println(getYaw());
+    //System.out.println(MathUtil.inputModulus(this.getYaw().getDegrees(), -180, 180));
     odometry.update(
         getYaw(),
         new SwerveModulePosition[] {
@@ -225,18 +227,22 @@ public abstract class MAXSwerve extends SubsystemBase {
           double targetX = 1;
           double targetY = 0;
           double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
-          double multiplier = 0;
-          if(Math.abs((this.getYaw().getDegrees()-targetAngle))>180)
-            multiplier = -1;
-          else
-            multiplier = 1;
-          System.out.println(targetAngle);
-          if (Math.abs(multiplier*pid.calculate(this.getYaw().getDegrees(),targetAngle*multiplier)) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
-            this.drive(xSpeed.get(),ySpeed.get(), multiplier*RobotMap.SwerveConstants.MAX_ANG_VELOCITY, true, true);
+          rotationTargetAngleEntry.setDouble(targetAngle);  
+          //System.out.println(targetAngle);
+          if (Math.abs(pid.calculate(MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180),
+              targetAngle)) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
+               this.drive(xSpeed.get(),ySpeed.get(),RobotMap.SwerveConstants.MAX_ANG_VELOCITY, 
+                true, true);
           } else {
-            this.drive(xSpeed.get(),ySpeed.get(),multiplier*pid.calculate(this.getYaw().getDegrees(), targetAngle*multiplier), true, true);
+            double newSpeed = pid.calculate(MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180), 
+                targetAngle);
+            if(newSpeed < 0) newSpeed = -0.05;
+            else newSpeed = 0.05;
+                this.drive(xSpeed.get(),ySpeed.get(),
+                newSpeed, true, true);
+                // System.out.println(newSpeed + "," + MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180) + "," 
+                // + targetAngle );
           }
-
             },
             interrupted -> {
               pid.close();
