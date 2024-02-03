@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.core.util.controllers.BoardController;
 import frc.robot.core.util.controllers.ButtonMap;
 import frc.robot.core.util.controllers.Xbox;
 
@@ -9,7 +10,7 @@ public class ExampleConfig {
     public static final boolean ELEVATOR_ENABLED = false;
     public static final boolean FLYWHEEL_ENABLED = false;
     public static final boolean INTAKE_ENABLED = false;
-    public static final boolean PROTOTYPE_ENABLED = false;
+    public static final boolean PROTOTYPE_ENABLED = true;
   }
 
   public class Controllers {
@@ -21,7 +22,7 @@ public class ExampleConfig {
     }
 
     public static ButtonMap getOperatorController() {
-      return new Xbox();
+      return new BoardController();
     }
   }
 }

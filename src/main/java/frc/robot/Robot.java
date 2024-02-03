@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.Vision.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
@@ -24,6 +25,7 @@ import frc.robot.util.SendableMotor;
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private final Field2d m_field = new Field2d();
+  private Prototypes prototypes;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,10 +37,12 @@ public class Robot extends TimedRobot {
     // robot/auto/selector/AutoModeSelector.java
     ctreConfigs = new CTREConfigs();
 
-    enableLiveWindowInTest(true);
+    if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
+      enableLiveWindowInTest(true);
     var autoModeSelector = AutoModeSelector.getInstance();
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
+    prototypes = Prototypes.getInstance();
   }
 
   /**
