@@ -1,6 +1,7 @@
 package frc.robot;
 
 import frc.robot.core.util.controllers.GameController;
+import frc.robot.layout.BoardOperatorMap;
 import frc.robot.layout.TwoJoyStickDriverMap;
 import frc.robot.layout.TwoJoyStickOperatorMap;
 
@@ -35,7 +36,7 @@ public class OI {
     // associates that to the command that you want to run, but thats just a
     // theory, a game theory.
     new TwoJoyStickDriverMap(driver).registerCommands();
-    new TwoJoyStickOperatorMap(operator).registerCommands();
+    new BoardOperatorMap(operator).registerCommands();
   }
 
   private OI() {
