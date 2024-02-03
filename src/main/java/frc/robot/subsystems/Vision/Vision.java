@@ -18,9 +18,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap.VisionConfig;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;
@@ -96,6 +99,8 @@ public class Vision extends SubsystemBase {
     setName("Vision");
     botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
     tempPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
+    noteFieldRelativePose = new Pose2d();
+    targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
     limeLatency = 0.0;
     // botPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
@@ -216,7 +221,7 @@ public class Vision extends SubsystemBase {
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
       detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
       if (detectTarget) {
-        detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
+        detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); //HAD TO NEGATIVE TO MAKE CCW POSITIVE
         detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
         double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_X, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset) ;
         //Note: limelight is already CCW positive, so tx does not have to be * -1
@@ -441,6 +446,14 @@ public class Vision extends SubsystemBase {
     Transform2d noteTransform = new Transform2d(notePoseRobotRelative.getTranslation(), notePoseRobotRelative.getRotation());
     Pose2d notePose = botPoseFieldRelative.transformBy(noteTransform);
     return notePose; 
+  }
+
+  /**
+   * Commnad to go to the note
+   * @return a command to reset the Pose Estimator and Drivetrain to the vision pose
+   */
+  public Command followNoteCommand(){
+    return Drivetrain.getInstance().followNoteCommand(this::getNotePose2d); //doing this::getNotePose2d converts to a supplier
   }
 
   /**

@@ -60,9 +60,10 @@ public class RobotMap {
     }
   }
 
+  //TODO rename to path swerve constants.
   public static final class SwerveConstants {
-    public static final double MAX_VELOCITY = 1;
-    public static final double MAX_ACCELERATION = 1;
+    public static final double MAX_VELOCITY = 4.8;
+    public static final double MAX_ACCELERATION = 20;
     public static final double MAX_ANG_VELOCITY = 1;
     public static final double MAX_ANG_ACCELERATION = 1;
   }
@@ -131,7 +132,7 @@ public class RobotMap {
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
     public static final double NN_LIME_YAW = 0.0;
-    public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(POSE_LIME_X, POSE_LIME_Y, new Rotation2d());
+    public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(NN_LIME_X, NN_LIME_Y, new Rotation2d());
 
     // Photonvision
     public static final String POSE_PHOTON_1 = "photon-cam1";

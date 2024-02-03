@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -89,12 +90,12 @@ public abstract class MAXSwerve extends SubsystemBase {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
     var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
-      this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
-    else if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
-      this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
-    else
-      this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+    // if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
+    //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
+    // else if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
+    //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
+    // else
+    //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
   }
 
   @Override
@@ -357,29 +358,35 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   /**
    * Command to drive to a note detected using Vision - NEEDS TO BE REWORKED TO USE NAVIGATE
+   * CURRENT ERROR: Robot travels to the robot relative note pose in field relative coordinates
+   * FIX: MUST BE A SUPPLIER SO IT CONTINUOUSLY UPDATES
    * @return command to generate a path On-the-fly to a note
    */
-  public Command followNoteCommand() {
-    return followPathCommand(
+  public Command followNoteCommand(Supplier<Pose2d> targetPose) {
+    System.out.println("patrick");
+    return new ProxyCommand(() -> followPathCommand(
         new PathPlannerPath(
-            PathPlannerPath.bezierFromPoses(new Pose2d(PoseEstimator.getInstance().getPosition().getTranslation(),
-                                                      Rotation2d.fromDegrees(0)),
-                                            new Pose2d (Vision.getInstance().getNotePose2d().getTranslation(),
-                                                          Rotation2d.fromDegrees(0))),
+            PathPlannerPath.bezierFromPoses(new Pose2d(this.getPose().getTranslation(),
+                                                Rotation2d.fromDegrees(0)),
+                                            new Pose2d(targetPose.get().getTranslation(),
+                                            Rotation2d.fromDegrees(0))),
             new PathConstraints(
                 RobotMap.SwerveConstants.MAX_VELOCITY,
                 RobotMap.SwerveConstants.MAX_ACCELERATION,
                 RobotMap.SwerveConstants.MAX_ANG_VELOCITY,
                 RobotMap.SwerveConstants.MAX_ANG_ACCELERATION),
-            new GoalEndState(0, Vision.getInstance().getNotePose2d().getRotation()),
+            new GoalEndState(0, targetPose.get().getRotation()),
             false),
-        false);
+        false));
   }
 
   public Command navigate(Supplier<Pose2d> targetPose, Supplier<String> pathName) {
     return followPathCommand(
         new PathPlannerPath(
-            PathPlannerPath.bezierFromPoses(this.getPose(), targetPose.get()),
+            PathPlannerPath.bezierFromPoses(new Pose2d(this.getPose().getTranslation(),
+                                                Rotation2d.fromDegrees(0)),
+                                            new Pose2d(targetPose.get().getTranslation(),
+                                            Rotation2d.fromDegrees(0))),
             new PathConstraints(
                 RobotMap.SwerveConstants.MAX_VELOCITY,
                 RobotMap.SwerveConstants.MAX_ACCELERATION,

@@ -14,6 +14,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.test;
 import frc.robot.subsystems.Vision.PoseEstimator;
+import frc.robot.subsystems.Vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
 
@@ -42,6 +43,7 @@ public abstract class DriverMap extends CommandMap {
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
       var drivetrain = Drivetrain.getInstance();
+      var vision = Vision.getInstance();
       drivetrain.setDefaultCommand(
       drivetrain.driveCommand(
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
@@ -51,7 +53,7 @@ public abstract class DriverMap extends CommandMap {
       getTestButton()
           .onTrue(drivetrain.TestAllCommand());
       getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
-      getFollowNoteButton().onTrue(drivetrain.followNoteCommand());
+      getFollowNoteButton().onTrue(vision.followNoteCommand());
       getResetOdometryVisionButton().onTrue(PoseEstimator.getInstance().resetOdometryVisionCommand());
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()
