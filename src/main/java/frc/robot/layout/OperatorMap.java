@@ -52,9 +52,9 @@ public abstract class OperatorMap extends CommandMap {
       // getBoardAxisXMinus().onTrue(prototypes.run(-0.2, 0.2, 0.7, 0.0));
       // getBoardAxisY().onTrue(prototypes.run(-0.3, 0.3, 0.7, 0.0));
       // getBoardAxisYMinus().onTrue(prototypes.run(-0.4, 0.4, 0.7, 0.0));
-      getBoardButtonEleven().onTrue(prototypes.run(-prototypes.getRampValue(), prototypes.getRampValue(), 0.0, 0.0));
-      getBoardButtonOne().whileTrue(prototypes.run(-0.3, 0.3, 0.5, 1));
-      getBoardButtonTwo().whileTrue(prototypes.run(-0.3, 0.3, 0.5, 0));
+      getBoardButtonEleven().onTrue(prototypes.run(0.0, 0.0, 0.0, 0.0));
+      getBoardButtonOne().whileTrue(prototypes.run(-prototypes.getRampValue(), prototypes.getRampValue(), 0.5, 1));
+      getBoardButtonTwo().whileTrue(prototypes.run(-prototypes.getRampValue(), prototypes.getRampValue(), 0.5, -1));
     }
   }
 
