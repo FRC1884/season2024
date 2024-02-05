@@ -85,10 +85,10 @@ public class Prototypes extends SubsystemBase {
         return new RunCommand(()->{
             if(Subsystems.PROTOTYPE_ENABLED && !RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED) {
                 if(motor1 != null) {
-                    motor1.set(speed1 + getRampValue());
+                    motor1.set(speed1);
                 }
                 if(motor2 != null) {
-                    motor2.set(speed2 - getRampValue());
+                    motor2.set(speed2);
                 }
                 if(motor3 != null) {
                     motor3.set(speed3);
@@ -97,8 +97,9 @@ public class Prototypes extends SubsystemBase {
                     motor4.set(speed4);
                 }
             }
-            if(speed4 == 0) rampValue -= 0.01;
-            if(speed4 == 1) rampValue += 0.01;
+            if(speed4 == -1.0) rampValue -= 0.01;
+            if(speed4 == 1.0) rampValue += 0.01;
+            if(speed4 == 0.0) rampValue =0;
         }, this);
     }
 }
