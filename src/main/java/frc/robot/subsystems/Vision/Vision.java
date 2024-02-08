@@ -129,6 +129,7 @@ public class Vision extends SubsystemBase {
     }
     if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
+      photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       photon1HasTargets = false;
       try {
         aprilTagFieldLayout =

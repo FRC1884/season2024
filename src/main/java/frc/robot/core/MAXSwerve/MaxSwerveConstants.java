@@ -6,7 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public class MaxSwerveConstants {
-  public static final double kMaxSpeedMetersPerSecond = 4.8;
+  public static final double kMaxSpeedMetersPerSecond = 2.4;
   public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
   public static final double kDirectionSlewRate = 1.2; // radians per second

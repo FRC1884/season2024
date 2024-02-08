@@ -34,187 +34,86 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getBoardButtonOne() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonOne'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonTwo() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonTwo'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonThree() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonThree'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonFour() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonFour'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonFive() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonFive'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonSix() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonSix'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonSeven() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonSeven'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonEight() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonEight'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonNine() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonNine'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonTen() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonTen'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonEleven() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonEleven'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getBoardButtonTwelve() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonTwelve'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   Trigger getBoardAxisX() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardAxisX'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   Trigger getBoardAxisY() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardAxisY'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   Trigger getBoardAxisXMinus() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardAxisXMinus'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   Trigger getBoardAxisYMinus() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardAxisYMinus'");
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   Trigger getBoardAxisIdle() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getBoardAxisIdle'");
+    return controller.getButton(Button.BUTTON_X);
   }
-
-  // @Override
-  // JoystickButton getBoardButtonOne() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonOne'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonTwo() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonTwo'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonThree() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonThree'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonFour() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonFour'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonFive() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonFive'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonSix() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonSix'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonSeven() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonSeven'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonEight() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonEight'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonNine() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonNine'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonTen() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonTen'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonEleven() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonEleven'");
-  // }
-
-  // @Override
-  // JoystickButton getBoardButtonTwelve() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardButtonTwelve'");
-  // }
-
-  // @Override
-  // Trigger getBoardAxisX() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardAxisX'");
-  // }
-
-  // @Override
-  // Trigger getBoardAxisY() {
-  //   // TODO Auto-generated method stub
-  //   throw new UnsupportedOperationException("Unimplemented method 'getBoardAxisY'");
-  // }
 }

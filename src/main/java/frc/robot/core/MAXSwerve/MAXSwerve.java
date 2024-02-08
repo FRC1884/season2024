@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -60,9 +61,10 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   private MAXSwerveModule fl, fr, bl, br;
   private Pigeon2 gyro;
-  private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-  GenericEntry distanceEntry = tab.add("Distance to target", 0).getEntry();
-  GenericEntry rotationTargetAngleEntry = tab.add("Rotation Target Angle", 0).getEntry();
+  private ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain Debugging");
+  GenericEntry targetAngleEntry = tab.add("Target Angle", 0).getEntry();
+  GenericEntry currentAngleEntry = tab.add("Current Angle", 0).getEntry();
+  private double targetAngleTelemetry = 0;
 
   SwerveDriveOdometry odometry;
 
@@ -108,6 +110,8 @@ public abstract class MAXSwerve extends SubsystemBase {
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
+    targetAngleEntry.setDouble(targetAngleTelemetry);
+    currentAngleEntry.setDouble(getHeading() % 360);
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -216,43 +220,46 @@ public abstract class MAXSwerve extends SubsystemBase {
     br.setDesiredState(swerveModuleStates[3]);
   }
 
-    public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed) {
+    public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Pose2d> targetPose) {
     PIDController pid = new PIDController(0.01, 0, 0);
     pid.setTolerance(0.1);
-    return new RepeatCommand(
-      new FunctionalCommand(
-        () -> {
-          // Init
-        },
-        () -> {
-          double targetX = 1;
-          double targetY = 0;
-          double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
-          rotationTargetAngleEntry.setDouble(targetAngle);  
-          //System.out.println(targetAngle);
-          if (Math.abs(pid.calculate(MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180),
-              targetAngle)) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
-               this.drive(xSpeed.get(),ySpeed.get(),RobotMap.SwerveConstants.MAX_ANG_VELOCITY, 
-                true, true);
-          } else {
-            double newSpeed = pid.calculate(MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180), 
-                targetAngle);
-            if(newSpeed < 0) newSpeed = -0.05;
-            else newSpeed = 0.05;
-                this.drive(xSpeed.get(),ySpeed.get(),
-                newSpeed, true, true);
-                // System.out.println(newSpeed + "," + MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180) + "," 
-                // + targetAngle );
-          }
-            },
-            interrupted -> {
-              pid.close();
-              this.drive(0.0,0.0,0.0,true,true);
-            },
-            () -> {
-              return pid.atSetpoint();
-            },
-            this));
+    return new ProxyCommand(() ->
+      new RepeatCommand(
+        new FunctionalCommand(
+          () -> {
+            // Init
+          },
+          () -> {
+            double targetX = targetPose.get().getX();
+            double targetY = targetPose.get().getY();
+            double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
+            double robotAngle = this.getYaw().getDegrees();
+
+            targetAngleTelemetry = targetAngle;
+            //System.out.println(targetAngle);
+            if (Math.abs(pid.calculate(MathUtil.inputModulus(robotAngle,-180,180),
+                targetAngle)) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
+                this.drive(xSpeed.get(),ySpeed.get(),RobotMap.SwerveConstants.MAX_ANG_VELOCITY, 
+                  true, true);
+            } else {
+              double newSpeed = pid.calculate(MathUtil.inputModulus(robotAngle,-180,180), 
+                  targetAngle);
+                  this.drive(xSpeed.get(),ySpeed.get(),
+                  newSpeed, true, true);
+                  // System.out.println(newSpeed + "," + MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180) + "," 
+                  // + targetAngle );
+            }
+            
+              },
+              interrupted -> {
+                pid.close();
+                this.drive(0.0,0.0,0.0,true,true);
+              },
+              () -> {
+                return pid.atSetpoint();
+              },
+              this))
+    );
   }
 
   public void driveWithChassisSpeeds(ChassisSpeeds chassisSpeeds) {
