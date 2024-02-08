@@ -13,28 +13,19 @@ public class BoardOperatorMap extends OperatorMap {
     super(controller);
   }
 
-
   @Override
   JoystickButton getResetButton() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getResetButton'");
+    return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
   JoystickButton getIntakeButton() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getIntakeButton'");
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
   JoystickButton getShootButton() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getShootButton'");
-  }
-
-  @Override
-  public void registerCommands() {
-    super.registerCommands();
+    return controller.getButton(Button.BUTTON_Y);
   }
 
 }
