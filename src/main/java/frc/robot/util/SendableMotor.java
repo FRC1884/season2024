@@ -25,11 +25,16 @@ public class SendableMotor implements Sendable {
   public double speed; 
   private double setpoint;
   private SlewRateLimiter sRL;
+  private boolean isInverted = false;
+  private double P = 0.0003;
+  private double I = 0.0000008;
+  private double D= 0.000006;
+
 
   public SendableMotor(CANSparkBase motor) {
     this.motor = motor;
     closedLoopController = motor.getPIDController();
-    sRL = new SlewRateLimiter(1);
+    sRL = new SlewRateLimiter(3);
   }
 
   void enable(boolean enabled) {
@@ -47,15 +52,18 @@ public class SendableMotor implements Sendable {
   }
 
   void setP(double p) {
-    if (openLoopEnabled && closedLoopEnabled) closedLoopController.setP(p);
+    P = p;
+    if (openLoopEnabled && closedLoopEnabled) closedLoopController.setP(P);
   }
 
   void setI(double i) {
-    if (openLoopEnabled && closedLoopEnabled) closedLoopController.setI(i);
+    I=i;
+    if (openLoopEnabled && closedLoopEnabled) closedLoopController.setI(I);
   }
 
   void setD(double d) {
-    if (openLoopEnabled && closedLoopEnabled) closedLoopController.setD(d);
+    D=d;
+    if (openLoopEnabled && closedLoopEnabled) closedLoopController.setD(D);
   }
 
   void setFF(double ff) {
@@ -92,13 +100,20 @@ public class SendableMotor implements Sendable {
     return (motor.getEncoder().getVelocity()*2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS)/60;
   }
 
+  // TODO: fix isInverted so we don't do negative doubles
+  void isInverted(boolean isInverted){ 
+    isInverted= this.isInverted;
+    if(isInverted)motor.setInverted(isInverted);
+    else motor.setInverted(isInverted);
+  }
+
   void setVelocity(double velocity) {}
 
   public void control() {
     if(openLoopEnabled) {
-      if(closedLoopEnabled != false) {
+      if(closedLoopEnabled) {
         this.motor.getPIDController()
-          .setReference(sRL.calculate((setpoint/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS))*60),
+          .setReference((setpoint/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS))*60,
             //trapezoidalSetpoint.velocity + closedLoopController.getFF() * setpoint, 
             ControlType.kVelocity);
       }
@@ -119,6 +134,7 @@ public class SendableMotor implements Sendable {
     builder.setActuator(false);
 
     builder.addBooleanProperty("Enabled", () -> openLoopEnabled, this::enable);
+    builder.addBooleanProperty("isInverted", () -> isInverted, this::isInverted);
     builder.addBooleanProperty("PID Enabled", () -> closedLoopEnabled, this::enablePID);
 
     builder.addDoubleProperty("Speed", motor::get, this::setSpeed);

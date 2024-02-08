@@ -15,17 +15,17 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getResetButton() {
-    return controller.getButton(Button.BUTTON_A);
+    return controller.getButton(Button.BUTTON_EXTRA_2);
   }
 
   @Override
   JoystickButton getIntakeButton() {
-    return controller.getButton(Button.BUTTON_B);
+    return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
   JoystickButton getShootButton() {
-    return controller.getButton(Button.BUTTON_Y);
+    return controller.getButton(Button.BUTTON_B);
   }
 
 }
