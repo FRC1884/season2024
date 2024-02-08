@@ -13,53 +13,6 @@ public class BoardOperatorMap extends OperatorMap {
     super(controller);
   }
 
-  @Override
-  public void registerCommands() {
-    super.registerCommands();
-  }
-
-  public JoystickButton getBoardButtonOne(){
-    return controller.getButton(Button.BUTTON_EXTRA_2);
-  }
-  public JoystickButton getBoardButtonTwo(){
-    return controller.getButton(Button.BUTTON_A);
-  }
-  public JoystickButton getBoardButtonThree(){
-    return controller.getButton(Button.BUTTON_B);
-  }
-  public JoystickButton getBoardButtonFour(){
-    return controller.getButton(Button.BUTTON_X);
-  }
-  public JoystickButton getBoardButtonFive(){
-    return controller.getButton(Button.BUTTON_Y);
-  }
-  public JoystickButton getBoardButtonSix(){
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
-  }
-  public JoystickButton getBoardButtonSeven(){
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
-  }
-  public JoystickButton getBoardButtonEight(){
-    return controller.getButton(Button.BUTTON_SHARE);
-  }
-  public JoystickButton getBoardButtonNine(){
-    return controller.getButton(Button.BUTTON_OPTIONS);
-  }
-  public JoystickButton getBoardButtonTen(){
-    return controller.getButton(Button.BUTTON_START);
-  }
-  public JoystickButton getBoardButtonEleven(){
-    return controller.getButton(Button.BUTTON_TOUCHPAD);
-  }
-  public JoystickButton getBoardButtonTwelve(){
-    return controller.getButton(Button.BUTTON_EXTRA_1); 
-  }
-  public Trigger getBoardAxisX(){
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
-  }
-  public Trigger getBoardAxisY(){
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_Y) > 0.9);
-  }
 
   @Override
   JoystickButton getResetButton() {
@@ -80,19 +33,8 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  Trigger getBoardAxisXMinus() {
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) < -0.9);
+  public void registerCommands() {
+    super.registerCommands();
   }
 
-  @Override
-  Trigger getBoardAxisYMinus() {
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_Y) < -0.9);
-  }
-
-  @Override
-  Trigger getBoardAxisIdle() {
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) == 0.0 && controller.getAxis(Axis.AXIS_LEFT_Y) == 0.0);
-  }
-
-  
 }

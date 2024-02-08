@@ -36,7 +36,13 @@ public class OI {
     // associates that to the command that you want to run, but thats just a
     // theory, a game theory.
     new TwoJoyStickDriverMap(driver).registerCommands();
-    new TwoJoyStickOperatorMap(operator).registerCommands();
+    if(ExampleConfig.Controllers.BOARD_OPERATOR_ENABLED){
+      new BoardOperatorMap(operator).registerCommands();
+    }
+    else if (ExampleConfig.Controllers.OPERATOR_ENABLED){
+      new TwoJoyStickOperatorMap(operator).registerCommands();
+    }
+    
   }
 
   private OI() {

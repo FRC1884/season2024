@@ -16,6 +16,7 @@ public class ExampleConfig {
   public class Controllers {
     public static final boolean DRIVER_ENALBED = true;
     public static final boolean OPERATOR_ENABLED = false;
+    public static final boolean BOARD_OPERATOR_ENABLED = false;
 
     public static ButtonMap getDriverController() {
       return new Xbox();

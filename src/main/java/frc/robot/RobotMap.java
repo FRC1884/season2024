@@ -69,7 +69,7 @@ public class RobotMap {
   }
 
   public static final class Coordinates {
-    public static final Pose2d BLUE_SPEAKER = new Pose2d(1.45, 5.52, new Rotation2d(Math.PI));
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(0, 5.52, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
     public static final Pose2d RED_SPEAKER = new Pose2d(15.1, 5.6, new Rotation2d(Math.PI));

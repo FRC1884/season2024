@@ -22,98 +22,14 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  public void registerCommands() {
-    super.registerCommands();
-  }
-
-  @Override
   JoystickButton getShootButton() {
     System.out.println("hello");
     return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
-  JoystickButton getBoardButtonOne() {
-    return controller.getButton(Button.BUTTON_EXTRA_2);
+  public void registerCommands() {
+    super.registerCommands();
   }
 
-  @Override
-  JoystickButton getBoardButtonTwo() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonThree() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonFour() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonFive() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonSix() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonSeven() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonEight() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonNine() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonTen() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getBoardButtonEleven() {
-    return controller.getButton(Button.BUTTON_TOUCHPAD);
-  }
-
-  @Override
-  JoystickButton getBoardButtonTwelve() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  Trigger getBoardAxisX() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  Trigger getBoardAxisY() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  Trigger getBoardAxisXMinus() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  Trigger getBoardAxisYMinus() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  Trigger getBoardAxisIdle() {
-    return controller.getButton(Button.BUTTON_A);
-  }
 }
