@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.util.sendable.Sendable;
@@ -21,11 +22,14 @@ public class SendableMotor implements Sendable {
   private SparkPIDController closedLoopController;
 
   public boolean openLoopEnabled = true, closedLoopEnabled = true;
-  public double speed, setpoint;
+  public double speed; 
+  private double setpoint;
+  private SlewRateLimiter sRL;
 
   public SendableMotor(CANSparkBase motor) {
     this.motor = motor;
     closedLoopController = motor.getPIDController();
+    sRL = new SlewRateLimiter(1);
   }
 
   void enable(boolean enabled) {
@@ -85,21 +89,16 @@ public class SendableMotor implements Sendable {
     }
   }
   double getVelocity(){
-    return (setpoint*2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS)/60;
+    return (motor.getEncoder().getVelocity()*2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS)/60;
   }
 
   void setVelocity(double velocity) {}
 
   public void control() {
     if(openLoopEnabled) {
-      if(closedLoopEnabled) {
-        TrapezoidProfile.State trapezoidalSetpoint = new TrapezoidProfile(new Constraints(0, 0)).calculate(0.02,
-          new TrapezoidProfile.State(motor.getEncoder().getPosition(), motor.getEncoder().getVelocity()), 
-          new TrapezoidProfile.State(motor.getEncoder().getPosition(), setpoint));
-
+      if(closedLoopEnabled != false) {
         this.motor.getPIDController()
-          .setReference(
-            ((trapezoidalSetpoint.velocity/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS))*60),
+          .setReference(sRL.calculate((setpoint/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS))*60),
             //trapezoidalSetpoint.velocity + closedLoopController.getFF() * setpoint, 
             ControlType.kVelocity);
       }
@@ -124,7 +123,7 @@ public class SendableMotor implements Sendable {
 
     builder.addDoubleProperty("Speed", motor::get, this::setSpeed);
 
-    builder.addDoubleProperty("Setpoint", () -> setpoint, this::setSetpoint);
+    builder.addDoubleProperty("Setpoint", ()->setpoint, this::setSetpoint);
     builder.addDoubleProperty("Velocity",  this::getVelocity, this::setVelocity);
 
 

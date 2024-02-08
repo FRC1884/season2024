@@ -188,4 +188,9 @@ public class RobotMap {
 
     public static final double WHEEL_RADIUS = 0.0508;
   }
+
+  public static class IntakeMap {
+    public static final int MOTOR_ID_1 = 29;
+    public static final int MOTOR_ID_2 = 30;
+  }
 }

@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,12 +37,13 @@ public class Prototypes extends SubsystemBase {
     private SendableMotor motor1Sendable, motor2Sendable, motor3Sendable, motor4Sendable;
     private TrapezoidProfile profile1, profile2, profile3, profile4;
     private TrapezoidProfile.State trapezoidalSetpoint1, trapezoidalSetpoint2, trapezoidalSetpoint3, trapezoidalSetpoint4;
-    // private double setpoint1;
 
-    private double rampValue = 0.0; 
+    private     SlewRateLimiter sRL;
+    // private double setpoint1;
     
     private Prototypes() {
         if(Subsystems.PROTOTYPE_ENABLED) {
+            sRL = new SlewRateLimiter(0.7);
             profile1 = new TrapezoidProfile(new TrapezoidProfile.Constraints(50000.0,1.0));
             motor1 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless); // TODO: Make sure that it is the right Motor
             motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
@@ -60,6 +62,7 @@ public class Prototypes extends SubsystemBase {
                 // SendableRegistry.addLW(new SendableMotor(motor4), "Prototype", "Motor 4");
             }
         }
+
     }
 
     public void shufflePeriodic() {
@@ -69,16 +72,6 @@ public class Prototypes extends SubsystemBase {
             if(motor3Sendable != null) motor3Sendable.control();
             if(motor4Sendable != null) motor4Sendable.control();
         }
-    }
-
-    public Command ramp(double rv) {
-        return new RepeatCommand(
-            new InstantCommand(() -> {this.rampValue += rv;})
-        );
-    }
-
-    public double getRampValue() {
-        return rampValue;
     }
 
     public Command run(double speed1, double speed2, double speed3, double speed4) {
@@ -94,12 +87,9 @@ public class Prototypes extends SubsystemBase {
                     motor3.set(speed3);
                 }
                 if(motor4 != null) {
-                    motor4.set(speed4);
+                    motor4.set(sRL.calculate(speed4));
                 }
             }
-            if(speed4 == -1.0) rampValue -= 0.01;
-            if(speed4 == 1.0) rampValue += 0.01;
-            if(speed4 == 0.0) rampValue =0;
         }, this);
     }
 }

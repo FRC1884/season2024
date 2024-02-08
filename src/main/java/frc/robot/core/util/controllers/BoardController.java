@@ -12,7 +12,7 @@ public class BoardController implements ButtonMap {  //TODO Auto-generated const
 
     public HashMap<Button, Integer> buttonMap() {
       var map = new HashMap<Button, Integer>();
-  
+      map.put(Button.BUTTON_EXTRA_2, 1);
       map.put(Button.BUTTON_A, 2);
       map.put(Button.BUTTON_B, 3);
       map.put(Button.BUTTON_X, 4);
@@ -24,7 +24,6 @@ public class BoardController implements ButtonMap {  //TODO Auto-generated const
       map.put(Button.BUTTON_START, 10);
       map.put(Button.BUTTON_TOUCHPAD, 11);
       map.put(Button.BUTTON_EXTRA_1, 12);
-      map.put(Button.BUTTON_EXTRA_2, 1);
   
       return map;
   }
