@@ -455,7 +455,7 @@ public class Vision extends SubsystemBase {
 
   /**
    * Commnad to go to the note
-   * @return a command to reset the Pose Estimator and Drivetrain to the vision pose
+   * @return a follow path command to drive to the note
    */
   public Command followNoteCommand(){
     return Drivetrain.getInstance().onTheFlyPathCommand(this::getNotePose2d); //doing this::getNotePose2d converts to a supplier
