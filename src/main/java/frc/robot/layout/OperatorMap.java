@@ -23,32 +23,32 @@ public abstract class OperatorMap extends CommandMap {
     super(controller);
   }
 
-  abstract JoystickButton getResetButton();
+  abstract JoystickButton getIntakeStopButton();
 
   abstract JoystickButton getIntakeButton();
 
+  abstract JoystickButton getintakeReverseButton();
+
   abstract JoystickButton getShootButton();
+
+  abstract JoystickButton getShootStopButton();
 
 
 
   private void registerPrototype() {
     if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED) {
       Prototypes prototypes = Prototypes.getInstance();
-      // getBoardAxisX().onTrue(prototypes.run(-0.1, 0.1, 0.7, 0.0));
-      // getBoardAxisXMinus().onTrue(prototypes.run(-0.2, 0.2, 0.7, 0.0));
-      // getBoardAxisY().onTrue(prototypes.run(-0.3, 0.3, 0.7, 0.0));
-      // getBoardAxisYMinus().onTrue(prototypes.run(-0.4, 0.4, 0.7, 0.0));
-      // getBoardButtonEleven().onTrue(prototypes.run(-prototypes.getRampValue(), prototypes.getRampValue(), 0.0, 0.0));
-      // getBoardButtonOne().whileTrue(prototypes.run(-0.3, 0.3, 0.5, 1));
-      // getBoardButtonTwo().whileTrue(prototypes.run(-0.3, 0.3, 0.5, 0));
+      getShootStopButton().whileTrue(prototypes.runAny4Motors(-0.0, 0.0, 0.0, 0));
+      getShootButton().whileTrue(prototypes.runAny4Motors(-15, 15, 0.0, 0));
     }
   }
 
     private void registerIntake() {
     if(ExampleConfig.Subsystems.INTAKE_ENABLED){
       Intake intake = Intake.getInstance();
-      getResetButton().onTrue(intake.runCommand());
-      getIntakeButton().onTrue(intake.stopCommand());
+      getIntakeStopButton().onTrue(intake.stopCommand());
+      getIntakeButton().onTrue(intake.runCommand(true));
+      getintakeReverseButton().onTrue(intake.runCommand(false));
 
     }
   }
@@ -56,10 +56,8 @@ public abstract class OperatorMap extends CommandMap {
 
   @Override
   public void registerCommands() {
-    // registerPrototype();
+    registerPrototype();
     registerIntake();
-    getResetButton().onTrue(new PrintCommand("reset works"));
-    getIntakeButton().onTrue(new PrintCommand("reset works"));
     
   }
 }

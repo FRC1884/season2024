@@ -51,30 +51,32 @@ public class Prototypes extends SubsystemBase {
             // profile1 = new TrapezoidProfile(new TrapezoidProfile.Constraints(50000.0,1.0));
             motor1 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless); // TODO: Make sure that it is the right Motor
             motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
-            motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
+            //motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
             // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
+            PIDController1 = motor1.getPIDController();
+            PIDController2 = motor2.getPIDController();
             PIDController1.setP(PIDMap.P);
             PIDController1.setI(PIDMap.I);
             PIDController1.setD(PIDMap.D);
             PIDController2.setP(PIDMap.P);
             PIDController2.setI(PIDMap.I);
             PIDController2.setD(PIDMap.D);
-            PIDController3.setP(PIDMap.P);
-            PIDController3.setI(PIDMap.I);
-            PIDController3.setD(PIDMap.D);
-            PIDController4.setP(PIDMap.P);
-            PIDController4.setI(PIDMap.I);
-            PIDController4.setD(PIDMap.D);
+            // PIDController3.setP(PIDMap.P);
+            // PIDController3.setI(PIDMap.I);
+            // PIDController3.setD(PIDMap.D);
+            // PIDController4.setP(PIDMap.P);
+            // PIDController4.setI(PIDMap.I);
+            // PIDController4.setD(PIDMap.D);
 
             if(PrototypeMap.LIVE_WINDOW_ENABLED) {
                 motor1Sendable = new SendableMotor(motor1);
                 motor2Sendable = new SendableMotor(motor2);
-                motor3Sendable = new SendableMotor(motor3);
+                //motor3Sendable = new SendableMotor(motor3);
                 //motor4Sendable = new SendableMotor(motor4);
 
                 SendableRegistry.addLW(motor1Sendable, "Prototype", "Motor 1");
                 SendableRegistry.addLW(motor2Sendable, "Prototype", "Motor 2");
-                SendableRegistry.addLW(motor3Sendable, "Prototype", "Motor 3");
+                //SendableRegistry.addLW(motor3Sendable, "Prototype", "Motor 3");
                 // SendableRegistry.addLW(new SendableMotor(motor4), "Prototype", "Motor 4");
             }
         }
@@ -94,24 +96,28 @@ public class Prototypes extends SubsystemBase {
         return new RunCommand(()->{
             if(Subsystems.PROTOTYPE_ENABLED && !RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED) {
                 if(motor1 != null) {
-                    PIDController1
+                    if(speed1!= 0.0)PIDController1
                         .setReference((speed1*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
                      ControlType.kVelocity);
+                     else motor1.set(0.0);
                 }
                 if(motor2 != null) {
-                    PIDController2
+                    if(speed2!= 0.0)PIDController2
                         .setReference((speed2*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
                      ControlType.kVelocity);
+                     else motor2.set(0.0);
                 }
                 if(motor3 != null) {
-                    PIDController3
+                    if(speed3!= 0.0)PIDController3
                         .setReference((speed3*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
                      ControlType.kVelocity);
+                     else motor3.set(0.0);
                 }
                 if(motor4 != null) {
-                    PIDController4
+                    if(speed4!= 0.0)PIDController4
                         .setReference((speed4*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
                      ControlType.kVelocity);
+                     else motor4.set(0.0);
                 }
             }
         }, this);

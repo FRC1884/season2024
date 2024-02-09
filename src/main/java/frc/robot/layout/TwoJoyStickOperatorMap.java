@@ -13,7 +13,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  public JoystickButton getResetButton() {
+  public JoystickButton getIntakeStopButton() {
     return controller.getButton(Button.BUTTON_A);
   }
   @Override
@@ -26,10 +26,19 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
     System.out.println("hello");
     return controller.getButton(Button.BUTTON_X);
   }
+  JoystickButton getShootStopButton() {
+    return controller.getButton(Button.BUTTON_X);
+  }
 
   @Override
   public void registerCommands() {
     super.registerCommands();
+  }
+
+  @Override
+  JoystickButton getintakeReverseButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getintakeReverseButton'");
   }
 
 }
