@@ -13,13 +13,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.IntakeMap;
+import frc.robot.RobotMap.PIDMap;
 import frc.robot.RobotMap.PrototypeMap;
 
 public class Intake extends SubsystemBase {
     private static Intake instance;
-    private double P = 0.0003;
-    private double I = 0.0000008;
-    private double D= 0.000006;
     private SparkPIDController PIDController1;
     private SparkPIDController PIDController2;
     
@@ -32,12 +30,12 @@ public class Intake extends SubsystemBase {
         
     }
     public void set(){
-        PIDController1.setP(P);
-        PIDController1.setI(I);
-        PIDController1.setD(D);
-        PIDController2.setP(P);
-        PIDController2.setI(I);
-        PIDController2.setD(D);
+        PIDController1.setP(PIDMap.P);
+        PIDController1.setI(PIDMap.I);
+        PIDController1.setD(PIDMap.D);
+        PIDController2.setP(PIDMap.P);
+        PIDController2.setI(PIDMap.I);
+        PIDController2.setD(PIDMap.D);
     }
 
     private CANSparkMax motor1, motor2;

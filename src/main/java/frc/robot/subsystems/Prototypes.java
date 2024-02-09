@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.RobotMap;
 import frc.robot.ExampleConfig.Subsystems;
+import frc.robot.RobotMap.PIDMap;
 import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.layout.OperatorMap;
 import frc.robot.util.SendableMotor;
@@ -36,9 +37,6 @@ public class Prototypes extends SubsystemBase {
     
     private CANSparkBase motor1, motor2, motor3, motor4;
     private SendableMotor motor1Sendable, motor2Sendable, motor3Sendable, motor4Sendable;
-    private double P = 0.0003;
-    private double I = 0.0000008;
-    private double D= 0.000006;
     private SparkPIDController PIDController1, PIDController2, PIDController3, PIDController4;
     // TrapezoidProfiling not needing yet keep for now.
     // private TrapezoidProfile profile1, profile2, profile3, profile4;
@@ -55,18 +53,18 @@ public class Prototypes extends SubsystemBase {
             motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
             motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
             // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
-            PIDController1.setP(P);
-            PIDController1.setI(I);
-            PIDController1.setD(D);
-            PIDController2.setP(P);
-            PIDController2.setI(I);
-            PIDController2.setD(D);
-            PIDController3.setP(P);
-            PIDController3.setI(I);
-            PIDController3.setD(D);
-            PIDController4.setP(P);
-            PIDController4.setI(I);
-            PIDController4.setD(D);
+            PIDController1.setP(PIDMap.P);
+            PIDController1.setI(PIDMap.I);
+            PIDController1.setD(PIDMap.D);
+            PIDController2.setP(PIDMap.P);
+            PIDController2.setI(PIDMap.I);
+            PIDController2.setD(PIDMap.D);
+            PIDController3.setP(PIDMap.P);
+            PIDController3.setI(PIDMap.I);
+            PIDController3.setD(PIDMap.D);
+            PIDController4.setP(PIDMap.P);
+            PIDController4.setI(PIDMap.I);
+            PIDController4.setD(PIDMap.D);
 
             if(PrototypeMap.LIVE_WINDOW_ENABLED) {
                 motor1Sendable = new SendableMotor(motor1);
