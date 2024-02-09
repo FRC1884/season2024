@@ -264,5 +264,9 @@ public class PoseEstimator extends SubsystemBase {
   public Command resetOdometryVisionCommand(){
     return new InstantCommand(() -> resetPoseEstimate(Vision.getInstance().visionBotPose()));
   }
+
+  public Command tempResetOdometryCOmmand(){
+    return new InstantCommand(() -> resetPoseEstimate(new Pose2d(2, 5.52, new Rotation2d(0))));
+  }
   
 }

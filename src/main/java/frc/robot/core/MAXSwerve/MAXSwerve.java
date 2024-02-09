@@ -110,6 +110,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
+    resetOdometry(PoseEstimator.getInstance().getPosition()); //NEEDS MORE TESTING
     targetAngleEntry.setDouble(targetAngleTelemetry);
     currentAngleEntry.setDouble(getHeading() % 360);
   }
@@ -234,7 +235,29 @@ public abstract class MAXSwerve extends SubsystemBase {
             double targetY = targetPose.get().getY();
             double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
             double robotAngle = this.getYaw().getDegrees();
+            
+            //
+            if (targetX-this.getPose().getX() <= 0 && targetY-this.getPose().getY() >= 0) {
+              targetAngle = -Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX())));
+              System.out.println(1);
+            }
+            if (targetX-this.getPose().getX() > 0 && targetY-this.getPose().getY() > 0) {
+              targetAngle = -90-(90-Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX()))));
+              System.out.println(2);
+            }
 
+            if (targetX-this.getPose().getX() > 0 && targetY-this.getPose().getY() == 0) {
+              targetAngle = robotAngle;
+            }
+
+            if (targetX-this.getPose().getX() >= 0 && targetY-this.getPose().getY() <= 0) {
+              targetAngle = 180 - Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY()/targetX-this.getPose().getX())));
+              System.out.println(3);
+            }
+            if (targetX-this.getPose().getX() < 0 && targetY-this.getPose().getY() < 0) {
+              targetAngle = 90 - (90-Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX()))));
+              System.out.println(4);
+            }
             targetAngleTelemetry = targetAngle;
             //System.out.println(targetAngle);
             if (Math.abs(pid.calculate(MathUtil.inputModulus(robotAngle,-180,180),

@@ -11,6 +11,45 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDLights extends SubsystemBase {
     
+public enum ColorList {
+    
+    hotPink(0.57),
+    darkRed(0.59), 
+    red(0.61),
+    redOrange(0.63),
+    orange(0.65),
+    gold(0.67),
+    yellow(0.69),
+    lawnGreen(0.71),
+    lime(0.73),
+    darkGreen(0.75),
+    green(0.77),
+    blueGreen(0.79),
+    aqua(0.81),
+    skyBlue(0.83),
+    darkBlue(0.85),
+    blue(0.87), 
+    blueViolet(0.89),
+    violet(0.91),
+    white(0.93),
+    gray(0.95),
+    darkGrey(0.97),
+    black(0.99),
+    pattern_rainbow(-0.99),
+    pattern_lava(-0.39),
+    pattern_ocean(-0.41),
+    pattern_heartbeatBlue(-0.23),
+    pattern_heartbeatRed(-0.25);
+
+    private final double colorValue;
+    private ColorList(double color) {
+        this.colorValue = color;
+    } 
+    public double get_colorValue() {
+        return colorValue;
+    }
+}
+
     public static Spark m_blinkin = null;
 
     //@param pwmPort  The PWM port the Blinkin is connected to.
@@ -23,116 +62,6 @@ public class LEDLights extends SubsystemBase {
         m_blinkin.set(val);
         }
     }
-    // Solid Colors
-    public void solid_hotPink() {
-        set(0.57);
-    }
-
-    public void solid_darkRed() {
-        set(0.59);
-    }
-
-    public void solid_red() {
-        set(0.61);
-    }
-
-    public void solid_redOrange() {
-        set(0.63);
-    }
-
-    public void solid_orange() {
-        set(0.65);
-    }
-
-    public void solid_gold() {
-        set(0.67);
-    }
-
-    public void solid_yellow() {
-        set(0.69);
-    }
-
-    public void solid_lawnGreen() {
-        set(0.71);
-    }
-
-    public void solid_lime() {
-        set(0.73);
-    }
-
-    public void solid_darkGreen() {
-        set(0.75);
-    }
-
-    public void solid_green() {
-        set(0.77);
-    }
-
-    public void solid_blueGreen() {
-        set(0.79);
-    }
-
-    public void solid_aqua() {
-        set(0.81);
-    }
-
-    public void solid_skyBlue() {
-        set(0.83);
-    }
-
-    public void solid_darkBlue() {
-        set(0.85);
-    }
-
-    public void solid_blue() {
-        set(0.87);
-    }
-
-    public void solid_blueViolet() {
-        set(0.89);
-    }
-
-    public void solid_violet() {
-        set(0.91);
-    }
-
-    public void solid_white() {
-        set(0.93);
-    }
-
-    public void solid_gray() {
-        set(0.95);
-    }
-
-    public void solid_darkGray() {
-        set(0.97);
-    }
-
-    public void solid_black() {
-        set(0.99);
-    }
-
-    // Patterns
-
-    public void pattern_rainbow() {
-        set(-0.99);
-    }
-
-    public void patternColorWave_lava() {
-        set(-0.39);
-    }
-
-    public void patternColorWave_ocean() {
-        set(-0.41);
-    }
-
-    public void pattern_heartbeatRed() {
-        set(-0.25);
-    }
-
-    public void pattern_heartbeatBlue() {
-        set(-0.23);
-    }
 
     public void allianceColor() {
         boolean isRed = NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("IsRedAlliance").getBoolean(true);
@@ -143,40 +72,8 @@ public class LEDLights extends SubsystemBase {
         }
     }
 
-    public Command setColorRed() {
-        return new InstantCommand (() -> solid_red());
-    }
-
-    public Command setColorOrange() {
-        return new InstantCommand (() -> solid_orange());
-    }
-
-    public Command setColorYellow() {
-        return new InstantCommand (() -> solid_yellow());
-    }
-
-    public Command setColorGreen() {
-        return new InstantCommand (() -> solid_green());
-    }
-
-    public Command setColorBlue() {
-        return new InstantCommand (() -> solid_blue());
-    }
-
-    public Command setColorViolet() {
-        return new InstantCommand (() -> solid_violet());
-    }
-
-    public Command setPatternColorWaveOcean() {
-        return new InstantCommand (() -> patternColorWave_ocean());
-    }
-
-    public Command setPatternColorWaveLava() {
-        return new InstantCommand (() -> patternColorWave_lava());
-    }
-
-    public Command setPatternRainbow() {
-        return new InstantCommand (() -> pattern_heartbeatBlue());
+    public Command setColorCommand(ColorList color){
+        return new InstantCommand(() -> set(color.get_colorValue()));
     }
 }
     

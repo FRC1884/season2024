@@ -53,16 +53,15 @@ public abstract class DriverMap extends CommandMap {
       drivetrain.setDefaultCommand(
       drivetrain.driveCommand(
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      getTestButton().onTrue(drivetrain.followPathCommand("ShortTestPath", true));
       getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER));
-      getTestButton()
-          .onTrue(drivetrain.TestAllCommand());
-      getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
+      // getTestButton()
+      //     .onTrue(drivetrain.TestAllCommand());
+      // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getResetOdometryVisionButton().onTrue(PoseEstimator.getInstance().resetOdometryVisionCommand());
-      getSpeakerBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_SPEAKER));
-      getAmpBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_AMP));
+      getSpeakerBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_SPEAKER)); //Right Bumper
+      getAmpBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_AMP)); //Options Button
 
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       // getSpeakerOrSourceButton()

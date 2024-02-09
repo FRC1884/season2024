@@ -62,7 +62,7 @@ public class RobotMap {
 
   //TODO rename to path swerve constants.
   public static final class SwerveConstants {
-    public static final double MAX_VELOCITY = 4.8;
+    public static final double MAX_VELOCITY = 1;
     public static final double MAX_ACCELERATION = 5;
     public static final double MAX_ANG_VELOCITY = 1;
     public static final double MAX_ANG_ACCELERATION = 1;
@@ -111,7 +111,7 @@ public class RobotMap {
     public static final boolean IS_LIMELIGHT_MODE = true;
     public static final boolean IS_PHOTON_VISION_MODE = false;
     public static final boolean IS_NEURAL_NET = true;
-    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.0; // Max difference between vision and odometry pose estimate
+    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 0.5; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
@@ -169,8 +169,8 @@ public class RobotMap {
     public static final double kPositionStdDevTheta = 10;
 
     // Increase these numbers to trust global measurements from vision less.
-    public static final double kVisionStdDevX = 5;
-    public static final double kVisionStdDevY = 5;
+    public static final double kVisionStdDevX = 0.5;
+    public static final double kVisionStdDevY = 0.5;
     public static final double kVisionStdDevTheta = 500;
   }
 
