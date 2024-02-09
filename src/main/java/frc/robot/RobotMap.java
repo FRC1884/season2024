@@ -193,4 +193,9 @@ public class RobotMap {
     public static final int MOTOR_ID_1 = 29;
     public static final int MOTOR_ID_2 = 30;
   }
+  public static class PIDMap{
+    public static final double P = 0.0003;
+    public static final double I = 0.0000008;
+    public static final double D= 0.000006;
+  }
 }

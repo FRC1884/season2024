@@ -1,10 +1,10 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.71,
+  "robotLength": 0.71,
   "holonomicMode": true,
   "pathFolders": [
-    "Full Autos",
-    "Auto Segments"
+    "Auto Components",
+    "Full Autos"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

@@ -6,6 +6,7 @@ import java.util.function.DoubleSupplier;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.RobotMap;
 import frc.robot.ExampleConfig.Subsystems;
+import frc.robot.RobotMap.PIDMap;
 import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.layout.OperatorMap;
 import frc.robot.util.SendableMotor;
@@ -35,20 +37,34 @@ public class Prototypes extends SubsystemBase {
     
     private CANSparkBase motor1, motor2, motor3, motor4;
     private SendableMotor motor1Sendable, motor2Sendable, motor3Sendable, motor4Sendable;
-    private TrapezoidProfile profile1, profile2, profile3, profile4;
-    private TrapezoidProfile.State trapezoidalSetpoint1, trapezoidalSetpoint2, trapezoidalSetpoint3, trapezoidalSetpoint4;
+    private SparkPIDController PIDController1, PIDController2, PIDController3, PIDController4;
+    // TrapezoidProfiling not needing yet keep for now.
+    // private TrapezoidProfile profile1, profile2, profile3, profile4;
+    // private TrapezoidProfile.State trapezoidalSetpoint1, trapezoidalSetpoint2, trapezoidalSetpoint3, trapezoidalSetpoint4;
 
-    private     SlewRateLimiter sRL;
+    private SlewRateLimiter sRL;
     // private double setpoint1;
     
     private Prototypes() {
         if(Subsystems.PROTOTYPE_ENABLED) {
             sRL = new SlewRateLimiter(0.7);
-            profile1 = new TrapezoidProfile(new TrapezoidProfile.Constraints(50000.0,1.0));
-            //motor1 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless); // TODO: Make sure that it is the right Motor
-            //motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
-            //motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
+            // profile1 = new TrapezoidProfile(new TrapezoidProfile.Constraints(50000.0,1.0));
+            motor1 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_1, MotorType.kBrushless); // TODO: Make sure that it is the right Motor
+            motor2 = new CANSparkFlex(RobotMap.PrototypeMap.MOTOR_ID_2, MotorType.kBrushless);
+            motor3 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_3, MotorType.kBrushless);
             // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
+            PIDController1.setP(PIDMap.P);
+            PIDController1.setI(PIDMap.I);
+            PIDController1.setD(PIDMap.D);
+            PIDController2.setP(PIDMap.P);
+            PIDController2.setI(PIDMap.I);
+            PIDController2.setD(PIDMap.D);
+            PIDController3.setP(PIDMap.P);
+            PIDController3.setI(PIDMap.I);
+            PIDController3.setD(PIDMap.D);
+            PIDController4.setP(PIDMap.P);
+            PIDController4.setI(PIDMap.I);
+            PIDController4.setD(PIDMap.D);
 
             if(PrototypeMap.LIVE_WINDOW_ENABLED) {
                 motor1Sendable = new SendableMotor(motor1);
@@ -73,21 +89,29 @@ public class Prototypes extends SubsystemBase {
             if(motor4Sendable != null) motor4Sendable.control();
         }
     }
-
-    public Command run(double speed1, double speed2, double speed3, double speed4) {
+    // to be deleted don't now, only for testing if we dont have subsystem for it.
+    public Command runAny4Motors(double speed1, double speed2, double speed3, double speed4) {
         return new RunCommand(()->{
             if(Subsystems.PROTOTYPE_ENABLED && !RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED) {
                 if(motor1 != null) {
-                    motor1.set(speed1);
+                    PIDController1
+                        .setReference((speed1*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
+                     ControlType.kVelocity);
                 }
                 if(motor2 != null) {
-                    motor2.set(speed2);
+                    PIDController2
+                        .setReference((speed2*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
+                     ControlType.kVelocity);
                 }
                 if(motor3 != null) {
-                    motor3.set(speed3);
+                    PIDController3
+                        .setReference((speed3*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
+                     ControlType.kVelocity);
                 }
                 if(motor4 != null) {
-                    motor4.set(sRL.calculate(speed4));
+                    PIDController4
+                        .setReference((speed4*60)/(2 * (Math.PI)* PrototypeMap.WHEEL_RADIUS), 
+                     ControlType.kVelocity);
                 }
             }
         }, this);

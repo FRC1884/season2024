@@ -46,7 +46,9 @@ public abstract class OperatorMap extends CommandMap {
 
     private void registerIntake() {
     if(ExampleConfig.Subsystems.INTAKE_ENABLED){
-    Intake intake = Intake.getInstance();
+      Intake intake = Intake.getInstance();
+      getResetButton().onTrue(intake.runCommand());
+      getIntakeButton().onTrue(intake.stopCommand());
 
     }
   }
@@ -54,8 +56,10 @@ public abstract class OperatorMap extends CommandMap {
 
   @Override
   public void registerCommands() {
-    registerPrototype();
+    // registerPrototype();
     registerIntake();
+    getResetButton().onTrue(new PrintCommand("reset works"));
+    getIntakeButton().onTrue(new PrintCommand("reset works"));
     
   }
 }
