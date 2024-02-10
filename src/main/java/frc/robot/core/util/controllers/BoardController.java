@@ -12,18 +12,18 @@ public class BoardController implements ButtonMap {  //TODO Auto-generated const
 
     public HashMap<Button, Integer> buttonMap() {
       var map = new HashMap<Button, Integer>();
-      map.put(Button.BUTTON_A, 1);
-      map.put(Button.BUTTON_B, 2);
-      map.put(Button.BUTTON_X, 3);
-      map.put(Button.BUTTON_Y, 4);
-      map.put(Button.BUTTON_LEFT_BUMPER, 5);
-      map.put(Button.BUTTON_RIGHT_BUMPER, 6);
-      map.put(Button.BUTTON_SHARE, 7);
-      map.put(Button.BUTTON_OPTIONS, 8);
-      map.put(Button.BUTTON_START, 9);
-      map.put(Button.BUTTON_TOUCHPAD, 10);
-      map.put(Button.BUTTON_EXTRA_1, 11);
-      map.put(Button.BUTTON_EXTRA_2, 12);
+      map.put(Button.BUTTON_EXTRA_2, 1);
+      map.put(Button.BUTTON_A, 2);
+      map.put(Button.BUTTON_B, 3);
+      map.put(Button.BUTTON_X, 4);
+      map.put(Button.BUTTON_Y, 5);
+      map.put(Button.BUTTON_LEFT_BUMPER, 6);
+      map.put(Button.BUTTON_RIGHT_BUMPER, 7);
+      map.put(Button.BUTTON_SHARE, 8);
+      map.put(Button.BUTTON_OPTIONS, 9);
+      map.put(Button.BUTTON_START, 10);
+      map.put(Button.BUTTON_TOUCHPAD, 11);
+      map.put(Button.BUTTON_EXTRA_1, 12);
   
       return map;
   }
