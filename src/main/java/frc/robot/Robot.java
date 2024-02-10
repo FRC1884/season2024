@@ -42,7 +42,6 @@ public class Robot extends TimedRobot {
     var autoModeSelector = AutoModeSelector.getInstance();
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
-    prototypes = Prototypes.getInstance();
   }
 
   /**
