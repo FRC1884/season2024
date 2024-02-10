@@ -26,9 +26,12 @@ import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 import java.text.DecimalFormat;
+import java.util.List;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /*
@@ -48,29 +51,29 @@ public class Vision extends SubsystemBase {
   private PhotonCamera photonCam_1;
   private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
-  private PhotonPoseEstimator photonPoseEstimator;
+  //private PhotonPoseEstimator photonPoseEstimator;
   private Transform3d robotToCam;
 
   private PhotonCamera photonCam_2;
   private boolean photon2HasTargets;
-  private PhotonPoseEstimator photonPoseEstimator_2;
+  //private PhotonPoseEstimator photonPoseEstimator_2;
   private Transform3d robotToCam_2;  
 
 
   //Shuffleboard telemetry - pose estimation
   private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-  private GenericEntry visionXDataEntry = tab.add("VisionPose X", 0).getEntry();
-  private GenericEntry visionYDataEntry = tab.add("VisionPose Y", 0).getEntry();
-  private GenericEntry visionRotDataEntry = tab.add("VisionPose Rotation", 0).getEntry();
+  private GenericEntry visionXDataEntry = tab.add("VisionPose X", "").getEntry();
+  private GenericEntry visionYDataEntry = tab.add("VisionPose Y", "").getEntry();
+  private GenericEntry visionRotDataEntry = tab.add("VisionPose Rotation", "").getEntry();
 
   //Shuffleboard telemtry - note detection
-  private GenericEntry visionNotePoseRobRelXEntry = tab.add("NoteX Pose Robot Space", 0).getEntry();
-  private GenericEntry visionNotePoseRobRelYEntry = tab.add("NoteY Pose Robot Space", 0).getEntry();
-  private GenericEntry visionNotePoseRobRelRotEntry = tab.add("Note Rotation Pose Robot Space", 0).getEntry();
+  private GenericEntry visionNotePoseRobRelXEntry = tab.add("NoteX Pose Robot Space", "").getEntry();
+  private GenericEntry visionNotePoseRobRelYEntry = tab.add("NoteY Pose Robot Space", "").getEntry();
+  private GenericEntry visionNotePoseRobRelRotEntry = tab.add("Note Rotation Pose Robot Space","").getEntry();
 
-  private GenericEntry visionNotePoseFieldRelXEntry = tab.add("NoteX Pose Field Space", 0).getEntry();
-  private GenericEntry visionNotePoseFieldRelYEntry = tab.add("NoteY Pose Field Space", 0).getEntry();
-  private GenericEntry visionNotePoseFieldRelRotEntry = tab.add("Note Rotation Pose Field Space", 0).getEntry();
+  private GenericEntry visionNotePoseFieldRelXEntry = tab.add("NoteX Pose Field Space", "").getEntry();
+  private GenericEntry visionNotePoseFieldRelYEntry = tab.add("NoteY Pose Field Space", "").getEntry();
+  private GenericEntry visionNotePoseFieldRelRotEntry = tab.add("Note Rotation Pose Field Space", "").getEntry();
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -147,12 +150,12 @@ public class Vision extends SubsystemBase {
                   VisionConfig.CAM_1_PITCH_RADIANS,
                   VisionConfig.CAM_1_YAW_RADIANS));
       // TODO for 9th graders - create PhotonPoseEstimator object
-      photonPoseEstimator =
-          new PhotonPoseEstimator(
-              aprilTagFieldLayout,
-              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-              photonCam_1,
-              robotToCam);
+      //photonPoseEstimator =
+          // new PhotonPoseEstimator(
+          //     aprilTagFieldLayout,
+          //     PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+          //     photonCam_1,
+          //     robotToCam);
 
       // Mounting information of photoncamera for making PhotonPoseEstimator object
       // robotToCam_2 =
@@ -204,9 +207,9 @@ public class Vision extends SubsystemBase {
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
         botPose = tempPose;
         //Shuffleboard Telemetry
-        visionXDataEntry.setDouble(botPose.getX());
-        visionYDataEntry.setDouble(botPose.getY());
-        visionRotDataEntry.setDouble(botPose.getRotation().getDegrees());
+        visionXDataEntry.setString(df.format(botPose.getX()));
+        visionYDataEntry.setString(df.format(botPose.getY()));
+        visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
 
       }
 
@@ -232,14 +235,14 @@ public class Vision extends SubsystemBase {
         noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, PoseEstimator.getInstance().getPosition());
 
         //Shuffleboard Telemetry - robot relative
-        visionNotePoseRobRelXEntry.setDouble(targetRobotRelativePose.getX());
-        visionNotePoseRobRelYEntry.setDouble(targetRobotRelativePose.getY());
-        visionNotePoseRobRelRotEntry.setDouble(targetRobotRelativePose.getRotation().getDegrees());
+        visionNotePoseRobRelXEntry.setString(df.format(targetRobotRelativePose.getX()));
+        visionNotePoseRobRelYEntry.setString(df.format(targetRobotRelativePose.getY()));
+        visionNotePoseRobRelRotEntry.setString(df.format(targetRobotRelativePose.getRotation().getDegrees()));
 
         //Shuffleboard Telemetry - field relative
-        visionNotePoseFieldRelXEntry.setDouble(noteFieldRelativePose.getX());
-        visionNotePoseFieldRelYEntry.setDouble(noteFieldRelativePose.getY());
-        visionNotePoseFieldRelRotEntry.setDouble(noteFieldRelativePose.getRotation().getDegrees());
+        visionNotePoseFieldRelXEntry.setString(df.format(noteFieldRelativePose.getX()));
+        visionNotePoseFieldRelYEntry.setString(df.format(noteFieldRelativePose.getY()));
+        visionNotePoseFieldRelRotEntry.setString(df.format(noteFieldRelativePose.getRotation().getDegrees()));
 
       }
     }
@@ -258,10 +261,22 @@ public class Vision extends SubsystemBase {
       // photon2HasTargets = result_2.hasTargets();
 
       if (photon1HasTargets) {
-        var update = photonPoseEstimator.update();
-        Pose3d currentPose3d = update.get().estimatedPose;
+        PhotonTrackedTarget target = result_1.getBestTarget();
+        photonTimestamp = result_1.getTimestampSeconds();
+        Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+        Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
+        Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, robotToCam);
+
         botPose = currentPose3d.toPose2d();
-        photonTimestamp = update.get().timestampSeconds;
+
+        visionXDataEntry.setString(df.format(botPose.getX()));
+        visionYDataEntry.setString(df.format(botPose.getY()));
+        visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
+
+        //var update = photonPoseEstimator.update();
+        //Pose3d currentPose3d = update.get().estimatedPose;
+        
+        //photonTimestamp = update.get().timestampSeconds;
       }
       // else if (photon2HasTargets){
       //   var update = photonPoseEstimator_2.update();
@@ -269,10 +284,6 @@ public class Vision extends SubsystemBase {
       //   botPose = currentPose3d.toPose2d();
       //   photonTimestamp = update.get().timestampSeconds;
       // }
-
-      visionXDataEntry.setDouble(botPose.getX());
-      visionYDataEntry.setDouble(botPose.getY());
-      visionRotDataEntry.setDouble(botPose.getRotation().getDegrees());
     }
   }
 
