@@ -60,4 +60,9 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
     return controller.getButton(Button.BUTTON_START);
   }
 
+  @Override
+  double getClimberAxis() {
+    return controller.getAxis(Axis.AXIS_RIGHT_Y);
+  }
+
 }
