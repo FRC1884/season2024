@@ -1,5 +1,8 @@
 package frc.robot.layout;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -15,27 +18,52 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getIntakeStopButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_2);
-  }
-
-  @Override
-  JoystickButton getIntakeButton() {
     return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
-  JoystickButton getShootButton() {
+  JoystickButton getIntakeButton() {
+    return controller.getButton(Button.BUTTON_B);
+  }
+  @Override
+  JoystickButton getintakeReverseButton() {
     return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
-  JoystickButton getShootStopButton() {
+  JoystickButton getShootButton() {
     return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
-  JoystickButton getintakeReverseButton() {
-    return controller.getButton(Button.BUTTON_B);
+  JoystickButton getShootStopButton() {
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
+
+  @Override
+  JoystickButton getPivotButtonOne() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  JoystickButton getPivotButtonTwo(){
+    return controller.getButton(Button.BUTTON_SHARE);
+  }
+
+  @Override
+  JoystickButton getFeederButton() {
+    return controller.getButton(Button.BUTTON_OPTIONS);
+  }
+
+  @Override
+  JoystickButton getFeederStopButton() {
+    return controller.getButton(Button.BUTTON_START);
+  }
+
+  @Override
+  double getClimberAxis() {
+    return controller.getAxis(Axis.AXIS_LEFT_Y);
+  }
+
 
 }

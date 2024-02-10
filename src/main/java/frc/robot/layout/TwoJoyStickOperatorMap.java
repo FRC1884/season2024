@@ -37,8 +37,32 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getintakeReverseButton() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getintakeReverseButton'");
+    return controller.getButton(Button.BUTTON_X);
+  }
+
+  @Override
+  JoystickButton getPivotButtonOne() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  JoystickButton getPivotButtonTwo(){
+    return controller.getButton(Button.BUTTON_SHARE);
+  }
+
+  @Override
+  JoystickButton getFeederButton() {
+    return controller.getButton(Button.BUTTON_OPTIONS);
+  }
+
+  @Override
+  JoystickButton getFeederStopButton() {
+    return controller.getButton(Button.BUTTON_START);
+  }
+
+  @Override
+  double getClimberAxis() {
+    return controller.getAxis(Axis.AXIS_RIGHT_Y);
   }
 
 }

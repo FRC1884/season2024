@@ -5,11 +5,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 
 public class RobotMap {
-  public static class ElevatorMap {
-    public static final int master = 4;
-    public static final int slave = 5;
+  public static class ClimberMap {
+    public static final int MASTER_ID = 9;
+    public static final int SLAVE_ID = 10;
 
-    public static final int limitSwitch = 0;
+    public static final int LIMIT_SWITCH = 0;
   }
 
   public enum PoseMap {
@@ -84,12 +84,12 @@ public class RobotMap {
     public static final int rightBackMaster = 3;
   }
 
-  public static class FlywheelMap {
+  public static class ShamperMap {
     public static final int TOP_SHOOTER = 42; // FIXME Set flywheel motor ID
     public static final int BOTTOM_SHOOTER = 41; // FIXME Set flywheel motor ID
-    public static final int LEFT_PIVOT = 40; // FIXME Set flywheel motor ID
-    public static final int RIGHT_PIVOT = 39; // FIXME Set flywheel motor ID
-    public static final int FEEDER = 38; // FIXME Set flywheel motor ID
+    public static final int PIVOT = 40; // FIXME Set flywheel motor ID
+    public static final int FEEDER = 38; 
+    public static final double FLYWHEEL_RADIUS = 0.0508; // FIXME Set flywheel wheel radius
   }
 
   public static class CameraMap {
