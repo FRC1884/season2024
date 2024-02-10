@@ -14,6 +14,7 @@ import frc.robot.core.util.controllers.GameController;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Prototypes;
+import frc.robot.subsystems.Shamper;
 import frc.robot.ExampleConfig;
 import frc.robot.core.util.controllers.BoardController;
 
@@ -32,6 +33,14 @@ public abstract class OperatorMap extends CommandMap {
   abstract JoystickButton getShootButton();
 
   abstract JoystickButton getShootStopButton();
+  
+  abstract JoystickButton getPivotButtonOne();
+  
+  abstract JoystickButton getPivotButtonTwo();
+  
+  abstract JoystickButton getFeederButton();
+
+  abstract JoystickButton getFeederStopButton();
 
 
 
@@ -53,11 +62,25 @@ public abstract class OperatorMap extends CommandMap {
     }
   }
 
+  private void registerShamper(){
+    if(ExampleConfig.Subsystems.FLYWHEEL_ENABLED){
+      Shamper shamper = Shamper.getInstance();
+      getShootButton().onTrue(shamper.runFlywheel(10));
+      getShootStopButton().onTrue(shamper.runFlywheel(0));
+      getPivotButtonOne().onTrue(shamper.runPivot(10));
+      getPivotButtonTwo().onTrue(shamper.runPivot(20));
+      getFeederButton().onTrue(shamper.runFeeder(1));
+      getFeederStopButton().onTrue(shamper.runFeeder(0.0));
+
+    }
+  }
+
 
   @Override
   public void registerCommands() {
-    registerPrototype();
+    // registerPrototype();
     registerIntake();
+    registerShamper();
     
   }
 }
