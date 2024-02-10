@@ -20,7 +20,13 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
+  public JoystickButton getPositionmotorButton(){
+    return controller.getButton(Button.BUTTON_Y);
+  }
+
+  @Override
   public void registerCommands() {
     super.registerCommands();
+
   }
 }
