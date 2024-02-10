@@ -52,7 +52,8 @@ public class Vision extends SubsystemBase {
   private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
   //private PhotonPoseEstimator photonPoseEstimator;
-  private Transform3d robotToCam;
+  private Transform3d robotToCam3d;
+  private Transform2d robotToCam2d;
 
   private PhotonCamera photonCam_2;
   private boolean photon2HasTargets;
@@ -60,20 +61,20 @@ public class Vision extends SubsystemBase {
   private Transform3d robotToCam_2;  
 
 
-  //Shuffleboard telemetry - pose estimation
-  private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-  private GenericEntry visionXDataEntry = tab.add("VisionPose X", "").getEntry();
-  private GenericEntry visionYDataEntry = tab.add("VisionPose Y", "").getEntry();
-  private GenericEntry visionRotDataEntry = tab.add("VisionPose Rotation", "").getEntry();
+  // //Shuffleboard telemetry - pose estimation
+  // private ShuffleboardTab tab = Shuffleboard.getTab("Vision");
+  // private GenericEntry visionXDataEntry = tab.add("VisionPose X", "").getEntry();
+  // private GenericEntry visionYDataEntry = tab.add("VisionPose Y", "").getEntry();
+  // private GenericEntry visionRotDataEntry = tab.add("VisionPose Rotation", "").getEntry();
 
-  //Shuffleboard telemtry - note detection
-  private GenericEntry visionNotePoseRobRelXEntry = tab.add("NoteX Pose Robot Space", "").getEntry();
-  private GenericEntry visionNotePoseRobRelYEntry = tab.add("NoteY Pose Robot Space", "").getEntry();
-  private GenericEntry visionNotePoseRobRelRotEntry = tab.add("Note Rotation Pose Robot Space","").getEntry();
+  // //Shuffleboard telemtry - note detection
+  // private GenericEntry visionNotePoseRobRelXEntry = tab.add("NoteX Pose Robot Space", "").getEntry();
+  // private GenericEntry visionNotePoseRobRelYEntry = tab.add("NoteY Pose Robot Space", "").getEntry();
+  // private GenericEntry visionNotePoseRobRelRotEntry = tab.add("Note Rotation Pose Robot Space","").getEntry();
 
-  private GenericEntry visionNotePoseFieldRelXEntry = tab.add("NoteX Pose Field Space", "").getEntry();
-  private GenericEntry visionNotePoseFieldRelYEntry = tab.add("NoteY Pose Field Space", "").getEntry();
-  private GenericEntry visionNotePoseFieldRelRotEntry = tab.add("Note Rotation Pose Field Space", "").getEntry();
+  // private GenericEntry visionNotePoseFieldRelXEntry = tab.add("NoteX Pose Field Space", "").getEntry();
+  // private GenericEntry visionNotePoseFieldRelYEntry = tab.add("NoteY Pose Field Space", "").getEntry();
+  // private GenericEntry visionNotePoseFieldRelRotEntry = tab.add("Note Rotation Pose Field Space", "").getEntry();
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -142,13 +143,15 @@ public class Vision extends SubsystemBase {
       }
 
       // Mounting information of photoncamera for making PhotonPoseEstimator object
-      robotToCam =
+      robotToCam3d =
           new Transform3d(
               new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z),
               new Rotation3d(
                   VisionConfig.CAM_1_ROLL_RADIANS,
                   VisionConfig.CAM_1_PITCH_RADIANS,
                   VisionConfig.CAM_1_YAW_RADIANS));
+      robotToCam2d = 
+        new Transform2d(new Translation2d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y), new Rotation2d(VisionConfig.CAM_1_YAW_RADIANS));
       // TODO for 9th graders - create PhotonPoseEstimator object
       //photonPoseEstimator =
           // new PhotonPoseEstimator(
@@ -207,9 +210,9 @@ public class Vision extends SubsystemBase {
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
         botPose = tempPose;
         //Shuffleboard Telemetry
-        visionXDataEntry.setString(df.format(botPose.getX()));
-        visionYDataEntry.setString(df.format(botPose.getY()));
-        visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
+        // visionXDataEntry.setString(df.format(botPose.getX()));
+        // visionYDataEntry.setString(df.format(botPose.getY()));
+        // visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
 
       }
 
@@ -219,6 +222,60 @@ public class Vision extends SubsystemBase {
 
       // Robot.log.logger.recordOutput("aimLL-VertOffset", aimVerticalOffset);
       // RobotTelemetry.print("aimLL-VertOffset: " + aimVerticalOffset);
+    }
+
+    // this method can call update() if vision pose estimation needs to be updated in
+    // Vision.java
+
+    // Photonvision Result
+    // The documentation for this is here:
+    // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
+    // The example code was missing, and we came up with this: 
+    // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
+    if (VisionConfig.IS_PHOTON_VISION_MODE) {
+      var result_1 = photonCam_1.getLatestResult();
+      photon1HasTargets = result_1.hasTargets();
+      // var result_2 = photonCam_2.getLatestResult();
+      // photon2HasTargets = result_2.hasTargets();
+
+      if (result_1.getMultiTagResult().estimatedPose.isPresent){
+        Transform3d fieldToCamera = result_1.getMultiTagResult().estimatedPose.best;
+        Pose2d currentCamPose2d = new Pose2d(fieldToCamera.getX(), fieldToCamera.getY(), fieldToCamera.getRotation().toRotation2d());
+        photonTimestamp = result_1.getTimestampSeconds();
+
+        botPose = currentCamPose2d.transformBy(robotToCam2d);
+        System.out.println("MultiTag");
+        //Telemetry Data
+        // visionXDataEntry.setString(df.format(botPose.getX()));
+        // visionYDataEntry.setString(df.format(botPose.getY()));
+        // visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
+      }
+      if (photon1HasTargets) {
+        PhotonTrackedTarget target = result_1.getBestTarget();
+        photonTimestamp = result_1.getTimestampSeconds();
+
+        Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+        Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
+        Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, robotToCam3d);
+
+        botPose = currentPose3d.toPose2d();
+        System.out.println("singleTag");
+        //Telemetry Data
+        // visionXDataEntry.setString(df.format(botPose.getX()));
+        // visionYDataEntry.setString(df.format(botPose.getY()));
+        // visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
+
+        //var update = photonPoseEstimator.update();
+        //Pose3d currentPose3d = update.get().estimatedPose;
+        
+        //photonTimestamp = update.get().timestampSeconds;
+      }
+      // else if (photon2HasTargets){
+      //   var update = photonPoseEstimator_2.update();
+      //   Pose3d currentPose3d = update.get().estimatedPose;
+      //   botPose = currentPose3d.toPose2d();
+      //   photonTimestamp = update.get().timestampSeconds;
+      // }
     }
 
     if (NNLimelightConnected) {
@@ -234,57 +291,19 @@ public class Vision extends SubsystemBase {
         targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
         noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, PoseEstimator.getInstance().getPosition());
 
-        //Shuffleboard Telemetry - robot relative
-        visionNotePoseRobRelXEntry.setString(df.format(targetRobotRelativePose.getX()));
-        visionNotePoseRobRelYEntry.setString(df.format(targetRobotRelativePose.getY()));
-        visionNotePoseRobRelRotEntry.setString(df.format(targetRobotRelativePose.getRotation().getDegrees()));
+        // //Shuffleboard Telemetry - robot relative
+        // visionNotePoseRobRelXEntry.setString(df.format(targetRobotRelativePose.getX()));
+        // visionNotePoseRobRelYEntry.setString(df.format(targetRobotRelativePose.getY()));
+        // visionNotePoseRobRelRotEntry.setString(df.format(targetRobotRelativePose.getRotation().getDegrees()));
 
-        //Shuffleboard Telemetry - field relative
-        visionNotePoseFieldRelXEntry.setString(df.format(noteFieldRelativePose.getX()));
-        visionNotePoseFieldRelYEntry.setString(df.format(noteFieldRelativePose.getY()));
-        visionNotePoseFieldRelRotEntry.setString(df.format(noteFieldRelativePose.getRotation().getDegrees()));
+        // //Shuffleboard Telemetry - field relative
+        // visionNotePoseFieldRelXEntry.setString(df.format(noteFieldRelativePose.getX()));
+        // visionNotePoseFieldRelYEntry.setString(df.format(noteFieldRelativePose.getY()));
+        // visionNotePoseFieldRelRotEntry.setString(df.format(noteFieldRelativePose.getRotation().getDegrees()));
 
       }
     }
-    // this method can call update() if vision pose estimation needs to be updated in
-    // Vision.java
 
-    // Photonvision Result
-    // The documentation for this is here:
-    // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
-    // The example code was missing, and we came up with this: 
-    // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
-    if (VisionConfig.IS_PHOTON_VISION_MODE) {
-      var result_1 = photonCam_1.getLatestResult();
-      photon1HasTargets = result_1.hasTargets();
-      // var result_2 = photonCam_2.getLatestResult();
-      // photon2HasTargets = result_2.hasTargets();
-
-      if (photon1HasTargets) {
-        PhotonTrackedTarget target = result_1.getBestTarget();
-        photonTimestamp = result_1.getTimestampSeconds();
-        Transform3d bestCameraToTarget = target.getBestCameraToTarget();
-        Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
-        Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, robotToCam);
-
-        botPose = currentPose3d.toPose2d();
-
-        visionXDataEntry.setString(df.format(botPose.getX()));
-        visionYDataEntry.setString(df.format(botPose.getY()));
-        visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
-
-        //var update = photonPoseEstimator.update();
-        //Pose3d currentPose3d = update.get().estimatedPose;
-        
-        //photonTimestamp = update.get().timestampSeconds;
-      }
-      // else if (photon2HasTargets){
-      //   var update = photonPoseEstimator_2.update();
-      //   Pose3d currentPose3d = update.get().estimatedPose;
-      //   botPose = currentPose3d.toPose2d();
-      //   photonTimestamp = update.get().timestampSeconds;
-      // }
-    }
   }
 
   /**

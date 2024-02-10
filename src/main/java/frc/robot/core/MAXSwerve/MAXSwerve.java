@@ -110,7 +110,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
-    resetOdometry(PoseEstimator.getInstance().getPosition()); //NEEDS MORE TESTING
+    //resetOdometry(PoseEstimator.getInstance().getPosition()); //NEEDS MORE TESTING
     targetAngleEntry.setDouble(targetAngleTelemetry);
     currentAngleEntry.setDouble(getHeading() % 360);
   }
@@ -336,7 +336,7 @@ public abstract class MAXSwerve extends SubsystemBase {
               if (isFirstPath) {
                 PathPoint startingPoint = pathName.getPoint(0);
                 Pose2d startingPose = new Pose2d(
-                    startingPoint.position, Rotation2d.fromDegrees(getYaw().getDegrees()));
+                    startingPoint.position, Rotation2d.fromDegrees(180));
                 this.resetOdometry(startingPose);
               }
             }),

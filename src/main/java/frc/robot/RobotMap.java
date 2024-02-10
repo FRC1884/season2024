@@ -107,11 +107,11 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
-    public static final boolean VISION_OVERRIDE_ENABLED = false;
-    public static final boolean IS_LIMELIGHT_MODE = true;
-    public static final boolean IS_PHOTON_VISION_MODE = false;
+    public static final boolean VISION_OVERRIDE_ENABLED = true;
+    public static final boolean IS_LIMELIGHT_MODE = false;
+    public static final boolean IS_PHOTON_VISION_MODE = true;
     public static final boolean IS_NEURAL_NET = true;
-    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 0.5; // Max difference between vision and odometry pose estimate
+    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
@@ -129,28 +129,28 @@ public class RobotMap {
     public static final double POSE_LIME_ROLL = 0.0; 
     public static final double POSE_LIME_YAW = 0.0;
 
-    public static final double NN_LIME_X = 0.322;
-    public static final double NN_LIME_Y = 0.234; //Y is the the left of the robot
-    public static final double NN_LIME_Z = 0.345; // 
+    public static final double NN_LIME_X = 0.322; //+X is forward on the robot
+    public static final double NN_LIME_Y = 0.234; //+Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.345; //+Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
     public static final double NN_LIME_YAW = 0.0;
     public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(NN_LIME_X, NN_LIME_Y, new Rotation2d());
 
     // Photonvision
-    public static final String POSE_PHOTON_1 = "Arducam_OV9281_USB_Camera";
+    public static final String POSE_PHOTON_1 = "photoncam-1";
     // Translation Values (location relative to robot center)
-    public static final double CAM_1_X = 0.5; // Forward: camera To Robot XMeters
-    public static final double CAM_1_Y = 0.0; // Right: camera To Robot YMeters
-    public static final double CAM_1_Z = 0.2; // Up: camera To Robot ZMeters
+    public static final double CAM_1_X = 0.322; // Forward: camera To Robot XMeters
+    public static final double CAM_1_Y = -0.274; // Left: camera To Robot YMeters
+    public static final double CAM_1_Z = 0.21; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
-    public static final double CAM_1_PITCH_RADIANS = 0.2618; // camera Pitch Radians
-    public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians
+    public static final double CAM_1_PITCH_RADIANS = 0.5236; // camera Pitch Radians
+    public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
     // Photonvision
-    public static final String POSE_PHOTON_2 = "photon-cam2";
+    public static final String POSE_PHOTON_2 = "photoncam-2";
     // Translation Values (location relative to robot center)
     public static final double CAM_2_X = 0.5; // Forward: camera To Robot XMeters
     public static final double CAM_2_Y = 0.0; // Right: camera To Robot YMeters
@@ -190,8 +190,8 @@ public class RobotMap {
   }
 
   public static class IntakeMap {
-    public static final int MOTOR_ID_1 = 2;
-    public static final int MOTOR_ID_2 = 3;
+    public static final int MOTOR_ID_1 = 29;
+    public static final int MOTOR_ID_2 = 30;
   }
   public static class PIDMap{
     public static final double P = 0.0003;

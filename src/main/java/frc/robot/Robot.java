@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -40,6 +42,7 @@ public class Robot extends TimedRobot {
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       enableLiveWindowInTest(true);
     var autoModeSelector = AutoModeSelector.getInstance();
+    SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
   }
@@ -74,7 +77,16 @@ public class Robot extends TimedRobot {
    * chooser code above as well.
    */
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    CommandScheduler.getInstance().cancelAll();
+
+    var autonomousCommand = AutoModeSelector.getInstance().getChooser().getSelected();
+
+      if(autonomousCommand != null){
+        autonomousCommand.schedule();
+      }
+  }
+    
 
   /** This function is called periodically during autonomous. */
   @Override
