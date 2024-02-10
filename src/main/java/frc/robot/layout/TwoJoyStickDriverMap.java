@@ -60,16 +60,16 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public JoystickButton getFollowNoteButton(){
-    return controller.getButton(Button.BUTTON_X);
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
   @Override
   public JoystickButton getResetOdometryVisionButton(){
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+    return controller.getButton(Button.BUTTON_X);
   }
   @Override
   public JoystickButton getSpeakerBlueButton(){
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
  @Override
   public JoystickButton getAmpBlueButton(){

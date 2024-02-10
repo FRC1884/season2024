@@ -129,7 +129,7 @@ public class Vision extends SubsystemBase {
     }
     if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
-      photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
+      //photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       photon1HasTargets = false;
       try {
         aprilTagFieldLayout =
@@ -155,20 +155,20 @@ public class Vision extends SubsystemBase {
               robotToCam);
 
       // Mounting information of photoncamera for making PhotonPoseEstimator object
-      robotToCam_2 =
-          new Transform3d(
-              new Translation3d(VisionConfig.CAM_2_X, VisionConfig.CAM_2_Y, VisionConfig.CAM_2_Z),
-              new Rotation3d(
-                  VisionConfig.CAM_2_ROLL_RADIANS,
-                  VisionConfig.CAM_2_PITCH_RADIANS,
-                  VisionConfig.CAM_2_YAW_RADIANS));
-      // TODO for 9th graders - create PhotonPoseEstimator object
-      photonPoseEstimator_2 =
-          new PhotonPoseEstimator(
-              aprilTagFieldLayout,
-              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-              photonCam_2,
-              robotToCam_2);
+      // robotToCam_2 =
+      //     new Transform3d(
+      //         new Translation3d(VisionConfig.CAM_2_X, VisionConfig.CAM_2_Y, VisionConfig.CAM_2_Z),
+      //         new Rotation3d(
+      //             VisionConfig.CAM_2_ROLL_RADIANS,
+      //             VisionConfig.CAM_2_PITCH_RADIANS,
+      //             VisionConfig.CAM_2_YAW_RADIANS));
+      // // TODO for 9th graders - create PhotonPoseEstimator object
+      // photonPoseEstimator_2 =
+      //     new PhotonPoseEstimator(
+      //         aprilTagFieldLayout,
+      //         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      //         photonCam_2,
+      //         robotToCam_2);
     }
 
     // printing purposes
@@ -254,8 +254,8 @@ public class Vision extends SubsystemBase {
     if (VisionConfig.IS_PHOTON_VISION_MODE) {
       var result_1 = photonCam_1.getLatestResult();
       photon1HasTargets = result_1.hasTargets();
-      var result_2 = photonCam_2.getLatestResult();
-      photon2HasTargets = result_2.hasTargets();
+      // var result_2 = photonCam_2.getLatestResult();
+      // photon2HasTargets = result_2.hasTargets();
 
       if (photon1HasTargets) {
         var update = photonPoseEstimator.update();
@@ -263,12 +263,12 @@ public class Vision extends SubsystemBase {
         botPose = currentPose3d.toPose2d();
         photonTimestamp = update.get().timestampSeconds;
       }
-      else if (photon2HasTargets){
-        var update = photonPoseEstimator_2.update();
-        Pose3d currentPose3d = update.get().estimatedPose;
-        botPose = currentPose3d.toPose2d();
-        photonTimestamp = update.get().timestampSeconds;
-      }
+      // else if (photon2HasTargets){
+      //   var update = photonPoseEstimator_2.update();
+      //   Pose3d currentPose3d = update.get().estimatedPose;
+      //   botPose = currentPose3d.toPose2d();
+      //   photonTimestamp = update.get().timestampSeconds;
+      // }
 
       visionXDataEntry.setDouble(botPose.getX());
       visionYDataEntry.setDouble(botPose.getY());
@@ -295,7 +295,7 @@ public class Vision extends SubsystemBase {
    * @return boolean if photonvision has targets
    */
   public boolean photonHasTargets() {
-    if (photon1HasTargets || photon2HasTargets){
+    if (photon1HasTargets){
       return true;
     }
     return false;

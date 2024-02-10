@@ -138,7 +138,7 @@ public class RobotMap {
     public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(NN_LIME_X, NN_LIME_Y, new Rotation2d());
 
     // Photonvision
-    public static final String POSE_PHOTON_1 = "photon-cam1";
+    public static final String POSE_PHOTON_1 = "Arducam_OV9281_USB_Camera";
     // Translation Values (location relative to robot center)
     public static final double CAM_1_X = 0.5; // Forward: camera To Robot XMeters
     public static final double CAM_1_Y = 0.0; // Right: camera To Robot YMeters

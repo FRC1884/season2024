@@ -5,7 +5,9 @@ import frc.robot.subsystems.Drivetrain;
 
 public class TestPath extends SequentialCommandGroup {
   public TestPath() {
-    String path = "Aspirational Auto Amp Start";
+    String path1 = "Amp Start To Top Note";
+    String path2 = "Top To Bottom Tripple";
+    String path3 = "Source To Lower Midfield";
 
     var maxswerve = Drivetrain.getInstance();
     addCommands(
@@ -18,6 +20,8 @@ public class TestPath extends SequentialCommandGroup {
         //             .alongWith(new RunCommand(() -> elevatorArm.moveElevator(-0.7))
         //                         .until(() -> elevatorArm.getBottomSwitch())),
         // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.DEFAULT),
-        maxswerve.followPathCommand(path, true));
+        maxswerve.followPathCommand(path1, true));
+        maxswerve.followPathCommand(path2, false);
+        maxswerve.followPathCommand(path3, false);
   }
 }
