@@ -62,19 +62,19 @@ public class PoseEstimator extends SubsystemBase {
   public void periodic() {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
-    estimatePose = Vision.getInstance().visionBotPose();
-    if (VisionConfig.IS_LIMELIGHT_MODE && estimatePose != null) { // Limelight mode
-      double currentTimestamp =
+    Pose2d tempEstimatePose = Vision.getInstance().visionBotPose();
+    if (VisionConfig.IS_LIMELIGHT_MODE && tempEstimatePose != null) { // Limelight mode
+      if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
+        double currentTimestamp =
           Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
-      if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
-        addVisionMeasurement(estimatePose, currentTimestamp);
+        addVisionMeasurement(tempEstimatePose, currentTimestamp);
       }
     }
     // TODO Photonvision mode - Needs editing and filtering
-    if (VisionConfig.IS_PHOTON_VISION_MODE && estimatePose != null) { // Limelight mode
-      double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
-      if (isEstimateReady(estimatePose)) { // Does making so many bot pose variables impact accuracy?
-        addVisionMeasurement(estimatePose, photonTimestamp);
+    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null) { // Limelight mode
+      if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
+        double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
+        addVisionMeasurement(tempEstimatePose, photonTimestamp);
       }
     }
 
@@ -89,9 +89,8 @@ public class PoseEstimator extends SubsystemBase {
     setOdometryPose(drivetrain.getPose());
 
     // telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
-    telemetry.updatePoseOnField("OdometryPose", odometryPose);
-    telemetry.updatePoseOnField(
-        "EstimatedPose", estimatePose); // Need to uncomment and fix to work here.
+    // telemetry.updatePoseOnField("OdometryPose", odometryPose);
+    // telemetry.updatePoseOnField("EstimatedPose", estimatePose); // Need to uncomment and fix to work here.
   }
 
   // /**
@@ -131,11 +130,12 @@ public class PoseEstimator extends SubsystemBase {
       return false;
     }
 
-    // Disregard measurements too far away from odometry
+    // Disregard measurements too far away from odometry - REMOVED BECAUSE THIS IS TOO STRICT
     // this can be tuned to find a threshold that helps us remove jumping vision
     // poses
-    return (Math.abs(pose.getX() - odometryPose.getX()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD)
-        && (Math.abs(pose.getY() - odometryPose.getY()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
+    // return (Math.abs(pose.getX() - odometryPose.getX()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD)
+    //     && (Math.abs(pose.getY() - odometryPose.getY()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
+    return true;
   }
 
   /** Sets the Odometry Pose to the given pose */

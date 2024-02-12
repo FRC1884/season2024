@@ -4,6 +4,7 @@ import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.commands.PathfindThenFollowPathHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -221,7 +222,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     br.setDesiredState(swerveModuleStates[3]);
   }
 
-    public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Pose2d> targetPose) {
+  public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Pose2d> targetPose) {
     PIDController pid = new PIDController(0.01, 0, 0);
     pid.setTolerance(0.1);
     return new ProxyCommand(() ->
@@ -261,8 +262,8 @@ public abstract class MAXSwerve extends SubsystemBase {
             targetAngleTelemetry = targetAngle;
             //System.out.println(targetAngle);
             if (Math.abs(pid.calculate(MathUtil.inputModulus(robotAngle,-180,180),
-                targetAngle)) > RobotMap.SwerveConstants.MAX_ANG_VELOCITY) {
-                this.drive(xSpeed.get(),ySpeed.get(),RobotMap.SwerveConstants.MAX_ANG_VELOCITY, 
+                targetAngle)) > RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY) {
+                this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY, 
                   true, true);
             } else {
               double newSpeed = pid.calculate(MathUtil.inputModulus(robotAngle,-180,180), 
@@ -359,7 +360,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                 // your Constants class
                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                 new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                4.5, // Max module speed, in m/s
+                MaxSwerveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
                 0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                 new ReplanningConfig() // Default path replanning config. See the API for the
             // options
@@ -388,8 +389,9 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   /**
    * Command to drive to a note detected using Vision - NEEDS TO BE REWORKED TO USE NAVIGATE
-   * CURRENT ERROR: Robot travels to the robot relative note pose in field relative coordinates
-   * FIX: MUST BE A SUPPLIER SO IT CONTINUOUSLY UPDATES
+   * Preivous ERROR: Robot travels to the robot relative note pose in field relative coordinates
+   * FIX: PARAMETER MUST BE A SUPPLIER SO IT CONTINUOUSLY UPDATES
+   * @param targetPose the Supplier<Pose2d> that the robot should drive to
    * @return command to generate a path On-the-fly to a note
    */
   public Command onTheFlyPathCommand(Supplier<Pose2d> targetPose) {
@@ -400,13 +402,53 @@ public abstract class MAXSwerve extends SubsystemBase {
                                             new Pose2d(targetPose.get().getTranslation(),
                                             Rotation2d.fromDegrees(0))),
             new PathConstraints(
-                RobotMap.SwerveConstants.MAX_VELOCITY,
-                RobotMap.SwerveConstants.MAX_ACCELERATION,
-                RobotMap.SwerveConstants.MAX_ANG_VELOCITY,
-                RobotMap.SwerveConstants.MAX_ANG_ACCELERATION),
+                RobotMap.SwervePathFollowConstants.MAX_VELOCITY,
+                RobotMap.SwervePathFollowConstants.MAX_ACCELERATION,
+                RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY,
+                RobotMap.SwervePathFollowConstants.MAX_ANG_ACCELERATION),
             new GoalEndState(0, targetPose.get().getRotation()),
             false),
         false));
+  }
+
+  /**
+   * Command to pathfind to a path - NEEDS TO BE TESTED, also, does it need to be a proxy?
+   * @param pathName name of the path that the robot will pathfind to  
+   * @return command to generate a path to the starting pose of a premade path and then to follow that path
+   */
+
+  public Command pathFindThenFollowPathCommand(String pathName){
+    return new ProxyCommand(new PathfindThenFollowPathHolonomic(
+        PathPlannerPath.fromPathFile(pathName),
+        new PathConstraints(
+                RobotMap.SwervePathFollowConstants.MAX_VELOCITY,
+                RobotMap.SwervePathFollowConstants.MAX_ACCELERATION,
+                RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY,
+                RobotMap.SwervePathFollowConstants.MAX_ANG_ACCELERATION),
+        this::getPose,
+        this::getChassisSpeeds,
+        this::driveWithChassisSpeeds,
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
+                // in
+                // your Constants class
+                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                4.5, // Max module speed, in m/s
+                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                new ReplanningConfig() // Default path replanning config. See the API for the
+            // options
+            // here
+            ),
+        1.0, // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate. Optional
+            
+            // Boolean supplier that controls when the path will be mirrored for the red alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+            getShouldFlip(),
+            
+        this // Reference to drive subsystem to set requirements
+      )
+    );
   }
 
   public Command navigate(Supplier<Pose2d> targetPose, Supplier<String> pathName) {
@@ -417,10 +459,10 @@ public abstract class MAXSwerve extends SubsystemBase {
                                             new Pose2d(targetPose.get().getTranslation(),
                                             Rotation2d.fromDegrees(0))),
             new PathConstraints(
-                RobotMap.SwerveConstants.MAX_VELOCITY,
-                RobotMap.SwerveConstants.MAX_ACCELERATION,
-                RobotMap.SwerveConstants.MAX_ANG_VELOCITY,
-                RobotMap.SwerveConstants.MAX_ANG_ACCELERATION),
+                RobotMap.SwervePathFollowConstants.MAX_VELOCITY,
+                RobotMap.SwervePathFollowConstants.MAX_ACCELERATION,
+                RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY,
+                RobotMap.SwervePathFollowConstants.MAX_ANG_ACCELERATION),
             new GoalEndState(0, new Rotation2d()),
             false),
         false);

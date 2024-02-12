@@ -42,7 +42,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class Vision extends SubsystemBase {
   private Pose2d botPose;
-  private Pose2d tempPose;
+  private Pose2d estimatePose;
   private double limeLatency;
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
@@ -101,8 +101,8 @@ public class Vision extends SubsystemBase {
   // TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
   private Vision() {
     setName("Vision");
-    botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
-    tempPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
+    botPose = new Pose2d();
+    estimatePose = new Pose2d();
     noteFieldRelativePose = new Pose2d();
     targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
@@ -200,15 +200,15 @@ public class Vision extends SubsystemBase {
 
     if (VisionConfig.IS_LIMELIGHT_MODE && apriltagLimelightConnected) {
       jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
-      tempPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-      if (visionAccurate(tempPose)) {
+      estimatePose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
+      if (visionAccurate(estimatePose)) {
         // json dump more accurate?
         // Update Vision robotpose - need to read more about coordinate systems centered
         // Blue alliance means origin is bottom right of the field 
         limeLatency =
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
-        botPose = tempPose;
+        botPose = estimatePose;
         //Shuffleboard Telemetry
         // visionXDataEntry.setString(df.format(botPose.getX()));
         // visionYDataEntry.setString(df.format(botPose.getY()));
@@ -287,8 +287,12 @@ public class Vision extends SubsystemBase {
         double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_X, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset) ;
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
+        
+        //This method makes the note appear turned in the wrong place - needs fixing
         Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, detectHorizontalOffset);
+
         targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
+        
         noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, PoseEstimator.getInstance().getPosition());
 
         // //Shuffleboard Telemetry - robot relative
@@ -370,8 +374,8 @@ public class Vision extends SubsystemBase {
 
   // This is a suss function - need to test it
   public boolean isInMap(Pose2d currentPose) {
-    return ((currentPose.getX() > 0.0 && currentPose.getX() <= VisionConfig.FIELD_LENGTH_METERS)
-        && (currentPose.getY() > 0.0 && currentPose.getY() <= VisionConfig.FIELD_WIDTH_METERS));
+    return ((currentPose.getX() >= 0.0 && currentPose.getX() <= VisionConfig.FIELD_LENGTH_METERS)
+        && (currentPose.getY() >= 0.0 && currentPose.getY() <= VisionConfig.FIELD_WIDTH_METERS));
   }
 
   /**
@@ -454,6 +458,8 @@ public class Vision extends SubsystemBase {
   public Pose2d estimateCameraToTargetPose2d(Translation2d cameraToTargetTranslation2d, double targetOffsetAngle_Horizontal){
     return new Pose2d(cameraToTargetTranslation2d, Rotation2d.fromDegrees(targetOffsetAngle_Horizontal));
   }
+
+
 /**
    * @param camToTargetPose the camera to target pose 2d
    * @param camToRobot the transform from the x and y of the camera to the center of the robot
