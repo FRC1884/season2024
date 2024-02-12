@@ -65,4 +65,19 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
     return controller.getAxis(Axis.AXIS_RIGHT_Y);
   }
 
+  @Override
+  JoystickButton getLEDPatternOneButton() {
+    return null;
+  }
+
+  @Override
+  JoystickButton getLEDPatternTwoButton() {
+    return null;
+  }
+
+  @Override
+  JoystickButton getLEDPatternOffButton() {
+    return null;
+  }
+
 }
