@@ -12,12 +12,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Prototypes;
-import frc.robot.subsystems.Shamper;
+import frc.robot.subsystems.*;
 import frc.robot.ExampleConfig;
 import frc.robot.core.util.controllers.BoardController;
+import frc.robot.util.BlinkinUtils;
 
 public abstract class OperatorMap extends CommandMap {
 
@@ -45,6 +43,11 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract double getClimberAxis();
 
+  abstract JoystickButton getLEDPatternOneButton();
+
+  abstract JoystickButton getLEDPatternTwoButton();
+
+  abstract JoystickButton getLEDPatternOffButton();
 
 
   private void registerPrototype() {
@@ -81,6 +84,21 @@ public abstract class OperatorMap extends CommandMap {
     if(ExampleConfig.Subsystems.CLIMBER_ENABLED) {
       Climber climber = Climber.getInstance();
       climber.setDefaultCommand(climber.run(this::getClimberAxis));
+    }
+  }
+
+  private void registerLEDs() {
+    if(ExampleConfig.Subsystems.LEDS_ENABLED) {
+      PWMLEDLights lights = PWMLEDLights.getInstance();
+      getLEDPatternOffButton().onTrue(
+              lights.setColorForSecondsCommand(3, BlinkinUtils.ColorPatterns.WHITE)
+      );
+      getLEDPatternOneButton().onTrue(
+              lights.setColorCommand(BlinkinUtils.ColorPatterns.SINELON_RAINBOW_PALETTE)
+      );
+      getLEDPatternTwoButton().onTrue(
+              lights.setColorCommand(BlinkinUtils.ColorPatterns.CP1_2_END_TO_END_BLEND)
+      );
     }
   }
 

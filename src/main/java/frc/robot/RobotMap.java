@@ -5,13 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 
 public class RobotMap {
-  public static class ClimberMap {
-    public static final int MASTER_ID = 9;
-    public static final int SLAVE_ID = 10;
-
-    public static final int LIMIT_SWITCH = 0;
-  }
-
   public enum PoseMap {
     SOURCE_BLUE(new Pose2d(0, 0, new Rotation2d(0)));
 
@@ -82,14 +75,6 @@ public class RobotMap {
     public static final int leftBackMaster = 1;
     public static final int rightFrontMaster = 2;
     public static final int rightBackMaster = 3;
-  }
-
-  public static class ShamperMap {
-    public static final int TOP_SHOOTER = 42; // FIXME Set flywheel motor ID
-    public static final int BOTTOM_SHOOTER = 41; // FIXME Set flywheel motor ID
-    public static final int PIVOT = 40; // FIXME Set flywheel motor ID
-    public static final int FEEDER = 38; 
-    public static final double FLYWHEEL_RADIUS = 0.0508; // FIXME Set flywheel wheel radius
   }
 
   public static class CameraMap {
@@ -193,9 +178,33 @@ public class RobotMap {
     public static final int MOTOR_ID_1 = 29;
     public static final int MOTOR_ID_2 = 30;
   }
-  public static class PIDMap{
+
+
+  public static class ShamperMap {
+    public static final int TOP_SHOOTER = 42;
+    public static final int BOTTOM_SHOOTER = 41;
+    public static final int PIVOT = 40;
+    public static final int FEEDER = 38;
+    public static final double FLYWHEEL_RADIUS = 0.0508;
+  }
+
+  public static class ClimberMap {
+    public static final int MASTER_ID = 9;
+    public static final int SLAVE_ID = 10;
+
+    public static final int LIMIT_SWITCH = 0;
+  }
+
+  public static class PIDMap {
     public static final double P = 0.0003;
     public static final double I = 0.0000008;
     public static final double D= 0.000006;
+  }
+
+  public static class LEDMap {
+    public static final int BLINKIN_PWM_PORT = 1;
+    public static final boolean BLINKIN_PWM = false;
+    public static final boolean BLINKIN_ON_SPARK = true;
+    public static final int NUMBER_LEDS = 50;
   }
 }

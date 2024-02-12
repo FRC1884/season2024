@@ -65,5 +65,20 @@ public class BoardOperatorMap extends OperatorMap {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
 
+  @Override
+  JoystickButton getLEDPatternOneButton() {
+    return controller.getButton(Button.BUTTON_TOUCHPAD);
+  }
+
+  @Override
+  JoystickButton getLEDPatternTwoButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_1);
+  }
+
+  @Override
+  JoystickButton getLEDPatternOffButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_2);
+  }
+
 
 }

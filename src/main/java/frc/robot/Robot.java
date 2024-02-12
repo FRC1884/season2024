@@ -45,6 +45,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
+    if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
+      Prototypes.getInstance();
   }
 
   /**

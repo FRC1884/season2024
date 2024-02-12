@@ -11,6 +11,7 @@ public class ExampleConfig {
     public static final boolean FLYWHEEL_ENABLED = true;
     public static final boolean INTAKE_ENABLED = true;
     public static final boolean PROTOTYPE_ENABLED = false;
+    public static final boolean LEDS_ENABLED = true;
   }
 
   public class Controllers {
