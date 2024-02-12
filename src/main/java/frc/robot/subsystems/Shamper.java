@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
@@ -12,6 +14,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShamperMap;
@@ -106,6 +109,12 @@ public class Shamper extends SubsystemBase {
         () -> {
           Pivot_PIDController.setReference(profile1.calculate(0,current, SetPoint).position, CANSparkBase.ControlType.kPosition);
         });
+  }
+
+  public Command runPivotPower(DoubleSupplier power) {
+    return new RunCommand(()->{
+      Pivot.set(Pivot.get() == 0.0 ? power.getAsDouble() : 0.0);
+    }, this);
   }
 
   public Command runFeeder(double power) {

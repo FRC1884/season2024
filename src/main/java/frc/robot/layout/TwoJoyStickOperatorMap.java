@@ -11,53 +11,53 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   public TwoJoyStickOperatorMap(GameController controller) {
     super(controller);
   }
-
+  @Override
+  public void registerCommands() {
+    super.registerCommands();
+  }
   @Override
   public JoystickButton getIntakeStopButton() {
-    return controller.getButton(Button.BUTTON_A);
+    return controller.getButton(Button.BUTTON_X);
   }
   @Override
   public JoystickButton getIntakeButton() {
-    return controller.getButton(Button.BUTTON_B);
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
   JoystickButton getShootButton() {
     System.out.println("hello");
-    return controller.getButton(Button.BUTTON_X);
+    return controller.getButton(Button.BUTTON_A);
   }
   JoystickButton getShootStopButton() {
-    return controller.getButton(Button.BUTTON_X);
+    return controller.getButton(Button.BUTTON_B);
   }
 
-  @Override
-  public void registerCommands() {
-    super.registerCommands();
-  }
+
 
   @Override
   JoystickButton getintakeReverseButton() {
-    return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  JoystickButton getPivotButtonOne() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
-  }
-
-  @Override
-  JoystickButton getPivotButtonTwo(){
-    return controller.getButton(Button.BUTTON_SHARE);
-  }
-
-  @Override
-  JoystickButton getFeederButton() {
     return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
   @Override
+  JoystickButton getPivotButtonOne() {
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
+
+  @Override
+  JoystickButton getPivotButtonTwo(){
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  JoystickButton getFeederButton() {
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
+
+  @Override
   JoystickButton getFeederStopButton() {
-    return controller.getButton(Button.BUTTON_START);
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
   @Override
