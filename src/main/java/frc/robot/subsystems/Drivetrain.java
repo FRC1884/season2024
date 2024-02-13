@@ -52,7 +52,6 @@ public class Drivetrain extends MAXSwerve {
    */
   private Drivetrain() {
     super(
-        DriveMap.PIGEON_ID,
         new MAXSwerveModule(
             DriveMap.FrontLeft.DRIVE_ID,
             DriveMap.FrontLeft.ROTATOR_ID,

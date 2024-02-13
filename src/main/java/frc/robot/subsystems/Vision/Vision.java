@@ -115,7 +115,7 @@ public class Vision extends SubsystemBase {
     // Changes vision mode between limelight and photonvision for easy switching
     if (VisionConfig.IS_LIMELIGHT_MODE) {
       // configure both limelights
-      LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
+      LimelightHelpers.setLEDMode_ForceOn(VisionConfig.POSE_LIMELIGHT);
       setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.APRILTAG_PIPELINE);
       LimelightHelpers.setCameraPose_RobotSpace(
           VisionConfig.POSE_LIMELIGHT,
@@ -243,8 +243,10 @@ public class Vision extends SubsystemBase {
         Pose2d currentCamPose2d = new Pose2d(fieldToCamera.getX(), fieldToCamera.getY(), fieldToCamera.getRotation().toRotation2d());
         photonTimestamp = result_1.getTimestampSeconds();
 
-        botPose = currentCamPose2d.transformBy(robotToCam2d);
-        System.out.println("MultiTag");
+        if (currentCamPose2d.getX() > 13.5 || currentCamPose2d.getX() < 3){
+          botPose = currentCamPose2d.transformBy(robotToCam2d);
+          System.out.println("MultiTag");
+        }
         //Telemetry Data
         // visionXDataEntry.setString(df.format(botPose.getX()));
         // visionYDataEntry.setString(df.format(botPose.getY()));
@@ -252,23 +254,27 @@ public class Vision extends SubsystemBase {
       }
       if (photon1HasTargets) {
         PhotonTrackedTarget target = result_1.getBestTarget();
-        photonTimestamp = result_1.getTimestampSeconds();
+        if (target.getPoseAmbiguity() < 0.25){
+          photonTimestamp = result_1.getTimestampSeconds();
 
-        Transform3d bestCameraToTarget = target.getBestCameraToTarget();
-        Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
-        Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, robotToCam3d);
+          Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
+          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, robotToCam3d);
 
-        botPose = currentPose3d.toPose2d();
-        System.out.println("singleTag");
-        //Telemetry Data
-        // visionXDataEntry.setString(df.format(botPose.getX()));
-        // visionYDataEntry.setString(df.format(botPose.getY()));
-        // visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
+          if (currentPose3d.getX() > 13.5 || currentPose3d.getX() < 3){
+            botPose = currentPose3d.toPose2d();
+          }
+          System.out.println("singleTag");
+          //Telemetry Data
+          // visionXDataEntry.setString(df.format(botPose.getX()));
+          // visionYDataEntry.setString(df.format(botPose.getY()));
+          // visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
 
-        //var update = photonPoseEstimator.update();
-        //Pose3d currentPose3d = update.get().estimatedPose;
-        
-        //photonTimestamp = update.get().timestampSeconds;
+          //var update = photonPoseEstimator.update();
+          //Pose3d currentPose3d = update.get().estimatedPose;
+          
+          //photonTimestamp = update.get().timestampSeconds;
+        }
       }
       // else if (photon2HasTargets){
       //   var update = photonPoseEstimator_2.update();
@@ -289,11 +295,20 @@ public class Vision extends SubsystemBase {
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
         
         //This method makes the note appear turned in the wrong place - needs fixing
-        Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, detectHorizontalOffset);
+        Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, 0);
 
         targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
-        
-        noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, PoseEstimator.getInstance().getPosition());
+        Pose2d currentBotPose = PoseEstimator.getInstance().getPosition();
+
+        noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, currentBotPose);
+
+        Translation2d robotTranslation = currentBotPose.getTranslation();
+        Translation2d target = noteFieldRelativePose.getTranslation();
+
+        Translation2d targetVector = robotTranslation.minus(target);
+        Rotation2d targetAngle = targetVector.getAngle();
+
+        noteFieldRelativePose = new Pose2d(target, targetAngle);
 
         // //Shuffleboard Telemetry - robot relative
         // visionNotePoseRobRelXEntry.setString(df.format(targetRobotRelativePose.getX()));

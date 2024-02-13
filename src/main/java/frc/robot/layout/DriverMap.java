@@ -40,14 +40,19 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getFollowNoteButton();
 
-  abstract JoystickButton getResetOdometryVisionButton();
+  //abstract JoystickButton getResetOdometryVisionButton();
 
   abstract JoystickButton getSpeakerBlueButton();
 
   abstract JoystickButton getAmpBlueButton();
 
+  abstract JoystickButton getZeroGyroButton();
+
+  abstract JoystickButton getNavigateAndAllignButton();
+
   private void registerDrivetrain() {
     if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
+      System.out.println("Register Drivetrain");
       var drivetrain = Drivetrain.getInstance();
       var vision = Vision.getInstance();
       drivetrain.setDefaultCommand(
@@ -55,11 +60,16 @@ public abstract class DriverMap extends CommandMap {
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
       getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER));
+      //getNavigateAndAllignButton().whileTrue(drivetrain.allignCommand(() -> Coordinates.RED_SPEAKER.getTranslation()));
+      //getNavigateAndAllignButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
+      getNavigateAndAllignButton().whileTrue(drivetrain.navigateAndAllignCommand(
+        "Go To Stage", () -> Coordinates.RED_SPEAKER.getTranslation()));
       // getTestButton()
       //     .onTrue(drivetrain.TestAllCommand());
       // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       getFollowNoteButton().whileTrue(vision.followNoteCommand());
-      getResetOdometryVisionButton().onTrue(PoseEstimator.getInstance().resetOdometryVisionCommand());
+      getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
+      //getResetOdometryVisionButton().onTrue(PoseEstimator.getInstance().resetOdometryVisionCommand());
       getSpeakerBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_SPEAKER)); //Right Bumper
       getAmpBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_AMP)); //Options Button
 

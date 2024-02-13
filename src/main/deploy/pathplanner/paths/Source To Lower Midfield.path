@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto Components",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

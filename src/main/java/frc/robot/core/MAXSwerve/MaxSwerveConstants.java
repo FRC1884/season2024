@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public class MaxSwerveConstants {
+  public static final boolean INVERT_GYRO = false;
   public static final double kMaxSpeedMetersPerSecond = 4.8;
   public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
@@ -67,7 +68,7 @@ public class MaxSwerveConstants {
     public static final double kTurningEncoderPositionPIDMaxInput =
         kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.04;
+    public static final double kDrivingP = 0.09;
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
     public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;

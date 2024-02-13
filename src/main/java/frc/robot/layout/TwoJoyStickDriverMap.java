@@ -1,7 +1,10 @@
 package frc.robot.layout;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
@@ -30,12 +33,20 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveXSpeed() {
-    return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    if(DriverStation.getAlliance().isPresent() 
+    && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+      return -controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    else
+      return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
   @Override
   public double getSwerveYSpeed() {
-    return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    if(DriverStation.getAlliance().isPresent() 
+      && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+      return -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+    else
+      return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
   }
 
   @Override
@@ -63,10 +74,16 @@ public class TwoJoyStickDriverMap extends DriverMap {
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
+  // @Override
+  // public JoystickButton getResetOdometryVisionButton(){
+  //   return controller.getButton(Button.BUTTON_X);
+  // }
+
   @Override
-  public JoystickButton getResetOdometryVisionButton(){
+  public JoystickButton getZeroGyroButton(){
     return controller.getButton(Button.BUTTON_X);
   }
+
   @Override
   public JoystickButton getSpeakerBlueButton(){
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
@@ -74,6 +91,11 @@ public class TwoJoyStickDriverMap extends DriverMap {
  @Override
   public JoystickButton getAmpBlueButton(){
     return controller.getButton(Button.BUTTON_OPTIONS);
+  }
+
+  @Override
+  public JoystickButton getNavigateAndAllignButton(){
+    return controller.getButton(Button.BUTTON_SHARE);
   }
     
   @Override

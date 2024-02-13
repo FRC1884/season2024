@@ -12,6 +12,8 @@ import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -42,6 +44,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.DriveMap;
+import frc.robot.RobotMap.DriveMap.GyroType;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.subsystems.Vision.PoseEstimator;
@@ -61,7 +65,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private MAXSwerveModule fl, fr, bl, br;
-  private Pigeon2 gyro;
+  private Object gyro;
   private ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain Debugging");
   GenericEntry targetAngleEntry = tab.add("Target Angle", 0).getEntry();
   GenericEntry currentAngleEntry = tab.add("Current Angle", 0).getEntry();
@@ -73,14 +77,22 @@ public abstract class MAXSwerve extends SubsystemBase {
   private double startTime, currentTime;
 
   public MAXSwerve(
-      int pigeon_id,
       MAXSwerveModule fl,
       MAXSwerveModule fr,
       MAXSwerveModule bl,
       MAXSwerveModule br) {
-    this.gyro = new Pigeon2(pigeon_id);
+    
+    switch (RobotMap.DriveMap.GYRO_TYPE) {
+      case NAVX:
+        gyro = new AHRS(SPI.Port.kMXP);
+        break;
+      case PIGEON:
+        gyro = new Pigeon2(DriveMap.PIGEON_ID);
+        break;
+      default:
+        break;
+    } 
     // gyro.getConfigurator().DefaultTimeoutSeconds = 50;
-    zeroGyro();
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;
@@ -88,7 +100,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     odometry = new SwerveDriveOdometry(
         MaxSwerveConstants.kDriveKinematics,
-        getYaw(),
+        getYawRot2d(),
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
@@ -101,13 +113,32 @@ public abstract class MAXSwerve extends SubsystemBase {
     //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
   }
 
+  public Rotation2d getYawRot2d() {
+    // TODO Auto-generated method stub
+    return (MaxSwerveConstants.INVERT_GYRO)
+        ? Rotation2d.fromDegrees(360 - getGyroYawDegrees())
+        : Rotation2d.fromDegrees(getGyroYawDegrees());
+  }
+
+  public double getGyroYawDegrees() {
+    // TODO Auto-generated method stub
+    switch (RobotMap.DriveMap.GYRO_TYPE) {
+      case NAVX:
+        return -Double.valueOf(((AHRS)gyro).getYaw()); //Must be negative to CCW is positive
+      case PIGEON:
+        return ((Pigeon2)gyro).getYaw();
+      default:
+        return 0.0;
+    }
+  }
+
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
     //System.out.println(odometry.getPoseMeters());
     //System.out.println(MathUtil.inputModulus(this.getYaw().getDegrees(), -180, 180));
     odometry.update(
-        getYaw(),
+        getYawRot2d(),
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
@@ -132,7 +163,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(
-        getYaw(),
+        getYawRot2d(),
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         },
@@ -235,7 +266,7 @@ public abstract class MAXSwerve extends SubsystemBase {
             double targetX = targetPose.get().getX();
             double targetY = targetPose.get().getY();
             double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
-            double robotAngle = this.getYaw().getDegrees();
+            double robotAngle = this.getGyroYawDegrees();
             
             //
             if (targetX-this.getPose().getX() <= 0 && targetY-this.getPose().getY() >= 0) {
@@ -334,11 +365,22 @@ public abstract class MAXSwerve extends SubsystemBase {
         new InstantCommand(
             () -> {
               // Reset odometry for the first path you run during auto
-              if (isFirstPath) {
+              if (isFirstPath && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
                 PathPoint startingPoint = pathName.getPoint(0);
                 Pose2d startingPose = new Pose2d(
-                    startingPoint.position, Rotation2d.fromDegrees(180));
-                this.resetOdometry(startingPose);
+                    startingPoint.position, this.getYawRot2d());
+                //VERY IMPORTANT SO THAT ODOMETRY IS NOT OVERRIDEN AS BEING THE ORIGIN
+                PoseEstimator.getInstance().resetPoseEstimate(startingPose);
+                //this.resetOdometry(startingPose);
+              }
+              else if(isFirstPath && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+              {
+                PathPoint startingPoint = pathName.getPoint(0);
+                double startingX = RobotMap.VisionConfig.FIELD_LENGTH_METERS - startingPoint.position.getX();
+                Pose2d startingPose = new Pose2d(
+                  startingX, startingPoint.position.getY(), this.getYawRot2d()
+                );
+                PoseEstimator.getInstance().resetPoseEstimate(startingPose);
               }
             }),
         new FollowPathHolonomic(
@@ -418,7 +460,7 @@ public abstract class MAXSwerve extends SubsystemBase {
    */
 
   public Command pathFindThenFollowPathCommand(String pathName){
-    return new ProxyCommand(new PathfindThenFollowPathHolonomic(
+    return new PathfindThenFollowPathHolonomic(
         PathPlannerPath.fromPathFile(pathName),
         new PathConstraints(
                 RobotMap.SwervePathFollowConstants.MAX_VELOCITY,
@@ -447,7 +489,48 @@ public abstract class MAXSwerve extends SubsystemBase {
             getShouldFlip(),
             
         this // Reference to drive subsystem to set requirements
-      )
+      );
+  }
+
+  public Command navigateAndAllignCommand(String pathName, Supplier<Translation2d> target)
+  {
+    return new SequentialCommandGroup(
+      pathFindThenFollowPathCommand(pathName),
+      allignCommand(target)
+    );
+  }
+
+  public Command allignCommand(Supplier<Translation2d> target){
+    PIDController pid = new PIDController(0.01, 0, 0);
+    pid.setTolerance(0.1);
+    pid.enableContinuousInput(-180, 180);
+    return new ProxyCommand(() ->
+        new FunctionalCommand(
+          () -> {
+            // Init
+          },
+          () -> {
+            Translation2d currentTranslation = this.getPose().getTranslation();
+            Translation2d targetVector = currentTranslation.minus(target.get());
+            Rotation2d targetAngle = targetVector.getAngle();
+            double newSpeed;
+            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+            else
+              newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
+            this.drive(0,0,
+            newSpeed, true, true);
+            targetAngleEntry.setDouble(targetAngle.getDegrees());
+            currentAngleEntry.setDouble(this.getGyroYawDegrees());
+          },
+          interrupted -> {
+              pid.close();
+              this.drive(0,0,0,true,true);  
+          },
+          () -> {
+            return pid.atSetpoint();
+          },
+          this)
     );
   }
 
@@ -507,27 +590,46 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   /** Zeros the heading of the robot */
-  public void ZeroHeading() {
-    gyro.setYaw(0);
+  public void zeroGyroYaw() {
+    switch (RobotMap.DriveMap.GYRO_TYPE) {
+      case NAVX:
+        ((AHRS)gyro).reset();
+        break;
+      case PIGEON:
+        ((Pigeon2)gyro).setYaw(0);
+        break;
+      default:
+        break;
+    }
   }
 
-  public void zeroGyro() {
-    gyro.setYaw(0);
+  /**
+   * set the yaw of the gyro in degrees
+   * @param degrees
+   */
+  public void setGyroYaw(double degrees){
+    switch (RobotMap.DriveMap.GYRO_TYPE) {
+      case NAVX:
+        ((AHRS)gyro).setAngleAdjustment(degrees);
+        break;
+      case PIGEON:
+        ((Pigeon2)gyro).setYaw(0);
+        break;
+      default:
+        break;
+  }
+}
+
+  public Command zeroYawCommand(){
+    return new InstantCommand(() -> zeroGyroYaw());
   }
 
   /**
    * Returns the heading of the robot.
-   *
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(gyro.getYaw()).getDegrees();
-  }
-
-  public Rotation2d getYaw() {
-    return (SwerveConstants.INVERT_GYRO)
-        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
-        : Rotation2d.fromDegrees(gyro.getYaw());
+    return getGyroYawDegrees();
   }
 
   public SequentialCommandGroup TestAllCommand() {

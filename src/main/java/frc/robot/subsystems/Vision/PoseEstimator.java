@@ -8,6 +8,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,6 +38,11 @@ public class PoseEstimator extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Drivetrain drivetrain;
 
+  private ShuffleboardTab tab = Shuffleboard.getTab("Odometry Data");
+  private GenericEntry xPoseDiffEntry = tab.add("XOdom Diff", 0).getEntry();
+  private GenericEntry yPoseDiffEntry = tab.add("YODom Diff", 0).getEntry();
+  private GenericEntry totalDiffEntry = tab.add("totalDiff", 0).getEntry();
+
   private PoseEstimator() {
     // config = new PoseConfig();
     telemetry = new PoseTelemetry(this);
@@ -45,7 +53,7 @@ public class PoseEstimator extends SubsystemBase {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             MaxSwerveConstants.kDriveKinematics,
-            drivetrain.getYaw(),
+            drivetrain.getYawRot2d(),
             drivetrain.getModulePositions(),
             drivetrain.getPose(),
             createStateStdDevs(
@@ -71,7 +79,7 @@ public class PoseEstimator extends SubsystemBase {
       }
     }
     // TODO Photonvision mode - Needs editing and filtering
-    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null) { // Limelight mode
+    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null && tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
         addVisionMeasurement(tempEstimatePose, photonTimestamp);
@@ -88,9 +96,17 @@ public class PoseEstimator extends SubsystemBase {
     setEstimatedPose(getPosition());
     setOdometryPose(drivetrain.getPose());
 
-    // telemetry.updatePoseOnField("VisionPose", Robot.vision.botPose);
-    // telemetry.updatePoseOnField("OdometryPose", odometryPose);
-    // telemetry.updatePoseOnField("EstimatedPose", estimatePose); // Need to uncomment and fix to work here.
+    double xDiff = estimatePose.getX() - odometryPose.getX();
+    double yDiff = estimatePose.getY() - odometryPose.getY();
+
+    xPoseDiffEntry.setDouble(xDiff);
+    yPoseDiffEntry.setDouble(yDiff); 
+    totalDiffEntry.setDouble(Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)));
+
+    double xAvg = (estimatePose.getX() + odometryPose.getX()) / 2;
+    double yAvg = (estimatePose.getY() + odometryPose.getY()) / 2;
+    drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
+
   }
 
   // /**
@@ -160,7 +176,7 @@ public class PoseEstimator extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometryEstimate() {
-    poseEstimator.update(drivetrain.getYaw(), drivetrain.getModulePositions());
+    poseEstimator.update(drivetrain.getYawRot2d(), drivetrain.getModulePositions());
   }
 
   /**
@@ -176,7 +192,7 @@ public class PoseEstimator extends SubsystemBase {
    * @param poseMeters
    */
   public void resetPoseEstimate(Pose2d poseMeters) {
-    poseEstimator.resetPosition(drivetrain.getYaw(), drivetrain.getModulePositions(), poseMeters);
+    poseEstimator.resetPosition(drivetrain.getYawRot2d(), drivetrain.getModulePositions(), poseMeters);
     drivetrain.resetOdometry(poseMeters);
   }
 

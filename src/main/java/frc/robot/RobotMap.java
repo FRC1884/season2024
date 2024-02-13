@@ -20,6 +20,11 @@ public class RobotMap {
   }
 
   public static class DriveMap {
+
+    public enum GyroType{PIGEON, NAVX}
+
+    public static final GyroType GYRO_TYPE = GyroType.NAVX;
+
     public static final int PIGEON_ID = 30;
 
     /* Module Specific Constants */
@@ -51,6 +56,8 @@ public class RobotMap {
       public static final int ROTATOR_ID = 4;
       public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
+
+    
   }
 
   //TODO rename to path swerve constants.
@@ -66,7 +73,7 @@ public class RobotMap {
     public static final Pose2d BLUE_SPEAKER = new Pose2d(0, 5.52, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
-    public static final Pose2d RED_SPEAKER = new Pose2d(15.1, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d RED_SPEAKER = new Pose2d(16.54175, 5.6, new Rotation2d(Math.PI));
     public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
     public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
   }
@@ -93,10 +100,10 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
-    public static final boolean VISION_OVERRIDE_ENABLED = true;
+    public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
     public static final boolean IS_PHOTON_VISION_MODE = true;
-    public static final boolean IS_NEURAL_NET = true;
+    public static final boolean IS_NEURAL_NET = false;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -126,13 +133,13 @@ public class RobotMap {
     // Photonvision
     public static final String POSE_PHOTON_1 = "photoncam-1";
     // Translation Values (location relative to robot center)
-    public static final double CAM_1_X = 0.322; // Forward: camera To Robot XMeters
-    public static final double CAM_1_Y = -0.274; // Left: camera To Robot YMeters
-    public static final double CAM_1_Z = 0.21; // Up: camera To Robot ZMeters
+    public static final double CAM_1_X = -0.292; // Forward: camera To Robot XMeters
+    public static final double CAM_1_Y = -0.076; // Left: camera To Robot YMeters
+    public static final double CAM_1_Z = 0.28; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
-    public static final double CAM_1_PITCH_RADIANS = 0.5236; // camera Pitch Radians
+    public static final double CAM_1_PITCH_RADIANS = 0.349; // camera Pitch Radians
     public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
     // Photonvision

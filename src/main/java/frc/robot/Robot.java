@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("field", m_field);
     if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       Prototypes.getInstance();
+    Drivetrain.getInstance().zeroGyroYaw();
   }
 
   /**
@@ -87,6 +88,7 @@ public class Robot extends TimedRobot {
       if(autonomousCommand != null){
         autonomousCommand.schedule();
       }
+    //Drivetrain.getInstance().setGyroYaw(180);
   }
     
 
@@ -99,6 +101,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
     OI.getInstance().registerCommands();
+    //Drivetrain.getInstance().zeroGyroYaw();
+    //Drivetrain.getInstance().setGyroYaw(0);
     //PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());
   }
 
