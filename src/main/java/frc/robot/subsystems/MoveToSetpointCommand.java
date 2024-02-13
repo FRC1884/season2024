@@ -22,9 +22,13 @@ public class MoveToSetpointCommand extends Command {
     private TrapezoidProfile.Constraints constraints;
     private TrapezoidProfile.State current, goal;
 
+    private double tolerance;
+
     private double setpoint;
 
-    public MoveToSetpointCommand(Consumer<Double> setMotorSpeed, Supplier<Double> getPosition, Supplier<Double> getVelocity, PIDController pid, double kDt, double tolerance, TrapezoidProfile.Constraints constraints, double setpoint) {
+    public MoveToSetpointCommand(Consumer<Double> setMotorSpeed, Supplier<Double> getPosition,
+            Supplier<Double> getVelocity, PIDController pid, double kDt, double tolerance,
+            TrapezoidProfile.Constraints constraints, double setpoint) {
         this.setMotorSpeed = setMotorSpeed;
         this.getPosition = getPosition;
         this.getVelocity = getVelocity;
@@ -35,6 +39,7 @@ public class MoveToSetpointCommand extends Command {
         this.setpoint = setpoint;
 
         controller.setTolerance(tolerance);
+        this.tolerance = tolerance;
     }
 
     @Override
@@ -61,14 +66,19 @@ public class MoveToSetpointCommand extends Command {
         SmartDashboard.putNumber("profile enc", getPosition.get());
         SmartDashboard.putNumber("profile cur pos", current.position);
         SmartDashboard.putNumber("profile target", goal.position);
-        SmartDashboard.putBoolean("profile fin", controller.atSetpoint());
+        SmartDashboard.putNumber("profile t", getProfile().totalTime());
+        SmartDashboard.putBoolean("profile fin", isDone());
         SmartDashboard.putNumber("profile err", controller.getPositionError());
-       
+
         SmartDashboard.putNumber("profile tolerance", controller.getPositionTolerance());
     }
-    
+
+    private boolean isDone() {
+        return Math.abs(setpoint - getPosition.get()) <= tolerance;
+    }
+
     @Override
     public boolean isFinished() {
-        return (getProfile().isFinished(0)) && controller.atSetpoint();
+        return (isDone()) && controller.atSetpoint();
     }
 }
