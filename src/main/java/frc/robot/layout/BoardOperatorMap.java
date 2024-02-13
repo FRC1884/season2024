@@ -36,6 +36,12 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
+  JoystickButton getShootAmpButton() {
+      // TODO Auto-generated method stub
+      return null;
+  }
+
+  @Override
   JoystickButton getShootStopButton() {
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
@@ -63,6 +69,12 @@ public class BoardOperatorMap extends OperatorMap {
   @Override
   double getClimberAxis() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
+  }
+
+  @Override
+  double getManualPivotAxis() {
+      // TODO Auto-generated method stub
+      return 0;
   }
 
   @Override

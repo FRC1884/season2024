@@ -32,6 +32,8 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getShootButton();
 
+  abstract JoystickButton getShootAmpButton();
+
   abstract JoystickButton getShootStopButton();
   
   abstract JoystickButton getPivotButtonOne();
@@ -45,6 +47,8 @@ public abstract class OperatorMap extends CommandMap {
   abstract JoystickButton getFeederStopButton();
 
   abstract double getClimberAxis();
+
+  abstract double getManualPivotAxis();
 
   abstract JoystickButton getLEDPatternOneButton();
 
@@ -66,26 +70,35 @@ public abstract class OperatorMap extends CommandMap {
     private void registerIntake() {
     if(ExampleConfig.Subsystems.INTAKE_ENABLED){
       Intake intake = Intake.getInstance();
+      Shamper shamper = Shamper.getInstance();
       getIntakeStopButton().onTrue(intake.stopCommand());
       getIntakeButton().onTrue(intake.runCommand(true));
       getintakeReverseButton().onTrue(intake.runCommand(false));
-
     }
   }
 
   private void registerShamper(){
     if(ExampleConfig.Subsystems.SHAMPER_ENABLED){
       Shamper shamper = Shamper.getInstance();
-      // getShootButton().onTrue(shamper.runFlywheel(10));
-      // getShootStopButton().onTrue(shamper.runFlywheel(0));
+      Intake intake = Intake.getInstance();
+
+      getShootButton().whileTrue(shamper.runFlywheelPower(1));
+      getShootButton().whileFalse(shamper.stopFlywheel());
+      getShootAmpButton().whileTrue(shamper.runFlywheelPower(0.2));
+      getShootAmpButton().whileTrue(shamper.stopFlywheel());
+      getFeederButton().onTrue(shamper.runFeederPower(0.9, false));
+      //getFeederButton().whileFalse(shamper.runFeederPower(0, false));
+      getFeederStopButton().onTrue(shamper.runFeederPower(0, false));
       // //getPivotButtonOne().onTrue(shamper.runPivot(10));
       // //getPivotButtonTwo().onTrue(shamper.runPivot(20));
       // getFeederButton().onTrue(shamper.runFeeder(1));
       // getFeederStopButton().onTrue(shamper.runFeeder(0.0));
       // shamper.setDefaultCommand(shamper.runPivotPower(() -> getClimberAxis()));
-      getPivotButtonOne().onTrue(shamper.runPivot(30.0));
-      getPivotButtonTwo().onTrue(shamper.runPivot(60.0));
-      getPivotButtonOff().onTrue(shamper.runPivot(0.0));
+      // getPivotButtonOne().onTrue(shamper.runPivot(30.0));
+      // getPivotButtonTwo().onTrue(shamper.runPivot(60.0));
+      // getPivotButtonOff().onTrue(shamper.runPivot(0.0));
+      shamper.setDefaultCommand(shamper.runPivotPower(() ->getManualPivotAxis()));
+      
     }
   }
 

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkBase;
@@ -80,12 +81,18 @@ public class Shamper extends SubsystemBase {
     if (ShamperMap.TOP_SHOOTER != -1) {
       leaderFlywheel = new CANSparkFlex(ShamperMap.TOP_SHOOTER, MotorType.kBrushless);
       leaderFlywheel_PIDController = leaderFlywheel.getPIDController();
+      leaderFlywheel_PIDController.setP(PIDMap.P);
+      leaderFlywheel_PIDController.setI(PIDMap.I);
+      leaderFlywheel_PIDController.setD(PIDMap.D);
     }
     if (ShamperMap.BOTTOM_SHOOTER != -1) {
       followerFlywheel = new CANSparkFlex(ShamperMap.BOTTOM_SHOOTER, MotorType.kBrushless);
       followerFlywheel_PIDController = followerFlywheel.getPIDController();
+      followerFlywheel_PIDController.setP(PIDMap.P);
+      followerFlywheel_PIDController.setI(PIDMap.I);
+      followerFlywheel_PIDController.setD(PIDMap.D);
     }
-    if (ShamperMap.PIVOT != -1) {
+    if (ShamperMap.PIVOT != -1){
       pivot = new CANSparkMax(ShamperMap.PIVOT, MotorType.kBrushless);
       pivot.restoreFactoryDefaults();
       pivot_PIDController = pivot.getPIDController();
@@ -114,6 +121,10 @@ public class Shamper extends SubsystemBase {
       tab.addBoolean("for switch", () -> pivotForwardLimitSwitch.isPressed());
 
       // pivot_PIDController.setFeedbackDevice();
+
+      pivot_PIDController.setP(PIDMap.P * 20);
+      pivot_PIDController.setI(PIDMap.I * 20);
+      pivot_PIDController.setD(PIDMap.D * 20);
     }
     if (ShamperMap.FEEDER != -1)
       feeder = new CANSparkFlex(ShamperMap.FEEDER, MotorType.kBrushless);
@@ -125,27 +136,13 @@ public class Shamper extends SubsystemBase {
 
     feeder.setInverted(false);
 
-    set();
-
-  }
-
-  public void set() {
-    leaderFlywheel_PIDController.setP(PIDMap.P);
-    leaderFlywheel_PIDController.setI(PIDMap.I);
-    leaderFlywheel_PIDController.setD(PIDMap.D);
-    followerFlywheel_PIDController.setP(PIDMap.P);
-    followerFlywheel_PIDController.setI(PIDMap.I);
-    followerFlywheel_PIDController.setD(PIDMap.D);
-    pivot_PIDController.setP(PIDMap.P * 20);
-    pivot_PIDController.setI(PIDMap.I * 20);
-    pivot_PIDController.setD(PIDMap.D * 20);
   }
 
   public double getSetpoint() {
     return leaderFlywheel.getEncoder().getPosition();
   }
 
-  public Command runFlywheel(double power) {
+  public Command runFlywheel() {
     SlewRateLimiter sRL = new SlewRateLimiter(0.3, -0.3, leaderFlywheel.getEncoder().getVelocity());
     return new InstantCommand(
         () -> {
@@ -157,13 +154,22 @@ public class Shamper extends SubsystemBase {
         });
   }
 
+  public Command runFlywheelPower(double power){
+    return new InstantCommand(() -> leaderFlywheel.set(power));
+  }
+
+  public Command stopFlywheel(){
+    return new InstantCommand(() -> leaderFlywheel.set(0));
+  }
+
+
   public Command runPivot(double setpoint) {
-    return new MoveToSetpointCommand(speed -> pivot.set(speed), pivot.getEncoder()::getVelocity, pivot.getEncoder()::getVelocity, Pivot.PID, Pivot.DT, Pivot.TOLERANCE, Pivot.PROFILE_CONSTRAINTS, setpoint);
+    return new MoveToSetpointCommand(speed -> {if (speed > 1) pivot.set(1.0); else if (speed < -1) pivot.set(-1.0); else pivot.set(speed);}, () -> pivot.getEncoder().getPosition(), () -> pivot.getEncoder().getVelocity(), Pivot.PID, Pivot.DT, Pivot.TOLERANCE, Pivot.PROFILE_CONSTRAINTS, setpoint, this);
   } 
 
-  public Command runPivotPower(double power) {
+  public Command runPivotPower(Supplier<Double> power) {
     return new InstantCommand(() -> {
-      pivot.set(power);
+      pivot.set(power.get());
     }, this);
   }
 
@@ -173,6 +179,10 @@ public class Shamper extends SubsystemBase {
         () -> {
           feeder.set(sRL.calculate(power));
         });
+  }
+
+  public Command runFeederPower(double power, boolean placeHolder){
+    return new InstantCommand(() -> feeder.set(power));
   }
 
   private static double rpmToMetersPS(double value) {
@@ -185,9 +195,10 @@ public class Shamper extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if(ShamperMap.PIVOT != -1){
     if (pivotReverseLimitSwitch.isPressed())
       zeroPivot();
     // SmartDashboard.putNumber("pivot enc", pivotEncoder.getPosition());
-
+  }
   }
 }

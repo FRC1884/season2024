@@ -193,8 +193,8 @@ public class RobotMap {
   public static class ShamperMap {
     public static final int TOP_SHOOTER = 18;
     public static final int BOTTOM_SHOOTER = 2;
-    public static final int PIVOT = 14;
-    public static final int FEEDER = 42;
+    public static final int PIVOT = 14; //TODO: Change back to 14
+    public static final int FEEDER = 42; 
     public static final double FLYWHEEL_RADIUS = 0.0508;
   }
 
@@ -216,7 +216,7 @@ public class RobotMap {
     public static final double DT = 0.2;
 
     public static final PIDController PID =  new PIDController(0.1, 0, 0);
-    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(5, 10);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(2, 1);
   }
 
   public static class LEDMap {

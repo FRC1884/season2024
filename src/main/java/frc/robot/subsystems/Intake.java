@@ -45,8 +45,8 @@ public class Intake extends SubsystemBase {
         if(yn){
         motor1.set(speed1);
         motor2.set(speed2);}
-        else{ motor1.set(0.1);
-        motor2.set(0.1);}
+        else{ motor1.set(0.4);
+        motor2.set(0.4);}
     }
 
     public Command runCommand(boolean yn) {

@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class MoveToSetpointCommand extends Command {
 
@@ -28,7 +29,7 @@ public class MoveToSetpointCommand extends Command {
 
     public MoveToSetpointCommand(Consumer<Double> setMotorSpeed, Supplier<Double> getPosition,
             Supplier<Double> getVelocity, PIDController pid, double kDt, double tolerance,
-            TrapezoidProfile.Constraints constraints, double setpoint) {
+            TrapezoidProfile.Constraints constraints, double setpoint, Subsystem... requirements) {
         this.setMotorSpeed = setMotorSpeed;
         this.getPosition = getPosition;
         this.getVelocity = getVelocity;
@@ -40,6 +41,8 @@ public class MoveToSetpointCommand extends Command {
 
         controller.setTolerance(tolerance);
         this.tolerance = tolerance;
+
+        addRequirements(requirements);
     }
 
     @Override
@@ -60,21 +63,30 @@ public class MoveToSetpointCommand extends Command {
 
     @Override
     public void execute() {
-        setMotorSpeed.accept(controller.calculate(getPosition.get(), current.position));
+        var speed = controller.calculate(getPosition.get(), current.position);
+        setMotorSpeed.accept(speed);
         updateCurrent();
 
         SmartDashboard.putNumber("profile enc", getPosition.get());
         SmartDashboard.putNumber("profile cur pos", current.position);
+        SmartDashboard.putNumber("profile speed", speed);
         SmartDashboard.putNumber("profile target", goal.position);
         SmartDashboard.putNumber("profile t", getProfile().totalTime());
-        SmartDashboard.putBoolean("profile fin", isDone());
+        SmartDashboard.putBoolean("profile fin", isDone()&& controller.atSetpoint());
         SmartDashboard.putNumber("profile err", controller.getPositionError());
+        SmartDashboard.putNumber("profile calculated error", Math.abs(setpoint - getPosition.get()));
 
         SmartDashboard.putNumber("profile tolerance", controller.getPositionTolerance());
     }
 
     private boolean isDone() {
         return Math.abs(setpoint - getPosition.get()) <= tolerance;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        System.out.println("FINSIHED!!!");
+        setMotorSpeed.accept(0.0);
     }
 
     @Override
