@@ -1,8 +1,10 @@
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class RobotMap {
   public enum PoseMap {
@@ -30,30 +32,30 @@ public class RobotMap {
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
     public static final class FrontLeft {
-      public static final int DRIVE_ID = 8;
-      public static final int ROTATOR_ID = 7;
+      public static final int DRIVE_ID = 10;
+      public static final int ROTATOR_ID = 8;
       public static final double ANGULAR_OFFSET = -Math.PI / 2;
       ;
     }
 
     /* Front Right Module - Module 1 */
     public static final class FrontRight {
-      public static final int DRIVE_ID = 5;
-      public static final int ROTATOR_ID = 6;
+      public static final int DRIVE_ID = 7;
+      public static final int ROTATOR_ID = 9;
       public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Left Module - Module 2 */
     public static final class BackLeft {
-      public static final int DRIVE_ID = 2;
-      public static final int ROTATOR_ID = 1;
+      public static final int DRIVE_ID = 11;
+      public static final int ROTATOR_ID = 13;
       public static final double ANGULAR_OFFSET = Math.PI;
     }
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {
       public static final int DRIVE_ID = 3;
-      public static final int ROTATOR_ID = 4;
+      public static final int ROTATOR_ID = 16;
       public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
 
@@ -102,7 +104,7 @@ public class RobotMap {
   public static class VisionConfig {
     public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
-    public static final boolean IS_PHOTON_VISION_MODE = true;
+    public static final boolean IS_PHOTON_VISION_MODE = true;//TODO: Change to false 
     public static final boolean IS_NEURAL_NET = false;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose estimate
     // Field limits
@@ -168,11 +170,11 @@ public class RobotMap {
   }
 
   public static class PrototypeMap {
-    public static final boolean LIVE_WINDOW_ENABLED = false;
+    public static final boolean LIVE_WINDOW_ENABLED = true;
 
-    public static final int MOTOR_ID_1 = 42;
+    public static final int MOTOR_ID_1 = 14;
     public static final int MOTOR_ID_2 = 8;
-    public static final int MOTOR_ID_3 = 2;
+    public static final int MOTOR_ID_3 = 50;
     public static final int MOTOR_ID_4 = 3;
 
     public static final double MOTOR_1_KP = 0.1;
@@ -183,22 +185,22 @@ public class RobotMap {
   }
 
   public static class IntakeMap {
-    public static final int MOTOR_ID_1 = 29;
-    public static final int MOTOR_ID_2 = 30;
+    public static final int MOTOR_ID_1 = 15;
+    public static final int MOTOR_ID_2 = 4;
   }
 
 
   public static class ShamperMap {
-    public static final int TOP_SHOOTER = 42;
-    public static final int BOTTOM_SHOOTER = 41;
-    public static final int PIVOT = 40;
-    public static final int FEEDER = 38;
+    public static final int TOP_SHOOTER = 18;
+    public static final int BOTTOM_SHOOTER = 2;
+    public static final int PIVOT = 14;
+    public static final int FEEDER = 42;
     public static final double FLYWHEEL_RADIUS = 0.0508;
   }
 
   public static class ClimberMap {
-    public static final int MASTER_ID = 9;
-    public static final int SLAVE_ID = 10;
+    public static final int MASTER_ID = 12;
+    public static final int SLAVE_ID = 17;
 
     public static final int LIMIT_SWITCH = 0;
   }
@@ -206,7 +208,15 @@ public class RobotMap {
   public static class PIDMap {
     public static final double P = 0.0003;
     public static final double I = 0.0000008;
-    public static final double D= 0.000006;
+    public static final double D= 0.0000006;
+  }
+
+  public static class Pivot {
+    public static final double TOLERANCE = 1;
+    public static final double DT = 0.2;
+
+    public static final PIDController PID =  new PIDController(0.1, 0, 0);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(5, 10);
   }
 
   public static class LEDMap {

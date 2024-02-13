@@ -1,7 +1,20 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+import java.util.function.LongConsumer;
+import java.util.function.LongSupplier;
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkBase;
 
+import edu.wpi.first.util.function.BooleanConsumer;
+import edu.wpi.first.util.function.FloatConsumer;
+import edu.wpi.first.util.function.FloatSupplier;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
@@ -13,6 +26,7 @@ import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Prototypes;
+import frc.robot.subsystems.Shamper;
 import frc.robot.subsystems.Vision.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
@@ -45,6 +59,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
+
     if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       Prototypes.getInstance();
     Drivetrain.getInstance().zeroGyroYaw();

@@ -3,6 +3,7 @@ package frc.robot;
 import frc.robot.core.util.controllers.BoardController;
 import frc.robot.core.util.controllers.ButtonMap;
 import frc.robot.core.util.controllers.Xbox;
+import frc.robot.layout.BoardOperatorMap;
 
 public class ExampleConfig {
   public class Subsystems {
@@ -10,6 +11,7 @@ public class ExampleConfig {
     public static final boolean CLIMBER_ENABLED = false;
     public static final boolean FLYWHEEL_ENABLED = false;
     public static final boolean INTAKE_ENABLED = false;
+    public static final boolean SHAMPER_ENABLED = false;
     public static final boolean PROTOTYPE_ENABLED = false;
     public static final boolean LEDS_ENABLED = false;
   }
@@ -24,7 +26,7 @@ public class ExampleConfig {
     }
 
     public static ButtonMap getOperatorController() {
-      return new BoardController();
+      return BOARD_OPERATOR_ENABLED ? new BoardController() : new Xbox();
     }
   }
 }

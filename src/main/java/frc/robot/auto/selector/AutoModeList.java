@@ -5,7 +5,7 @@ import frc.robot.auto.modes.*;
 
 public enum AutoModeList {
   DO_NOTHING(new DoNothing()),
-  TEST_PATH(new TestPath());
+  TEST_PATH(new DoNothing());
 
   private final SequentialCommandGroup autoCommand;
 
