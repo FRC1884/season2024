@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import javax.print.attribute.standard.PrinterMessageFromOperator;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -36,6 +37,8 @@ public abstract class OperatorMap extends CommandMap {
   abstract JoystickButton getPivotButtonOne();
   
   abstract JoystickButton getPivotButtonTwo();
+  
+  abstract JoystickButton getPivotButtonOff();
   
   abstract JoystickButton getFeederButton();
 
@@ -71,17 +74,18 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerShamper(){
-    if(ExampleConfig.Subsystems.FLYWHEEL_ENABLED){
+    if(ExampleConfig.Subsystems.SHAMPER_ENABLED){
       Shamper shamper = Shamper.getInstance();
-      getShootButton().onTrue(shamper.runFlywheel(10));
-      getShootStopButton().onTrue(shamper.runFlywheel(0));
-      //getPivotButtonOne().onTrue(shamper.runPivot(10));
-      //getPivotButtonTwo().onTrue(shamper.runPivot(20));
-      getFeederButton().onTrue(shamper.runFeeder(1));
-      getFeederStopButton().onTrue(shamper.runFeeder(0.0));
+      // getShootButton().onTrue(shamper.runFlywheel(10));
+      // getShootStopButton().onTrue(shamper.runFlywheel(0));
+      // //getPivotButtonOne().onTrue(shamper.runPivot(10));
+      // //getPivotButtonTwo().onTrue(shamper.runPivot(20));
+      // getFeederButton().onTrue(shamper.runFeeder(1));
+      // getFeederStopButton().onTrue(shamper.runFeeder(0.0));
       // shamper.setDefaultCommand(shamper.runPivotPower(() -> getClimberAxis()));
-      getPivotButtonOne().onTrue(shamper.runPivotPower(()->0.1));
-      getPivotButtonTwo().onTrue(shamper.runPivotPower(()->-0.1));
+      getPivotButtonOne().onTrue(shamper.runPivot(30.0));
+      getPivotButtonTwo().onTrue(shamper.runPivot(60.0));
+      getPivotButtonOff().onTrue(shamper.runPivot(0.0));
     }
   }
 

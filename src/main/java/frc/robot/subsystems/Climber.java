@@ -25,10 +25,12 @@ public class Climber extends SubsystemBase {
         leaderMotor = new CANSparkMax(RobotMap.ClimberMap.MASTER_ID, MotorType.kBrushless);
         followerMotor = new CANSparkMax(RobotMap.ClimberMap.SLAVE_ID, MotorType.kBrushless);
 
-        leaderMotor.setInverted(true);
+        // leaderMotor.setInverted(false);
 
-        followerMotor.follow(leaderMotor);
-        followerMotor.setInverted(false);
+        followerMotor.follow(leaderMotor, true);
+        leaderMotor.burnFlash();
+        followerMotor.burnFlash();
+        //followerMotor.setInverted(true);
     }
 
     public Command run(DoubleSupplier power) {

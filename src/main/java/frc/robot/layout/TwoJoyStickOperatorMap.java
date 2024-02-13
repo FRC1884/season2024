@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
+import frc.robot.core.util.controllers.ButtonMap.Dpad;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Prototypes;
 
@@ -15,6 +16,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   public void registerCommands() {
     super.registerCommands();
   }
+
   @Override
   public JoystickButton getIntakeStopButton() {
     return controller.getButton(Button.BUTTON_X);
@@ -27,10 +29,10 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   JoystickButton getShootButton() {
     System.out.println("hello");
-    return controller.getButton(Button.BUTTON_A);
+    return controller.getButton(Button.BUTTON_START);
   }
   JoystickButton getShootStopButton() {
-    return controller.getButton(Button.BUTTON_B);
+    return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
 
@@ -42,12 +44,12 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getPivotButtonOne() {
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getPivotButtonTwo(){
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
@@ -78,6 +80,10 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   JoystickButton getLEDPatternOffButton() {
     return null;
+  }
+  @Override
+  JoystickButton getPivotButtonOff() {
+    return controller.getButton(Button.BUTTON_A);
   }
 
 }

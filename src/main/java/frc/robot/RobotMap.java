@@ -1,8 +1,10 @@
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class RobotMap {
   public enum PoseMap {
@@ -93,10 +95,10 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
-    public static final boolean VISION_OVERRIDE_ENABLED = true;
+    public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
-    public static final boolean IS_PHOTON_VISION_MODE = true;
-    public static final boolean IS_NEURAL_NET = true;
+    public static final boolean IS_PHOTON_VISION_MODE = false;
+    public static final boolean IS_NEURAL_NET = false;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -161,9 +163,9 @@ public class RobotMap {
   }
 
   public static class PrototypeMap {
-    public static final boolean LIVE_WINDOW_ENABLED = false;
+    public static final boolean LIVE_WINDOW_ENABLED = true;
 
-    public static final int MOTOR_ID_1 = 42;
+    public static final int MOTOR_ID_1 = 14;
     public static final int MOTOR_ID_2 = 8;
     public static final int MOTOR_ID_3 = 50;
     public static final int MOTOR_ID_4 = 3;
@@ -198,8 +200,16 @@ public class RobotMap {
 
   public static class PIDMap {
     public static final double P = 0.0003;
-    public static final double I = 0.00000008;
-    public static final double D= 0.00000006;
+    public static final double I = 0.0000008;
+    public static final double D= 0.0000006;
+  }
+
+  public static class Pivot {
+    public static final double TOLERANCE = 1;
+    public static final double DT = 0.2;
+
+    public static final PIDController PID =  new PIDController(0.1, 0, 0);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(5, 10);
   }
 
   public static class LEDMap {

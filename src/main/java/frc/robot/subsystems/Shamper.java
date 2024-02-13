@@ -2,42 +2,58 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkLimitSwitch;
+import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShamperMap;
+import frc.robot.util.SendableMotor;
 import frc.robot.RobotMap.PIDMap;
+import frc.robot.RobotMap.Pivot;
 
 /**
- * This is the Catapul-- umm... Flywheel subsystem for the 2024 season. Throughout the season, add
+ * This is the Catapul-- umm... Flywheel subsystem for the 2024 season.
+ * Throughout the season, add
  * everything shooting here. <br>
  * <br>
  * Think:
  *
  * <ul>
- *   <li>pitch control for adjusting the launch angle,
- *   <li>LUT-based power setpoints,
- *   <li>closed-loop control to regain rotational momentum quickly,
- *   <li>whatever else you'd like!
+ * <li>pitch control for adjusting the launch angle,
+ * <li>LUT-based power setpoints,
+ * <li>closed-loop control to regain rotational momentum quickly,
+ * <li>whatever else you'd like!
  * </ul>
  */
 public class Shamper extends SubsystemBase {
   private static Shamper instance;
 
   public static Shamper getInstance() {
-    if (instance == null) instance = new Shamper();
+    if (instance == null)
+      instance = new Shamper();
     return instance;
   }
 
@@ -48,72 +64,106 @@ public class Shamper extends SubsystemBase {
    * leaderPIVOT: LEFT PIVOT
    * followerPivot: RIGHT PIVOT
    */
-  private CANSparkBase leaderFlywheel = null, followerFlywheel = null;
-  private CANSparkBase Pivot = null;
-  private CANSparkBase feeder = null;
-  private SparkPIDController leaderFlywheel_PIDController, followerFlywheel_PIDController, Pivot_PIDController;
+  private CANSparkBase leaderFlywheel, followerFlywheel;
+  private CANSparkMax pivot;
+  private CANSparkBase feeder;
+  private SparkPIDController leaderFlywheel_PIDController, followerFlywheel_PIDController, pivot_PIDController;
   private TrapezoidProfile profile1;
 
+  private SparkLimitSwitch pivotReverseLimitSwitch, pivotForwardLimitSwitch;
+
+  // private RelativeEncoder pivotEncoder;
+
+  private SendableMotor pivotSendable;
+
   private Shamper() {
-    if(ShamperMap.TOP_SHOOTER != -1){
+    if (ShamperMap.TOP_SHOOTER != -1) {
       leaderFlywheel = new CANSparkFlex(ShamperMap.TOP_SHOOTER, MotorType.kBrushless);
-      leaderFlywheel_PIDController = leaderFlywheel.getPIDController();}
-    if(ShamperMap.BOTTOM_SHOOTER != -1){
+      leaderFlywheel_PIDController = leaderFlywheel.getPIDController();
+    }
+    if (ShamperMap.BOTTOM_SHOOTER != -1) {
       followerFlywheel = new CANSparkFlex(ShamperMap.BOTTOM_SHOOTER, MotorType.kBrushless);
-      followerFlywheel_PIDController = followerFlywheel.getPIDController();}
-    if(ShamperMap.PIVOT != -1){
-      Pivot = new CANSparkFlex(ShamperMap.PIVOT, MotorType.kBrushless);
-      Pivot_PIDController = leaderFlywheel.getPIDController();}
-    if(ShamperMap.FEEDER != -1)
+      followerFlywheel_PIDController = followerFlywheel.getPIDController();
+    }
+    if (ShamperMap.PIVOT != -1) {
+      pivot = new CANSparkMax(ShamperMap.PIVOT, MotorType.kBrushless);
+      pivot.restoreFactoryDefaults();
+      pivot_PIDController = pivot.getPIDController();
+
+      pivot.setInverted(true);
+
+      // pivotEncoder =
+      // pivot.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+
+      // System.out.println(pivotEncoder.getCountsPerRevolution());
+      // System.out.println(pivotEncoder.getPosition());
+
+      var tab = Shuffleboard.getTab("shamper");
+
+      tab.addDouble("enc", () -> pivot.getEncoder().getPosition());
+
+      pivotReverseLimitSwitch = pivot.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+      pivotReverseLimitSwitch.enableLimitSwitch(true);
+
+      pivotForwardLimitSwitch = pivot.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+      pivotForwardLimitSwitch.enableLimitSwitch(true);
+
+      pivot.burnFlash();
+
+      tab.addBoolean("rev switch", () -> pivotReverseLimitSwitch.isPressed());
+      tab.addBoolean("for switch", () -> pivotForwardLimitSwitch.isPressed());
+
+      // pivot_PIDController.setFeedbackDevice();
+    }
+    if (ShamperMap.FEEDER != -1)
       feeder = new CANSparkFlex(ShamperMap.FEEDER, MotorType.kBrushless);
 
-    // This method is in case one of the motors needs to be inverted before setting them to follow
+    // This method is in case one of the motors needs to be inverted before setting
+    // them to follow
     leaderFlywheel.setInverted(false);
     followerFlywheel.follow(leaderFlywheel, true);
 
-    Pivot.setInverted(false);
-
     feeder.setInverted(false);
-    
-    profile1 = new TrapezoidProfile(new TrapezoidProfile.Constraints(50000.0,1.0));
+
     set();
-    
+
   }
 
-  public void set(){
-        leaderFlywheel_PIDController.setP(PIDMap.P);
-        leaderFlywheel_PIDController.setI(PIDMap.I);
-        leaderFlywheel_PIDController.setD(PIDMap.D);
-        followerFlywheel_PIDController.setP(PIDMap.P);
-        followerFlywheel_PIDController.setI(PIDMap.I);
-        followerFlywheel_PIDController.setD(PIDMap.D);
-        Pivot_PIDController.setP(PIDMap.P);
-        Pivot_PIDController.setI(PIDMap.I);
-        Pivot_PIDController.setD(PIDMap.D);
+  public void set() {
+    leaderFlywheel_PIDController.setP(PIDMap.P);
+    leaderFlywheel_PIDController.setI(PIDMap.I);
+    leaderFlywheel_PIDController.setD(PIDMap.D);
+    followerFlywheel_PIDController.setP(PIDMap.P);
+    followerFlywheel_PIDController.setI(PIDMap.I);
+    followerFlywheel_PIDController.setD(PIDMap.D);
+    pivot_PIDController.setP(PIDMap.P * 20);
+    pivot_PIDController.setI(PIDMap.I * 20);
+    pivot_PIDController.setD(PIDMap.D * 20);
+  }
 
-    }
+  public double getSetpoint() {
+    return leaderFlywheel.getEncoder().getPosition();
+  }
 
   public Command runFlywheel(double power) {
     SlewRateLimiter sRL = new SlewRateLimiter(0.3, -0.3, leaderFlywheel.getEncoder().getVelocity());
     return new InstantCommand(
         () -> {
-          leaderFlywheel_PIDController.setReference(sRL.calculate(rpmToMetersPS(power)), CANSparkBase.ControlType.kVelocity);
-          followerFlywheel_PIDController.setReference(sRL.calculate(rpmToMetersPS(power)), CANSparkBase.ControlType.kVelocity);
+          leaderFlywheel.set(0.1);
+          // leaderFlywheel.getPIDController().setReference(sRL.calculate(rpmToMetersPS(power)),
+          // CANSparkBase.ControlType.kVelocity);
+          // followerFlywheel.getPIDController().setReference(sRL.calculate(rpmToMetersPS(power)),
+          // CANSparkBase.ControlType.kVelocity);
         });
   }
 
   public Command runPivot(double setpoint) {
-    TrapezoidProfile.State current = new TrapezoidProfile.State(leaderFlywheel.getEncoder().getPosition(),leaderFlywheel.getEncoder().getVelocity());
-    TrapezoidProfile.State SetPoint = new TrapezoidProfile.State((setpoint/360.0)*4096.0, 0.0);
-    return new InstantCommand(
-        () -> {
-          Pivot_PIDController.setReference(profile1.calculate(0,current, SetPoint).position, CANSparkBase.ControlType.kPosition);
-        });
-  }
+    return new MoveToSetpointCommand(speed -> pivot.set(speed), pivot.getEncoder()::getVelocity, pivot.getEncoder()::getVelocity, Pivot.PID, Pivot.DT, Pivot.TOLERANCE, Pivot.PROFILE_CONSTRAINTS, setpoint);
+  } 
 
-  public Command runPivotPower(DoubleSupplier power) {
-    return new RunCommand(()->{
-      Pivot.set(Pivot.get() == 0.0 ? power.getAsDouble() : 0.0);
+  public Command runPivotPower(double power) {
+    return new InstantCommand(() -> {
+      pivot.set(power);
     }, this);
   }
 
@@ -123,9 +173,21 @@ public class Shamper extends SubsystemBase {
         () -> {
           feeder.set(sRL.calculate(power));
         });
-      }
+  }
 
   private static double rpmToMetersPS(double value) {
-    return (value*60)/(2 * (Math.PI)* ShamperMap.FLYWHEEL_RADIUS);
+    return (value * 60) / (2 * (Math.PI) * ShamperMap.FLYWHEEL_RADIUS);
+  }
+
+  private void zeroPivot() {
+    pivot.getEncoder().setPosition(0);
+  }
+
+  @Override
+  public void periodic() {
+    if (pivotReverseLimitSwitch.isPressed())
+      zeroPivot();
+    // SmartDashboard.putNumber("pivot enc", pivotEncoder.getPosition());
+
   }
 }

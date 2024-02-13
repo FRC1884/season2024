@@ -42,12 +42,12 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getPivotButtonOne() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+    return controller.getButton(Button.BUTTON_EXTRA_2);
   }
 
   @Override
   JoystickButton getPivotButtonTwo(){
-    return controller.getButton(Button.BUTTON_SHARE);
+    return controller.getButton(Button.BUTTON_TOUCHPAD);
   }
 
   @Override
@@ -78,6 +78,11 @@ public class BoardOperatorMap extends OperatorMap {
   @Override
   JoystickButton getLEDPatternOffButton() {
     return controller.getButton(Button.BUTTON_EXTRA_2);
+  }
+
+  @Override
+  JoystickButton getPivotButtonOff() {
+    return controller.getButton(Button.BUTTON_EXTRA_1);
   }
 
 

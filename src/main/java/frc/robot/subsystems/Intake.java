@@ -31,8 +31,8 @@ public class Intake extends SubsystemBase {
     }
 
     private CANSparkMax motor1, motor2;
-    private double MOTOR_SPEED_1 = 0.75; //TODO: fix value
-    private double MOTOR_SPEED_2 = 0.75;// TODO: fix value
+    private double MOTOR_SPEED_1 = -0.6; //TODO: fix value
+    private double MOTOR_SPEED_2 = -0.6;// TODO: fix value
     
 
     private Intake() {
@@ -45,8 +45,8 @@ public class Intake extends SubsystemBase {
         if(yn){
         motor1.set(speed1);
         motor2.set(speed2);}
-        else{ motor1.set(-0.1);
-        motor2.set(-0.1);}
+        else{ motor1.set(0.1);
+        motor2.set(0.1);}
     }
 
     public Command runCommand(boolean yn) {
