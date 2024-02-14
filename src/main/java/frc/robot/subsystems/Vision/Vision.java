@@ -243,7 +243,7 @@ public class Vision extends SubsystemBase {
         Pose2d currentCamPose2d = new Pose2d(fieldToCamera.getX(), fieldToCamera.getY(), fieldToCamera.getRotation().toRotation2d());
         photonTimestamp = result_1.getTimestampSeconds();
         botPose = currentCamPose2d.transformBy(robotToCam2d);
-        System.out.println("MultiTag");
+        //System.out.println("MultiTag");
         //Telemetry Data
         // visionXDataEntry.setString(df.format(botPose.getX()));
         // visionYDataEntry.setString(df.format(botPose.getY()));
@@ -258,7 +258,7 @@ public class Vision extends SubsystemBase {
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, robotToCam3d);
           botPose = currentPose3d.toPose2d();
-          System.out.println("singleTag");
+          //System.out.println("singleTag");
           //Telemetry Data
           // visionXDataEntry.setString(df.format(botPose.getX()));
           // visionYDataEntry.setString(df.format(botPose.getY()));
