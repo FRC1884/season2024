@@ -24,7 +24,9 @@ public class RobotMap {
 
   public static class DriveMap {
 
-    public enum GyroType{PIGEON, NAVX}
+    public enum GyroType {
+      PIGEON, NAVX
+    }
 
     public static final GyroType GYRO_TYPE = GyroType.NAVX;
 
@@ -35,8 +37,7 @@ public class RobotMap {
     public static final class FrontLeft {
       public static final int DRIVE_ID = 1;
       public static final int ROTATOR_ID = 2;
-      public static final double ANGULAR_OFFSET = -Math.PI / 2;
-      ;
+      public static final double ANGULAR_OFFSET = -Math.PI / 2;;
     }
 
     /* Front Right Module - Module 1 */
@@ -60,10 +61,9 @@ public class RobotMap {
       public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
 
-    
   }
 
-  //TODO rename to path swerve constants.
+  // TODO rename to path swerve constants.
   public static final class SwervePathFollowConstants {
     public static final double MAX_VELOCITY = 1;
     public static final double MAX_ACCELERATION = 5;
@@ -105,9 +105,10 @@ public class RobotMap {
   public static class VisionConfig {
     public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
-    public static final boolean IS_PHOTON_VISION_MODE = true;//TODO: Change to false 
+    public static final boolean IS_PHOTON_VISION_MODE = true;// TODO: Change to false
     public static final boolean IS_NEURAL_NET = false;
-    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose estimate
+    public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
+                                                                  // estimate
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
@@ -122,12 +123,12 @@ public class RobotMap {
     public static final double POSE_LIME_Y = -0.274; // Side - Right is positive on the limelight
     public static final double POSE_LIME_Z = 0.21; // Up
     public static final double POSE_LIME_PITCH = 30; // NEED to find units - degrees for now
-    public static final double POSE_LIME_ROLL = 0.0; 
+    public static final double POSE_LIME_ROLL = 0.0;
     public static final double POSE_LIME_YAW = 0.0;
 
-    public static final double NN_LIME_X = 0.322; //+X is forward on the robot
-    public static final double NN_LIME_Y = 0.234; //+Y is the the left of the robot
-    public static final double NN_LIME_Z = 0.345; //+Z is up
+    public static final double NN_LIME_X = 0.322; // +X is forward on the robot
+    public static final double NN_LIME_Y = 0.234; // +Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.345; // +Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
     public static final double NN_LIME_YAW = 0.0;
@@ -186,19 +187,31 @@ public class RobotMap {
   }
 
   public static class IntakeMap {
-    public static final int MOTOR_ID_1 = 9;
+    public static final int INTAKE_ID = 9;
+    public static final int FEEDER_ID = 10;
+    public static final int SENSOR = -1;
+
+    public static final double INTAKE_FORWARD_SPEED = 0.6;
+    public static final double FEEDER_FORWARD_SPEED = 0.5;
+
+    public static final double INTAKE_REVERSE_SPEED = -0.6;
+    public static final double FEEDER_REVERSE_SPEED = -0.5;
   }
 
-
-  public static class ShamperMap {
-    public static final int FEEDER = 10; 
+  public static class ShooterMap {
+    public static final int FEEDER = -1;
     public static final int TOP_SHOOTER = 11;
     public static final int BOTTOM_SHOOTER = 12;
-    public static final int PIVOT = 13; //TODO: Change back to 14
+    public static final int PIVOT = 13; // TODO: Change back to 14
     public static final double FLYWHEEL_RADIUS = 0.0508;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FLYWHEEL_FF = 0.00015;
+    public static final double FLYWHEEL_RAMP_RATE = 0.5;
+
+    public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.015);
+    public static final double FEEDER_FF = 0.00015;
+    public static final double FEEDER_RAMP_RATE = 0.5;
   }
 
   public static class ClimberMap {
@@ -230,11 +243,16 @@ public class RobotMap {
   }
 
   public static class PivotMap {
-    public static final int PIVOT = 14;
-    public static final double TOLERANCE = 1;
+    public static final int PIVOT_ID = 14;
+    public static final double POSITION_TOLERANCE = 1;
+    public static final double VELOCITY_TOLERANCE = .5;
     public static final double DT = 0.2;
 
-    public static final PIDController PID =  new PIDController(0.1, 0, 0);
+    // TODO: Tune these values
+    public static final double kP = 0.003;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+
     public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(2, 1);
   }
 

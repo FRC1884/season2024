@@ -5,12 +5,17 @@ import frc.robot.core.util.controllers.ButtonMap;
 import frc.robot.core.util.controllers.Xbox;
 import frc.robot.layout.BoardOperatorMap;
 
-public class ExampleConfig {
-  public class Subsystems {
+public class Config {
+  public static final class Subsystems {
     public static final boolean DRIVETRAIN_ENABLED = true;
     public static final boolean CLIMBER_ENABLED = false;
     public static final boolean SHAMPER_ENABLED = true;
-    public static final boolean INTAKE_ENABLED = true;
+
+    public static final class Intake {
+      public static final boolean INTAKE_ENABLED = true;
+      public static final boolean INTAKE_SENSOR_ENABLED = true;
+    }
+
     public static final boolean PROTOTYPE_ENABLED = false;
     public static final boolean LEDS_ENABLED = false;
   }

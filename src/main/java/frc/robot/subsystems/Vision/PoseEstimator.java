@@ -73,15 +73,16 @@ public class PoseEstimator extends SubsystemBase {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
     Pose2d tempEstimatePose = Vision.getInstance().visionBotPose();
-    if (VisionConfig.IS_LIMELIGHT_MODE && tempEstimatePose != null && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
+    if (VisionConfig.IS_LIMELIGHT_MODE && tempEstimatePose != null
+        && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
-        double currentTimestamp =
-          Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
+        double currentTimestamp = Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
         addVisionMeasurement(tempEstimatePose, currentTimestamp);
       }
     }
     // TODO Photonvision mode - Needs editing and filtering
-    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
+    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null
+        && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
         addVisionMeasurement(tempEstimatePose, photonTimestamp);
@@ -90,7 +91,7 @@ public class PoseEstimator extends SubsystemBase {
 
     //UNTESTED - ALWAYS SETS DRIVETRAIN ODOMETRY TO THE POSE-ESTIMATOR ODOMETRY
     //NOT GREAT FOR ERROR CHECKING POSE ESTIMATOR! - SET TO FALSE
-    if(VisionConfig.VISION_OVERRIDE_ENABLED){
+    if (VisionConfig.VISION_OVERRIDE_ENABLED) {
       drivetrain.resetOdometry(getPosition());
     }
 
@@ -102,17 +103,21 @@ public class PoseEstimator extends SubsystemBase {
     double yDiff = estimatePose.getY() - odometryPose.getY();
 
     xPoseDiffEntry.setDouble(xDiff);
-    yPoseDiffEntry.setDouble(yDiff); 
+    yPoseDiffEntry.setDouble(yDiff);
     totalDiffEntry.setDouble(Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)));
 
     double xAvg = (estimatePose.getX() + odometryPose.getX()) / 2;
     double yAvg = (estimatePose.getY() + odometryPose.getY()) / 2;
     drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
-    
+
     Translation2d currentTranslation = getPosition().getTranslation();
     double targetVectorLength = currentTranslation.getDistance(Coordinates.RED_SPEAKER.getTranslation());
     rToSpeaker.setDouble(targetVectorLength);
 
+  }
+  
+  public Double getDistanceToPose(Translation2d pose) {
+    return getPosition().getTranslation().getDistance(pose);
   }
 
   // /**

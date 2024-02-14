@@ -14,7 +14,8 @@ import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.subsystems.*;
-import frc.robot.ExampleConfig;
+import frc.robot.Config;
+import frc.robot.Commands.ShootSequenceCommand;
 import frc.robot.core.util.controllers.BoardController;
 import frc.robot.util.BlinkinUtils;
 
@@ -26,16 +27,16 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getIntakeButton();
 
-  abstract JoystickButton getintakeReverseButton();
+  abstract JoystickButton getOuttakeButton();
 
-  abstract JoystickButton getShootButton();
+  abstract JoystickButton getShootSpeakerButton();
 
   abstract JoystickButton getShootAmpButton();
-  
+
   abstract JoystickButton getPivotButtonOne();
-  
+
   abstract JoystickButton getPivotButtonTwo();
-  
+
   abstract JoystickButton getFeederButton();
 
   abstract double getClimberAxis();
@@ -48,74 +49,68 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getLEDPatternOffButton();
 
-
   private void registerPrototype() {
-    if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED) {
+    if (Config.Subsystems.PROTOTYPE_ENABLED) {
       Prototypes prototypes = Prototypes.getInstance();
-      
-      getShootButton().whileTrue(prototypes.runAny4Motors(-0.30, 0.30, 0.0, 0));
-      getFeederButton().whileTrue(prototypes.runAny4Motors(0.0,0.0,-0.1,0.0));
+
+      getShootSpeakerButton().whileTrue(prototypes.runAny4Motors(-0.30, 0.30, 0.0, 0));
+      getFeederButton().whileTrue(prototypes.runAny4Motors(0.0, 0.0, -0.1, 0.0));
 
     }
   }
 
-    private void registerIntake() {
-    if(ExampleConfig.Subsystems.INTAKE_ENABLED){
+  private void registerIntake() {
+    if (Config.Subsystems.Intake.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
-      Shamper shamper = Shamper.getInstance();
-      getIntakeButton().onTrue(intake.runCommand(false));
-      getIntakeButton().onFalse(intake.stopCommand());
-      getintakeReverseButton().onTrue(intake.runCommand(true));
-      getintakeReverseButton().onFalse(intake.stopCommand());
+      getIntakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.FORWARD));
+      getOuttakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.REVERSE));
+      
+
     }
   }
 
-  private void registerShamper(){
-    if(ExampleConfig.Subsystems.SHAMPER_ENABLED){
-      Shamper shamper = Shamper.getInstance();
+  private void registerShooter() {
+    if (Config.Subsystems.SHAMPER_ENABLED) {
+      Shooter shooter = Shooter.getInstance();
       Pivot pivot = Pivot.getInstance();
 
-      getShootButton().whileTrue(shamper.runFlywheel(10));
-      getShootButton().whileFalse(shamper.runFlywheel(0.0));
-      getShootAmpButton().whileTrue(shamper.runFlywheel(5));
-      getShootAmpButton().whileFalse(shamper.runFlywheel(0.0));
-      getFeederButton().whileTrue(shamper.runFeederPower(0.9, false));
-      getFeederButton().whileFalse(shamper.runFeederPower(0, false));
-      // getPivotButtonOne().onTrue(pivot.runPivotPower(() -> 0.2));
-      // getPivotButtonOne().onFalse(shamper.runPivotPower(() -> 0.0));
-      getPivotButtonTwo().onTrue(pivot.moveTo(2000));
-      getPivotButtonTwo().onFalse(pivot.moveTo(0));
     }
   }
 
   private void registerClimber() {
-    if(ExampleConfig.Subsystems.CLIMBER_ENABLED) {
+    if (Config.Subsystems.CLIMBER_ENABLED) {
       Climber climber = Climber.getInstance();
       climber.setDefaultCommand(climber.run(this::getClimberAxis));
     }
   }
 
+  private void registerShootSequence() {
+    if (Config.Subsystems.SHAMPER_ENABLED && Config.Subsystems.Intake.INTAKE_ENABLED
+        && Config.Subsystems.DRIVETRAIN_ENABLED) {
+      getShootSpeakerButton().onTrue(new ShootSequenceCommand());
+    }
+  }
+
   private void registerLEDs() {
-    if(ExampleConfig.Subsystems.LEDS_ENABLED) {
+    if (Config.Subsystems.LEDS_ENABLED) {
       PWMLEDLights lights = PWMLEDLights.getInstance();
       getLEDPatternOffButton().onTrue(
-              lights.setColorForSecondsCommand(3, BlinkinUtils.ColorPatterns.WHITE)
-      );
+          lights.setColorForSecondsCommand(3, BlinkinUtils.ColorPatterns.WHITE));
       getLEDPatternOneButton().onTrue(
-              lights.setColorCommand(BlinkinUtils.ColorPatterns.SINELON_RAINBOW_PALETTE)
-      );
+          lights.setColorCommand(BlinkinUtils.ColorPatterns.SINELON_RAINBOW_PALETTE));
       getLEDPatternTwoButton().onTrue(
-              lights.setColorCommand(BlinkinUtils.ColorPatterns.CP1_2_END_TO_END_BLEND)
-      );
+          lights.setColorCommand(BlinkinUtils.ColorPatterns.CP1_2_END_TO_END_BLEND));
     }
   }
 
   @Override
   public void registerCommands() {
-    //registerPrototype();
+    // registerPrototype();
     registerIntake();
-    registerShamper();
+    registerShooter();
+    registerShootSequence();
+
     // registerClimber();
-    // registerLEDs();  
+    // registerLEDs();
   }
 }

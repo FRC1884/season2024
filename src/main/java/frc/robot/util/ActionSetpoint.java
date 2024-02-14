@@ -3,19 +3,18 @@ package frc.robot.util;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class ActionSetpoint {
-  private double angle;
-  private Pose2d pose;
+  private double rpm, angleSetpoint;
 
-  ActionSetpoint(Pose2d pose, double angle) {
-    this.pose = pose;
-    this.angle = angle;
+  ActionSetpoint(double rpm, double aS) {
+    this.rpm = rpm;
+    this.angleSetpoint = aS;
   }
 
-  public double getAngle() {
-    return angle;
+  public double getRPM() {
+    return rpm;
   }
 
-  public Pose2d getPose() {
-    return pose;
+  public double getAngleSetpoint() {
+    return angleSetpoint;
   }
 }

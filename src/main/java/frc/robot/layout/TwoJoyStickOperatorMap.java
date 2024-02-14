@@ -12,6 +12,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   public TwoJoyStickOperatorMap(GameController controller) {
     super(controller);
   }
+
   @Override
   public void registerCommands() {
     super.registerCommands();
@@ -23,18 +24,17 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getShootButton() {
+  JoystickButton getShootSpeakerButton() {
     return controller.getButton(Button.BUTTON_A);
   }
+
   @Override
   JoystickButton getShootAmpButton() {
     return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
-
-
   @Override
-  JoystickButton getintakeReverseButton() {
+  JoystickButton getOuttakeButton() {
     return controller.getButton(Button.BUTTON_SHARE);
   }
 
@@ -44,7 +44,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getPivotButtonTwo(){
+  JoystickButton getPivotButtonTwo() {
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
@@ -52,7 +52,6 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   JoystickButton getFeederButton() {
     return controller.getButton(Button.BUTTON_X);
   }
-
 
   @Override
   double getClimberAxis() {

@@ -30,7 +30,7 @@ import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.AddressableLEDLights;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Prototypes;
-import frc.robot.subsystems.Shamper;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
     SmartDashboard.putData("field", m_field);
 
-    if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
+    if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       Prototypes.getInstance();
     Drivetrain.getInstance().zeroGyroYaw();
   }
@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    if(ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
+    if(Config.Subsystems.DRIVETRAIN_ENABLED) {
       // UNTESTED GLASS TELEMETRY CODE - MAY RESULT IN NULL POINTERS
       m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
       m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());

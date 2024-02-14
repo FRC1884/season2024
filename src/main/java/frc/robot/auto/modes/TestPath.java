@@ -2,7 +2,7 @@ package frc.robot.auto.modes;
 
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.ExampleConfig;
+import frc.robot.Config;
 import frc.robot.subsystems.Drivetrain;
 
 public class TestPath extends SequentialCommandGroup {
@@ -11,7 +11,7 @@ public class TestPath extends SequentialCommandGroup {
     String path2 = "Top To Bottom Tripple Less Rotating";
     String path3 = "Source To Lower Midfield";
 
-    if(ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
+    if(Config.Subsystems.DRIVETRAIN_ENABLED) {
       var maxswerve = Drivetrain.getInstance();
       addCommands(
           // elevatorArm.movePivotCommand(() -> ElevatorMap.PivotPosition.MID),

@@ -12,22 +12,22 @@ import frc.robot.core.util.controllers.BoardController;
 import frc.robot.core.util.controllers.GameController;
 
 public class BoardOperatorMap extends OperatorMap {
-    public BoardOperatorMap(GameController controller) {
+  public BoardOperatorMap(GameController controller) {
     super(controller);
   }
-
 
   @Override
   JoystickButton getIntakeButton() {
     return controller.getButton(Button.BUTTON_Y);
   }
+
   @Override
-  JoystickButton getintakeReverseButton() {
+  JoystickButton getOuttakeButton() {
     return controller.getButton(Button.BUTTON_START);
   }
 
   @Override
-  JoystickButton getShootButton() {
+  JoystickButton getShootSpeakerButton() {
     return controller.getButton(Button.BUTTON_A);
   }
 
@@ -42,7 +42,7 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getPivotButtonTwo(){
+  JoystickButton getPivotButtonTwo() {
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
 
@@ -58,8 +58,8 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   double getManualPivotAxis() {
-      // TODO Auto-generated method stub
-      return 0;
+    // TODO Auto-generated method stub
+    return 0;
   }
 
   @Override
@@ -76,6 +76,5 @@ public class BoardOperatorMap extends OperatorMap {
   JoystickButton getLEDPatternOffButton() {
     return controller.getButton(Button.BUTTON_EXTRA_2);
   }
-
 
 }
