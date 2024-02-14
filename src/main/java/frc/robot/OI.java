@@ -39,7 +39,7 @@ public class OI {
     if(ExampleConfig.Controllers.BOARD_OPERATOR_ENABLED){
       new BoardOperatorMap(operator).registerCommands();
     }
-    else if (ExampleConfig.Controllers.OPERATOR_ENABLED){
+    else if (ExampleConfig.Controllers.JOYSTICK_OPERATOR_ENABLED){
       new TwoJoyStickOperatorMap(operator).registerCommands();
     }
     
