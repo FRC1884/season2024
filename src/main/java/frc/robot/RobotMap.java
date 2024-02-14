@@ -207,11 +207,11 @@ public class RobotMap {
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
     public static final double FEEDER_RAMP_RATE = 0.5;
 
-    public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00006, 0, 0);
-    public static final double FLYWHEEL_FF = 0.000015;
+    public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.00001);
+    public static final double FLYWHEEL_FF = 0.00015;
 
-    public static final PIDConstants FEEDER_PID = new PIDConstants(0.00006, 0, 0);
-    public static final double FEEDER_FF = 0.000015;
+    public static final PIDConstants FEEDER_PID = new PIDConstants(0.00096, 0, 0.00002);
+    public static final double FEEDER_FF = 0.00015;
   }
 
   public static class ClimberMap {
