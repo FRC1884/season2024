@@ -4,9 +4,10 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.ExampleConfig;
+import frc.robot.Config;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PrototypeMap;
@@ -51,18 +52,25 @@ public abstract class DriverMap extends CommandMap {
   abstract JoystickButton getNavigateAndAllignButton();
 
   private void registerDrivetrain() {
-    if (ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
+    if (Config.Subsystems.DRIVETRAIN_ENABLED) {
       System.out.println("Register Drivetrain");
       var drivetrain = Drivetrain.getInstance();
       var vision = Vision.getInstance();
       drivetrain.setDefaultCommand(
       drivetrain.driveCommand(
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      getArcingButton().whileTrue(drivetrain.driveSetAngleCommand(
-              this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER));
+      if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
+        getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
+              this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.RED_SPEAKER.getTranslation()));
+      }
+      else{
+        getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
+              this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
+      }
+      
       //getNavigateAndAllignButton().whileTrue(drivetrain.allignCommand(() -> Coordinates.RED_SPEAKER.getTranslation()));
       //getNavigateAndAllignButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
-      getNavigateAndAllignButton().whileTrue(drivetrain.navigateAndAllignCommand(
+      getNavigateAndAllignButton().whileTrue(drivetrain.navigateAndAlignCommand(
         "Go To Stage", () -> Coordinates.RED_SPEAKER.getTranslation()));
       // getTestButton()
       //     .onTrue(drivetrain.TestAllCommand());

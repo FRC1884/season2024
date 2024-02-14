@@ -32,6 +32,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /*
@@ -79,6 +80,9 @@ public class Vision extends SubsystemBase {
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
   private double detectVerticalOffset = 0;
+  
+  // modifier for front/back
+  private int directionMod = 1;
 
   private int targetSeenCount = 0;
 
@@ -129,6 +133,9 @@ public class Vision extends SubsystemBase {
       if (VisionConfig.IS_NEURAL_NET) {
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
+        if (!VisionConfig.NN_FACING_FRONT) {
+          directionMod = -1;
+        }
       }
     }
     if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
@@ -242,11 +249,8 @@ public class Vision extends SubsystemBase {
         Transform3d fieldToCamera = result_1.getMultiTagResult().estimatedPose.best;
         Pose2d currentCamPose2d = new Pose2d(fieldToCamera.getX(), fieldToCamera.getY(), fieldToCamera.getRotation().toRotation2d());
         photonTimestamp = result_1.getTimestampSeconds();
-
-        if (currentCamPose2d.getX() > 13.5 || currentCamPose2d.getX() < 3){
-          botPose = currentCamPose2d.transformBy(robotToCam2d);
-          System.out.println("MultiTag");
-        }
+        botPose = currentCamPose2d.transformBy(robotToCam2d);
+        //System.out.println("MultiTag");
         //Telemetry Data
         // visionXDataEntry.setString(df.format(botPose.getX()));
         // visionYDataEntry.setString(df.format(botPose.getY()));
@@ -260,11 +264,8 @@ public class Vision extends SubsystemBase {
           Transform3d bestCameraToTarget = target.getBestCameraToTarget();
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, robotToCam3d);
-
-          if (currentPose3d.getX() > 13.5 || currentPose3d.getX() < 3){
-            botPose = currentPose3d.toPose2d();
-          }
-          System.out.println("singleTag");
+          botPose = currentPose3d.toPose2d();
+          //System.out.println("singleTag");
           //Telemetry Data
           // visionXDataEntry.setString(df.format(botPose.getX()));
           // visionYDataEntry.setString(df.format(botPose.getY()));
@@ -290,16 +291,16 @@ public class Vision extends SubsystemBase {
       if (detectTarget) {
         detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); //HAD TO NEGATIVE TO MAKE CCW POSITIVE
         detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
-        double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_X, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset) ;
+        double targetDist = targetDistanceMetersCamera(VisionConfig.BACKWARD_NN_LIME_POSE.getZ(), VisionConfig.BACKWARD_NN_LIME_POSE.getRotation().getY(), 0, detectVerticalOffset);
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
         
         //This method makes the note appear turned in the wrong place - needs fixing
         Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, 0);
-
-        targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, VisionConfig.NN_LIME_TO_ROBOT);
+        
+        targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, new Transform2d(VisionConfig.BACKWARD_NN_LIME_POSE.getX(), VisionConfig.BACKWARD_NN_LIME_POSE.getY(), new Rotation2d()));
+        targetRobotRelativePose.rotateBy(new Rotation2d(VisionConfig.BACKWARD_NN_LIME_POSE.getRotation().getZ()));
         Pose2d currentBotPose = PoseEstimator.getInstance().getPosition();
-
         noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, currentBotPose);
 
         Translation2d robotTranslation = currentBotPose.getTranslation();
@@ -307,8 +308,7 @@ public class Vision extends SubsystemBase {
 
         Translation2d targetVector = robotTranslation.minus(target);
         Rotation2d targetAngle = targetVector.getAngle();
-
-        noteFieldRelativePose = new Pose2d(target, targetAngle);
+        noteFieldRelativePose = new Pose2d(target, targetAngle);        
 
         // //Shuffleboard Telemetry - robot relative
         // visionNotePoseRobRelXEntry.setString(df.format(targetRobotRelativePose.getX()));
@@ -463,7 +463,7 @@ public class Vision extends SubsystemBase {
   public Translation2d estimateCameraToTargetTranslation(double targetDistanceMeters, double targetOffsetAngle_Horizontal){
     Rotation2d yaw = Rotation2d.fromDegrees(targetOffsetAngle_Horizontal);
     return new Translation2d(
-      yaw.getCos() * targetDistanceMeters, yaw.getSin() * targetDistanceMeters);
+      yaw.getCos() * targetDistanceMeters * directionMod, yaw.getSin() * targetDistanceMeters);
   }
 /**
    * @param cameraToTargetTranslation2d the translation from estimate camera to target
