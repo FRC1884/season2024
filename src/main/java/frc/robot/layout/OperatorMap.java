@@ -24,8 +24,6 @@ public abstract class OperatorMap extends CommandMap {
     super(controller);
   }
 
-  abstract JoystickButton getIntakeStopButton();
-
   abstract JoystickButton getIntakeButton();
 
   abstract JoystickButton getintakeReverseButton();
@@ -33,18 +31,12 @@ public abstract class OperatorMap extends CommandMap {
   abstract JoystickButton getShootButton();
 
   abstract JoystickButton getShootAmpButton();
-
-  abstract JoystickButton getShootStopButton();
   
   abstract JoystickButton getPivotButtonOne();
   
   abstract JoystickButton getPivotButtonTwo();
   
-  abstract JoystickButton getPivotButtonOff();
-  
   abstract JoystickButton getFeederButton();
-
-  abstract JoystickButton getFeederStopButton();
 
   abstract double getClimberAxis();
 
@@ -60,10 +52,10 @@ public abstract class OperatorMap extends CommandMap {
   private void registerPrototype() {
     if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED) {
       Prototypes prototypes = Prototypes.getInstance();
-      getShootStopButton().whileTrue(prototypes.runAny4Motors(-0.0, 0.0, 0.0, 0));
+      
       getShootButton().whileTrue(prototypes.runAny4Motors(-0.30, 0.30, 0.0, 0));
       getFeederButton().whileTrue(prototypes.runAny4Motors(0.0,0.0,-0.1,0.0));
-      getFeederStopButton().whileTrue(prototypes.runAny4Motors(0.0,0.0,0.1,0.0));
+
     }
   }
 
@@ -71,9 +63,10 @@ public abstract class OperatorMap extends CommandMap {
     if(ExampleConfig.Subsystems.INTAKE_ENABLED){
       Intake intake = Intake.getInstance();
       Shamper shamper = Shamper.getInstance();
-      getIntakeStopButton().onTrue(intake.stopCommand());
-      getIntakeButton().onTrue(intake.runCommand(true));
-      getintakeReverseButton().onTrue(intake.runCommand(false));
+      getIntakeButton().onTrue(intake.runCommand(false));
+      getIntakeButton().onFalse(intake.stopCommand());
+      getintakeReverseButton().onTrue(intake.runCommand(true));
+      getintakeReverseButton().onFalse(intake.stopCommand());
     }
   }
 
@@ -82,22 +75,16 @@ public abstract class OperatorMap extends CommandMap {
       Shamper shamper = Shamper.getInstance();
       Intake intake = Intake.getInstance();
 
-      getShootButton().whileTrue(shamper.runFlywheelPower(1));
-      getShootButton().whileFalse(shamper.stopFlywheel());
-      getShootAmpButton().whileTrue(shamper.runFlywheelPower(0.2));
-      getShootAmpButton().whileTrue(shamper.stopFlywheel());
-      getFeederButton().onTrue(shamper.runFeederPower(0.9, false));
-      //getFeederButton().whileFalse(shamper.runFeederPower(0, false));
-      getFeederStopButton().onTrue(shamper.runFeederPower(0, false));
-      // //getPivotButtonOne().onTrue(shamper.runPivot(10));
-      // //getPivotButtonTwo().onTrue(shamper.runPivot(20));
-      // getFeederButton().onTrue(shamper.runFeeder(1));
-      // getFeederStopButton().onTrue(shamper.runFeeder(0.0));
-      // shamper.setDefaultCommand(shamper.runPivotPower(() -> getClimberAxis()));
-      // getPivotButtonOne().onTrue(shamper.runPivot(30.0));
-      // getPivotButtonTwo().onTrue(shamper.runPivot(60.0));
-      // getPivotButtonOff().onTrue(shamper.runPivot(0.0));
-      shamper.setDefaultCommand(shamper.runPivotPower(() ->getManualPivotAxis()));
+      getShootButton().whileTrue(shamper.runFlywheel(10));
+      getShootButton().whileFalse(shamper.runFlywheel(0.0));
+      getShootAmpButton().whileTrue(shamper.runFlywheel(5));
+      getShootAmpButton().whileFalse(shamper.runFlywheel(0.0));
+      getFeederButton().whileTrue(shamper.runFeederPower(0.9, false));
+      getFeederButton().whileFalse(shamper.runFeederPower(0, false));
+      getPivotButtonOne().onTrue(shamper.runPivotPower(() -> 0.2));
+      getPivotButtonOne().onFalse(shamper.runPivotPower(() -> 0.0));
+      getPivotButtonTwo().onTrue(shamper.runPivotPower(() -> -0.2));
+      getPivotButtonTwo().onFalse(shamper.runPivotPower(() -> 0.0));
       
     }
   }
@@ -129,7 +116,7 @@ public abstract class OperatorMap extends CommandMap {
     //registerPrototype();
     registerIntake();
     registerShamper();
-    registerClimber();
+    // registerClimber();
     // registerLEDs();  
   }
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
@@ -42,6 +43,7 @@ public class PoseEstimator extends SubsystemBase {
   private GenericEntry xPoseDiffEntry = tab.add("XOdom Diff", 0).getEntry();
   private GenericEntry yPoseDiffEntry = tab.add("YODom Diff", 0).getEntry();
   private GenericEntry totalDiffEntry = tab.add("totalDiff", 0).getEntry();
+  private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
 
   private PoseEstimator() {
     // config = new PoseConfig();
@@ -106,6 +108,10 @@ public class PoseEstimator extends SubsystemBase {
     double xAvg = (estimatePose.getX() + odometryPose.getX()) / 2;
     double yAvg = (estimatePose.getY() + odometryPose.getY()) / 2;
     drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
+    
+    Translation2d currentTranslation = getPosition().getTranslation();
+    double targetVectorLength = currentTranslation.getDistance(Coordinates.RED_SPEAKER.getTranslation());
+    rToSpeaker.setDouble(targetVectorLength);
 
   }
 

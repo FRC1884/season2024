@@ -18,53 +18,41 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  public JoystickButton getIntakeStopButton() {
-    return controller.getButton(Button.BUTTON_X);
-  }
-  @Override
   public JoystickButton getIntakeButton() {
     return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
   JoystickButton getShootButton() {
-    return controller.getButton(Button.BUTTON_START);
+    return controller.getButton(Button.BUTTON_A);
   }
-  JoystickButton getShootStopButton() {
-    return controller.getButton(Button.BUTTON_OPTIONS);
-  }
-
   @Override
   JoystickButton getShootAmpButton() {
-    return controller.getButton(Button.BUTTON_B);
+    return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
 
 
   @Override
   JoystickButton getintakeReverseButton() {
-    return controller.getButton(Button.BUTTON_OPTIONS);
+    return controller.getButton(Button.BUTTON_START);
   }
 
   @Override
   JoystickButton getPivotButtonOne() {
-    return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  JoystickButton getPivotButtonTwo(){
-    return controller.getButton(Button.BUTTON_Y);
-  }
-
-  @Override
-  JoystickButton getFeederButton() {
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
 
   @Override
-  JoystickButton getFeederStopButton() {
+  JoystickButton getPivotButtonTwo(){
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
+
+  @Override
+  JoystickButton getFeederButton() {
+    return controller.getButton(Button.BUTTON_X);
+  }
+
 
   @Override
   double getClimberAxis() {
@@ -89,10 +77,6 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   JoystickButton getLEDPatternOffButton() {
     return null;
-  }
-  @Override
-  JoystickButton getPivotButtonOff() {
-    return controller.getButton(Button.BUTTON_A);
   }
 
 }

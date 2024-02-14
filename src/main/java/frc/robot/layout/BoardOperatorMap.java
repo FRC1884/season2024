@@ -16,54 +16,39 @@ public class BoardOperatorMap extends OperatorMap {
     super(controller);
   }
 
-  @Override
-  JoystickButton getIntakeStopButton() {
-    return controller.getButton(Button.BUTTON_A);
-  }
 
   @Override
   JoystickButton getIntakeButton() {
-    return controller.getButton(Button.BUTTON_B);
+    return controller.getButton(Button.BUTTON_Y);
   }
   @Override
   JoystickButton getintakeReverseButton() {
-    return controller.getButton(Button.BUTTON_X);
+    return controller.getButton(Button.BUTTON_START);
   }
 
   @Override
   JoystickButton getShootButton() {
-    return controller.getButton(Button.BUTTON_Y);
+    return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
   JoystickButton getShootAmpButton() {
-      // TODO Auto-generated method stub
-      return null;
-  }
-
-  @Override
-  JoystickButton getShootStopButton() {
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
-  }
-
-  @Override
-  JoystickButton getPivotButtonOne() {
-    return controller.getButton(Button.BUTTON_EXTRA_2);
-  }
-
-  @Override
-  JoystickButton getPivotButtonTwo(){
-    return controller.getButton(Button.BUTTON_TOUCHPAD);
-  }
-
-  @Override
-  JoystickButton getFeederButton() {
     return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
   @Override
-  JoystickButton getFeederStopButton() {
-    return controller.getButton(Button.BUTTON_START);
+  JoystickButton getPivotButtonOne() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  JoystickButton getPivotButtonTwo(){
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
+
+  @Override
+  JoystickButton getFeederButton() {
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
@@ -90,11 +75,6 @@ public class BoardOperatorMap extends OperatorMap {
   @Override
   JoystickButton getLEDPatternOffButton() {
     return controller.getButton(Button.BUTTON_EXTRA_2);
-  }
-
-  @Override
-  JoystickButton getPivotButtonOff() {
-    return controller.getButton(Button.BUTTON_EXTRA_1);
   }
 
 

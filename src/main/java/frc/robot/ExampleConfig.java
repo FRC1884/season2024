@@ -18,6 +18,7 @@ public class ExampleConfig {
   public class Controllers {
     public static final boolean DRIVER_ENALBED = true;
     public static final boolean JOYSTICK_OPERATOR_ENABLED = true;
+    public static final boolean OPERATOR_ENABLED = true;
     public static final boolean BOARD_OPERATOR_ENABLED = !JOYSTICK_OPERATOR_ENABLED;
 
     public static ButtonMap getDriverController() {

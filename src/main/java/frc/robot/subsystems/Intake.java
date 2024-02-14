@@ -13,13 +13,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.IntakeMap;
-import frc.robot.RobotMap.PIDMap;
 import frc.robot.RobotMap.PrototypeMap;
 
 public class Intake extends SubsystemBase {
     private static Intake instance;
-    private SparkPIDController PIDController1;
-    private SparkPIDController PIDController2;
     
 
     public static Intake getInstance() {
@@ -31,22 +28,24 @@ public class Intake extends SubsystemBase {
     }
 
     private CANSparkMax motor1, motor2;
-    private double MOTOR_SPEED_1 = -0.6; //TODO: fix value
+    private double MOTOR_SPEED_1 = -0.8; //TODO: fix value
     private double MOTOR_SPEED_2 = -0.6;// TODO: fix value
     
 
     private Intake() {
         motor1 = new CANSparkMax(IntakeMap.MOTOR_ID_1, MotorType.kBrushless);
-        motor2 = new CANSparkMax(IntakeMap.MOTOR_ID_2, MotorType.kBrushless);
+        //motor2 = new CANSparkMax(IntakeMap.MOTOR_ID_2, MotorType.kBrushless);
         
     }
 
     private void run(double speed1, double speed2, boolean yn){
         if(yn){
         motor1.set(speed1);
-        motor2.set(speed2);}
+        // motor2.set(speed2);
+    }
         else{ motor1.set(0.4);
-        motor2.set(0.4);}
+        // motor2.set(0.4);
+        }
     }
 
     public Command runCommand(boolean yn) {

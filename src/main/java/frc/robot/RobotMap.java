@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,30 +33,30 @@ public class RobotMap {
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
     public static final class FrontLeft {
-      public static final int DRIVE_ID = 10;
-      public static final int ROTATOR_ID = 8;
+      public static final int DRIVE_ID = 1;
+      public static final int ROTATOR_ID = 2;
       public static final double ANGULAR_OFFSET = -Math.PI / 2;
       ;
     }
 
     /* Front Right Module - Module 1 */
     public static final class FrontRight {
-      public static final int DRIVE_ID = 7;
-      public static final int ROTATOR_ID = 9;
+      public static final int DRIVE_ID = 3;
+      public static final int ROTATOR_ID = 4;
       public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Left Module - Module 2 */
     public static final class BackLeft {
-      public static final int DRIVE_ID = 11;
-      public static final int ROTATOR_ID = 13;
+      public static final int DRIVE_ID = 5;
+      public static final int ROTATOR_ID = 6;
       public static final double ANGULAR_OFFSET = Math.PI;
     }
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {
-      public static final int DRIVE_ID = 3;
-      public static final int ROTATOR_ID = 16;
+      public static final int DRIVE_ID = 7;
+      public static final int ROTATOR_ID = 8;
       public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
 
@@ -185,33 +186,51 @@ public class RobotMap {
   }
 
   public static class IntakeMap {
-    public static final int MOTOR_ID_1 = 15;
-    public static final int MOTOR_ID_2 = 4;
+    public static final int MOTOR_ID_1 = 9;
   }
 
 
   public static class ShamperMap {
-    public static final int TOP_SHOOTER = 18;
-    public static final int BOTTOM_SHOOTER = 2;
-    public static final int PIVOT = 14; //TODO: Change back to 14
-    public static final int FEEDER = 42; 
+    public static final int FEEDER = 10; 
+    public static final int TOP_SHOOTER = 11;
+    public static final int BOTTOM_SHOOTER = 12;
+    public static final int PIVOT = 13; //TODO: Change back to 14
     public static final double FLYWHEEL_RADIUS = 0.0508;
+
+    public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
+    public static final double FLYWHEEL_FF = 0.00015;
   }
 
   public static class ClimberMap {
-    public static final int MASTER_ID = 12;
-    public static final int SLAVE_ID = 17;
+    public static final int MASTER_ID = 14;
+    public static final int SLAVE_ID = 15;
 
     public static final int LIMIT_SWITCH = 0;
-  }
 
-  public static class PIDMap {
     public static final double P = 0.0003;
     public static final double I = 0.0000008;
-    public static final double D= 0.0000006;
+    public static final double D = 0.0000006;
+
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(5, 10);
+
+    public enum Setpoints {
+      DOWN(0),
+      UP(1000);
+
+      private double ticks;
+
+      Setpoints(double ticks) {
+        this.ticks = ticks;
+      }
+
+      public double getTicks() {
+        return ticks;
+      }
+    }
   }
 
-  public static class Pivot {
+  public static class PivotMap {
+    public static final int PIVOT = 14;
     public static final double TOLERANCE = 1;
     public static final double DT = 0.2;
 
