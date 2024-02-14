@@ -55,7 +55,6 @@ public class Shamper extends SubsystemBase {
      * followerPivot: RIGHT PIVOT
      */
     private CANSparkBase leaderFlywheel, followerFlywheel;
-    private CANSparkMax pivot;
     private CANSparkBase feeder;
     private SparkPIDController leaderFlywheel_PIDController, followerFlywheel_PIDController, pivot_PIDController;
     private TrapezoidProfile profile1;
@@ -92,42 +91,6 @@ public class Shamper extends SubsystemBase {
             followerFlywheel_PIDController.setD(ShamperMap.FLYWHEEL_PID.kI);
             followerFlywheel_PIDController.setFF(ShamperMap.FLYWHEEL_FF);
         }
-        if (ShamperMap.PIVOT != -1){
-            pivot = new CANSparkMax(PivotMap.PIVOT, MotorType.kBrushless);
-            pivot.restoreFactoryDefaults();
-            pivot_PIDController = pivot.getPIDController();
-
-            pivot.setInverted(true);
-
-            // pivotEncoder =
-            // pivot.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
-
-            // System.out.println(pivotEncoder.getCountsPerRevolution());
-            // System.out.println(pivotEncoder.getPosition());
-
-            
-
-            pivotReverseLimitSwitch = pivot.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
-            pivotReverseLimitSwitch.enableLimitSwitch(true);
-
-            pivotForwardLimitSwitch = pivot.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
-            pivotForwardLimitSwitch.enableLimitSwitch(true);
-
-            pivot.burnFlash();
-
-            // tab.addBoolean("rev switch", () -> pivotReverseLimitSwitch.isPressed());
-            // tab.addBoolean("for switch", () -> pivotForwardLimitSwitch.isPressed());
-
-            // tab.add("current pos", leaderFlywheel.getEncoder().getPosition());
-            // tab.add("current vel", leaderFlywheel.getEncoder().getVelocity());
-            // tab.add("goal vel", 0);
-
-            // pivot_PIDController.setFeedbackDevice();
-
-//      pivot_PIDController.setP(PIDMap.P * 20);
-//      pivot_PIDController.setI(PIDMap.I * 20);
-//      pivot_PIDController.setD(PIDMap.D * 20);
-        }
         if (ShamperMap.FEEDER != -1)
             feeder = new CANSparkFlex(ShamperMap.FEEDER, MotorType.kBrushless);
 
@@ -159,30 +122,6 @@ public class Shamper extends SubsystemBase {
         return new InstantCommand(() -> leaderFlywheel.set(0));
     }
 
-
-    public Command runPivot(double setpoint) {
-        return new MoveToSetpointCommand(
-                speed -> {
-                    if (speed > 1) pivot.set(1.0);
-                    else if (speed < -1) pivot.set(-1.0);
-                    else pivot.set(speed);
-                },
-                () -> pivot.getEncoder().getPosition(),
-                () -> pivot.getEncoder().getVelocity(),
-                PivotMap.PID,
-                PivotMap.DT,
-                PivotMap.TOLERANCE,
-                PivotMap.PROFILE_CONSTRAINTS,
-                setpoint,
-                this);
-    }
-
-    public Command runPivotPower(Supplier<Double> power) {
-        return new InstantCommand(() -> {
-            pivot.set(power.get());
-        }, this);
-    }
-
     public Command runFeeder(double power) {
         SlewRateLimiter sRL = new SlewRateLimiter(0.3);
         return new InstantCommand(
@@ -199,20 +138,10 @@ public class Shamper extends SubsystemBase {
         return (value * 60) / (2 * (Math.PI) * ShamperMap.FLYWHEEL_RADIUS);
     }
 
-    private void zeroPivot() {
-        pivot.getEncoder().setPosition(0);
-    }
-
     @Override
     public void periodic() {
       curVelocityEntry.setDouble(leaderFlywheel.getEncoder().getVelocity());
-        if(ShamperMap.PIVOT != -1){
-            if (pivotReverseLimitSwitch.isPressed())
-                
-                
-                zeroPivot();
                 
             // SmartDashboard.putNumber("pivot enc", pivotEncoder.getPosition());
-        }
     }
 }

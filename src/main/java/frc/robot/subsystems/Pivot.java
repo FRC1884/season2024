@@ -22,6 +22,7 @@ public class Pivot extends SubsystemBase {
 
     private Pivot() {
         motor = new CANSparkMax(PivotMap.PIVOT, MotorType.kBrushless);
+        goalState = new TrapezoidProfile.State();
         profiledPIDController = new ProfiledPIDController(
                 PivotMap.PID.getP(),
                 PivotMap.PID.getI(),
@@ -32,11 +33,14 @@ public class Pivot extends SubsystemBase {
         Shuffleboard.getTab("Pivot").add("goal pos", goalState.position);
         Shuffleboard.getTab("Pivot").add("goal vel", goalState.velocity);
     }
+    private void zeroPivot() {
+        motor.getEncoder().setPosition(0);
+    }
 
     public Command moveTo(double ticks) {
         return new ProfiledPIDCommand(
             profiledPIDController,
-            ()->motor.getEncoder().getPosition(),
+            ()-> motor.getEncoder().getPosition(),
             () -> ticks,
             (vel, state) -> {
                 motor.set(vel);

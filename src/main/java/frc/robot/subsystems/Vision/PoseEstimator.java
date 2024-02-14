@@ -73,7 +73,7 @@ public class PoseEstimator extends SubsystemBase {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
     Pose2d tempEstimatePose = Vision.getInstance().visionBotPose();
-    if (VisionConfig.IS_LIMELIGHT_MODE && tempEstimatePose != null) { // Limelight mode
+    if (VisionConfig.IS_LIMELIGHT_MODE && tempEstimatePose != null && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double currentTimestamp =
           Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
@@ -81,7 +81,7 @@ public class PoseEstimator extends SubsystemBase {
       }
     }
     // TODO Photonvision mode - Needs editing and filtering
-    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null && tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3) { // Limelight mode
+    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
         addVisionMeasurement(tempEstimatePose, photonTimestamp);

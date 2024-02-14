@@ -73,7 +73,7 @@ public abstract class OperatorMap extends CommandMap {
   private void registerShamper(){
     if(ExampleConfig.Subsystems.SHAMPER_ENABLED){
       Shamper shamper = Shamper.getInstance();
-      Intake intake = Intake.getInstance();
+      Pivot pivot = Pivot.getInstance();
 
       getShootButton().whileTrue(shamper.runFlywheel(10));
       getShootButton().whileFalse(shamper.runFlywheel(0.0));
@@ -81,11 +81,10 @@ public abstract class OperatorMap extends CommandMap {
       getShootAmpButton().whileFalse(shamper.runFlywheel(0.0));
       getFeederButton().whileTrue(shamper.runFeederPower(0.9, false));
       getFeederButton().whileFalse(shamper.runFeederPower(0, false));
-      getPivotButtonOne().onTrue(shamper.runPivotPower(() -> 0.2));
-      getPivotButtonOne().onFalse(shamper.runPivotPower(() -> 0.0));
-      getPivotButtonTwo().onTrue(shamper.runPivotPower(() -> -0.2));
-      getPivotButtonTwo().onFalse(shamper.runPivotPower(() -> 0.0));
-      
+      // getPivotButtonOne().onTrue(pivot.runPivotPower(() -> 0.2));
+      // getPivotButtonOne().onFalse(shamper.runPivotPower(() -> 0.0));
+      getPivotButtonTwo().onTrue(pivot.moveTo(2000));
+      getPivotButtonTwo().onFalse(pivot.moveTo(0));
     }
   }
 
