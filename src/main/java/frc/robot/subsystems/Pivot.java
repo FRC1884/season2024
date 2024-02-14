@@ -16,9 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.PivotMap;
-import frc.robot.commands.MoveToSetpointCommand;
 
 public class Pivot extends ProfiledPIDSubsystem {
     private static Pivot instance;
