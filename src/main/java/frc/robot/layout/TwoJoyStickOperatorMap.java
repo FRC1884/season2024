@@ -35,7 +35,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getintakeReverseButton() {
-    return controller.getButton(Button.BUTTON_START);
+    return controller.getButton(Button.BUTTON_SHARE);
   }
 
   @Override
