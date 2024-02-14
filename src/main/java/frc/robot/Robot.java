@@ -8,6 +8,7 @@ import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkBase;
 
 import edu.wpi.first.util.function.BooleanConsumer;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.AddressableLEDLights;
@@ -54,19 +56,25 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // TODO put auto chooser here. make sure to use the one from
     // robot/auto/selector/AutoModeSelector.java
+    
+    OI.getInstance();
+
+    //Autocommands
+    // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
+    // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
+
+    AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       enableLiveWindowInTest(true);
     var autoModeSelector = AutoModeSelector.getInstance();
     SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
-    OI.getInstance();
     SmartDashboard.putData("field", m_field);
 
     if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       Prototypes.getInstance();
     Drivetrain.getInstance().zeroGyroYaw();
-    AutoCommands.registerAutoCommands();
   }
 
   /**

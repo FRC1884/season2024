@@ -253,9 +253,10 @@ public abstract class MAXSwerve extends SubsystemBase {
     br.setDesiredState(swerveModuleStates[3]);
   }
 
-  public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Pose2d> targetPose) {
+  public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target) {
     PIDController pid = new PIDController(0.01, 0, 0);
-    pid.setTolerance(0.1);
+    pid.setTolerance(1.5);
+    pid.enableContinuousInput(-180, 180);
     return new ProxyCommand(() ->
       new RepeatCommand(
         new FunctionalCommand(
@@ -263,47 +264,16 @@ public abstract class MAXSwerve extends SubsystemBase {
             // Init
           },
           () -> {
-            double targetX = targetPose.get().getX();
-            double targetY = targetPose.get().getY();
-            double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
-            double robotAngle = this.getGyroYawDegrees();
-            
-            //
-            if (targetX-this.getPose().getX() <= 0 && targetY-this.getPose().getY() >= 0) {
-              targetAngle = -Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX())));
-              System.out.println(1);
-            }
-            if (targetX-this.getPose().getX() > 0 && targetY-this.getPose().getY() > 0) {
-              targetAngle = -90-(90-Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX()))));
-              System.out.println(2);
-            }
-
-            if (targetX-this.getPose().getX() > 0 && targetY-this.getPose().getY() == 0) {
-              targetAngle = robotAngle;
-            }
-
-            if (targetX-this.getPose().getX() >= 0 && targetY-this.getPose().getY() <= 0) {
-              targetAngle = 180 - Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY()/targetX-this.getPose().getX())));
-              System.out.println(3);
-            }
-            if (targetX-this.getPose().getX() < 0 && targetY-this.getPose().getY() < 0) {
-              targetAngle = 90 - (90-Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX()))));
-              System.out.println(4);
-            }
-            targetAngleTelemetry = targetAngle;
-            //System.out.println(targetAngle);
-            if (Math.abs(pid.calculate(MathUtil.inputModulus(robotAngle,-180,180),
-                targetAngle)) > RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY) {
-                this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY, 
-                  true, true);
-            } else {
-              double newSpeed = pid.calculate(MathUtil.inputModulus(robotAngle,-180,180), 
-                  targetAngle);
-                  this.drive(xSpeed.get(),ySpeed.get(),
-                  newSpeed, true, true);
-                  // System.out.println(newSpeed + "," + MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180) + "," 
-                  // + targetAngle );
-            }
+            Translation2d currentTranslation = this.getPose().getTranslation();
+            Translation2d targetVector = currentTranslation.minus(target.get());
+            Rotation2d targetAngle = targetVector.getAngle();
+            double newSpeed;
+            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+            else
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+            this.drive(xSpeed.get(),ySpeed.get(),
+            newSpeed, true, true);
             
               },
               interrupted -> {
@@ -492,17 +462,17 @@ public abstract class MAXSwerve extends SubsystemBase {
       );
   }
 
-  public Command navigateAndAllignCommand(String pathName, Supplier<Translation2d> target)
+  public Command navigateAndAlignCommand(String pathName, Supplier<Translation2d> target)
   {
     return new SequentialCommandGroup(
       pathFindThenFollowPathCommand(pathName),
-      allignCommand(target)
+      alignCommand(target)
     );
   }
 
-  public Command allignCommand(Supplier<Translation2d> target){
+  public Command alignCommand(Supplier<Translation2d> target){
     PIDController pid = new PIDController(0.01, 0, 0);
-    pid.setTolerance(0.1);
+    pid.setTolerance(1.5);
     pid.enableContinuousInput(-180, 180);
     return new ProxyCommand(() ->
         new FunctionalCommand(
@@ -525,7 +495,8 @@ public abstract class MAXSwerve extends SubsystemBase {
           },
           interrupted -> {
               pid.close();
-              this.drive(0,0,0,true,true);  
+              //this.drive(0,0,0,true,true);
+              System.out.println("Allignment OVer");  
           },
           () -> {
             return pid.atSetpoint();
