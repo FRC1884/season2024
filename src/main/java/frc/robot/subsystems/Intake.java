@@ -60,12 +60,14 @@ public class Intake extends SubsystemBase {
 
         if (Subsystems.Intake.SENSOR_ENABLED) {
             intakeSensor = Optional.of(new DigitalInput(IntakeMap.SENSOR));
+        } else {
+            intakeSensor = Optional.empty();
         }
 
         var tab = Shuffleboard.getTab("Intake");
 
-        tab.add("intake motor", intake);
-        tab.add("feeder motor", feeder);
+        // tab.add("intake motor", intake);
+        // tab.add("feeder motor", feeder);
 
         if (intakeSensor.isPresent()) {
             tab.add("sensor", intakeSensor.get());

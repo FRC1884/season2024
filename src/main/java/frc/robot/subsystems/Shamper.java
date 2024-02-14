@@ -72,6 +72,8 @@ public class Shamper extends SubsystemBase {
       bottom = new CANSparkFlex(ShamperMap.BOTTOM_SHOOTER, MotorType.kBrushless);
       bottom.restoreFactoryDefaults();
 
+      bottom.setInverted(true);
+
       bottomPid = bottom.getPIDController();
       bottomPid.setP(ShamperMap.FLYWHEEL_PID.kP);
       bottomPid.setI(ShamperMap.FLYWHEEL_PID.kI);
@@ -103,18 +105,18 @@ public class Shamper extends SubsystemBase {
     var tab = Shuffleboard.getTab("Shamper");
 
     if (top != null) {
-      tab.add("top", top);
-      tab.add("top pid", topPid);
+      // tab.add("top", top);
+      // tab.add("top pid", topPid);
     }
 
     if (bottom != null) {
-      tab.add("bottom", bottom);
-      tab.add("bottom pid", bottomPid);
+      // tab.add("bottom", bottom);
+      // tab.add("bottom pid", bottomPid);
     }
 
     if (feeder != null) {
-      tab.add("feeder", feeder);
-      tab.add("feeder pid", feederPid);
+      // tab.add("feeder", feeder);
+      // tab.add("feeder pid", feederPid);
     }
 
     tab.add("shamper", this);
@@ -179,5 +181,8 @@ public class Shamper extends SubsystemBase {
     builder.addDoubleProperty("top velocity", () -> topVelocity, (v) -> topVelocity = v);
     builder.addDoubleProperty("bottom velocity", () -> bottomVelocity, (v) -> bottomVelocity = v);
     builder.addDoubleProperty("feeder velocity", () -> feederVelocity, (v) -> feederVelocity = v);
+    builder.addDoubleProperty("real top velo", () -> top.getEncoder().getVelocity(), (d)-> {});
+    builder.addDoubleProperty("real bottom velo", () -> bottom.getEncoder().getVelocity(), (d) -> {});
+    builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d)->{});
   }
 }

@@ -22,8 +22,8 @@ public class Climber extends SubsystemBase {
     private CANSparkBase leaderMotor, followerMotor;
 
     private Climber() {
-        leaderMotor = new CANSparkMax(RobotMap.ClimberMap.MASTER_ID, MotorType.kBrushless);
-        followerMotor = new CANSparkMax(RobotMap.ClimberMap.SLAVE_ID, MotorType.kBrushless);
+        leaderMotor = new CANSparkMax(RobotMap.ClimberMap.FOLLOWER, MotorType.kBrushless);
+        followerMotor = new CANSparkMax(RobotMap.ClimberMap.LEADER, MotorType.kBrushless);
 
         // leaderMotor.setInverted(false);
 

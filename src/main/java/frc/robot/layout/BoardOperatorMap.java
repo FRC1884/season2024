@@ -26,7 +26,7 @@ public class BoardOperatorMap extends OperatorMap {
     return controller.getButton(Button.BUTTON_B);
   }
   @Override
-  JoystickButton getintakeReverseButton() {
+  JoystickButton getIntakeReverseButton() {
     return controller.getButton(Button.BUTTON_X);
   }
 

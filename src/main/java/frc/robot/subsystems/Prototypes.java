@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.RobotMap;
 import frc.robot.ExampleConfig.Subsystems;
-import frc.robot.RobotMap.PIDMap;
+
 import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.layout.OperatorMap;
 import frc.robot.util.SendableMotor;
@@ -55,9 +55,9 @@ public class Prototypes extends SubsystemBase {
             // motor4 = new CANSparkMax(RobotMap.PrototypeMap.MOTOR_ID_4, MotorType.kBrushless);
             PIDController1 = motor1.getPIDController();
             //PIDController2 = motor2.getPIDController();
-            PIDController1.setP(PIDMap.P);
-            PIDController1.setI(PIDMap.I);
-            PIDController1.setD(PIDMap.D);
+            // PIDController1.setP(PIDMap.P);
+            // PIDController1.setI(PIDMap.I);
+            // PIDController1.setD(PIDMap.D);
             // PIDController2.setP(PIDMap.P);
             // PIDController2.setI(PIDMap.I);
             // PIDController2.setD(PIDMap.D);

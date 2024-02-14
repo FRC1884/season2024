@@ -97,7 +97,7 @@ public class Drivetrain extends MAXSwerve {
               thetaController.calculate(
                   getPose().getRotation().getRadians(), targetPose.getRotation().getRadians());
 
-          // need to get rotpos? felt cute now might delete later (ꈍᴗꈍ)♡
+          // need to get rotpos? felt cute now might delete later
           // drive(ChassisSpeeds.fromFieldRelativeSpeeds(sX, sY, sR, getPose().getRotation()),
           // true);
           drive(sX, sY, sR, true, true);
