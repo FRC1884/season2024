@@ -15,6 +15,7 @@ import edu.wpi.first.util.function.FloatConsumer;
 import edu.wpi.first.util.function.FloatSupplier;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
+import frc.robot.subsystems.AddressableLEDLights;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.Shamper;
@@ -31,6 +33,7 @@ import frc.robot.subsystems.Vision.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
 import frc.robot.util.SendableMotor;
+import frc.robot.auto.AutoCommands;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -63,6 +66,7 @@ public class Robot extends TimedRobot {
     if(ExampleConfig.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       Prototypes.getInstance();
     Drivetrain.getInstance().zeroGyroYaw();
+    AutoCommands.registerAutoCommands();
   }
 
   /**
@@ -75,10 +79,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    // UNTESTED GLASS TELEMETRY CODE - MAY RESULT IN NULL POINTERS
-    m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
-    m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
-    m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
+    if(ExampleConfig.Subsystems.DRIVETRAIN_ENABLED) {
+      // UNTESTED GLASS TELEMETRY CODE - MAY RESULT IN NULL POINTERS
+      m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
+      m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
+      m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
+    }
     if (Vision.getInstance().getNotePose2d() != null){
       m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
     }
@@ -123,7 +129,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    //AddressableLEDLights.getInstance().periodic();
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override

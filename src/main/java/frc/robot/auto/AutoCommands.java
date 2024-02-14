@@ -7,7 +7,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Drivetrain;
 
 public class AutoCommands {
-    public AutoCommands()
+    public static void registerAutoCommands()
     {
      NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
      NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
