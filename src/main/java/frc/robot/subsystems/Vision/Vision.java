@@ -129,15 +129,16 @@ public class Vision extends SubsystemBase {
           VisionConfig.POSE_LIME_ROLL,
           VisionConfig.POSE_LIME_PITCH,
           VisionConfig.POSE_LIME_YAW);
+    }
 
-      if (VisionConfig.IS_NEURAL_NET) {
+    if (VisionConfig.IS_NEURAL_NET) {
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
         // if (!VisionConfig.NN_FACING_FRONT) {
         //   directionMod = -1;
         // }
       }
-    }
+
     if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       //photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
@@ -294,39 +295,18 @@ public class Vision extends SubsystemBase {
         double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_Z, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset);
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
+        
         Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
 
         Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);
         noteFieldRelativePose = camPoseFieldRelative.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
-
-
+        Translation2d currentBotTranslation = currentBotPoseFieldRelative.getTranslation();
+        Translation2d targetVector = currentBotTranslation.minus(noteFieldRelativePose.getTranslation());
+        Rotation2d targetAngle = targetVector.getAngle();
         
-        //This method makes the note appear turned in the wrong place - needs fixing
-        // Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, 0);
-        
-        // targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, new Transform2d(VisionConfig.BACKWARD_NN_LIME_POSE.getX(), VisionConfig.BACKWARD_NN_LIME_POSE.getY(), new Rotation2d()));
-        // targetRobotRelativePose.rotateBy(new Rotation2d(VisionConfig.BACKWARD_NN_LIME_POSE.getRotation().getZ()));
-        // Pose2d currentBotPose = PoseEstimator.getInstance().getPosition();
-        // noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, currentBotPose);
+        noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
 
-        // Translation2d robotTranslation = currentBotPose.getTranslation();
-        // Translation2d target = noteFieldRelativePose.getTranslation();
-
-        // Translation2d targetVector = robotTranslation.minus(target);
-        // Rotation2d targetAngle = targetVector.getAngle();
-        // noteFieldRelativePose = new Pose2d(target, targetAngle);        
-
-        // //Shuffleboard Telemetry - robot relative
-        // visionNotePoseRobRelXEntry.setString(df.format(targetRobotRelativePose.getX()));
-        // visionNotePoseRobRelYEntry.setString(df.format(targetRobotRelativePose.getY()));
-        // visionNotePoseRobRelRotEntry.setString(df.format(targetRobotRelativePose.getRotation().getDegrees()));
-
-        // //Shuffleboard Telemetry - field relative
-        // visionNotePoseFieldRelXEntry.setString(df.format(noteFieldRelativePose.getX()));
-        // visionNotePoseFieldRelYEntry.setString(df.format(noteFieldRelativePose.getY()));
-        // visionNotePoseFieldRelRotEntry.setString(df.format(noteFieldRelativePose.getRotation().getDegrees()));
-
-      }
+        }
     }
 
   }

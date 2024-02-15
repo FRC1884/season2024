@@ -411,8 +411,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         new PathPlannerPath(
             PathPlannerPath.bezierFromPoses(new Pose2d(this.getPose().getTranslation(),
                                                 Rotation2d.fromDegrees(0)),
-                                            new Pose2d(targetPose.get().getTranslation(),
-                                            Rotation2d.fromDegrees(0))),
+                                            targetPose.get()),
             new PathConstraints(
                 RobotMap.SwervePathFollowConstants.MAX_VELOCITY,
                 RobotMap.SwervePathFollowConstants.MAX_ACCELERATION,
