@@ -4,7 +4,9 @@ import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class RobotMap {
@@ -126,13 +128,19 @@ public class RobotMap {
     public static final double POSE_LIME_ROLL = 0.0;
     public static final double POSE_LIME_YAW = 0.0;
 
+    //THESE ARE ALL ROBOT RELATIVE (CENTER OF THE ROBOT IS THE ORIGIN)
     public static final double NN_LIME_X = 0.322; // +X is forward on the robot
     public static final double NN_LIME_Y = 0.234; // +Y is the the left of the robot
     public static final double NN_LIME_Z = 0.345; // +Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
     public static final double NN_LIME_YAW = 0.0;
-    public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(NN_LIME_X, NN_LIME_Y, new Rotation2d());
+
+    public static final Transform2d NN_ROBOT_TO_LIME_2D = new Transform2d(NN_LIME_X, NN_LIME_Y, new Rotation2d(NN_LIME_YAW));
+
+    public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y, new Rotation2d(-NN_LIME_YAW));
+
+    
 
     // Photonvision
     public static final String POSE_PHOTON_1 = "photoncam-1";
@@ -145,6 +153,9 @@ public class RobotMap {
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
     public static final double CAM_1_PITCH_RADIANS = 0.349; // camera Pitch Radians
     public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
+
+    public static final Transform3d ROBOT_TO_CAM = new Transform3d();
+    public static final Transform3d CAM_TO_ROBOT = new Transform3d(); 
 
     // Photonvision
     public static final String POSE_PHOTON_2 = "photoncam-2";
