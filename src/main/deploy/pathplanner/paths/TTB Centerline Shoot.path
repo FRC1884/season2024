@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
-        "y": 7.5
+        "x": 6.048944572916893,
+        "y": 1.6905777651732885
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.156550859161651,
-        "y": 7.316420498545769
+        "x": 5.075973215209472,
+        "y": 1.5345351889371925
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TTB Centerline"
     },
     {
       "anchor": {
-        "x": 7.636907260495988,
-        "y": 0.73596435761129
+        "x": 2.7995873971770147,
+        "y": 3.3427932782613623
       },
       "prevControl": {
-        "x": 7.4441487839690454,
-        "y": 8.143397241289488
+        "x": 3.2034623003763216,
+        "y": 3.1133189014435736
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,16 +34,19 @@
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 140.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto Components",
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0.0
+  },
+  "useDefaultConstraints": true
 }

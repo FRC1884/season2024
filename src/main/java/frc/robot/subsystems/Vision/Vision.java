@@ -133,9 +133,9 @@ public class Vision extends SubsystemBase {
       if (VisionConfig.IS_NEURAL_NET) {
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
-        if (!VisionConfig.NN_FACING_FRONT) {
-          directionMod = -1;
-        }
+        // if (!VisionConfig.NN_FACING_FRONT) {
+        //   directionMod = -1;
+        // }
       }
     }
     if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
@@ -256,7 +256,7 @@ public class Vision extends SubsystemBase {
         // visionYDataEntry.setString(df.format(botPose.getY()));
         // visionRotDataEntry.setString(df.format(botPose.getRotation().getDegrees()));
       }
-      if (photon1HasTargets) {
+      else if (photon1HasTargets) {
         PhotonTrackedTarget target = result_1.getBestTarget();
         if (target.getPoseAmbiguity() < 0.25){
           photonTimestamp = result_1.getTimestampSeconds();
@@ -289,26 +289,26 @@ public class Vision extends SubsystemBase {
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
       detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
       if (detectTarget) {
-        detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); //HAD TO NEGATIVE TO MAKE CCW POSITIVE
-        detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
-        double targetDist = targetDistanceMetersCamera(VisionConfig.BACKWARD_NN_LIME_POSE.getZ(), VisionConfig.BACKWARD_NN_LIME_POSE.getRotation().getY(), 0, detectVerticalOffset);
-        //Note: limelight is already CCW positive, so tx does not have to be * -1
-        Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
+        // detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); //HAD TO NEGATIVE TO MAKE CCW POSITIVE
+        // detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
+        // double targetDist = targetDistanceMetersCamera(VisionConfig.BACKWARD_NN_LIME_POSE.getZ(), VisionConfig.BACKWARD_NN_LIME_POSE.getRotation().getY(), 0, detectVerticalOffset);
+        // //Note: limelight is already CCW positive, so tx does not have to be * -1
+        // Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
         
-        //This method makes the note appear turned in the wrong place - needs fixing
-        Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, 0);
+        // //This method makes the note appear turned in the wrong place - needs fixing
+        // Pose2d camToTargPose = estimateCameraToTargetPose2d(camToTargTrans, 0);
         
-        targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, new Transform2d(VisionConfig.BACKWARD_NN_LIME_POSE.getX(), VisionConfig.BACKWARD_NN_LIME_POSE.getY(), new Rotation2d()));
-        targetRobotRelativePose.rotateBy(new Rotation2d(VisionConfig.BACKWARD_NN_LIME_POSE.getRotation().getZ()));
-        Pose2d currentBotPose = PoseEstimator.getInstance().getPosition();
-        noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, currentBotPose);
+        // targetRobotRelativePose = camPoseToRobotRelativeTargetPose2d(camToTargPose, new Transform2d(VisionConfig.BACKWARD_NN_LIME_POSE.getX(), VisionConfig.BACKWARD_NN_LIME_POSE.getY(), new Rotation2d()));
+        // targetRobotRelativePose.rotateBy(new Rotation2d(VisionConfig.BACKWARD_NN_LIME_POSE.getRotation().getZ()));
+        // Pose2d currentBotPose = PoseEstimator.getInstance().getPosition();
+        // noteFieldRelativePose = notePoseFieldSpace(targetRobotRelativePose, currentBotPose);
 
-        Translation2d robotTranslation = currentBotPose.getTranslation();
-        Translation2d target = noteFieldRelativePose.getTranslation();
+        // Translation2d robotTranslation = currentBotPose.getTranslation();
+        // Translation2d target = noteFieldRelativePose.getTranslation();
 
-        Translation2d targetVector = robotTranslation.minus(target);
-        Rotation2d targetAngle = targetVector.getAngle();
-        noteFieldRelativePose = new Pose2d(target, targetAngle);        
+        // Translation2d targetVector = robotTranslation.minus(target);
+        // Rotation2d targetAngle = targetVector.getAngle();
+        // noteFieldRelativePose = new Pose2d(target, targetAngle);        
 
         // //Shuffleboard Telemetry - robot relative
         // visionNotePoseRobRelXEntry.setString(df.format(targetRobotRelativePose.getX()));

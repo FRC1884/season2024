@@ -11,6 +11,7 @@ import frc.robot.Config;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PrototypeMap;
+import frc.robot.core.util.SimpleDeadBand;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
@@ -59,7 +60,7 @@ public abstract class DriverMap extends CommandMap {
       drivetrain.setDefaultCommand(
       drivetrain.driveCommand(
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
+       if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
         getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.RED_SPEAKER.getTranslation()));
       }

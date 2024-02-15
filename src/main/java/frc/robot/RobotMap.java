@@ -29,7 +29,7 @@ public class RobotMap {
       PIGEON, NAVX
     }
 
-    public static final GyroType GYRO_TYPE = GyroType.NAVX;
+    public static final GyroType GYRO_TYPE = GyroType.PIGEON;
 
     public static final int PIGEON_ID = 30;
 
@@ -202,7 +202,7 @@ public class RobotMap {
   public static class ShamperMap {
     public static final int TOP_SHOOTER = 18;
     public static final int BOTTOM_SHOOTER = 2;
-    public static final int FEEDER = 42;
+    public static final int FEEDER = 32;
     public static final double FLYWHEEL_RADIUS = 0.0508;
     
     public static final double FLYWHEEL_RAMP_RATE = 0.5;

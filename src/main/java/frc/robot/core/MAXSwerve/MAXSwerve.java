@@ -3,6 +3,7 @@ package frc.robot.core.MAXSwerve;
 import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.commands.PathfindThenFollowPathHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
@@ -111,6 +112,18 @@ public abstract class MAXSwerve extends SubsystemBase {
     //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     // else
     //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+
+    AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds, new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
+                // in
+                // your Constants class
+                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                MaxSwerveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
+                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                new ReplanningConfig() // Default path replanning config. See the API for the
+            // options
+            // here
+            ), getShouldFlip(), this);
   }
 
   public Rotation2d getYawRot2d() {
@@ -157,7 +170,6 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-
     return odometry.getPoseMeters();
   }
 
@@ -253,39 +265,69 @@ public abstract class MAXSwerve extends SubsystemBase {
     br.setDesiredState(swerveModuleStates[3]);
   }
 
-  public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target) {
-    PIDController pid = new PIDController(0.01, 0, 0);
-    pid.setTolerance(1.5);
-    pid.enableContinuousInput(-180, 180);
-    return new ProxyCommand(() ->
-      new RepeatCommand(
-        new FunctionalCommand(
-          () -> {
-            // Init
-          },
-          () -> {
-            Translation2d currentTranslation = this.getPose().getTranslation();
-            Translation2d targetVector = currentTranslation.minus(target.get());
-            Rotation2d targetAngle = targetVector.getAngle();
-            double newSpeed;
-            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
-              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
-            else
-              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
-            this.drive(xSpeed.get(),ySpeed.get(),
-            newSpeed, true, true);
+  // public Command driveSetAngleCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Pose2d> targetPose) {
+  //   PIDController pid = new PIDController(0.01, 0, 0);
+  //   pid.setTolerance(0.1);
+  //   return new ProxyCommand(() ->
+  //     new RepeatCommand(
+  //       new FunctionalCommand(
+  //         () -> {
+  //           // Init
+  //         },
+  //         () -> {
+  //           double targetX = targetPose.get().getX();
+  //           double targetY = targetPose.get().getY();
+  //           double targetAngle = Math.toDegrees(Math.atan2((targetY-this.getPose().getY()),(targetX-this.getPose().getX())));
+  //           double robotAngle = this.getGyroYawDegrees();
             
-              },
-              interrupted -> {
-                pid.close();
-                this.drive(0.0,0.0,0.0,true,true);
-              },
-              () -> {
-                return pid.atSetpoint();
-              },
-              this))
-    );
-  }
+  //           //
+  //           if (targetX-this.getPose().getX() <= 0 && targetY-this.getPose().getY() >= 0) {
+  //             targetAngle = -Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX())));
+  //             System.out.println(1);
+  //           }
+  //           if (targetX-this.getPose().getX() > 0 && targetY-this.getPose().getY() > 0) {
+  //             targetAngle = -90-(90-Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX()))));
+  //             System.out.println(2);
+  //           }
+
+  //           if (targetX-this.getPose().getX() > 0 && targetY-this.getPose().getY() == 0) {
+  //             targetAngle = robotAngle;
+  //           }
+
+  //           if (targetX-this.getPose().getX() >= 0 && targetY-this.getPose().getY() <= 0) {
+  //             targetAngle = 180 - Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY()/targetX-this.getPose().getX())));
+  //             System.out.println(3);
+  //           }
+  //           if (targetX-this.getPose().getX() < 0 && targetY-this.getPose().getY() < 0) {
+  //             targetAngle = 90 - (90-Math.toDegrees(Math.abs(Math.atan(targetY-this.getPose().getY())/(targetX-this.getPose().getX()))));
+  //             System.out.println(4);
+  //           }
+  //           targetAngleTelemetry = targetAngle;
+  //           //System.out.println(targetAngle);
+  //           if (Math.abs(pid.calculate(MathUtil.inputModulus(robotAngle,-180,180),
+  //               targetAngle)) > RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY) {
+  //               this.drive(xSpeed.get(),ySpeed.get(), RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY, 
+  //                 true, true);
+  //           } else {
+  //             double newSpeed = pid.calculate(MathUtil.inputModulus(robotAngle,-180,180), 
+  //                 targetAngle);
+  //                 this.drive(xSpeed.get(),ySpeed.get(),
+  //                 newSpeed, true, true);
+  //                 // System.out.println(newSpeed + "," + MathUtil.inputModulus(this.getYaw().getDegrees(),-180,180) + "," 
+  //                 // + targetAngle );
+  //           }
+            
+  //             },
+  //             interrupted -> {
+  //               pid.close();
+  //               this.drive(0.0,0.0,0.0,true,true);
+  //             },
+  //             () -> {
+  //               return pid.atSetpoint();
+  //             },
+  //             this))
+  //   );
+  // }
 
   public void driveWithChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     var swerveModuleStates = MaxSwerveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
@@ -325,6 +367,10 @@ public abstract class MAXSwerve extends SubsystemBase {
     };
   }
 
+  public void startingOdometry(Pose2d startingPose) {
+    PoseEstimator.getInstance().resetPoseEstimate(startingPose);
+  }
+
   public Command followPathCommand(String pathName, boolean isFirstPath) {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
     return followPathCommand(path, isFirstPath);
@@ -353,34 +399,8 @@ public abstract class MAXSwerve extends SubsystemBase {
                 PoseEstimator.getInstance().resetPoseEstimate(startingPose);
               }
             }),
-        new FollowPathHolonomic(
-            pathName,
-            this::getPose, // Robot pose supplier
-            this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::driveWithChassisSpeeds,
-            /*speeds -> driveWithChassisSpeeds(
-              new ChassisSpeeds(
-                speeds.vxMetersPerSecond * Math.cos(gyro.getYaw()) - speeds.vyMetersPerSecond * Math.sin(gyro.getYaw()),
-                speeds.vxMetersPerSecond * Math.sin(gyro.getYaw()) + speeds.vyMetersPerSecond * Math.cos(gyro.getYaw()),
-                gyro.getYaw()
-              )
-            ),*/
-            // Method that will drive the robot given ROBOT RELATIVE
-            // ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
-                // in
-                // your Constants class
-                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                MaxSwerveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig() // Default path replanning config. See the API for the
-            // options
-            // here
-            ),
-            getShouldFlip(),
-            this // Reference to this subsystem to set requirements
-        ));
+        AutoBuilder.followPath(pathName)
+        );
   }
 
   public Command followAprilTagCommand() {
@@ -460,6 +480,40 @@ public abstract class MAXSwerve extends SubsystemBase {
             
         this // Reference to drive subsystem to set requirements
       );
+  }
+
+  public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target) {
+    PIDController pid = new PIDController(0.01, 0, 0);
+    pid.setTolerance(1.5);
+    pid.enableContinuousInput(-180, 180);
+    return new ProxyCommand(() ->
+      new RepeatCommand(
+        new FunctionalCommand(
+          () -> {
+            // Init
+          },
+          () -> {
+            Translation2d currentTranslation = this.getPose().getTranslation();
+            Translation2d targetVector = currentTranslation.minus(target.get());
+            Rotation2d targetAngle = targetVector.getAngle();
+            double newSpeed;
+            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+            else
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+            this.drive(xSpeed.get(),ySpeed.get(),
+            newSpeed, true, true);
+            
+              },
+              interrupted -> {
+                pid.close();
+                this.drive(0.0,0.0,0.0,true,true);
+              },
+              () -> {
+                return pid.atSetpoint();
+              },
+              this))
+    );
   }
 
   public Command navigateAndAlignCommand(String pathName, Supplier<Translation2d> target)

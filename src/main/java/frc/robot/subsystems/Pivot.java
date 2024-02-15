@@ -14,6 +14,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.RobotMap.PivotMap;
@@ -38,11 +39,11 @@ public class Pivot extends ProfiledPIDSubsystem {
                         PivotMap.PID.kP,
                         PivotMap.PID.kI,
                         PivotMap.PID.kD,
-                        PivotMap.PROFILE_CONSTRAINTS
-                ), 0
-        );
+                        PivotMap.PROFILE_CONSTRAINTS),
+                0);
 
         setName("Pivot");
+        System.out.println("RUNNING PIVOT");
 
         pivot = new CANSparkMax(PivotMap.PIVOT, MotorType.kBrushless);
         pivot.restoreFactoryDefaults();
@@ -65,27 +66,31 @@ public class Pivot extends ProfiledPIDSubsystem {
 
         pivotPid = pivot.getPIDController();
 
+        
         var tab = Shuffleboard.getTab("pivot");
         tab.add(this);
+
+        enable();
+        setGoal(0);
     }
 
-    //  public Command moveToSetpointCommand(double setpoint) {
-//    return new MoveToSetpointCommand(
-//        speed -> pivot.set(speed),
-//        () -> pivot.getEncoder().getPosition(),
-//        () -> pivot.getEncoder().getVelocity(),
-//
-//        PivotMap.PID,
-//        PivotMap.DT,
-//        PivotMap.TOLERANCE,
-//        PivotMap.PROFILE_CONSTRAINTS,
-//
-//        setpoint,
-//
-//        "pivot",
-//        this);
-//  }
-//
+    // public Command moveToSetpointCommand(double setpoint) {
+    // return new MoveToSetpointCommand(
+    // speed -> pivot.set(speed),
+    // () -> pivot.getEncoder().getPosition(),
+    // () -> pivot.getEncoder().getVelocity(),
+    //
+    // PivotMap.PID,
+    // PivotMap.DT,
+    // PivotMap.TOLERANCE,
+    // PivotMap.PROFILE_CONSTRAINTS,
+    //
+    // setpoint,
+    //
+    // "pivot",
+    // this);
+    // }
+    //
     public Command setSpeedCommand(Supplier<Double> power) {
         return new InstantCommand(() -> {
             pivot.set(power.get());
@@ -98,9 +103,9 @@ public class Pivot extends ProfiledPIDSubsystem {
 
     @Override
     protected void useOutput(double v, TrapezoidProfile.State state) {
-        var feedforward = 0; //pivotFeedforward.calculate(state.position, state.velocity);
+        var feedforward = 0; // pivotFeedforward.calculate(state.position, state.velocity);
 
-        pivotPid.setReference(v + feedforward, CANSparkBase.ControlType.kVoltage);
+        pivotPid.setReference(v + feedforward, CANSparkBase.ControlType.kVelocity);
     }
 
     @Override
@@ -110,6 +115,8 @@ public class Pivot extends ProfiledPIDSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
+
         if (pivotReverseLimitSwitch.isPressed()) {
             zeroPivot();
         }
@@ -121,16 +128,26 @@ public class Pivot extends ProfiledPIDSubsystem {
         builder.addBooleanProperty("forward limit", () -> pivotForwardLimitSwitch.isPressed(), (s) -> {});
         builder.addBooleanProperty("rev limit", () -> pivotReverseLimitSwitch.isPressed(), (s) -> {});
         builder.addDoubleProperty("encoder", this::getMeasurement, (s) -> {});
-        builder.addDoubleArrayProperty("pid", () -> new double[]{pivotPid.getD(), pivotPid.getI(), pivotPid.getD()}, (pid) ->
-                {
-                    pivotPid.setP(pid[0]);
-                    pivotPid.setI(pid[1]);
-                    pivotPid.setD(pid[2]);
-                }
-        );
+        builder.addDoubleProperty("kp", () -> pivotPid.getP(), (s) -> pivotPid.setP(s));
+        builder.addDoubleProperty("ki", () -> pivotPid.getI(), (s) -> pivotPid.setP(s));
+        builder.addDoubleProperty("kd", () -> pivotPid.getD(), (s) -> pivotPid.setP(s));
+        builder.addDoubleProperty("ks", () -> pivotFeedforward.ks,
+                (s) -> pivotFeedforward = new ArmFeedforward(s, pivotFeedforward.kg,
+                        pivotFeedforward.kv, pivotFeedforward.ka));
+        builder.addDoubleProperty("kg", () -> pivotFeedforward.kg,
+                (s) -> pivotFeedforward = new ArmFeedforward(pivotFeedforward.ks, s,
+                        pivotFeedforward.kv, pivotFeedforward.ka));
+        builder.addDoubleProperty("kv", () -> pivotFeedforward.kv,
+                (s) -> pivotFeedforward = new ArmFeedforward(pivotFeedforward.ks, pivotFeedforward.kg,
+                        s, pivotFeedforward.ka));
+        builder.addDoubleProperty("ka", () -> pivotFeedforward.ka,
+                (s) -> pivotFeedforward = new ArmFeedforward(pivotFeedforward.ks, pivotFeedforward.kg,
+                        pivotFeedforward.kv, s));
+        builder.addBooleanProperty("at goal",() -> 
+        getController().atGoal(), null);
+        builder.addBooleanProperty("is enabled",() -> 
+        isEnabled(), null);
 
-        builder.addDoubleArrayProperty("ff", () -> new double[]{pivotFeedforward.ks, pivotFeedforward.kg, pivotFeedforward.kv, pivotFeedforward.ka}, (ff) -> {
-            pivotFeedforward = new ArmFeedforward(ff[0], ff[1], ff[2], ff[3]);
-        });
+        builder.addDoubleProperty("target v", () -> getController().calculate(getMeasurement()), null);
     }
 }

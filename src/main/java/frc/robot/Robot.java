@@ -9,6 +9,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.CANSparkBase;
 
 import edu.wpi.first.util.function.BooleanConsumer;
@@ -22,15 +23,18 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import frc.robot.auto.AutoCommands;
 import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.AddressableLEDLights;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Prototypes;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Shamper;
 import frc.robot.subsystems.Vision.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
@@ -47,6 +51,7 @@ public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private final Field2d m_field = new Field2d();
   private Prototypes prototypes;
+  private SendableChooser<Command> autoChooser;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -66,15 +71,31 @@ public class Robot extends TimedRobot {
     AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
+    System.out.println("BOOP");
+    enableLiveWindowInTest(isTest());
+    OI.getInstance().registerCommands();
+    AutoCommands.registerAutoCommands();
+
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
-      enableLiveWindowInTest(true);
-    var autoModeSelector = AutoModeSelector.getInstance();
-    SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
+      {enableLiveWindowInTest(true);
+      System.out.println("enabled test mode");}
+
+    //var autoModeSelector = AutoModeSelector.getInstance();
+    //SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
+    OI.getInstance();
     SmartDashboard.putData("field", m_field);
 
     if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       Prototypes.getInstance();
+      
     Drivetrain.getInstance().zeroGyroYaw();
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
+
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
   }
 
   /**
@@ -112,7 +133,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    var autonomousCommand = AutoModeSelector.getInstance().getChooser().getSelected();
+    var autonomousCommand = getAutonomousCommand();
 
       if(autonomousCommand != null){
         autonomousCommand.schedule();
@@ -129,7 +150,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
-    OI.getInstance().registerCommands();
     //Drivetrain.getInstance().zeroGyroYaw();
     //Drivetrain.getInstance().setGyroYaw(0);
     //PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());

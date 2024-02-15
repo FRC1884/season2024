@@ -4,7 +4,7 @@ import frc.robot.core.util.controllers.BoardController;
 import frc.robot.core.util.controllers.ButtonMap;
 import frc.robot.core.util.controllers.Xbox;
 
-public final class ExampleConfig {
+public final class Config {
   public static final class Subsystems {
     public static final boolean DRIVETRAIN_ENABLED = true;
     public static final boolean CLIMBER_ENABLED = false;
@@ -21,8 +21,8 @@ public final class ExampleConfig {
 
   public static final class Controllers {
     public static final boolean DRIVER_ENALBED = true;
-    public static final boolean JOYSTICK_OPERATOR_ENABLED = true;
-    public static final boolean BOARD_OPERATOR_ENABLED = !JOYSTICK_OPERATOR_ENABLED;
+    public static final boolean JOYSTICK_OPERATOR_ENABLED = false;
+    public static final boolean BOARD_OPERATOR_ENABLED = false; //!JOYSTICK_OPERATOR_ENABLED;
 
     public static ButtonMap getDriverController() {
       return new Xbox();

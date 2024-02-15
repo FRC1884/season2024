@@ -1,13 +1,16 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Empty;
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.ShamperMap;
@@ -43,7 +46,7 @@ public class Shamper extends SubsystemBase {
    * followerPivot: RIGHT PIVOT
    */
   private CANSparkFlex top, bottom;
-  private CANSparkFlex feeder;
+  private CANSparkMax feeder;
 
   private SparkPIDController topPid, bottomPid, feederPid;
 
@@ -64,6 +67,7 @@ public class Shamper extends SubsystemBase {
 
       // takes that many seconds to go from 0 to full speed
       top.setClosedLoopRampRate(ShamperMap.FLYWHEEL_RAMP_RATE);
+      top.setCANTimeout(0);
 
       top.burnFlash();
     }
@@ -82,12 +86,13 @@ public class Shamper extends SubsystemBase {
 
       // takes that many seconds to go from 0 to full speed
       bottom.setClosedLoopRampRate(ShamperMap.FLYWHEEL_RAMP_RATE);
+      bottom.setCANTimeout(0);
 
       bottom.burnFlash();
     }
 
     if (ShamperMap.FEEDER != -1) {
-      feeder = new CANSparkFlex(ShamperMap.FEEDER, MotorType.kBrushless);
+      feeder = new CANSparkMax(ShamperMap.FEEDER, MotorType.kBrushless);
       feeder.restoreFactoryDefaults();
 
       feederPid = feeder.getPIDController();
@@ -122,11 +127,20 @@ public class Shamper extends SubsystemBase {
     tab.add("shamper", this);
   }
 
+  // public Command setFlywheelVelocityCommand(double velocity) {
+  //   return new InstantCommand(() -> {
+  //     topVelocity = velocity;
+  //     bottomVelocity = velocity;
+  //   }, this);
+  // }
+
   public Command setFlywheelVelocityCommand(double velocity) {
-    return new InstantCommand(() -> {
+
+    return new FunctionalCommand(() -> {
       topVelocity = velocity;
       bottomVelocity = velocity;
-    }, this);
+    }, () -> {}, (interrupted) -> {System.out.println("Ended command");
+  }, () -> true, this);
   }
 
   public Command stopFlywheelCommand() {

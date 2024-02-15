@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.RobotMap;
-import frc.robot.ExampleConfig.Subsystems;
+import frc.robot.Config.Subsystems;
 
 import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.layout.OperatorMap;

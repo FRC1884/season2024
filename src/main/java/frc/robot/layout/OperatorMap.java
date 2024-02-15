@@ -1,7 +1,8 @@
 package frc.robot.layout;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.ExampleConfig;
+import frc.robot.Config;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Climber;
@@ -52,7 +53,7 @@ public abstract class OperatorMap extends CommandMap {
   abstract JoystickButton getLEDPatternOffButton();
 
   private void registerPrototype() {
-    if (ExampleConfig.Subsystems.PROTOTYPE_ENABLED) {
+    if (Config.Subsystems.PROTOTYPE_ENABLED) {
       Prototypes prototypes = Prototypes.getInstance();
       getShootStopButton().whileTrue(prototypes.runAny4Motors(-0.0, 0.0, 0.0, 0));
       getShootButton().whileTrue(prototypes.runAny4Motors(-0.30, 0.30, 0.0, 0));
@@ -62,7 +63,7 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerIntake() {
-    if (ExampleConfig.Subsystems.INTAKE_ENABLED) {
+    if (Config.Subsystems.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
 
       getIntakeStopButton().onTrue(intake.setIntakeState(IntakeDirection.STOPPED));
@@ -72,7 +73,7 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerShamper() {
-    if (ExampleConfig.Subsystems.SHAMPER_ENABLED) {
+    if (Config.Subsystems.SHAMPER_ENABLED) {
       Shamper shamper = Shamper.getInstance();
 
       // getShootButton().whileTrue(shamper.setFlywheelVelocityCommand(0.5));
@@ -97,7 +98,7 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerPivot() {
-    if (ExampleConfig.Subsystems.PIVOT_ENABLED) {
+    if (Config.Subsystems.PIVOT_ENABLED) {
       Pivot pivot = Pivot.getInstance();
 
       // getPivotButtonOne().onTrue(shamper.runPivot(10.0));
@@ -107,14 +108,14 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerClimber() {
-    if (ExampleConfig.Subsystems.CLIMBER_ENABLED) {
+    if (Config.Subsystems.CLIMBER_ENABLED) {
       Climber climber = Climber.getInstance();
       climber.setDefaultCommand(climber.run(this::getClimberAxis));
     }
   }
 
   private void registerLEDs() {
-    if (ExampleConfig.Subsystems.LEDS_ENABLED) {
+    if (Config.Subsystems.LEDS_ENABLED) {
       PWMLEDLights lights = PWMLEDLights.getInstance();
       getLEDPatternOffButton().onTrue(
           lights.setColorForSecondsCommand(3, BlinkinUtils.ColorPatterns.WHITE));
@@ -131,6 +132,7 @@ public abstract class OperatorMap extends CommandMap {
     registerIntake();
     registerShamper();
     registerClimber();
+    registerPivot();
     // registerLEDs();
   }
 }
