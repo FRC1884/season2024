@@ -3,6 +3,7 @@ package frc.robot.core.MAXSwerve;
 import static frc.robot.core.TalonSwerve.SwerveConstants.KINEMATICS;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.commands.PathfindThenFollowPathHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -51,6 +53,7 @@ import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.subsystems.Vision.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
 
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -111,6 +114,17 @@ public abstract class MAXSwerve extends SubsystemBase {
     //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     // else
     //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+    AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds, new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
+                // in
+                // your Constants class
+                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                MaxSwerveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
+                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                new ReplanningConfig() // Default path replanning config. See the API for the
+            // options
+            // here
+            ), getShouldFlip(), this);
   }
 
   public Rotation2d getYawRot2d() {
@@ -325,6 +339,10 @@ public abstract class MAXSwerve extends SubsystemBase {
     };
   }
 
+  public void startingOdometry(Pose2d startingPose) {
+    PoseEstimator.getInstance().resetPoseEstimate(startingPose);
+  }
+
   public Command followPathCommand(String pathName, boolean isFirstPath) {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
     return followPathCommand(path, isFirstPath);
@@ -353,34 +371,9 @@ public abstract class MAXSwerve extends SubsystemBase {
                 PoseEstimator.getInstance().resetPoseEstimate(startingPose);
               }
             }),
-        new FollowPathHolonomic(
-            pathName,
-            this::getPose, // Robot pose supplier
-            this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::driveWithChassisSpeeds,
-            /*speeds -> driveWithChassisSpeeds(
-              new ChassisSpeeds(
-                speeds.vxMetersPerSecond * Math.cos(gyro.getYaw()) - speeds.vyMetersPerSecond * Math.sin(gyro.getYaw()),
-                speeds.vxMetersPerSecond * Math.sin(gyro.getYaw()) + speeds.vyMetersPerSecond * Math.cos(gyro.getYaw()),
-                gyro.getYaw()
-              )
-            ),*/
-            // Method that will drive the robot given ROBOT RELATIVE
-            // ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
-                // in
-                // your Constants class
-                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                MaxSwerveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig() // Default path replanning config. See the API for the
-            // options
-            // here
-            ),
-            getShouldFlip(),
-            this // Reference to this subsystem to set requirements
-        ));
+        AutoBuilder.followPath(pathName).andThen(() -> System.out.println("Helo there")),
+        new InstantCommand(() -> System.out.println("Tihs"))
+        );
   }
 
   public Command followAprilTagCommand() {
@@ -407,7 +400,7 @@ public abstract class MAXSwerve extends SubsystemBase {
    * @return command to generate a path On-the-fly to a note
    */
   public Command onTheFlyPathCommand(Supplier<Pose2d> targetPose) {
-    return new ProxyCommand(() -> followPathCommand(
+    return new DeferredCommand(() -> followPathCommand(
         new PathPlannerPath(
             PathPlannerPath.bezierFromPoses(new Pose2d(this.getPose().getTranslation(),
                                                 Rotation2d.fromDegrees(0)),
@@ -419,9 +412,12 @@ public abstract class MAXSwerve extends SubsystemBase {
                 RobotMap.SwervePathFollowConstants.MAX_ANG_ACCELERATION),
             new GoalEndState(0, targetPose.get().getRotation()),
             false),
-        false));
+        false),
+        //.until(
+         // () -> targetPose.get().getTranslation().getDistance(PoseEstimator.getInstance().getPosition().getTranslation())<1.5))
+          //.finallyDo(() -> System.out.println("uwu owo"));
+    Set.of(this));
   }
-
   /**
    * Command to pathfind to a path - NEEDS TO BE TESTED, also, does it need to be a proxy?
    * @param pathName name of the path that the robot will pathfind to  

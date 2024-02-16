@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4708394010225951,
-        "y": 7.3
+        "x": 8.317099886696207,
+        "y": 0.7846260485673593
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4708394010225951,
-        "y": 7.3
+        "x": 7.555895511220408,
+        "y": 0.7846260485673593
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "CCBS First Shot"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.3
+        "x": 8.317099886696207,
+        "y": 2.435854001522554
       },
       "prevControl": {
-        "x": 2.111045813028386,
-        "y": 7.3
+        "x": 6.466787712462727,
+        "y": 1.8971555204166035
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TTB Shot One"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -38,15 +38,15 @@
     "maxAngularAcceleration": 240.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -140.0,
+    "velocity": 0,
+    "rotation": -160.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
     "rotation": 180.0,
-    "velocity": 0.0
+    "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -128,28 +128,12 @@
     },
     {
       "anchor": {
-        "x": 2.313101718323304,
-        "y": 6.839982780964453
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 2.4636767981011944,
-        "y": 6.934092205825635
-      },
-      "nextControl": {
-        "x": 2.16623811715992,
-        "y": 6.748193030237338
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.0,
-        "y": 7.5
-      },
-      "prevControl": {
-        "x": 3.73584285459359,
-        "y": 7.528405911417817
+        "x": 2.193775042378054,
+        "y": 7.023562282418683
       },
       "nextControl": null,
       "isLocked": false,
@@ -191,22 +175,24 @@
       "waypointRelativePos": 7,
       "rotationDegrees": -89.99999999999994,
       "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 8,
-      "rotationDegrees": -141.70983680775697,
-      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.5,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
         }
       }
     },
@@ -216,37 +202,65 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
         }
       }
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 4.6,
+      "waypointRelativePos": 4.1,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
         }
       }
     },
     {
       "name": "Shoot",
-      "waypointRelativePos": 5.1,
+      "waypointRelativePos": 5.0,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
         }
       }
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 6.55,
+      "waypointRelativePos": 6.3,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
         }
       }
     },
@@ -256,7 +270,14 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
         }
       }
     }
@@ -269,11 +290,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -140.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto Components",
-  "previewStartingState": null,
+  "folder": "Old Segments",
+  "previewStartingState": {
+    "rotation": 140.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

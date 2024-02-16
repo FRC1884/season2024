@@ -3,43 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.5232015791445568,
-        "y": 7.289752559527318
+        "x": 2.0,
+        "y": 7.3
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4875022447048227,
-        "y": 4.884861090476899
+        "x": 1.9815373154336995,
+        "y": 8.103898889684714
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TTB Shot One"
     },
     {
       "anchor": {
-        "x": 7.0,
-        "y": 7.5
+        "x": 8.270256540518371,
+        "y": 7.424670370029387
       },
       "prevControl": {
-        "x": 6.082102492728847,
-        "y": 7.5
+        "x": 7.520763001588354,
+        "y": 7.471513716212511
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "CCTS First Shot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.35,
-      "rotationDegrees": -168.01213306451376,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot",
-      "waypointRelativePos": 0.35,
+      "name": "Intake",
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "parallel",
         "data": {
@@ -47,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "Intake"
               }
             }
           ]
@@ -56,20 +50,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
   },
   "goalEndState": {
     "velocity": 0,
     "rotation": 180.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "Old Segments",
+  "folder": null,
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": -140.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

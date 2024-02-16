@@ -134,9 +134,6 @@ public class Vision extends SubsystemBase {
     if (VisionConfig.IS_NEURAL_NET) {
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
-        // if (!VisionConfig.NN_FACING_FRONT) {
-        //   directionMod = -1;
-        // }
       }
 
     if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
@@ -295,7 +292,7 @@ public class Vision extends SubsystemBase {
         double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_Z, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset);
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
-        
+
         Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
 
         Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);

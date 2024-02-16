@@ -128,28 +128,12 @@
     },
     {
       "anchor": {
-        "x": 1.8908688649746073,
-        "y": 3.8751738324746428
+        "x": 2.0,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 1.9199395752906665,
-        "y": 4.1074463820537765
-      },
-      "nextControl": {
-        "x": 1.861798154658548,
-        "y": 3.6429012828955076
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.5,
-        "y": 1.0
-      },
-      "prevControl": {
-        "x": 2.60221165235483,
-        "y": 1.7800471549587875
+        "x": 2.0560904162873808,
+        "y": 4.082610775654402
       },
       "nextControl": null,
       "isLocked": false,
@@ -196,18 +180,13 @@
       "waypointRelativePos": 7.0,
       "rotationDegrees": -177.73204546409417,
       "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 8.0,
-      "rotationDegrees": 136.134421630977,
-      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 1.9,
+      "waypointRelativePos": 1.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -226,13 +205,13 @@
       "name": "Shoot",
       "waypointRelativePos": 3.3,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
-              "type": "wait",
+              "type": "named",
               "data": {
-                "waitTime": 2.0
+                "name": "Shoot"
               }
             }
           ]
@@ -260,13 +239,13 @@
       "name": "Shoot",
       "waypointRelativePos": 5.05,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
-              "type": "wait",
+              "type": "named",
               "data": {
-                "waitTime": 2.0
+                "name": "Shoot"
               }
             }
           ]
@@ -292,15 +271,15 @@
     },
     {
       "name": "Shoot",
-      "waypointRelativePos": 8.05,
+      "waypointRelativePos": 8.0,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
-              "type": "wait",
+              "type": "named",
               "data": {
-                "waitTime": 2.0
+                "name": "Shoot"
               }
             }
           ]
@@ -316,13 +295,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 145.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Old Segments",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": -140.0,
     "velocity": 0.0
   },
   "useDefaultConstraints": true

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4708394010225951,
-        "y": 7.3
+        "x": 5.986643414085687,
+        "y": 6.780574360007493
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4708394010225951,
-        "y": 7.3
+        "x": 5.518209952254426,
+        "y": 6.722020177278586
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "BTT Centerline"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.3
+        "x": 2.894982565999367,
+        "y": 6.323851734722014
       },
       "prevControl": {
-        "x": 2.111045813028386,
-        "y": 7.3
+        "x": 3.1643318065523425,
+        "y": 6.323851734722014
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TTB Shot One"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -38,15 +38,15 @@
     "maxAngularAcceleration": 240.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -140.0,
+    "velocity": 0,
+    "rotation": -160.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
     "rotation": 180.0,
-    "velocity": 0.0
+    "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -8,6 +8,7 @@ import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkBase;
 
@@ -22,7 +23,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.auto.selector.AutoModeSelector;
@@ -47,6 +50,7 @@ public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private final Field2d m_field = new Field2d();
   private Prototypes prototypes;
+  private SendableChooser<Command> autoChooser;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -62,21 +66,27 @@ public class Robot extends TimedRobot {
     //Autocommands
     // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
     // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
-
+    OI.getInstance().registerCommands();
     AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       enableLiveWindowInTest(true);
-    var autoModeSelector = AutoModeSelector.getInstance();
-    SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
+    // var autoModeSelector = AutoModeSelector.getInstance();
+    // SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
     SmartDashboard.putData("field", m_field);
 
     if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       Prototypes.getInstance();
     Drivetrain.getInstance().zeroGyroYaw();
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
@@ -112,7 +122,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    var autonomousCommand = AutoModeSelector.getInstance().getChooser().getSelected();
+    var autonomousCommand = getAutonomousCommand();
 
       if(autonomousCommand != null){
         autonomousCommand.schedule();
@@ -129,7 +139,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
-    OI.getInstance().registerCommands();
+    //OI.getInstance().registerCommands();
     //Drivetrain.getInstance().zeroGyroYaw();
     //Drivetrain.getInstance().setGyroYaw(0);
     //PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4708394010225951,
-        "y": 7.3
+        "x": 2.4324283942685536,
+        "y": 3.9302476829149002
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4708394010225951,
-        "y": 7.3
+        "x": 2.7445135467407455,
+        "y": 2.7278019483896907
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TTB Shot Four"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.3
+        "x": 6.048944572916893,
+        "y": 1.6905777651732885
       },
       "prevControl": {
-        "x": 2.111045813028386,
-        "y": 7.3
+        "x": 5.048944572916893,
+        "y": 1.6905777651732885
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TTB Shot One"
+      "linkedName": "TTB Centerline"
     }
   ],
   "rotationTargets": [],
@@ -38,15 +38,15 @@
     "maxAngularAcceleration": 240.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -140.0,
+    "velocity": 0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 180.0,
-    "velocity": 0.0
+    "rotation": 140.0,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }
