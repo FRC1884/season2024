@@ -32,6 +32,8 @@ public abstract class DriverMap extends CommandMap {
 
   abstract double getSwerveRot();
 
+  abstract JoystickButton getSlowModeToggleButton();
+  
   abstract JoystickButton getArcingButton();
 
   abstract JoystickButton getTestButton();

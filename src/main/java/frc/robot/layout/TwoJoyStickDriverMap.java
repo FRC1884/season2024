@@ -48,6 +48,11 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
 
   @Override
+  public JoystickButton getSlowModeToggleButton(){
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
+
+  @Override
   public JoystickButton getArcingButton(){
     return controller.getButton(Button.BUTTON_Y); 
   }
