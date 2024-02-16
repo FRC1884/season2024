@@ -14,7 +14,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.Drivetrain;
 
 public class AutoCommands {

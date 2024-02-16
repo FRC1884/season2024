@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Vision;
+package frc.robot.subsystems;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -14,12 +14,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.vision.Vision;
 
 /** Reports our expected, desired, and actual poses to dashboards */
 public class PoseEstimator extends SubsystemBase {
@@ -31,9 +30,7 @@ public class PoseEstimator extends SubsystemBase {
   }
 
   // PoseConfig config;
-  private PoseTelemetry telemetry;
   private Pose2d odometryPose = new Pose2d();
-  private Pose2d desiredPose = new Pose2d();
   private Pose2d estimatePose = new Pose2d();
 
   private final SwerveDrivePoseEstimator poseEstimator;
@@ -47,8 +44,6 @@ public class PoseEstimator extends SubsystemBase {
 
   private PoseEstimator() {
     // config = new PoseConfig();
-    telemetry = new PoseTelemetry(this);
-
     drivetrain = Drivetrain.getInstance();
 
     // Maxswerve Version from MAXSwerve.java in core
@@ -74,7 +69,7 @@ public class PoseEstimator extends SubsystemBase {
     // Updates using the vision estimate
     Pose2d tempEstimatePose = Vision.getInstance().visionBotPose();
     if (VisionConfig.IS_LIMELIGHT_MODE && tempEstimatePose != null
-        && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
+        && (tempEstimatePose.getX() > VisionConfig.VISION_X_MAX_CUTOFF || tempEstimatePose.getX() < VisionConfig.VISION_X_MIN_CUTOFF)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double currentTimestamp = Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());
         addVisionMeasurement(tempEstimatePose, currentTimestamp);
@@ -82,7 +77,7 @@ public class PoseEstimator extends SubsystemBase {
     }
     // TODO Photonvision mode - Needs editing and filtering
     if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null
-        && (tempEstimatePose.getX() > 13.5 || tempEstimatePose.getX() < 3)) { // Limelight mode
+        && (tempEstimatePose.getX() > VisionConfig.VISION_X_MAX_CUTOFF || tempEstimatePose.getX() < VisionConfig.VISION_X_MIN_CUTOFF)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
         addVisionMeasurement(tempEstimatePose, photonTimestamp);
@@ -120,30 +115,6 @@ public class PoseEstimator extends SubsystemBase {
     return getPosition().getTranslation().getDistance(pose);
   }
 
-  // /**
-  //  * @return true if estimated pose is on the chargestation by using the field-space
-  // chargestation
-  //  *     dimensions
-  //  */
-  // public boolean isOnChargeStation() {
-  //     return ((getBestPose().getX() > 2.9 && getBestPose().getX() < 4.8)
-  //             && (getBestPose().getY() > 1.54 && getBestPose().getY() < 3.99));
-  // }
-
-  // /**
-  //  * Returns the most accurate pose. If we are not confident that vision is accurate,
-  //  * estimatedPose is considered to be most accurate.
-  //  *
-  //  * @return vision pose or estimated pose
-  //  */
-  // public Pose2d getBestPose() {
-  //     if (Robot.vision.visionAccurate()) {
-  //         return Robot.vision.botPose;
-  //     } else {
-  //         return estimatePose;
-  //     }
-  // }
-
   /**
    * Helper method for comparing vision pose against odometry pose. Does not account for difference
    * in rotation. Will return false vision if it sees no targets or if the vision estimated pose is
@@ -156,12 +127,6 @@ public class PoseEstimator extends SubsystemBase {
     if (!Vision.getInstance().visionAccurate(pose)) { // visionAccurate method sees if Apriltags present in Vision.java
       return false;
     }
-
-    // Disregard measurements too far away from odometry - REMOVED BECAUSE THIS IS TOO STRICT
-    // this can be tuned to find a threshold that helps us remove jumping vision
-    // poses
-    // return (Math.abs(pose.getX() - odometryPose.getX()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD)
-    //     && (Math.abs(pose.getY() - odometryPose.getY()) <= VisionConfig.DIFFERENCE_CUTOFF_THRESHOLD);
     return true;
   }
 
@@ -173,11 +138,6 @@ public class PoseEstimator extends SubsystemBase {
   /** Returns the Odometry Pose from drivetrain */
   public Pose2d getOdometryPose() {
     return odometryPose;
-  }
-
-  /** Sets the desired pose of the robot */
-  public void setDesiredPose(Pose2d pose) {
-    desiredPose = pose;
   }
 
   /** Sets the estimated pose to the given pose */
