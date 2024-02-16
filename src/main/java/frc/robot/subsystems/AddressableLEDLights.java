@@ -52,9 +52,9 @@ public class AddressableLEDLights extends SubsystemBase {
                 for(int i = 0; i < m_ledBuffer.getLength(); i++) {
                     m_ledBuffer.setHSV(
                         i, 
-                        m_rainbowFirstPixelHue, 
-                        (int) (confidence2.getAsDouble() * 255), 
-                        (int) (confidence.getAsDouble() * 255)
+                        120, 
+                        (int) (127 + confidence2.getAsDouble() * 127),
+                        (int) (127 + confidence.getAsDouble() * 127)
                     );
                 }
                 m_rainbowFirstPixelHue++;
@@ -180,13 +180,19 @@ public class AddressableLEDLights extends SubsystemBase {
     public Command disableCommand() {
         return setColorCommand(Color.kBlack);
     }
+    
+    public Command checkBeam() {
+        return new RunCommand(()->{
+        if(feederSensor.get()){
+            setColor(Color.kGreenYellow);
+        }
+        else setColor(Color.kRed);
+    },this);
+
+    }
 
     @Override
     public void periodic() {
         //System.out.println(m_ledBuffer.getLED(0));
-        // if(feederSensor.get()){
-        //     setColor(Color.kGreenYellow);
-        // }
-        // else setColor(Color.kRed);
     }
 }

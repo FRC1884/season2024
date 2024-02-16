@@ -268,9 +268,9 @@ public class RobotMap {
   }
 
   public static class LEDMap {
-    public static final int BLINKIN_PWM_PORT = 1;
-    public static final boolean BLINKIN_PWM = false;
-    public static final boolean BLINKIN_ON_SPARK = true;
-    public static final int NUMBER_LEDS = 50;
+    public static final int BLINKIN_PWM_PORT = 0;
+    public static final boolean BLINKIN_PWM = true;
+    public static final boolean BLINKIN_ON_SPARK = false;
+    public static final int NUMBER_LEDS = 280;
   }
 }

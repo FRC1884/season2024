@@ -47,7 +47,17 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getLEDPatternTwoButton();
 
+  abstract JoystickButton getLEDPatternThreeButton();
+
+  abstract JoystickButton getLEDPatternFourButton();
+
+  abstract JoystickButton getLEDPatternFiveButton();
+
   abstract JoystickButton getLEDPatternOffButton();
+
+  abstract double getLEDAxis1();
+
+  abstract double getLEDAxis2();
 
   private void registerPrototype() {
     if (Config.Subsystems.PROTOTYPE_ENABLED) {
@@ -93,24 +103,25 @@ public abstract class OperatorMap extends CommandMap {
 
   private void registerLEDs() {
     if (Config.Subsystems.LEDS_ENABLED) {
-      PWMLEDLights lights = PWMLEDLights.getInstance();
-      getLEDPatternOffButton().onTrue(
-          lights.setColorForSecondsCommand(3, BlinkinUtils.ColorPatterns.WHITE));
-      getLEDPatternOneButton().onTrue(
-          lights.setColorCommand(BlinkinUtils.ColorPatterns.SINELON_RAINBOW_PALETTE));
-      getLEDPatternTwoButton().onTrue(
-          lights.setColorCommand(BlinkinUtils.ColorPatterns.CP1_2_END_TO_END_BLEND));
+      AddressableLEDLights lights = AddressableLEDLights.getInstance();
+      // getLEDPatternOffButton().whileTrue(lights.disableCommand());
+      // // getLEDPatternOneButton().onTrue(lights.setRedBlack());
+      // getLEDPatternTwoButton().whileTrue(lights.setDecreasing());
+      // getLEDPatternThreeButton().whileTrue(lights.setRainbow());
+      // getLEDPatternFourButton().whileTrue(lights.setRedDarkRed());
+      // getLEDPatternFiveButton().whileTrue(lights.checkBeam());
+      lights.setDefaultCommand(lights.setValue(this::getLEDAxis1, this::getLEDAxis2));
     }
   }
 
   @Override
   public void registerCommands() {
     // registerPrototype();
-    registerIntake();
-    registerShooter();
-    registerShootSequence();
+    //registerIntake();
+    //registerShooter();
+    //registerShootSequence();
 
     // registerClimber();
-    // registerLEDs();
+    registerLEDs();
   }
 }

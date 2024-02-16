@@ -78,4 +78,33 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
     return null;
   }
 
+  @Override
+  JoystickButton getLEDPatternThreeButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getLEDPatternThreeButton'");
+  }
+
+  @Override
+  JoystickButton getLEDPatternFourButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getLEDPatternFourButton'");
+  }
+
+  @Override
+  JoystickButton getLEDPatternFiveButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getLEDPatternFiveButton'");
+  }
+
+  
+  @Override
+  double getLEDAxis1() {
+    return controller.getAxis(Axis.AXIS_LEFT_X);
+  }
+
+  
+  @Override
+  double getLEDAxis2() {
+    return controller.getAxis(Axis.AXIS_LEFT_Y);
+  }
 }

@@ -64,12 +64,12 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getLEDPatternOneButton() {
-    return controller.getButton(Button.BUTTON_TOUCHPAD);
+    return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
   JoystickButton getLEDPatternTwoButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_1);
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
@@ -77,4 +77,29 @@ public class BoardOperatorMap extends OperatorMap {
     return controller.getButton(Button.BUTTON_EXTRA_2);
   }
 
+  @Override
+  JoystickButton getLEDPatternThreeButton() {
+    return controller.getButton(Button.BUTTON_X);
+  }
+
+  @Override
+  JoystickButton getLEDPatternFourButton() {
+    return controller.getButton(Button.BUTTON_Y);
+  }
+
+  @Override
+  JoystickButton getLEDPatternFiveButton() {
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
+
+  @Override
+  double getLEDAxis1() {
+    return controller.getAxis(Axis.AXIS_LEFT_X);
+  }
+
+  
+  @Override
+  double getLEDAxis2() {
+    return controller.getAxis(Axis.AXIS_LEFT_Y);
+  }
 }
