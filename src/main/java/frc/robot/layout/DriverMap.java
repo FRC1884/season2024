@@ -14,10 +14,10 @@ import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.test;
-import frc.robot.subsystems.Vision.PoseEstimator;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
 
