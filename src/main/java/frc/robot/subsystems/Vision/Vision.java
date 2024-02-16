@@ -159,6 +159,7 @@ public class Vision extends SubsystemBase {
       }
     }
 
+    //Does math to see where the note is
     if (NNLimelightConnected) {
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
       detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
