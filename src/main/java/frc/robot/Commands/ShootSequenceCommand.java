@@ -14,6 +14,7 @@ import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake.IntakeDirection;
 import frc.robot.subsystems.Intake.IntakeStatus;
+import frc.robot.subsystems.Shooter.FeederDirection;
 import frc.robot.util.FlywheelLookupTable;
 
 public class ShootSequenceCommand extends SequentialCommandGroup {
@@ -34,8 +35,8 @@ public class ShootSequenceCommand extends SequentialCommandGroup {
                 shooter.setFlywheelVelocityCommand(lookupTable.get(
                     poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()).until(null)
             ),
-            new InstantCommand(() -> intake.setIntakeState(IntakeDirection.FORWARD)).onlyWhile(() -> intake.hasNote()),
-            new InstantCommand(() -> shooter.stopFlywheelCommand()).onlyIf(() -> !intake.hasNote())
+            new InstantCommand(() -> shooter.setFeederState(FeederDirection.FORWARD)).onlyWhile(() -> shooter.isNoteLoaded()),
+            new InstantCommand(() -> shooter.stopFlywheelCommand()).onlyIf(() -> !shooter.isNoteLoaded())
         );
     }
 }

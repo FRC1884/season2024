@@ -42,11 +42,8 @@ public class Intake extends SubsystemBase {
         EMPTY, LOADED
     }
 
-    private CANSparkMax intake, feeder;
-    private double MOTOR_SPEED_1 = -0.8; //TODO: fix value
-    private double MOTOR_SPEED_2 = -0.6;// TODO: fix value
+    private CANSparkMax intake;
     
-    private Optional<DigitalInput> intakeSensor;
 
     private IntakeStatus status = IntakeStatus.EMPTY;
     private IntakeDirection direction = IntakeDirection.STOPPED;
@@ -54,45 +51,21 @@ public class Intake extends SubsystemBase {
     private Intake() {
         setName("Intake");
         intake = new CANSparkMax(IntakeMap.INTAKE_ID, MotorType.kBrushless);
-        feeder = new CANSparkMax(IntakeMap.FEEDER_ID, MotorType.kBrushless);
 
         intake.restoreFactoryDefaults();
-        feeder.restoreFactoryDefaults();
-
         intake.setInverted(true);
-        feeder.setInverted(true);
-
         intake.setSmartCurrentLimit(20);
-        feeder.setSmartCurrentLimit(20);
-
         intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        feeder.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
         intake.burnFlash();
-        feeder.burnFlash();
-
-        if (Config.Subsystems.Intake.INTAKE_SENSOR_ENABLED) {
-            intakeSensor = Optional.of(new DigitalInput(IntakeMap.SENSOR));
-        } else {
-            intakeSensor = Optional.empty();
-        }
 
         var tab = Shuffleboard.getTab("Intake");
-
-        // tab.add("intake motor", intake);
-        // tab.add("feeder motor", feeder);
-
-        if (intakeSensor.isPresent()) {
-            tab.add("sensor", intakeSensor.get());
-        }
 
         tab.addString("status", () -> status.toString());
         tab.addString("direction", () -> direction.toString());
     }
 
-    private void setSpeed(double intakeSpeed, double feederSpeed) {
+    private void setSpeed(double intakeSpeed) {
         intake.set(intakeSpeed);
-        feeder.set(feederSpeed);
     }
 
     /**
@@ -124,30 +97,16 @@ public class Intake extends SubsystemBase {
                 this);
     }
 
-    public boolean hasNote() {
-        if (!intakeSensor.isPresent())
-            return false;
-        else {
-            return status == IntakeStatus.LOADED;
-        }
-    }
 
     @Override
     public void periodic() {
-        if (intakeSensor.isPresent()) {
-            if (!intakeSensor.get().get()) {
-                status = IntakeStatus.EMPTY;
-            } else {
-                status = IntakeStatus.LOADED;
-            }
-        }
 
         if (direction == IntakeDirection.FORWARD) {
-            setSpeed(IntakeMap.INTAKE_FORWARD_SPEED, IntakeMap.FEEDER_FORWARD_SPEED);
+            setSpeed(IntakeMap.INTAKE_FORWARD_SPEED);
         } else if (direction == IntakeDirection.REVERSE) {
-            setSpeed(IntakeMap.INTAKE_REVERSE_SPEED, IntakeMap.FEEDER_REVERSE_SPEED);
+            setSpeed(IntakeMap.INTAKE_REVERSE_SPEED);
         } else {
-            setSpeed(0, 0);
+            setSpeed(0);
         }
     }
 

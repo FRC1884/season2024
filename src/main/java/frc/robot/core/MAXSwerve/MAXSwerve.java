@@ -74,6 +74,8 @@ public abstract class MAXSwerve extends SubsystemBase {
   GenericEntry currentAngleEntry = tab.add("Current Angle", 0).getEntry();
   private double targetAngleTelemetry = 0;
 
+  private boolean isSlowModeEnabled = false;
+
   SwerveDriveOdometry odometry;
 
   //For Testing All functions

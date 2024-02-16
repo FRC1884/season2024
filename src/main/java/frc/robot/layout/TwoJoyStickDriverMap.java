@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
@@ -19,39 +20,31 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
 
   @Override
-  public ChassisSpeeds getChassisSpeeds() {
-    double x =
-        Math.pow(controller.getAxis(Axis.AXIS_LEFT_Y), 1)
-            * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    double y =
-        Math.pow(controller.getAxis(Axis.AXIS_LEFT_X), 1)
-            * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
-    double rot = controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed * 0.7;
-
-    return ChassisSpeeds.fromFieldRelativeSpeeds(x, y, rot, new Rotation2d(0, 0));
-  }
-
-  @Override
   public double getSwerveXSpeed() {
     if(DriverStation.getAlliance().isPresent() 
     && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-      return -controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+      return -controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond 
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
     else
-      return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+      return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond 
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 
   @Override
   public double getSwerveYSpeed() {
     if(DriverStation.getAlliance().isPresent() 
       && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-      return -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+      return -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
     else
-      return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond;
+      return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 
   @Override
   public double getSwerveRot() {
-    return -controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed * 0.3;
+    return -controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed
+    * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_ROTATION_MUTLIPLIER : 0.3);
   }
 
   @Override
@@ -74,23 +67,9 @@ public class TwoJoyStickDriverMap extends DriverMap {
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
-  // @Override
-  // public JoystickButton getResetOdometryVisionButton(){
-  //   return controller.getButton(Button.BUTTON_X);
-  // }
-
   @Override
   public JoystickButton getZeroGyroButton(){
     return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  public JoystickButton getSpeakerBlueButton(){
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
-  }
- @Override
-  public JoystickButton getAmpBlueButton(){
-    return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
   @Override

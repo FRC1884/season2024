@@ -15,6 +15,7 @@ import frc.robot.core.util.controllers.GameController;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.subsystems.*;
 import frc.robot.Config;
+import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.Commands.ShootSequenceCommand;
 import frc.robot.core.util.controllers.BoardController;
 import frc.robot.util.BlinkinUtils;
@@ -72,7 +73,7 @@ public abstract class OperatorMap extends CommandMap {
   private void registerIntake() {
     if (Config.Subsystems.Intake.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
-      getIntakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.FORWARD));
+      // getIntakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.FORWARD));
       getOuttakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.REVERSE));
       
 
@@ -80,7 +81,7 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerShooter() {
-    if (Config.Subsystems.SHAMPER_ENABLED) {
+    if (Config.Subsystems.SHOOTER_ENABLED) {
       Shooter shooter = Shooter.getInstance();
       Pivot pivot = Pivot.getInstance();
 
@@ -94,12 +95,17 @@ public abstract class OperatorMap extends CommandMap {
     }
   }
 
-  private void registerShootSequence() {
-    if (Config.Subsystems.SHAMPER_ENABLED && Config.Subsystems.Intake.INTAKE_ENABLED
+  private void registerComplexCommands(){
+    if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.Intake.INTAKE_ENABLED
         && Config.Subsystems.DRIVETRAIN_ENABLED) {
+
       getShootSpeakerButton().onTrue(new ShootSequenceCommand());
+      getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
+      
     }
+    
   }
+
 
   private void registerLEDs() {
     if (Config.Subsystems.LEDS_ENABLED) {
@@ -117,11 +123,10 @@ public abstract class OperatorMap extends CommandMap {
   @Override
   public void registerCommands() {
     // registerPrototype();
-    //registerIntake();
+    registerIntake();
+    //registerClimber();
     //registerShooter();
-    //registerShootSequence();
-
-    // registerClimber();
     registerLEDs();
+    registerComplexCommands();
   }
 }

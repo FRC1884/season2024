@@ -25,7 +25,6 @@ public abstract class DriverMap extends CommandMap {
     super(controller);
   }
 
-  abstract ChassisSpeeds getChassisSpeeds();
 
   abstract double getSwerveXSpeed();
 
@@ -41,12 +40,6 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getFollowNoteButton();
 
-  //abstract JoystickButton getResetOdometryVisionButton();
-
-  abstract JoystickButton getSpeakerBlueButton();
-
-  abstract JoystickButton getAmpBlueButton();
-
   abstract JoystickButton getZeroGyroButton();
 
   abstract JoystickButton getNavigateAndAllignButton();
@@ -56,9 +49,13 @@ public abstract class DriverMap extends CommandMap {
       System.out.println("Register Drivetrain");
       var drivetrain = Drivetrain.getInstance();
       var vision = Vision.getInstance();
+
+      //--- Drive --- 
       drivetrain.setDefaultCommand(
       drivetrain.driveCommand(
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+
+      //--- Arcing ---
       if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
         getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.RED_SPEAKER.getTranslation()));
@@ -68,26 +65,10 @@ public abstract class DriverMap extends CommandMap {
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
       }
       
-      //getNavigateAndAllignButton().whileTrue(drivetrain.allignCommand(() -> Coordinates.RED_SPEAKER.getTranslation()));
-      //getNavigateAndAllignButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
       getNavigateAndAllignButton().whileTrue(drivetrain.navigateAndAlignCommand(
         "Go To Stage", () -> Coordinates.RED_SPEAKER.getTranslation()));
-      // getTestButton()
-      //     .onTrue(drivetrain.TestAllCommand());
-      // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
       getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
-      //getResetOdometryVisionButton().onTrue(PoseEstimator.getInstance().resetOdometryVisionCommand());
-      getSpeakerBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_SPEAKER)); //Right Bumper
-      getAmpBlueButton().onTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_AMP)); //Options Button
-
-      // getFollowAprilTagButton().whileTrue(drivetrain.followAprilTagCommand());
-      // getSpeakerOrSourceButton()
-      // .onTrue(
-      // drivetrain.goSpeakerOrSource(
-      // false)); // boolean arguement set as false as function to determine if robot
-      // is
-      // holding note has not been created yet
     }
   }
 

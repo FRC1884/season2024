@@ -34,6 +34,12 @@ public class RobotMap {
 
     public static final int PIGEON_ID = 30;
 
+    public static final double SLOW_MODE_TRANSLATE_MULTIPLIER = 0.3;
+
+    public static final double SLOW_MODE_ROTATION_MUTLIPLIER = 0.2;
+
+    public static boolean IS_SLOWMODE_ENABLED = false;
+
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
     public static final class FrontLeft {
@@ -203,21 +209,18 @@ public class RobotMap {
 
   public static class IntakeMap {
     public static final int INTAKE_ID = 9;
-    public static final int FEEDER_ID = 10;
-    public static final int SENSOR = -1;
+    public static final int SENSOR = 0;
 
-    public static final double INTAKE_FORWARD_SPEED = 0.6;
-    public static final double FEEDER_FORWARD_SPEED = 0.5;
-
-    public static final double INTAKE_REVERSE_SPEED = -0.6;
-    public static final double FEEDER_REVERSE_SPEED = -0.5;
+    public static final double INTAKE_FORWARD_SPEED = 1;
+    public static final double INTAKE_REVERSE_SPEED = -1;
   }
 
   public static class ShooterMap {
-    public static final int FEEDER = -1;
+    public static final int FEEDER = 10;
     public static final int TOP_SHOOTER = 11;
     public static final int BOTTOM_SHOOTER = 12;
     public static final int PIVOT = 13; // TODO: Change back to 14
+    public static final int BEAMBREAK = 0;
     public static final double FLYWHEEL_RADIUS = 0.0508;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
@@ -227,6 +230,7 @@ public class RobotMap {
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FEEDER_FF = 0.00015;
     public static final double FEEDER_RAMP_RATE = 0.5;
+    public static final double FEEDER_RPM = 6000;
   }
 
   public static class ClimberMap {
