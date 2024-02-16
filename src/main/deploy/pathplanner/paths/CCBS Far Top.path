@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 8.317099886696207,
-        "y": 0.7846260485673593
+        "y": 5.796864090161846
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.555895511220408,
-        "y": 0.7846260485673593
+        "x": 7.684714713224005,
+        "y": 6.382405917450922
       },
       "isLocked": false,
-      "linkedName": "CCBS First Shot"
+      "linkedName": "CCBS Fourth Shot"
     },
     {
       "anchor": {
         "x": 8.317099886696207,
-        "y": 2.435854001522554
+        "y": 7.483224552754384
       },
       "prevControl": {
-        "x": 6.466787712462727,
-        "y": 1.8971555204166035
+        "x": 6.560474404828979,
+        "y": 7.553489572029072
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CCBS Second Shot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -160.0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": 160.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
