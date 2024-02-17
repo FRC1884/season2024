@@ -39,23 +39,8 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getPivotButtonOne() {
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
-  }
-
-  @Override
-  JoystickButton getPivotButtonTwo() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
-  }
-
-  @Override
-  JoystickButton getFeederButton() {
+  JoystickButton getAmpAlignButton() {
     return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  double getClimberAxis() {
-    return controller.getAxis(Axis.AXIS_RIGHT_Y);
   }
 
   @Override
@@ -106,5 +91,47 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   double getLEDAxis2() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
+  }
+
+  @Override
+  JoystickButton getManualShootButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getManualShootButton'");
+  }
+
+  @Override
+  JoystickButton getArcButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getArcButton'");
+  }
+
+  @Override
+  JoystickButton getTrapButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getTrapButton'");
+  }
+
+  @Override
+  JoystickButton getStageAlignButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getStageAligButton'");
+  }
+
+  @Override
+  JoystickButton getAmplifyButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getAmplifyButton'");
+  }
+
+  @Override
+  JoystickButton getCoopButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getCoopButton'");
+  }
+
+  @Override
+  JoystickButton getClimbSequenceButton() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getClimbSequenceButton'");
   }
 }

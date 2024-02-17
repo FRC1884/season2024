@@ -44,7 +44,9 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getZeroGyroButton();
 
-  abstract JoystickButton getNavigateAndAllignButton();
+  abstract JoystickButton getNavigateAndAllignAmpButton();
+
+  abstract JoystickButton getNavigateAndAllignStageButton();
 
   private void registerDrivetrain() {
     if (Config.Subsystems.DRIVETRAIN_ENABLED) {
@@ -67,8 +69,11 @@ public abstract class DriverMap extends CommandMap {
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
       }
       
-      getNavigateAndAllignButton().whileTrue(drivetrain.navigateAndAlignCommand(
-        "Go To Stage", () -> Coordinates.RED_SPEAKER.getTranslation()));
+      getNavigateAndAllignAmpButton().whileTrue(drivetrain.navigateAndAlignCommand(
+        "Go To Amp", () -> Coordinates.RED_AMP.getTranslation()));
+
+      getNavigateAndAllignAmpButton().whileTrue(drivetrain.navigateAndAlignCommand(
+        "Go To Stage", () -> Coordinates.RED_STAGE.getTranslation()));
         
       getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());

@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,6 +24,8 @@ import frc.robot.subsystems.Intake.IntakeDirection;
 import frc.robot.subsystems.Feeder.FeederDirection;
 import frc.robot.Config;
 import frc.robot.RobotMap.Coordinates;
+import frc.robot.RobotMap.PivotMap;
+import frc.robot.RobotMap.ShooterMap;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.Commands.ShootSequenceCommand;
 import frc.robot.core.util.controllers.BoardController;
@@ -42,15 +46,23 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getShootAmpButton();
 
-  abstract JoystickButton getPivotButtonOne();
+  abstract JoystickButton getAmpAlignButton();
 
-  abstract JoystickButton getPivotButtonTwo();
-
-  abstract JoystickButton getFeederButton();
-
-  abstract double getClimberAxis();
+  abstract JoystickButton getClimbSequenceButton();
 
   abstract double getManualPivotAxis();
+
+  abstract JoystickButton getArcButton();
+
+  abstract JoystickButton getTrapButton();
+
+  abstract JoystickButton getStageAlignButton();
+
+  abstract JoystickButton getManualShootButton();
+
+  abstract JoystickButton getAmplifyButton();
+
+  abstract JoystickButton getCoopButton();
 
   abstract JoystickButton getLEDPatternOneButton();
 
@@ -73,7 +85,7 @@ public abstract class OperatorMap extends CommandMap {
       Prototypes prototypes = Prototypes.getInstance();
 
       getShootSpeakerButton().whileTrue(prototypes.runAny4Motors(-0.30, 0.30, 0.0, 0));
-      getFeederButton().whileTrue(prototypes.runAny4Motors(0.0, 0.0, -0.1, 0.0));
+      //getFeederButton().whileTrue(prototypes.runAny4Motors(0.0, 0.0, -0.1, 0.0));
 
     }
   }
@@ -87,7 +99,7 @@ public abstract class OperatorMap extends CommandMap {
       // ).until(() -> shooter.isNoteLoaded()).andThen(
       //   intake.setIntakeState(Intake.IntakeDirection.STOPPED)
       // ));
-      // getOuttakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.REVERSE));
+     getOuttakeButton().onTrue(new InstantCommand(() -> intake.setIntakeState(Intake.IntakeDirection.REVERSE), intake));
       
 
     }
@@ -100,8 +112,8 @@ public abstract class OperatorMap extends CommandMap {
       FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
       Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
-      pivot.setDefaultCommand(pivot.updatePosition(() -> lookupTable
-      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()));
+      // pivot.setDefaultCommand(pivot.updatePosition(() -> lookupTable
+      // .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()));
       // shooter.setDefaultCommand(shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
       //   poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()));
     }
@@ -110,14 +122,16 @@ public abstract class OperatorMap extends CommandMap {
   private void registerFeeder() {
     if(Config.Subsystems.FEEDER_ENABLED) {
       Feeder feeder = Feeder.getInstance();
-      getFeederButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
+      getShootSpeakerButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
+      getShootAmpButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD_SLOW)));
+      getTrapButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
     }
   }
 
   private void registerClimber() {
     if (Config.Subsystems.CLIMBER_ENABLED) {
       Climber climber = Climber.getInstance();
-      climber.setDefaultCommand(climber.run(this::getClimberAxis));
+      
     }
   }
 
@@ -126,9 +140,29 @@ public abstract class OperatorMap extends CommandMap {
         && Config.Subsystems.DRIVETRAIN_ENABLED) {
         Intake intake = Intake.getInstance(); 
         Shooter shooter = Shooter.getInstance();
+         Pivot pivot = Pivot.getInstance();
+      FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+      Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+      PoseEstimator poseEstimator = PoseEstimator.getInstance();
       // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
       getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
-      
+      getArcButton().whileTrue(new ParallelCommandGroup(pivot.updatePosition(() -> lookupTable
+      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()), 
+      shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
+        poseEstimator.getDistanceToPose(target.getTranslation())).getRPM())));
+      getAmpAlignButton().onTrue(
+        pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
+        shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED)));
+      getStageAlignButton().onTrue(
+        pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
+        shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
+      getClimbSequenceButton().onTrue(
+        new SequentialCommandGroup(
+          Climber.getInstance().run(() -> 0.2),
+          new WaitCommand(1),
+          Climber.getInstance().run(() -> 0)
+        )
+      );
     }
     
   }
@@ -154,9 +188,9 @@ public abstract class OperatorMap extends CommandMap {
     // registerPrototype();
     registerIntake();
     registerFeeder();
-    //registerClimber();
+    registerClimber();
     registerShooter();
-    //registerLEDs();
+    registerLEDs();
     registerComplexCommands();
   }
 }

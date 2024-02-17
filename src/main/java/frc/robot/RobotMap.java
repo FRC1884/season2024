@@ -81,12 +81,13 @@ public class RobotMap {
   }
 
   public static final class Coordinates {
-    public static final Pose2d BLUE_SPEAKER = new Pose2d(0, 5.52, new Rotation2d(Math.PI));
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(0.22, 5.6, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
     public static final Pose2d RED_SPEAKER = new Pose2d(16.54175 - 0.22, 5.6, new Rotation2d(Math.PI));
     public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
     public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
+    public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
   }
 
   public static class TankDriveMap {
@@ -221,6 +222,8 @@ public class RobotMap {
     public static final int BOTTOM_SHOOTER = 14;
     public static final double FLYWHEEL_RADIUS = 0.0508;
     public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
+    public static final double AMP_SPEED = 1500;
+    public static final double TRAP_SPEED = 2000;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FLYWHEEL_FF = 0.00015;
@@ -272,6 +275,8 @@ public class RobotMap {
     public static final double DT = 0.2;
     public static final double UPPER_SETPOINT_LIMIT = -120;
     public static final double LOWER_SETPOINT_LIMIT = 0;
+    public static final double PIVOT_AMP_ANGLE = -115;
+    public static final double PIVOT_TRAP_ANGLE = -80;
 
     // TODO: Tune these values
     public static final double kP = 0.3;

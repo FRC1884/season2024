@@ -18,12 +18,12 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getIntakeButton() {
-    return controller.getButton(Button.BUTTON_Y);
+    return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
   JoystickButton getOuttakeButton() {
-    return controller.getButton(Button.BUTTON_START);
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
@@ -33,33 +33,27 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getShootAmpButton() {
-    return controller.getButton(Button.BUTTON_OPTIONS);
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
-  JoystickButton getPivotButtonOne() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
-  }
-
-  @Override
-  JoystickButton getPivotButtonTwo() {
+  JoystickButton getAmpAlignButton() {
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
 
   @Override
-  JoystickButton getFeederButton() {
-    return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  double getClimberAxis() {
+  double getManualPivotAxis() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
+  @Override
+  JoystickButton getManualShootButton() {
+    return controller.getButton(Button.BUTTON_A);
+  }
 
   @Override
-  double getManualPivotAxis() {
-    // TODO Auto-generated method stub
-    return 0;
+  JoystickButton getClimbSequenceButton()
+  {
+    return controller.getButton(Button.BUTTON_TOUCHPAD);
   }
 
   @Override
@@ -101,5 +95,30 @@ public class BoardOperatorMap extends OperatorMap {
   @Override
   double getLEDAxis2() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
+  }
+
+  @Override
+  JoystickButton getArcButton() {
+    return controller.getButton(Button.BUTTON_SHARE);
+  }
+
+  @Override
+  JoystickButton getTrapButton() {
+    return controller.getButton(Button.BUTTON_START);
+  }
+
+  @Override
+  JoystickButton getStageAlignButton() {
+    return controller.getButton(Button.BUTTON_OPTIONS);
+  }
+
+  @Override
+  JoystickButton getAmplifyButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_1);
+  }
+
+  @Override
+  JoystickButton getCoopButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_2);
   }
 }

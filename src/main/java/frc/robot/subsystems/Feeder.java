@@ -28,7 +28,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public static enum FeederDirection{
-        FORWARD, REVERSE, STOPPED
+        FORWARD, FORWARD_SLOW, REVERSE, STOPPED
     }
 
     private NoteStatus status = NoteStatus.EMPTY;
@@ -85,6 +85,10 @@ public class Feeder extends SubsystemBase {
         else if (direction == FeederDirection.STOPPED){
             feedVel = 0;
         }
+        else if (direction == FeederDirection.FORWARD_SLOW){
+            feedVel = FeederMap.FEEDER_RPM/2;
+        }
+
     }
 
     private void updateMotors() {
