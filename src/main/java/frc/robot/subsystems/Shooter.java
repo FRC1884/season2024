@@ -1,19 +1,29 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.ShooterMap;
 import frc.robot.subsystems.Intake.IntakeStatus;
+import frc.robot.util.FlywheelLookupTable;
 
 /**
  * This is the Catapul-- umm... Flywheel subsystem for the 2024 season.
@@ -46,27 +56,20 @@ public class Shooter extends SubsystemBase {
      * followerPivot: RIGHT PIVOT
      */
     private CANSparkBase top, bot;
-    private CANSparkBase feeder;
-    private SparkPIDController topPID, botPID, feedPID;
+    private SparkPIDController topPID, botPID;
 
-    private double leadVel, followVel, feedVel;
-    private DigitalInput beamBreak;
+    private double leadVel, followVel;
 
-    private ShuffleboardTab tab = Shuffleboard.getTab("Shamper");
+    private ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
 
-    public static enum NoteStatus {
-        EMPTY, LOADED
-    }
-
-    public static enum FeederDirection{
-        FORWARD, REVERSE, STOPPED
-    }
-
-    private NoteStatus status = NoteStatus.EMPTY;
+    FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+    Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+    PoseEstimator poseEstimator = PoseEstimator.getInstance();
 
     private Shooter() {
         if (ShooterMap.TOP_SHOOTER != -1) {
             top = new CANSparkFlex(ShooterMap.TOP_SHOOTER, MotorType.kBrushless);
+            top.setIdleMode(IdleMode.kCoast);
             topPID = top.getPIDController();
             topPID.setP(ShooterMap.FLYWHEEL_PID.kP);
             topPID.setI(ShooterMap.FLYWHEEL_PID.kI);
@@ -74,10 +77,12 @@ public class Shooter extends SubsystemBase {
             topPID.setFF(ShooterMap.FLYWHEEL_FF);
 
             top.setClosedLoopRampRate(ShooterMap.FLYWHEEL_RAMP_RATE);
+            top.burnFlash();
 
         }
         if (ShooterMap.BOTTOM_SHOOTER != -1) {
             bot = new CANSparkFlex(ShooterMap.BOTTOM_SHOOTER, MotorType.kBrushless);
+            bot.setIdleMode(IdleMode.kCoast);
             botPID = bot.getPIDController();
             botPID.setP(ShooterMap.FLYWHEEL_PID.kP);
             botPID.setI(ShooterMap.FLYWHEEL_PID.kI);
@@ -85,69 +90,46 @@ public class Shooter extends SubsystemBase {
             botPID.setFF(ShooterMap.FLYWHEEL_FF);
 
             bot.setClosedLoopRampRate(ShooterMap.FLYWHEEL_RAMP_RATE);
-        }
-        if (ShooterMap.FEEDER != -1){
-            feeder = new CANSparkFlex(ShooterMap.FEEDER, MotorType.kBrushless);
-            feedPID = feeder.getPIDController();
-            feedPID.setP(ShooterMap.FEEDER_PID.kP);
-            feedPID.setI(ShooterMap.FEEDER_PID.kI);
-            feedPID.setD(ShooterMap.FEEDER_PID.kD);
-            feedPID.setFF(ShooterMap.FEEDER_FF);
-
-            feeder.setClosedLoopRampRate(ShooterMap.FEEDER_RAMP_RATE);
-            feeder.setInverted(false);
+            bot.burnFlash();
         }
 
-        beamBreak = new DigitalInput(ShooterMap.BEAMBREAK);
+        initDefaultCommand();
     }
 
     public double getSetpoint() {
         return top.getEncoder().getPosition();
     }
 
-    public boolean isNoteLoaded(){
-        //Once tripped 
-        return status == NoteStatus.LOADED;
-    }
-
-    public void runFeeder(){
-        feedVel = ShooterMap.FEEDER_RPM;
-    }
-
-    public void setFeederState(FeederDirection direction){
-        switch (direction){
-            case FORWARD:
-            feedVel = ShooterMap.FEEDER_RPM;
-            case REVERSE:
-            feedVel = -ShooterMap.FEEDER_RPM;
-            case STOPPED:
-            feedVel = 0;
-        }
-    }
-
-    public void stopFeeder(){}
-
-
-    public Command setFlywheelVelocityCommand(double v) {
-        return new InstantCommand(
+    public Command setFlywheelVelocityCommand(Supplier<Double> v) {
+        return new RunCommand(
                 () -> {
-                    leadVel = v;
-                    followVel = v;
-                });
+                    System.out.println(v.get());
+                    leadVel = v.get();
+                    followVel = v.get();
+                }, this);
     }
 
     public Command stopFlywheelCommand() {
-        return new InstantCommand(
-                () -> runFeeder());
+        return setFlywheelVelocityCommand(()->0.0);
     }
 
+    public boolean getFlywheelIsAtVelocity(){
+        return Math.abs(top.getEncoder().getVelocity() - leadVel) < ShooterMap.FLYWHEEL_VELOCITY_TOLERANCE
+            && Math.abs(bot.getEncoder().getVelocity() - followVel) < ShooterMap.FLYWHEEL_VELOCITY_TOLERANCE;
+    }
 
 
 
     @Override
     public void periodic() {
-        status = (!beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
+        //System.out.println("" + lookupTable.get(
+            //poseEstimator.getDistanceToPose(target.getTranslation())).getRPM());
         updateMotors();
+    }
+
+    public void initDefaultCommand() {
+        setDefaultCommand(this.setFlywheelVelocityCommand(()->lookupTable.get(
+            poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()));
     }
 
     private void updateMotors() {
@@ -163,24 +145,15 @@ public class Shooter extends SubsystemBase {
             } else
                 bot.set(0);
         }
-        if (feeder != null) {
-            if (feedVel != 0) {
-                feedPID.setReference(feedVel, ControlType.kVelocity);
-            } else
-                feeder.set(0);
-        }
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("lead velocity", () -> leadVel, (v) -> leadVel = v);
         builder.addDoubleProperty("follow velocity", () -> followVel, (v) -> followVel = v);
-        // builder.addDoubleProperty("feeder velocity", () -> feedVel, (v) -> feedVel = v);
         builder.addDoubleProperty("real top velo", () -> top.getEncoder().getVelocity(), (d) -> {
         });
         builder.addDoubleProperty("real bottom velo", () -> bot.getEncoder().getVelocity(), (d) -> {
-        });
-        builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d) -> {
         });
     }
 

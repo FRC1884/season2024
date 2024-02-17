@@ -4,8 +4,12 @@ import java.util.function.DoubleSupplier;
 
 import javax.print.attribute.standard.PrinterMessageFromOperator;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -14,11 +18,15 @@ import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Intake.IntakeDirection;
+import frc.robot.subsystems.Feeder.FeederDirection;
 import frc.robot.Config;
+import frc.robot.RobotMap.Coordinates;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.Commands.ShootSequenceCommand;
 import frc.robot.core.util.controllers.BoardController;
 import frc.robot.util.BlinkinUtils;
+import frc.robot.util.FlywheelLookupTable;
 
 public abstract class OperatorMap extends CommandMap {
 
@@ -73,8 +81,13 @@ public abstract class OperatorMap extends CommandMap {
   private void registerIntake() {
     if (Config.Subsystems.Intake.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
-      // getIntakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.FORWARD));
-      getOuttakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.REVERSE));
+      Shooter shooter = Shooter.getInstance();
+      // getIntakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.FORWARD).andThen(
+      //   new InstantCommand(() -> shooter.setFeederState(FeederDirection.FORWARD))
+      // ).until(() -> shooter.isNoteLoaded()).andThen(
+      //   intake.setIntakeState(Intake.IntakeDirection.STOPPED)
+      // ));
+      // getOuttakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.REVERSE));
       
 
     }
@@ -84,7 +97,20 @@ public abstract class OperatorMap extends CommandMap {
     if (Config.Subsystems.SHOOTER_ENABLED) {
       Shooter shooter = Shooter.getInstance();
       Pivot pivot = Pivot.getInstance();
+      FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+      Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+      PoseEstimator poseEstimator = PoseEstimator.getInstance();
+      pivot.setDefaultCommand(pivot.updatePosition(() -> lookupTable
+      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()));
+      // shooter.setDefaultCommand(shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
+      //   poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()));
+    }
+  }
 
+  private void registerFeeder() {
+    if(Config.Subsystems.FEEDER_ENABLED) {
+      Feeder feeder = Feeder.getInstance();
+      getFeederButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
     }
   }
 
@@ -98,8 +124,9 @@ public abstract class OperatorMap extends CommandMap {
   private void registerComplexCommands(){
     if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.Intake.INTAKE_ENABLED
         && Config.Subsystems.DRIVETRAIN_ENABLED) {
-
-      getShootSpeakerButton().onTrue(new ShootSequenceCommand());
+        Intake intake = Intake.getInstance(); 
+        Shooter shooter = Shooter.getInstance();
+      // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
       getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
       
     }
@@ -120,13 +147,16 @@ public abstract class OperatorMap extends CommandMap {
     }
   }
 
+
+
   @Override
   public void registerCommands() {
     // registerPrototype();
     registerIntake();
+    registerFeeder();
     //registerClimber();
-    //registerShooter();
-    registerLEDs();
+    registerShooter();
+    //registerLEDs();
     registerComplexCommands();
   }
 }

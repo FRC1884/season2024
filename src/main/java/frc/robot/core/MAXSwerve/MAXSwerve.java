@@ -51,7 +51,7 @@ import frc.robot.RobotMap.DriveMap.GyroType;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.Vision.Vision;
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -378,6 +378,8 @@ public abstract class MAXSwerve extends SubsystemBase {
         );
   }
 
+
+
   public Command followAprilTagCommand() {
     return new RepeatCommand(
         new RunCommand(
@@ -394,6 +396,30 @@ public abstract class MAXSwerve extends SubsystemBase {
             this));
   }
 
+  public Command followNoteCommand(PathPlannerPath pathName){
+      return new FollowPathHolonomic(
+              pathName,
+              this::getPose, // Robot pose supplier
+              this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+              this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+              new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                      new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                      new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                      4.5, // Max module speed, in m/s
+                      0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                      new ReplanningConfig() // Default path replanning config. See the API for the options here
+              ),
+              () -> {
+                  // Boolean supplier that controls when the path will be mirrored for the red alliance
+                  // This will flip the path being followed to the red side of the field.
+                  // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                  return false;
+              },
+              this // Reference to this subsystem to set requirements
+      );
+  }
+
   /**
    * Command to drive to a note detected using Vision - NEEDS TO BE REWORKED TO USE NAVIGATE
    * Preivous ERROR: Robot travels to the robot relative note pose in field relative coordinates
@@ -402,7 +428,7 @@ public abstract class MAXSwerve extends SubsystemBase {
    * @return command to generate a path On-the-fly to a note
    */
   public Command onTheFlyPathCommand(Supplier<Pose2d> targetPose) {
-    return new DeferredCommand(() -> followPathCommand(
+    return new DeferredCommand(() -> followNoteCommand(
         new PathPlannerPath(
             PathPlannerPath.bezierFromPoses(new Pose2d(this.getPose().getTranslation(),
                                                 Rotation2d.fromDegrees(0)),
@@ -413,8 +439,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                 RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY,
                 RobotMap.SwervePathFollowConstants.MAX_ANG_ACCELERATION),
             new GoalEndState(0, targetPose.get().getRotation()),
-            false),
-        false),
+            false)),
         //.until(
          // () -> targetPose.get().getTranslation().getDistance(PoseEstimator.getInstance().getPosition().getTranslation())<1.5))
           //.finallyDo(() -> System.out.println("uwu owo"));
@@ -482,7 +507,7 @@ public abstract class MAXSwerve extends SubsystemBase {
             Rotation2d targetAngle = targetVector.getAngle();
             double newSpeed;
             if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
-              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+              newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
             else
               newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
             this.drive(0,0,

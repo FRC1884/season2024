@@ -30,7 +30,7 @@ public class RobotMap {
       PIGEON, NAVX
     }
 
-    public static final GyroType GYRO_TYPE = GyroType.NAVX;
+    public static final GyroType GYRO_TYPE = GyroType.PIGEON;
 
     public static final int PIGEON_ID = 30;
 
@@ -73,8 +73,8 @@ public class RobotMap {
 
   // TODO rename to path swerve constants.
   public static final class SwervePathFollowConstants {
-    public static final double MAX_VELOCITY = 1;
-    public static final double MAX_ACCELERATION = 5;
+    public static final double MAX_VELOCITY = 3;
+    public static final double MAX_ACCELERATION = 4;
     public static final double MAX_ANG_VELOCITY = 1;
     public static final double MAX_ANG_ACCELERATION = 1;
 
@@ -84,7 +84,7 @@ public class RobotMap {
     public static final Pose2d BLUE_SPEAKER = new Pose2d(0, 5.52, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
-    public static final Pose2d RED_SPEAKER = new Pose2d(16.54175, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d RED_SPEAKER = new Pose2d(16.54175 - 0.22, 5.6, new Rotation2d(Math.PI));
     public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
     public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
   }
@@ -111,15 +111,21 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
+    public static final boolean DRIVER_CAMERA_ACTIVE = false;
     public static final boolean VISION_OVERRIDE_ENABLED = false;
-    public static final boolean IS_LIMELIGHT_MODE = true;
-    public static final boolean IS_PHOTON_VISION_MODE = false;// TODO: Change to false
-    public static final boolean IS_NEURAL_NET = false;
+    public static final boolean IS_LIMELIGHT_MODE = false;
+    public static final boolean IS_PHOTON_VISION_MODE = true;// TODO: Change to false
+    public static final boolean IS_NEURAL_NET = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
+
+    public static final String DRIVER_CAM_STREAM = "http://drivercam.local:1182/stream.mjpg";    
+
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
+    public static final double VISION_X_MIN_CUTOFF = 3.0;
+    public static final double VISION_X_MAX_CUTOFF = 13.5;
 
     // Limelight - units are meters
     public static final String POSE_LIMELIGHT = "limelight-pose";
@@ -135,33 +141,29 @@ public class RobotMap {
     public static final double POSE_LIME_YAW = 0.0;
 
     //THESE ARE ALL ROBOT RELATIVE (CENTER OF THE ROBOT IS THE ORIGIN)
-    public static final double NN_LIME_X = 0.322; // +X is forward on the robot
-    public static final double NN_LIME_Y = 0.234; // +Y is the the left of the robot
-    public static final double NN_LIME_Z = 0.345; // +Z is up
+    public static final double NN_LIME_X = -0.343; // +X is forward on the robot
+    public static final double NN_LIME_Y = -0.271; // +Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.487; // +Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
-    public static final double NN_LIME_YAW = 0.0;
+    public static final double NN_LIME_YAW = Math.PI;
 
     public static final Transform2d NN_ROBOT_TO_LIME_2D = new Transform2d(NN_LIME_X, NN_LIME_Y, new Rotation2d(NN_LIME_YAW));
 
     public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y, new Rotation2d(-NN_LIME_YAW));
 
-    
-
     // Photonvision
-    public static final double POSE_AMBIGUITY_CUTOFF = 0.25;
-    public static final double VISION_X_MIN_CUTOFF = 3.0;
-    public static final double VISION_X_MAX_CUTOFF = 13.5;
+    public static final double POSE_AMBIGUITY_CUTOFF = 0.2;
 
     public static final String POSE_PHOTON_1 = "photoncam-1";
     // Translation Values (location relative to robot center)
-    public static final double CAM_1_X = 0.292; // Forward: camera To Robot XMeters
-    public static final double CAM_1_Y = 0.076; // Left: camera To Robot YMeters
-    public static final double CAM_1_Z = 0.28; // Up: camera To Robot ZMeters
+    public static final double CAM_1_X = 0.3079; // Forward: camera To Robot XMeters
+    public static final double CAM_1_Y = -0.0762; // Left: camera To Robot YMeters
+    public static final double CAM_1_Z = 0.156; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
-    public static final double CAM_1_PITCH_RADIANS = 0.349; // camera Pitch Radians
+    public static final double CAM_1_PITCH_RADIANS = 0.436; // camera Pitch Radians
     public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
     public static final Transform3d PHOTON_1_ROBOT_TO_CAM = new Transform3d(CAM_1_X, CAM_1_Y, CAM_1_Z, new Rotation3d(CAM_1_ROLL_RADIANS, CAM_1_PITCH_RADIANS, CAM_1_YAW_RADIANS));
@@ -187,8 +189,8 @@ public class RobotMap {
     public static final double kPositionStdDevTheta = 10;
 
     // Increase these numbers to trust global measurements from vision less.
-    public static final double kVisionStdDevX = 0.5;
-    public static final double kVisionStdDevY = 0.5;
+    public static final double kVisionStdDevX = 2.5;
+    public static final double kVisionStdDevY = 2.5;
     public static final double kVisionStdDevTheta = 500;
   }
 
@@ -206,36 +208,38 @@ public class RobotMap {
 
     public static final double WHEEL_RADIUS = 0.0508;
   }
-
   public static class IntakeMap {
     public static final int INTAKE_ID = 9;
-    public static final int SENSOR = 0;
 
     public static final double INTAKE_FORWARD_SPEED = 1;
-    public static final double INTAKE_REVERSE_SPEED = -1;
+
+    public static final double INTAKE_REVERSE_SPEED = -0.6;
   }
 
   public static class ShooterMap {
-    public static final int FEEDER = 10;
     public static final int TOP_SHOOTER = 11;
-    public static final int BOTTOM_SHOOTER = 12;
-    public static final int PIVOT = 13; // TODO: Change back to 14
-    public static final int BEAMBREAK = 0;
+    public static final int BOTTOM_SHOOTER = 14;
     public static final double FLYWHEEL_RADIUS = 0.0508;
+    public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FLYWHEEL_FF = 0.00015;
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
 
+  }
+
+  public static class FeederMap {
+    public static final int FEEDER = 10;
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FEEDER_FF = 0.00015;
     public static final double FEEDER_RAMP_RATE = 0.5;
-    public static final double FEEDER_RPM = 6000;
+    public static final double FEEDER_RPM = 8000;
+    public static final int BEAMBREAK = 0;
   }
 
   public static class ClimberMap {
-    public static final int MASTER_ID = 14;
-    public static final int SLAVE_ID = 15;
+    public static final int MASTER_ID = 16;
+    public static final int SLAVE_ID = 17;
 
     public static final int LIMIT_SWITCH = 0;
 
@@ -262,17 +266,19 @@ public class RobotMap {
   }
 
   public static class PivotMap {
-    public static final int PIVOT_ID = 14;
+    public static final int PIVOT_ID = 13;
     public static final double POSITION_TOLERANCE = 1;
     public static final double VELOCITY_TOLERANCE = .5;
     public static final double DT = 0.2;
+    public static final double UPPER_SETPOINT_LIMIT = -120;
+    public static final double LOWER_SETPOINT_LIMIT = 0;
 
     // TODO: Tune these values
-    public static final double kP = 0.003;
+    public static final double kP = 0.3;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
 
-    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(2, 1);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(300, 150);
   }
 
   public static class LEDMap {

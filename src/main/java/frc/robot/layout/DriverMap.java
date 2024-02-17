@@ -17,7 +17,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.test;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.Vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
 
@@ -69,6 +69,7 @@ public abstract class DriverMap extends CommandMap {
       
       getNavigateAndAllignButton().whileTrue(drivetrain.navigateAndAlignCommand(
         "Go To Stage", () -> Coordinates.RED_SPEAKER.getTranslation()));
+        
       getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
     }

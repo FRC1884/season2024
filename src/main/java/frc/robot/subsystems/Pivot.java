@@ -1,14 +1,21 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkLimitSwitch;
+import com.revrobotics.SparkMaxAlternateEncoder;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.PivotMap;
@@ -24,6 +31,10 @@ public class Pivot extends ProfiledPIDSubsystem {
 
     private SparkPIDController pivotPID;
     private CANSparkMax pivot;
+    // private SparkLimitSwitch forwardLimitSwitch, reverseLimitSwitch;
+    private DigitalInput reverseLimitSwitch;
+    private boolean shouldZeroPivot;
+    // private RelativeEncoder pivotEncoder;
 
     private Pivot() {
         super(
@@ -33,26 +44,44 @@ public class Pivot extends ProfiledPIDSubsystem {
                         PivotMap.PROFILE_CONSTRAINTS));
 
         setName("Pivot");
-        enable();
         pivot = new CANSparkMax(PivotMap.PIVOT_ID, MotorType.kBrushless);
-        pivot.restoreFactoryDefaults();
+        //pivot.restoreFactoryDefaults();
         pivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        pivot.burnFlash();
+        pivot.setSmartCurrentLimit(40);
+        
+
+        // pivotEncoder = pivot.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
 
         pivotPID = pivot.getPIDController();
+
+        // forwardLimitSwitch = pivot.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+        // forwardLimitSwitch.enableLimitSwitch(false);
+
+        // reverseLimitSwitch = pivot.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+        // reverseLimitSwitch.enableLimitSwitch(true);
+
+        // reverseLimitSwitch = new DigitalInput(2);
+
+        pivot.burnFlash();
+
         var tab = Shuffleboard.getTab("Pivot");
         tab.add(this);
+
+        setGoal(0);
+        enable();
     }
 
-    private void zeroPivot() {
+    private void zeroPivot(boolean zP) {
+        if(zP)
         pivot.getEncoder().setPosition(0);
     }
 
     @Override
     protected void useOutput(double v, TrapezoidProfile.State state) {
-        var feedforward = 0; // pivotFeedforward.calculate(state.position, state.velocity);
+        var feedforward = 0;//pivotFeedforward.calculate(state.position, state.velocity);
 
-        pivotPID.setReference(v + feedforward, CANSparkBase.ControlType.kVoltage);
+        //pivotPID.setReference(v + feedforward, CANSparkBase.ControlType.kVoltage);
+        pivot.setVoltage(v + feedforward);
     }
 
     @Override
@@ -65,26 +94,39 @@ public class Pivot extends ProfiledPIDSubsystem {
     }
 
     public void setPosition(double setpoint) {
-        getController().setGoal(setpoint);
+        if(setpoint<PivotMap.LOWER_SETPOINT_LIMIT && setpoint>PivotMap.UPPER_SETPOINT_LIMIT)
+            getController().setGoal(setpoint);
+    }
+
+    public Command updatePosition(Supplier<Double> setpoint)
+    {
+        return new InstantCommand(() -> setPosition(setpoint.get()), this);
     }
 
     @Override
     public void periodic() {
-        if (!isAtGoal()) {
-            
-        }
+        super.periodic();
     }
+
+    public void setSpeed(double spd){
+        pivot.set(spd);
+    }
+
+
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty("goal", () -> getController().getGoal().position, this::setGoal);
-        builder.addDoubleProperty("encoder", this::getMeasurement, (s) -> {
-        });
-        builder.addDoubleArrayProperty("pid", () -> new double[] { pivotPID.getD(), pivotPID.getI(), pivotPID.getD() },
-                (pid) -> {
-                    pivotPID.setP(pid[0]);
-                    pivotPID.setI(pid[1]);
-                    pivotPID.setD(pid[2]);
-                });
+        builder.addDoubleProperty("goal", () -> getController().getSetpoint().position, (s) -> setPosition(s));
+        // builder.addBooleanProperty("Forward limit", () -> forwardLimitSwitch.isPressed(), (s) -> {});
+        // builder.addBooleanProperty("Reverse limit", () -> reverseLimitSwitch.get(), (s) -> {});
+        builder.addDoubleProperty("encoder", this::getMeasurement, (s) -> {});
+        builder.addDoubleProperty("kP", () -> m_controller.getP(), (s) -> m_controller.setP(s));
+        builder.addDoubleProperty("kI", () -> m_controller.getI(), (s) -> m_controller.setI(s));
+        builder.addDoubleProperty("kD", () -> m_controller.getD(), (s) -> m_controller.setD(s));
+        builder.addBooleanProperty("Zero Pivot", () -> shouldZeroPivot, (b) -> zeroPivot(b));
+        builder.addBooleanProperty("at goal", () -> isAtGoal(), null);
+        //builder.addDoubleProperty("Pivot Power", () -> pivot.get(), (s) -> setSpeed(s));
+        builder.addDoubleProperty("target V", () -> getController().calculate(getMeasurement()), null);
+
     }
 }

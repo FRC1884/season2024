@@ -6,7 +6,9 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -25,6 +27,15 @@ public class Climber extends SubsystemBase {
         leaderMotor = new CANSparkMax(RobotMap.ClimberMap.MASTER_ID, MotorType.kBrushless);
         followerMotor = new CANSparkMax(RobotMap.ClimberMap.SLAVE_ID, MotorType.kBrushless);
 
+        leaderMotor.restoreFactoryDefaults();
+        followerMotor.restoreFactoryDefaults();
+
+        leaderMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        followerMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
+        leaderMotor.setSmartCurrentLimit(30);
+        followerMotor.setSmartCurrentLimit(30);
+
         // leaderMotor.setInverted(false);
 
         followerMotor.follow(leaderMotor, true);
@@ -34,6 +45,14 @@ public class Climber extends SubsystemBase {
     }
 
     public Command run(DoubleSupplier power) {
-        return new RunCommand(()->leaderMotor.set(power.getAsDouble()/5.0), this);
+        return new InstantCommand(()->leaderMotor.set(power.getAsDouble()/5.0), this);
+    }
+
+
+
+    @Override
+    public void initSendable(SendableBuilder builder){
+        builder.addDoubleProperty("Climber Power", () -> leaderMotor.get(), (s) -> leaderMotor.set(s));
+
     }
 }

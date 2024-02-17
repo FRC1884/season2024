@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.771033906107768,
-        "y": 3.682415355951689
+        "x": 1.2203329399526117,
+        "y": 3.8879977331994606
       },
       "isLocked": false,
       "linkedName": "TTB Shot Three"
@@ -79,7 +79,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.0,
+    "rotation": 150.0,
     "rotateFast": false
   },
   "reversed": false,

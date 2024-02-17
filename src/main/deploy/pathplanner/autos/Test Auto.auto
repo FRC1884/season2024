@@ -12,12 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "SpoolShooter"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Amp Start To Top Note"

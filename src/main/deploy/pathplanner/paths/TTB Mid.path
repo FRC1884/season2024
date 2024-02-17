@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2391616348160557,
-        "y": 5.187767267876379
+        "x": 1.477971343959805,
+        "y": 5.433828157242619
       },
       "isLocked": false,
       "linkedName": "TTB Shot Two"
@@ -58,7 +58,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 180.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,

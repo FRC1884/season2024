@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
@@ -9,6 +10,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,7 +55,7 @@ public class Intake extends SubsystemBase {
         intake = new CANSparkMax(IntakeMap.INTAKE_ID, MotorType.kBrushless);
 
         intake.restoreFactoryDefaults();
-        intake.setInverted(true);
+        intake.setInverted(false);
         intake.setSmartCurrentLimit(20);
         intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
         intake.burnFlash();
@@ -74,14 +76,18 @@ public class Intake extends SubsystemBase {
      * @param direction the direction to set the intake to
      * @return the command to set the intake state
      */
-    public Command setIntakeState(IntakeDirection direction) {
+    public void setIntakeState(IntakeDirection direction) {
         if (direction == IntakeDirection.FORWARD) {
-            return new InstantCommand(() -> this.direction = (this.direction == IntakeDirection.STOPPED) ?  IntakeDirection.FORWARD :  IntakeDirection.STOPPED);
-        } else if (direction == IntakeDirection.REVERSE) {
-            return new InstantCommand(() -> this.direction = (this.direction == IntakeDirection.STOPPED) ? IntakeDirection.REVERSE : IntakeDirection.STOPPED);
-        } else {
-            return new InstantCommand(() -> this.direction = IntakeDirection.STOPPED);
+            this.direction = IntakeDirection.FORWARD;
+        } 
+        else if(direction == IntakeDirection.STOPPED){
+            this.direction = IntakeDirection.STOPPED;
         }
+        //else if (direction == IntakeDirection.REVERSE) {
+        //     return new InstantCommand(() -> this.direction = (this.direction == IntakeDirection.STOPPED) ? IntakeDirection.REVERSE : IntakeDirection.STOPPED);
+        // } else {
+        //     return new InstantCommand(() -> this.direction = IntakeDirection.STOPPED);
+        // }
     }
 
     public Command intakeUntilLoadedCommand() {
@@ -110,5 +116,15 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    public void setIntake(boolean isOn){
+        if(isOn) direction = IntakeDirection.FORWARD;
+        else direction = IntakeDirection.STOPPED;
+    }
+
+
+    @Override
+    public void initSendable(SendableBuilder builder){
+        builder.addBooleanProperty("Intake On", () -> (direction==IntakeDirection.FORWARD), this::setIntake);
+    }
     
 }

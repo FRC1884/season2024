@@ -1,29 +1,32 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.subsystems.Shooter.FeederDirection;
+import frc.robot.subsystems.Feeder.FeederDirection;
 
 public class IntakeUntilLoadedCommand extends Command{
-    Shooter shooter = Shooter.getInstance();
+    Feeder feeder = Feeder.getInstance();
     Intake intake = Intake.getInstance();
 
     @Override
     public void initialize(){
-        intake.setIntakeState(IntakeDirection.STOPPED);
-        shooter.setFeederState(FeederDirection.FORWARD);
+        intake.setIntakeState(IntakeDirection.FORWARD);
+        feeder.setFeederState(FeederDirection.FORWARD);
+        System.out.println("Hell0");
     }
     
     @Override
     public void end(boolean interrupted){
         intake.setIntakeState(IntakeDirection.STOPPED);
-        shooter.setFeederState(FeederDirection.STOPPED);
+        feeder.setFeederState(FeederDirection.STOPPED);
+        System.out.println("Command Ended");
     }
 
     @Override
     public boolean isFinished(){
-        return shooter.isNoteLoaded();
+        return feeder.isNoteLoaded();
     }
 }

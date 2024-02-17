@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -10,12 +10,14 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;
@@ -42,6 +44,7 @@ public class Vision extends SubsystemBase {
   private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
   private Pose2d targetRobotRelativePose;
   private Pose2d noteFieldRelativePose;
+  private ShuffleboardTab tab = Shuffleboard.getTab("Driver Cam");
 
   // testing
   private final DecimalFormat df = new DecimalFormat();
@@ -93,6 +96,10 @@ public class Vision extends SubsystemBase {
       } catch (Exception e) {
         System.out.println("Field layout not found");
       }
+    }
+
+    if (VisionConfig.DRIVER_CAMERA_ACTIVE){
+      tab.addCamera("Driver Camera", "Drive cam", VisionConfig.DRIVER_CAM_STREAM);
     }
 
     // printing purposes
@@ -160,14 +167,14 @@ public class Vision extends SubsystemBase {
     }
 
     //Does math to see where the note is
-    if (NNLimelightConnected) {
+    if (VisionConfig.IS_NEURAL_NET && NNLimelightConnected) {
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
       detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
-      var rrResults = detectJsonResults.targetingResults.targets_Retro[0];
+      //var rrResults = detectJsonResults.targetingResults.targets_Retro[0];
 
       if (detectTarget) {
-        detectHorizontalOffset = -rrResults.tx; //HAD TO NEGATIVE TO MAKE CCW POSITIVE
-        detectVerticalOffset = rrResults.ty;
+        detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); //HAD TO NEGATIVE TO MAKE CCW POSITIVE
+        detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
         double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_Z, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset);
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
@@ -206,10 +213,7 @@ public class Vision extends SubsystemBase {
    * @return boolean if photonvision has targets
    */
   public boolean photonHasTargets() {
-    if (photon1HasTargets){
-      return true;
-    }
-    return false;
+    return photon1HasTargets;
   }
   
   /**
