@@ -29,36 +29,42 @@ public class RobotMap {
       PIGEON, NAVX
     }
 
-    public static final GyroType GYRO_TYPE = GyroType.PIGEON;
+    public static final GyroType GYRO_TYPE = GyroType.NAVX;
 
     public static final int PIGEON_ID = 30;
+
+    public static boolean IS_SLOWMODE_ENABLED = false;
+
+    public static final double SLOW_MODE_TRANSLATE_MULTIPLIER = 0.2;
+
+    public static final double SLOW_MODE_ROTATION_MUTLIPLIER = 4;
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
     public static final class FrontLeft {
-      public static final int DRIVE_ID = 10;
-      public static final int ROTATOR_ID = 8;
+      public static final int DRIVE_ID = 15;
+      public static final int ROTATOR_ID = 14;
       public static final double ANGULAR_OFFSET = -Math.PI / 2;;
     }
 
     /* Front Right Module - Module 1 */
     public static final class FrontRight {
-      public static final int DRIVE_ID = 7;
-      public static final int ROTATOR_ID = 9;
+      public static final int DRIVE_ID = 10;
+      public static final int ROTATOR_ID = 11;
       public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Left Module - Module 2 */
     public static final class BackLeft {
-      public static final int DRIVE_ID = 11;
-      public static final int ROTATOR_ID = 13;
+      public static final int DRIVE_ID = 16;
+      public static final int ROTATOR_ID = 17;
       public static final double ANGULAR_OFFSET = Math.PI;
     }
 
-    /* Back Right Module - Module 3 */
+    /* Back Right Module - Module 3 */  
     public static final class BackRight {
-      public static final int DRIVE_ID = 3;
-      public static final int ROTATOR_ID = 16;
+      public static final int DRIVE_ID = 21;
+      public static final int ROTATOR_ID = 20;
       public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
 
@@ -188,11 +194,11 @@ public class RobotMap {
   }
 
   public static class IntakeMap {
-    public static final int INTAKE = 15;
-    public static final int FEEDER = 4;
+    public static final int INTAKE = 13;                      
+    public static final int FEEDER = 18;
 
-    public static final double INTAKE_FORWARD_SPEED = 0.6;
-    public static final double FEEDER_FORWARD_SPEED = 0.6;
+    public static final double INTAKE_FORWARD_SPEED = 0.8;
+    public static final double FEEDER_FORWARD_SPEED = 0.8;
 
     public static final double INTAKE_REVERSE_SPEED = -0.4;
     public static final double FEEDER_REVERSE_SPEED = -0.4;
@@ -200,9 +206,9 @@ public class RobotMap {
   }
 
   public static class ShamperMap {
-    public static final int TOP_SHOOTER = 18;
-    public static final int BOTTOM_SHOOTER = 2;
-    public static final int FEEDER = 32;
+    public static final int TOP_SHOOTER = 41;
+    public static final int BOTTOM_SHOOTER = 40;
+    public static final int FEEDER = 42;
     public static final double FLYWHEEL_RADIUS = 0.0508;
     
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
@@ -212,21 +218,23 @@ public class RobotMap {
     public static final double FLYWHEEL_FF = 0.00015;
 
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.00002);
-    public static final double FEEDER_FF = 0.00015;
+    public static final double FEEDER_FF = 0.000165;
   }
 
   public static class ClimberMap {
-    public static final int LEADER = 12;
-    public static final int FOLLOWER = 17;
+    public static final int LEADER = 30;
+    public static final int FOLLOWER = 31;
   }
 
   public static class PivotMap {
-    public static final int PIVOT = 14;
+    public static final int PIVOT = 19;
     public static final double TOLERANCE = 1;
     public static final double DT = 0.2;
+    public static final double LOWER_SETPOINT_LIMIT = 5;
+    public static final double UPPER_SETPOINT_LIMIT = 80;
 
-    public static final PIDConstants PID = new PIDConstants(0.1, 0, 0);
-    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(2, 1);
+    public static final PIDConstants PID = new PIDConstants(1, 2, 0);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(30, 10);
     public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0, 0, 0, 0);
   }
 

@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -75,6 +76,8 @@ public class Intake extends SubsystemBase {
 
         tab.addString("status", () -> status.toString());
         tab.addString("direction", () -> direction.toString());
+        System.out.println("Intake!");
+        tab.add(this);
     }
 
     private void setSpeed(double intakeSpeed, double feederSpeed) {
@@ -129,5 +132,16 @@ public class Intake extends SubsystemBase {
         } else {
             setSpeed(0, 0);
         }
+    }
+
+    public void toggleIntake(boolean isOn){
+        if(isOn) direction = IntakeDirection.FORWARD;
+        else if(!isOn) direction = IntakeDirection.STOPPED;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder){
+        builder.addBooleanProperty("Intake On", () -> (IntakeDirection.FORWARD == direction), 
+        (d) -> toggleIntake(d));
     }
 }

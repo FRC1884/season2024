@@ -30,6 +30,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -697,6 +698,11 @@ public abstract class MAXSwerve extends SubsystemBase {
       new WaitCommand(1),
       followPathCommand("ShortTestPath", true)
     );
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    builder.addDoubleProperty("Yaw", () -> getGyroYawDegrees(), null);
   }
 }
 

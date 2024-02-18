@@ -9,6 +9,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 
 public class MAXSwerveModule {
@@ -103,6 +104,11 @@ public class MAXSwerveModule {
     m_chassisAngularOffset = chassisAngularOffset;
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
+
+    var tab = Shuffleboard.getTab(drivingCANId + " swerve");
+    tab.addDouble("actual", () -> getPosition().angle.getDegrees());
+    tab.addDouble("desired", () -> m_desiredState.angle.getDegrees());
+
   }
 
   /**

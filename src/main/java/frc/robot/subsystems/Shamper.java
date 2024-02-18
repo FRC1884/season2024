@@ -46,7 +46,7 @@ public class Shamper extends SubsystemBase {
    * followerPivot: RIGHT PIVOT
    */
   private CANSparkFlex top, bottom;
-  private CANSparkMax feeder;
+  private CANSparkFlex feeder;
 
   private SparkPIDController topPid, bottomPid, feederPid;
 
@@ -92,7 +92,7 @@ public class Shamper extends SubsystemBase {
     }
 
     if (ShamperMap.FEEDER != -1) {
-      feeder = new CANSparkMax(ShamperMap.FEEDER, MotorType.kBrushless);
+      feeder = new CANSparkFlex(ShamperMap.FEEDER, MotorType.kBrushless);
       feeder.restoreFactoryDefaults();
 
       feederPid = feeder.getPIDController();
@@ -198,5 +198,9 @@ public class Shamper extends SubsystemBase {
     builder.addDoubleProperty("real top velo", () -> top.getEncoder().getVelocity(), (d)-> {});
     builder.addDoubleProperty("real bottom velo", () -> bottom.getEncoder().getVelocity(), (d) -> {});
     builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d)->{});
+
+    builder.addDoubleProperty("top ff", () -> topPid.getFF(), (s) -> topPid.setFF(s));
+    builder.addDoubleProperty("bottom ff", () -> bottomPid.getFF(), (s) -> bottomPid.setFF(s));
+    builder.addDoubleProperty("feeder ff", () -> feederPid.getFF(), (s) -> feederPid.setFF(s));
   }
 }

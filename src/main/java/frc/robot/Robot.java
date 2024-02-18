@@ -50,7 +50,6 @@ import frc.robot.auto.AutoCommands;
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private final Field2d m_field = new Field2d();
-  private Prototypes prototypes;
   private SendableChooser<Command> autoChooser;
 
   /**
@@ -68,13 +67,11 @@ public class Robot extends TimedRobot {
     // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
     // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
 
-    AutoCommands.registerAutoCommands();
+    //AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
-    System.out.println("BOOP");
     enableLiveWindowInTest(isTest());
     OI.getInstance().registerCommands();
-    AutoCommands.registerAutoCommands();
 
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       {enableLiveWindowInTest(true);
@@ -85,13 +82,11 @@ public class Robot extends TimedRobot {
     OI.getInstance();
     SmartDashboard.putData("field", m_field);
 
-    if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
-      Prototypes.getInstance();
-      
-    Drivetrain.getInstance().zeroGyroYaw();
+    // if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
+    //   Prototypes.getInstance();
 
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    // autoChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   public Command getAutonomousCommand() {
