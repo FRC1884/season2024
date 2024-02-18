@@ -34,7 +34,7 @@ public class AddressableLEDLights extends SubsystemBase {
     private int currLED, direction, hue;
     private int z =1;
     private int x =0;
-    private DigitalInput feederSensor;
+    // private DigitalInput feederSensor;
     private boolean c;
 
     private AddressableLEDLights() {
@@ -43,7 +43,11 @@ public class AddressableLEDLights extends SubsystemBase {
         m_ledBuffer = new AddressableLEDBuffer(RobotMap.LEDMap.NUMBER_LEDS);
         m_led.setData(m_ledBuffer);
         m_led.start();
-        feederSensor = new DigitalInput(4);
+        // feederSensor = new DigitalInput(4);
+        // m_led_TWO = new AddressableLED(RobotMap.LEDMap.BLINKIN_PWM_PORT_TWO);
+        // m_led_TWO.setLength(RobotMap.LEDMap.NUMBER_LEDS);
+        // m_led_TWO.setData(m_ledBuffer);
+        // m_led_TWO.start();
     }
 
     public Command setValue(DoubleSupplier confidence, DoubleSupplier confidence2) {
@@ -61,6 +65,8 @@ public class AddressableLEDLights extends SubsystemBase {
                 m_rainbowFirstPixelHue %= 180;
                 m_led.setData(m_ledBuffer);
                 m_led.start();
+                // m_led_TWO.setData(m_ledBuffer);
+                // m_led_TWO.start();
             }
         , this);
     }
@@ -76,6 +82,8 @@ public class AddressableLEDLights extends SubsystemBase {
         }
         m_led.setData(m_ledBuffer);
         m_led.start();
+        // m_led_TWO.setData(m_ledBuffer);
+        // m_led_TWO.start();
         //IntStream.range(0, m_blinkinBuffer.getLength()).forEachOrdered(i -> m_blinkinBuffer.setLED(i, color));
     }
 
@@ -95,6 +103,8 @@ public class AddressableLEDLights extends SubsystemBase {
             m_rainbowFirstPixelHue %= 180;
             m_led.setData(m_ledBuffer);
             m_led.start();
+            // m_led_TWO.setData(m_ledBuffer);
+            // m_led_TWO.start();
         }, this));
     }
     public Command setDecreasing() {
@@ -138,6 +148,7 @@ public class AddressableLEDLights extends SubsystemBase {
             if(currLED == 0) direction = 1;
             if(currLED%3==0)z++;
             m_led.setData(m_ledBuffer);
+            // m_led_TWO.setData(m_ledBuffer);
             
         }, this).andThen(new WaitCommand(0.0)));
     }
@@ -150,6 +161,8 @@ public class AddressableLEDLights extends SubsystemBase {
             currLED += 1;
             m_led.setData(m_ledBuffer);
             m_led.start();
+            // m_led_TWO.setData(m_ledBuffer);
+            // m_led_TWO.start();
         }).andThen(new WaitCommand(0.1)));
     }
     public Command setRedDarkRed() {
@@ -181,15 +194,14 @@ public class AddressableLEDLights extends SubsystemBase {
         return setColorCommand(Color.kBlack);
     }
     
-    public Command checkBeam() {
-        return new RunCommand(()->{
-        if(feederSensor.get()){
-            setColor(Color.kGreenYellow);
-        }
-        else setColor(Color.kRed);
-    },this);
-
-    }
+    // public Command checkBeam() {
+    //     return new RunCommand(()->{
+    //     if(feederSensor.get()){
+    //         setColor(Color.kGreenYellow);
+    //     }
+    //     else setColor(Color.kRed);
+    //      },this);
+    // }
 
     @Override
     public void periodic() {

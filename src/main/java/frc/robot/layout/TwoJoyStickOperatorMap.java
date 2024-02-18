@@ -6,7 +6,6 @@ import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
 import frc.robot.core.util.controllers.ButtonMap.Dpad;
 import frc.robot.core.util.controllers.GameController;
-import frc.robot.subsystems.Prototypes;
 
 public class TwoJoyStickOperatorMap extends OperatorMap {
   public TwoJoyStickOperatorMap(GameController controller) {
@@ -16,6 +15,16 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   public void registerCommands() {
     super.registerCommands();
+  }
+
+  @Override
+  public Trigger getClimberRaiseButton(){
+    return null;
+  }
+
+  @Override
+  public Trigger getClimberLowerButton(){
+    return null;
   }
 
   @Override
@@ -81,10 +90,22 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
     return null;
   }
 
+  @Override
+  double getManualClimberAxis(){
+    return 0;
+  }
+
+
+
   
   @Override
   double getLEDAxis1() {
     return controller.getAxis(Axis.AXIS_LEFT_X);
+  }
+
+  @Override
+  JoystickButton getEjectButton(){
+    return null;
   }
 
   

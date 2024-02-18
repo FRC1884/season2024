@@ -9,35 +9,17 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.revrobotics.CANSparkBase;
 
-import edu.wpi.first.util.function.BooleanConsumer;
-import edu.wpi.first.util.function.FloatConsumer;
-import edu.wpi.first.util.function.FloatSupplier;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
-import frc.robot.subsystems.AddressableLEDLights;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.Prototypes;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.vision.Vision;
-// import frc.robot.subsystems.PrototypeSubsystem;
-import frc.robot.util.SendableMotor;
+import frc.robot.subsystems.Vision.Vision;
 import frc.robot.auto.AutoCommands;
 
 /**
@@ -49,7 +31,6 @@ import frc.robot.auto.AutoCommands;
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private final Field2d m_field = new Field2d();
-  private Prototypes prototypes;
   private SendableChooser<Command> autoChooser;
 
   /**
@@ -75,9 +56,6 @@ public class Robot extends TimedRobot {
     // var autoModeSelector = AutoModeSelector.getInstance();
     // SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
     SmartDashboard.putData("field", m_field);
-
-    if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
-      Prototypes.getInstance();
     Drivetrain.getInstance().zeroGyroYaw();
 
     autoChooser = AutoBuilder.buildAutoChooser();

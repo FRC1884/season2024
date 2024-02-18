@@ -24,7 +24,20 @@ public class FlywheelLookupTable {
 
     // Distance (meters), rpm, angleSetpoint
     private double[][] lookupTable = {
-            { 0.815, 2400,-115},
+            { 1, 2400,-115 - 12},
+            { 1.45, 2400, -87 -12},
+            { 1.95, 2500, -67 -12},
+            { 2.47, 3000, -52- 12},
+          //  { 2.49, 3700, -52- 12},
+          //  { 2.90, 3800, -52- 12},
+          //  { 2.96, 4000, -30 - 12},
+            { 3.48, 4000, -19 - 12},
+            { 3.95, 4050, -10 -13},
+            { 4.43, 4200, -4- 14}
+    };
+
+/*
+ *  { 0.815, 2400,-115},
             { 1.315, 2400, -87},
             { 1.815, 2500, -67},
             { 2.315, 2700, -52},
@@ -32,7 +45,8 @@ public class FlywheelLookupTable {
             { 3.315, 4000, -19},
             { 3.815, 4050, -10},
             { 4.315, 4200, -4}
-    };
+    
+ */
 
     private FlywheelLookupTable() {
         distanceToRPM = new InterpolatingDoubleTreeMap();

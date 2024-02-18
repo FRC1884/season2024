@@ -1,23 +1,13 @@
 package frc.robot.layout;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Config;
-import frc.robot.RobotMap;
 import frc.robot.RobotMap.Coordinates;
-import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.Prototypes;
-import frc.robot.subsystems.test;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.Vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
 

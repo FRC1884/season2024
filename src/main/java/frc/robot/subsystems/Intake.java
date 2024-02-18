@@ -1,29 +1,14 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Config;
-import frc.robot.Config.Subsystems;
 import frc.robot.RobotMap.IntakeMap;
-import frc.robot.RobotMap.PrototypeMap;
-import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.subsystems.Intake.IntakeStatus;
 
 public class Intake extends SubsystemBase {
     private static Intake instance;
@@ -82,6 +67,9 @@ public class Intake extends SubsystemBase {
         } 
         else if(direction == IntakeDirection.STOPPED){
             this.direction = IntakeDirection.STOPPED;
+        }
+        else if(direction == IntakeDirection.REVERSE){
+            this.direction = IntakeDirection.REVERSE;
         }
         //else if (direction == IntakeDirection.REVERSE) {
         //     return new InstantCommand(() -> this.direction = (this.direction == IntakeDirection.STOPPED) ? IntakeDirection.REVERSE : IntakeDirection.STOPPED);

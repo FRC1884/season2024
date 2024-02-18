@@ -45,7 +45,7 @@ public class Climber extends SubsystemBase {
     }
 
     public Command run(DoubleSupplier power) {
-        return new InstantCommand(()->leaderMotor.set(power.getAsDouble()/5.0), this);
+        return new InstantCommand(()->leaderMotor.set(power.getAsDouble()), this);
     }
 
 

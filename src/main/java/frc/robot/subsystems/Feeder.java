@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.FeederMap;
 import frc.robot.RobotMap.ShooterMap;
@@ -17,6 +19,8 @@ import frc.robot.subsystems.Feeder.NoteStatus;
 
 public class Feeder extends SubsystemBase {
     private static Feeder instance;
+    private boolean isDisabled = true;
+    private AddressableLEDLights lights;
 
     public static Feeder getInstance() {
         if(instance == null) instance = new Feeder();
@@ -41,6 +45,7 @@ public class Feeder extends SubsystemBase {
     private double feedVel;
 
     private Feeder() {
+        lights = AddressableLEDLights.getInstance();
         if (FeederMap.FEEDER != -1){
             feeder = new CANSparkFlex(FeederMap.FEEDER, MotorType.kBrushless);
             feeder.setIdleMode(IdleMode.kBrake);
@@ -86,7 +91,10 @@ public class Feeder extends SubsystemBase {
             feedVel = 0;
         }
         else if (direction == FeederDirection.FORWARD_SLOW){
-            feedVel = FeederMap.FEEDER_RPM/2;
+            feedVel = FeederMap.FEEDER_RPM/8;
+        }
+        else if (direction == FeederDirection.REVERSE){
+            feedVel = FeederMap.FEEDER_RPM * -1;
         }
 
     }
@@ -105,6 +113,16 @@ public class Feeder extends SubsystemBase {
         status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         updateMotors();
     }
+    public void Amplify(boolean y){
+        isDisabled = y;
+        lights.setColorCommand(Color.kBlue);
+
+    }
+    public void Coop(boolean y){
+        isDisabled = y;
+        lights.setColorCommand(Color.kPurple);
+
+    }
 
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -112,5 +130,13 @@ public class Feeder extends SubsystemBase {
         builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d) -> {
         });
         builder.addBooleanProperty("BB", () -> beamBreak.get(), null);
+        if(!isDisabled){
+            if(beamBreak.get()){
+                lights.setColorCommand(Color.kGreenYellow);
+            }
+            else lights.setColorCommand(Color.kRed);
+
+        }
+
     }
 }

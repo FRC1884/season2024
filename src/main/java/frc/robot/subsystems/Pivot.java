@@ -1,21 +1,12 @@
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkLimitSwitch;
-import com.revrobotics.SparkMaxAlternateEncoder;
-
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -107,18 +98,6 @@ public class Pivot extends ProfiledPIDSubsystem {
     public Command updatePosition(Supplier<Double> setpoint)
     {
         return new RunCommand(() -> setPosition(setpoint.get()), this);
-    }
-
-    // public Command incrementCommand(Supplier<Double> delta)
-    // {
-    //     return new RepeatCommand(
-    //         updatePosition(() -> getPosition().getAsDouble() + delta.get())
-    //     ).alongWith(
-    //         new PrintCommand("" + (getPosition().getAsDouble())));
-    // }
-
-    private DoubleSupplier getPosition() {
-        return pivot.getEncoder()::getPosition;
     }
 
     @Override

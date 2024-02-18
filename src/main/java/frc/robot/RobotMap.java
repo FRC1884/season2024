@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.util.PIDConstants;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -81,10 +80,10 @@ public class RobotMap {
   }
 
   public static final class Coordinates {
-    public static final Pose2d BLUE_SPEAKER = new Pose2d(0.22, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(0.22, 5.55, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
-    public static final Pose2d RED_SPEAKER = new Pose2d(16.54175 - 0.22, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d RED_SPEAKER = new Pose2d(16.54175 - 0.22, 5.55, new Rotation2d(Math.PI));
     public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
     public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
     public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
@@ -142,9 +141,9 @@ public class RobotMap {
     public static final double POSE_LIME_YAW = 0.0;
 
     //THESE ARE ALL ROBOT RELATIVE (CENTER OF THE ROBOT IS THE ORIGIN)
-    public static final double NN_LIME_X = -0.343; // +X is forward on the robot
-    public static final double NN_LIME_Y = -0.271; // +Y is the the left of the robot
-    public static final double NN_LIME_Z = 0.487; // +Z is up
+    public static final double NN_LIME_X = -0.308; // +X is forward on the robot
+    public static final double NN_LIME_Y = -0.280; // +Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.497; // +Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
     public static final double NN_LIME_YAW = Math.PI;
@@ -222,7 +221,7 @@ public class RobotMap {
     public static final int BOTTOM_SHOOTER = 14;
     public static final double FLYWHEEL_RADIUS = 0.0508;
     public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
-    public static final double AMP_SPEED = 1500;
+    public static final double AMP_SPEED = 1000;
     public static final double TRAP_SPEED = 4000;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
@@ -236,7 +235,7 @@ public class RobotMap {
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FEEDER_FF = 0.00015;
     public static final double FEEDER_RAMP_RATE = 0.5;
-    public static final double FEEDER_RPM = 8000;
+    public static final double FEEDER_RPM = 3500 *4; //multiplied by four to account for gear ratio
     public static final int BEAMBREAK = 0;
   }
 
@@ -273,25 +272,25 @@ public class RobotMap {
     public static final double POSITION_TOLERANCE = 1;
     public static final double VELOCITY_TOLERANCE = .5;
     public static final double DT = 0.2;
-    public static final double UPPER_SETPOINT_LIMIT = -120;
+    public static final double UPPER_SETPOINT_LIMIT = -350;
     public static final double LOWER_SETPOINT_LIMIT = 0;
-    public static final double PIVOT_AMP_ANGLE = -115;
+    public static final double PIVOT_AMP_ANGLE = -340;
     public static final double PIVOT_TRAP_ANGLE = -30;
 
     // TODO: Tune these values
-    public static final double kP = 0.5;
+    public static final double kP = 1.5;
     public static final double kI = 3;
     public static final double kD = 0.075;
 
     public static final double kIZone = 0.5;
 
-    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(300, 150);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(300, 200);
   }
 
   public static class LEDMap {
-    public static final int BLINKIN_PWM_PORT = 0;
+    public static final int BLINKIN_PWM_PORT = 5;
     public static final boolean BLINKIN_PWM = true;
     public static final boolean BLINKIN_ON_SPARK = false;
-    public static final int NUMBER_LEDS = 280;
+    public static final int NUMBER_LEDS = 22;
   }
 }

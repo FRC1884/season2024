@@ -16,7 +16,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,7 +33,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -47,11 +45,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveMap;
-import frc.robot.RobotMap.DriveMap.GyroType;
-import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
-import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.vision.Vision;
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -73,8 +67,6 @@ public abstract class MAXSwerve extends SubsystemBase {
   GenericEntry targetAngleEntry = tab.add("Target Angle", 0).getEntry();
   GenericEntry currentAngleEntry = tab.add("Current Angle", 0).getEntry();
   private double targetAngleTelemetry = 0;
-
-  private boolean isSlowModeEnabled = false;
 
   SwerveDriveOdometry odometry;
 
@@ -109,13 +101,6 @@ public abstract class MAXSwerve extends SubsystemBase {
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
-    var alliance = DriverStation.getAlliance();
-    // if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
-    //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
-    // else if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
-    //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
-    // else
-    //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
     AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds, new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
                 // in
                 // your Constants class
@@ -376,24 +361,6 @@ public abstract class MAXSwerve extends SubsystemBase {
         AutoBuilder.followPath(pathName).andThen(() -> System.out.println("Helo there")),
         new InstantCommand(() -> System.out.println("Tihs"))
         );
-  }
-
-
-
-  public Command followAprilTagCommand() {
-    return new RepeatCommand(
-        new RunCommand(
-            () -> this.followPathCommand(
-                new PathPlannerPath(
-                    PathPlannerPath.bezierFromPoses(
-                        Vision.getInstance().getRobotPose2d_TargetSpace(),
-                        new Pose2d(1.0, 0.0, new Rotation2d())), // Need to make this better
-                    null,
-                    null),
-                false // null vaules because these are to be obtained from vision when that
-            // is finished
-            ),
-            this));
   }
 
   public Command followNoteCommand(PathPlannerPath pathName){
@@ -667,26 +634,3 @@ public abstract class MAXSwerve extends SubsystemBase {
     );
   }
 }
-
-
-//   /**
-//    * Returns the turn rate of the robot.
-//    *
-//    * @return The turn rate of the robot, in degrees per second
-//    */
-//   public double getTurnRate() {
-//     return gyro.getRate() * (MaxSwerveConstants.kGyroReversed ? -1.0 : 1.0);
-//   }
-// }
-
-// Control.ButtonPressed(Event e){
-//  String command = e.getLabel(); //take me to source
-
-// if (command = "takeMEToSource"){
-//   Pose currentlocation = robot.getLocation();
-//   Pose destination = PoseCollection.getInstance().getDestinationPose("Source");
-//   Robot.getInstance().navigate(currentLocation, destination);
-
-// }
-
-// }

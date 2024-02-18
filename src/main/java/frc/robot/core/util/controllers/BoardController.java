@@ -2,10 +2,6 @@ package frc.robot.core.util.controllers;
 
 import java.util.HashMap;
 
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import frc.robot.core.util.controllers.ButtonMap.Axis;
-import frc.robot.core.util.controllers.ButtonMap.Button;
-
 public class BoardController implements ButtonMap {  //TODO Auto-generated constructor stub
   
 

@@ -21,7 +21,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Feeder.FeederDirection;
 import frc.robot.util.FlywheelLookupTable;
 import frc.robot.subsystems.Drivetrain;
@@ -42,7 +42,7 @@ public class AutoCommands {
         NamedCommands.registerCommand("Intake", new IntakeUntilLoadedCommand());
         NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
             new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.FORWARD), Feeder.getInstance()),
-            new WaitCommand(0.5),
+            new WaitCommand(0.25),
             new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED), Feeder.getInstance())));
         NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand().alongWith(Vision.getInstance().followNoteCommand().onlyIf(
         () -> !Vision.getInstance().getNotePose2d().getTranslation().equals(new Translation2d(0,0)))));
