@@ -42,7 +42,7 @@ public class AutoCommands {
         NamedCommands.registerCommand("Intake", new IntakeUntilLoadedCommand());
         NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
             new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.FORWARD), Feeder.getInstance()),
-            new WaitCommand(0.25),
+            new WaitCommand(0.3),
             new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED), Feeder.getInstance())));
         NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand().alongWith(Vision.getInstance().followNoteCommand().onlyIf(
         () -> !Vision.getInstance().getNotePose2d().getTranslation().equals(new Translation2d(0,0)))));

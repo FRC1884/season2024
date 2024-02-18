@@ -24,16 +24,16 @@ public class FlywheelLookupTable {
 
     // Distance (meters), rpm, angleSetpoint
     private double[][] lookupTable = {
-            { 1, 2400,-115 - 12},
-            { 1.45, 2400, -87 -12},
-            { 1.95, 2500, -67 -12},
-            { 2.47, 3000, -52- 12},
+            { 1, 2600,-115-10},
+            { 1.45, 2600, -87-10},
+            { 1.95, 2600, -67-5},
+            { 2.47, 3000, -52},
           //  { 2.49, 3700, -52- 12},
           //  { 2.90, 3800, -52- 12},
           //  { 2.96, 4000, -30 - 12},
-            { 3.48, 4000, -19 - 12},
-            { 3.95, 4050, -10 -13},
-            { 4.43, 4200, -4- 14}
+            { 3.48, 4000, -19 },
+            { 3.95, 4050, -10},
+            { 4.43, 4200, -4}
     };
 
 /*
@@ -58,7 +58,7 @@ public class FlywheelLookupTable {
     private void createShootMap(double[][] table) {
         for (double[] t : table) {
             Double d = (t[0]);
-            distanceToRPM.put(d, t[1]);
+            distanceToRPM.put(d, t[1] - 30);
             distanceToAngleSetpoint.put(d, t[2]);
         }
     }

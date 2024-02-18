@@ -142,7 +142,7 @@ public class RobotMap {
 
     //THESE ARE ALL ROBOT RELATIVE (CENTER OF THE ROBOT IS THE ORIGIN)
     public static final double NN_LIME_X = -0.308; // +X is forward on the robot
-    public static final double NN_LIME_Y = -0.280; // +Y is the the left of the robot
+    public static final double NN_LIME_Y = -0.300; // +Y is the the left of the robot
     public static final double NN_LIME_Z = 0.497; // +Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
@@ -221,8 +221,8 @@ public class RobotMap {
     public static final int BOTTOM_SHOOTER = 14;
     public static final double FLYWHEEL_RADIUS = 0.0508;
     public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
-    public static final double AMP_SPEED = 1000;
-    public static final double TRAP_SPEED = 4000;
+    public static final double AMP_SPEED = 800;
+    public static final double TRAP_SPEED = 3000;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FLYWHEEL_FF = 0.00015;
@@ -274,8 +274,8 @@ public class RobotMap {
     public static final double DT = 0.2;
     public static final double UPPER_SETPOINT_LIMIT = -350;
     public static final double LOWER_SETPOINT_LIMIT = 0;
-    public static final double PIVOT_AMP_ANGLE = -340;
-    public static final double PIVOT_TRAP_ANGLE = -30;
+    public static final double PIVOT_AMP_ANGLE = -330;
+    public static final double PIVOT_TRAP_ANGLE = -150;
 
     // TODO: Tune these values
     public static final double kP = 1.5;

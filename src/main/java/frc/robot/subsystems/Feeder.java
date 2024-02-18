@@ -91,7 +91,7 @@ public class Feeder extends SubsystemBase {
             feedVel = 0;
         }
         else if (direction == FeederDirection.FORWARD_SLOW){
-            feedVel = FeederMap.FEEDER_RPM/8;
+            feedVel = FeederMap.FEEDER_RPM/14;
         }
         else if (direction == FeederDirection.REVERSE){
             feedVel = FeederMap.FEEDER_RPM * -1;

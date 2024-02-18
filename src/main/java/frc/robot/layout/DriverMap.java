@@ -59,10 +59,10 @@ public abstract class DriverMap extends CommandMap {
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
       }
       
-      getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
-        "Go To Amp"));
+      // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
+      //   "Go To Amp"));
 
-      getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
+      // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
         
       getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
