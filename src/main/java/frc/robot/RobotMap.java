@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class RobotMap {
@@ -31,7 +32,7 @@ public class RobotMap {
       PIGEON, NAVX
     }
 
-    public static final GyroType GYRO_TYPE = GyroType.PIGEON;
+    public static final GyroType GYRO_TYPE = GyroType.NAVX;
 
     public static final int PIGEON_ID = 30;
 
@@ -135,18 +136,18 @@ public class RobotMap {
     public static final int APRILTAG_PIPELINE = 1;
     public static final int NOTE_DETECTOR_PIPELINE = 2;
 
-    public static final double POSE_LIME_X = 0.322; // Forward - Meters
-    public static final double POSE_LIME_Y = -0.274; // Side - Right is positive on the limelight
-    public static final double POSE_LIME_Z = 0.21; // Up
+    public static final double POSE_LIME_X = 0.2921; // Forward - Meters
+    public static final double POSE_LIME_Y = 0.1937; // Side - Right is positive on the limelight
+    public static final double POSE_LIME_Z = 0.1651; // Up
     public static final double POSE_LIME_PITCH = 30; // NEED to find units - degrees for now
     public static final double POSE_LIME_ROLL = 0.0;
     public static final double POSE_LIME_YAW = 0.0;
 
     // THESE ARE ALL ROBOT RELATIVE (CENTER OF THE ROBOT IS THE ORIGIN)
-    public static final double NN_LIME_X = -0.343; // +X is forward on the robot
-    public static final double NN_LIME_Y = -0.271; // +Y is the the left of the robot
-    public static final double NN_LIME_Z = 0.487; // +Z is up
-    public static final double NN_LIME_PITCH = -0.349;
+    public static final double NN_LIME_X = -0.3102; // +X is forward on the robot
+    public static final double NN_LIME_Y = 0.2796; // +Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.6152; // +Z is up
+    public static final double NN_LIME_PITCH = -0.524; //30 degrees
     public static final double NN_LIME_ROLL = 0.0;
     public static final double NN_LIME_YAW = Math.PI;
 
@@ -161,13 +162,13 @@ public class RobotMap {
 
     public static final String POSE_PHOTON_1 = "photoncam-1";
     // Translation Values (location relative to robot center)
-    public static final double CAM_1_X = 0.3079; // Forward: camera To Robot XMeters
-    public static final double CAM_1_Y = -0.0762; // Left: camera To Robot YMeters
-    public static final double CAM_1_Z = 0.156; // Up: camera To Robot ZMeters
+    public static final double CAM_1_X = 0.2948; // Forward: camera To Robot XMeters
+    public static final double CAM_1_Y = -0.1395; // Left: camera To Robot YMeters
+    public static final double CAM_1_Z = 0.1861; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
-    public static final double CAM_1_PITCH_RADIANS = 0.436; // camera Pitch Radians
+    public static final double CAM_1_PITCH_RADIANS = 0.4887; // camera Pitch Radians
     public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
     public static final Transform3d PHOTON_1_ROBOT_TO_CAM = new Transform3d(CAM_1_X, CAM_1_Y, CAM_1_Z,
@@ -222,9 +223,15 @@ public class RobotMap {
     public static final double INTAKE_FORWARD_SPEED = 0.8;
     public static final double FEEDER_FORWARD_SPEED = 0.8;
 
+    public static final double INTAKE_SLOW_SPEED = 0.4;
+    public static final double FEEDER_SLOW_SPEED = 0.4;
+
     public static final double INTAKE_REVERSE_SPEED = -0.4;
     public static final double FEEDER_REVERSE_SPEED = -0.4;
     public static final int SENSOR = 0;
+
+    public static final double INTAKE_DELAY = 0.1
+    ;
   }
 
   public static class ShamperMap {
@@ -246,6 +253,8 @@ public class RobotMap {
 
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.00002);
     public static final double FEEDER_FF = 0.000165;
+
+    public static final Translation2d SHOT_OFFSET = new Translation2d(0, 0.20);
   }
 
   public static class ClimberMap {
@@ -257,7 +266,7 @@ public class RobotMap {
     public static final int PIVOT = 19;
     public static final double TOLERANCE = 1;
     public static final double DT = 0.2;
-    public static final double LOWER_SETPOINT_LIMIT = 5;
+    public static final double LOWER_SETPOINT_LIMIT = 0;
     public static final double UPPER_SETPOINT_LIMIT = 80;
 
     // TODO: TUNE

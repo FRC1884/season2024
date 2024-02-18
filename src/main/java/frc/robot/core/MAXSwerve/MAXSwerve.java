@@ -52,7 +52,7 @@ import frc.robot.RobotMap.DriveMap.GyroType;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.Vision.Vision;
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -98,6 +98,7 @@ public abstract class MAXSwerve extends SubsystemBase {
       default:
         break;
     } 
+
     // gyro.getConfigurator().DefaultTimeoutSeconds = 50;
     this.fl = fl;
     this.fr = fr;

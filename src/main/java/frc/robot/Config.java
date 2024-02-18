@@ -23,8 +23,8 @@ public final class Config {
   public static final class Controllers {
     public static final boolean DRIVER_ENALBED = true;
     public static final boolean JOYSTICK_OPERATOR_ENABLED = true;
-    public static final boolean OPERATOR_ENABLED = true;
-    public static final boolean BOARD_OPERATOR_ENABLED = false;
+    public static final boolean OPERATOR_ENABLED = false;
+    public static final boolean BOARD_OPERATOR_ENABLED = true;
 
     public static ButtonMap getDriverController() {
       return new Xbox();

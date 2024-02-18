@@ -101,7 +101,7 @@ public class Pivot extends ProfiledPIDSubsystem {
     }
 
     public void setPosition(double setpoint) {
-        if(setpoint<PivotMap.LOWER_SETPOINT_LIMIT && setpoint>PivotMap.UPPER_SETPOINT_LIMIT)
+        if(setpoint>=PivotMap.LOWER_SETPOINT_LIMIT && setpoint<=PivotMap.UPPER_SETPOINT_LIMIT)
             getController().setGoal(setpoint);
     }
 

@@ -17,7 +17,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.FlywheelLookupTable;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;

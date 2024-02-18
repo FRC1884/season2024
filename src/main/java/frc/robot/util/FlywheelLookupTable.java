@@ -25,10 +25,12 @@ public class FlywheelLookupTable {
     // Distance (meters), shooter velocity, angleSetpoint, feeder velocity
     private double[][] lookupTable = {
             // { 0.815, 2400, -115, 0},
-            { 1.315, 4, 47, 4},
-            { 1.815, 4, 41, 4},
-            { 2.315, 4.1, 38, 4.1 },
-            { 2.815, 4.4, 34.5, 4.4},
+            { 1.185, 3500, 46, 4000},
+            { 1.61, 4000, 40, 4000},
+            { 2.1, 4500, 36, 4000 },
+            { 2.65, 4800, 32, 4000},
+            { 3.14, 5100, 30, 4000},
+            { 3.6, 5200, 28, 4000}
             // { 3.315, 4, -19, 0},
             // { 3.815, 4, -10, 0},
             // { 4.315, 4, -4, 0}
@@ -47,6 +49,7 @@ public class FlywheelLookupTable {
             Double d = (t[0]);
             distanceToFlywheelVelocity.put(d, t[1]);
             distanceToAngleSetpoint.put(d, t[2]);
+            distanceToFeederVelocity.put(d, t[3]);
         }
     }
 

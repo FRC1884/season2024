@@ -1,0 +1,92 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9005561229768415,
+        "y": 5.527389345566705
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.2203329399526117,
+        "y": 3.8879977331994606
+      },
+      "isLocked": false,
+      "linkedName": "TTB Shot Three"
+    },
+    {
+      "anchor": {
+        "x": 2.6607658350837373,
+        "y": 4.122214464115091
+      },
+      "prevControl": {
+        "x": 2.4707253569291585,
+        "y": 4.155751019083546
+      },
+      "nextControl": {
+        "x": 2.8168084113198333,
+        "y": 4.094677538896956
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.4324283942685536,
+        "y": 3.9302476829149002
+      },
+      "prevControl": {
+        "x": 2.3725109148331507,
+        "y": 3.9899110208875244
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TTB Shot Four"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.3,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 150.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

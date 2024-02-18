@@ -94,8 +94,16 @@ public abstract class OperatorMap extends CommandMap {
       // ).until(() -> shooter.isNoteLoaded()).andThen(
       // intake.setIntakeState(Intake.IntakeDirection.STOPPED)
       // ));
-      getIntakeReverseButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.REVERSE));
 
+      getIntakeStopButton().onTrue(intake.setIntakeState(IntakeDirection.STOPPED));
+      getIntakeButton().whileTrue(intake.intakeUntilLoadedCommand())
+          .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
+      getIntakeReverseButton().onTrue(intake.setIntakeState(IntakeDirection.REVERSE));
+
+      getShootAmpButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD))
+          .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
+      getShootButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD))
+          .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
     }
   }
 
@@ -146,7 +154,6 @@ public abstract class OperatorMap extends CommandMap {
           : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
       // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
-      getIntakeButton().onTrue(intake.intakeUntilLoadedCommand());
 
       getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
           .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint())
@@ -154,11 +161,16 @@ public abstract class OperatorMap extends CommandMap {
               poseEstimator.getDistanceToPose(target.getTranslation())).getFlywheelV(),
               () -> lookupTable.get(poseEstimator.getDistanceToPose(target.getTranslation())).getFeederV()))));
 
-      getArcButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+      getArcButton().onFalse(shooter.setShootVelocityCommand(() -> 0.0, () -> 0.0));
 
       getAmpAlignButton().onTrue(
+        
           pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
-              shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP)));
+              shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP).andThen(shooter.setBotVelocityCommand(() -> -ShamperMap.AMP_SPEED_TOP)).andThen(shooter.setFeederVelocityCommand(() -> ShamperMap.AMP_SPEED_FEEDER))));
+
+      getAmpAlignButton().onFalse(
+          pivot.updatePosition(() -> 0.0).alongWith(
+              shooter.setFlywheelVelocityCommand(() -> 0.0).andThen(shooter.setFeederVelocityCommand(() -> 0.0))));
 
       getStageAlignButton().onTrue(
           pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(

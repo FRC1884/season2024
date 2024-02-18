@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.6373441619921745,
+        "y": 6.850839379282182
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.3249070838476766,
+        "y": 5.380431930051368
+      },
+      "isLocked": false,
+      "linkedName": "TTB Shot Two"
+    },
+    {
+      "anchor": {
+        "x": 2.9005561229768415,
+        "y": 5.527389345566705
+      },
+      "prevControl": {
+        "x": 1.9005561229768415,
+        "y": 5.527389345566705
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TTB Shot Three"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.4,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -155.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

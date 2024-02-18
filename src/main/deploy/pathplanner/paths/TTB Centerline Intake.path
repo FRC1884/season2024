@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4324283942685536,
+        "y": 3.9302476829149002
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7445135467407455,
+        "y": 2.7278019483896907
+      },
+      "isLocked": false,
+      "linkedName": "TTB Shot Four"
+    },
+    {
+      "anchor": {
+        "x": 5.904667558265215,
+        "y": 1.545830424043158
+      },
+      "prevControl": {
+        "x": 4.904667558265215,
+        "y": 1.545830424043158
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TTB Centerline"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 150.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

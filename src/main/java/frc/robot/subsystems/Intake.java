@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Config.Subsystems;
 import frc.robot.RobotMap.IntakeMap;
 
@@ -28,7 +29,7 @@ public class Intake extends SubsystemBase {
     }
 
     public static enum IntakeDirection {
-        FORWARD, REVERSE, STOPPED
+        FORWARD, REVERSE, STOPPED, SLOW
     }
 
     public static enum IntakeStatus {
@@ -75,7 +76,7 @@ public class Intake extends SubsystemBase {
         tab.add(this);
     }
 
-    private void setSpeed(double intakeSpeed) {
+    private void setSpeed(double intakeSpeed, double feederSpeed) {
         intake.set(intakeSpeed);
         feeder.set(intakeSpeed);
     }
@@ -108,11 +109,10 @@ public class Intake extends SubsystemBase {
                 () -> {
                 },
                 (interrupt) -> {
-                    if (!interrupt)
-                        direction = IntakeDirection.STOPPED;
+                    direction = IntakeDirection.SLOW;
                 },
                 () -> status == IntakeStatus.LOADED,
-                this);
+                this).andThen(new WaitCommand(IntakeMap.INTAKE_DELAY)).andThen(() -> direction = IntakeDirection.STOPPED);
     }
 
     public boolean getNoteStatus() {
@@ -121,7 +121,13 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        status = (intakeSensor.get().get()) ? IntakeStatus.LOADED : IntakeStatus.EMPTY;
+        if (intakeSensor.isPresent()) {
+            if (intakeSensor.get().get()) {
+                status = IntakeStatus.EMPTY;
+            } else {
+                status = IntakeStatus.LOADED;
+            }
+        }
 
         updateIntake();
         
@@ -129,15 +135,17 @@ public class Intake extends SubsystemBase {
 
     private void updateIntake() {
         if (direction == IntakeDirection.FORWARD) {
-            setSpeed(IntakeMap.INTAKE_FORWARD_SPEED);
+            setSpeed(IntakeMap.INTAKE_FORWARD_SPEED, IntakeMap.FEEDER_FORWARD_SPEED);
         } else if (direction == IntakeDirection.REVERSE) {
-            setSpeed(IntakeMap.INTAKE_REVERSE_SPEED);
+            setSpeed(IntakeMap.INTAKE_REVERSE_SPEED, IntakeMap.FEEDER_REVERSE_SPEED);
+        } else if (direction == IntakeDirection.SLOW) {
+            setSpeed(IntakeMap.INTAKE_SLOW_SPEED, IntakeMap.FEEDER_SLOW_SPEED);
         } else {
-            setSpeed(0);
+            setSpeed(0, 0);
         }
     }
 
-    public void toggleIntake(boolean isOn){
+    public void toggleIntake(boolean isOn) { 
         if(isOn) direction = IntakeDirection.FORWARD;
         else if(!isOn) direction = IntakeDirection.STOPPED;
     }

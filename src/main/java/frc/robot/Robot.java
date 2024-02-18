@@ -37,8 +37,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.Shamper;
+import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
 import frc.robot.util.SendableMotor;
 import frc.robot.auto.AutoCommands;
@@ -89,6 +89,9 @@ public class Robot extends TimedRobot {
 
     // autoChooser = AutoBuilder.buildAutoChooser();
     // SmartDashboard.putData("Auto Chooser", autoChooser);
+    Drivetrain.getInstance().zeroGyroYaw();
+    Drivetrain.getInstance().setGyroYaw(180);
+    PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
   }
 
   public Command getAutonomousCommand() {

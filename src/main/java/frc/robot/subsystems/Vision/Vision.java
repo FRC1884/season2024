@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;

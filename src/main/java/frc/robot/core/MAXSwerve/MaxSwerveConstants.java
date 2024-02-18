@@ -8,10 +8,10 @@ import edu.wpi.first.math.util.Units;
 public class MaxSwerveConstants {
   public static final boolean INVERT_GYRO = false;
   public static final double kMaxSpeedMetersPerSecond = 4.8;
-  public static final double kMaxAngularSpeed = 2 * Math.PI / 2; // radians per second
+  public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
   public static final double kDirectionSlewRate = 1.2; // radians per second
-  public static final double kMagnitudeSlewRate = 1.8; // percent per second (10)
+  public static final double kMagnitudeSlewRate = 10; // percent per second (10)
   public static final double kRotationalSlewRate = 2.0; // percent per second
 
   // Chassis configuration

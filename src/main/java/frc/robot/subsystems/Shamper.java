@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.ShamperMap;
 
@@ -175,7 +176,7 @@ public class Shamper extends SubsystemBase {
   }
 
   public Command setShootVelocityCommand(Supplier<Double> vK, Supplier<Double> vF) {
-    return new ParallelCommandGroup(
+    return new SequentialCommandGroup(
       setFlywheelVelocityCommand(vK),
       setFeederVelocityCommand(vF)
     );
@@ -189,6 +190,7 @@ public class Shamper extends SubsystemBase {
 
   @Override
   public void periodic() {
+    //System.out.println(topVelocity);
     if (top != null) {
       if (topVelocity != 0) {
         topPid.setReference(topVelocity, ControlType.kVelocity);
