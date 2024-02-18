@@ -70,6 +70,8 @@ public class Robot extends TimedRobot {
     // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
     OI.getInstance().registerCommands();
     AutoCommands.registerAutoCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     ctreConfigs = new CTREConfigs();
 
     enableLiveWindowInTest(isTest());

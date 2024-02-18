@@ -242,7 +242,7 @@ public class RobotMap {
 
 
     public static final double AMP_SPEED_TOP = -1000;
-    public static final double AMP_SPEED_FEEDER = 1000;
+    public static final double AMP_SPEED_FEEDER = 800;
     public static final double TRAP_SPEED = 4000;     // TODO: TUNE
 
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
@@ -266,7 +266,7 @@ public class RobotMap {
     public static final int PIVOT = 19;
     public static final double TOLERANCE = 1;
     public static final double DT = 0.2;
-    public static final double LOWER_SETPOINT_LIMIT = 0;
+    public static final double LOWER_SETPOINT_LIMIT = 10;
     public static final double UPPER_SETPOINT_LIMIT = 80;
 
     // TODO: TUNE

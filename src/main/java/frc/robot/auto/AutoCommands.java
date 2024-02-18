@@ -40,9 +40,10 @@ public class AutoCommands {
                 .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()));
         NamedCommands.registerCommand("Intake", intake.intakeUntilLoadedCommand());
         NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
-                new InstantCommand(() -> intake.setIntakeState(IntakeDirection.FORWARD), intake),
-                new WaitCommand(0.5),
-                new InstantCommand(() -> intake.setIntakeState(IntakeDirection.STOPPED), intake)));
+               intake.setIntakeState(IntakeDirection.FORWARD),
+                new WaitCommand(1),
+                intake.setIntakeState(IntakeDirection.STOPPED)
+                ));
         NamedCommands.registerCommand("VisionIntake",
                 intake.intakeUntilLoadedCommand().alongWith(Vision.getInstance().followNoteCommand().onlyIf(
                         () -> !Vision.getInstance().getNotePose2d().getTranslation().equals(new Translation2d(0, 0)))));

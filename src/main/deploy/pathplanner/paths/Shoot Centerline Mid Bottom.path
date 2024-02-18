@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.27025654051308,
+        "y": 2.435854001522554
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.604764701683467,
+        "y": 0.5855418272890752
+      },
+      "isLocked": false,
+      "linkedName": "Random BS"
+    },
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 4.0
+      },
+      "prevControl": {
+        "x": 2.9301150756367123,
+        "y": 3.1502150308152252
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "BTT Shot One"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 140.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -148.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

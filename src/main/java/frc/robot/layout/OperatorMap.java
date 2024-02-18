@@ -169,7 +169,7 @@ public abstract class OperatorMap extends CommandMap {
               shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP).andThen(shooter.setBotVelocityCommand(() -> -ShamperMap.AMP_SPEED_TOP)).andThen(shooter.setFeederVelocityCommand(() -> ShamperMap.AMP_SPEED_FEEDER))));
 
       getAmpAlignButton().onFalse(
-          pivot.updatePosition(() -> 0.0).alongWith(
+          pivot.updatePosition(() -> PivotMap.LOWER_SETPOINT_LIMIT + 1).alongWith(
               shooter.setFlywheelVelocityCommand(() -> 0.0).andThen(shooter.setFeederVelocityCommand(() -> 0.0))));
 
       getStageAlignButton().onTrue(

@@ -328,7 +328,7 @@ public class Vision extends SubsystemBase {
   public Translation2d estimateCameraToTargetTranslation(double targetDistanceMeters, double targetOffsetAngle_Horizontal){
     Rotation2d yaw = Rotation2d.fromDegrees(targetOffsetAngle_Horizontal);
     return new Translation2d(
-      yaw.getCos() * targetDistanceMeters, yaw.getSin() * targetDistanceMeters);
+      yaw.getCos() * (targetDistanceMeters + 0.30), yaw.getSin() * targetDistanceMeters);
   }
 /**
    * @param cameraToTargetTranslation2d the translation from estimate camera to target
