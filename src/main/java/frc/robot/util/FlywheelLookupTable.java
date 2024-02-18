@@ -2,7 +2,13 @@ package frc.robot.util;
 
 import static frc.robot.util.BlinkinUtils.ColorPatterns.valueOf;
 
+import java.util.TreeMap;
+
+import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.Interpolator;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class FlywheelLookupTable {
     private static FlywheelLookupTable instance;
@@ -13,34 +19,45 @@ public class FlywheelLookupTable {
         return instance;
     }
 
-    private InterpolatingTreeMap<Double, Double> distanceToRPM, distanceToAngleSetpoint;
+    private InterpolatingDoubleTreeMap distanceToFlywheelVelocity, distanceToAngleSetpoint, distanceToFeederVelocity;
 
-    // Distance (meters), rpm, angleSetpoint
+
+    // Distance (meters), shooter velocity, angleSetpoint, feeder velocity
     private double[][] lookupTable = {
-            { 1, 1000, 85.2 },
-            { 2, 1500, 80.5 }
+            // { 0.815, 2400, -115, 0},
+            { 1.315, 4, 47, 4},
+            { 1.815, 4, 41, 4},
+            { 2.315, 4.1, 38, 4.1 },
+            { 2.815, 4.4, 34.5, 4.4},
+            // { 3.315, 4, -19, 0},
+            // { 3.815, 4, -10, 0},
+            // { 4.315, 4, -4, 0}
     };
 
     private FlywheelLookupTable() {
+        distanceToFlywheelVelocity = new InterpolatingDoubleTreeMap();
+        distanceToAngleSetpoint = new InterpolatingDoubleTreeMap();
+        distanceToFeederVelocity = new InterpolatingDoubleTreeMap();
+
         createShootMap(lookupTable);
     }
 
     private void createShootMap(double[][] table) {
         for (double[] t : table) {
             Double d = (t[0]);
-            distanceToRPM.put(d, t[1]);
+            distanceToFlywheelVelocity.put(d, t[1]);
             distanceToAngleSetpoint.put(d, t[2]);
         }
     }
 
     public ActionSetpoint get(Double d) {
-        ActionSetpoint values = new ActionSetpoint(distanceToRPM.get(d), distanceToAngleSetpoint.get(d));
+        ActionSetpoint values = new ActionSetpoint(distanceToFlywheelVelocity.get(d), distanceToAngleSetpoint.get(d), distanceToFeederVelocity.get(d));
         return values;
     }
 
     public void clearTables() {
         distanceToAngleSetpoint.clear();
-        distanceToRPM.clear();
+        distanceToFlywheelVelocity.clear();
     }
 
 }

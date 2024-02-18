@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -34,7 +36,9 @@ public class Intake extends SubsystemBase {
     }
 
     private CANSparkMax intake, feeder;
+
     private Optional<DigitalInput> intakeSensor;
+    
 
     private IntakeStatus status = IntakeStatus.EMPTY;
     private IntakeDirection direction = IntakeDirection.STOPPED;
@@ -54,8 +58,6 @@ public class Intake extends SubsystemBase {
         feeder.setSmartCurrentLimit(20);
 
         intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        feeder.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
         intake.burnFlash();
         feeder.burnFlash();
 
@@ -67,22 +69,15 @@ public class Intake extends SubsystemBase {
 
         var tab = Shuffleboard.getTab("Intake");
 
-        // tab.add("intake motor", intake);
-        // tab.add("feeder motor", feeder);
-
-        if (intakeSensor.isPresent()) {
-            tab.add("sensor", intakeSensor.get());
-        }
-
         tab.addString("status", () -> status.toString());
         tab.addString("direction", () -> direction.toString());
         System.out.println("Intake!");
         tab.add(this);
     }
 
-    private void setSpeed(double intakeSpeed, double feederSpeed) {
+    private void setSpeed(double intakeSpeed) {
         intake.set(intakeSpeed);
-        feeder.set(feederSpeed);
+        feeder.set(intakeSpeed);
     }
 
     /**
@@ -100,6 +95,11 @@ public class Intake extends SubsystemBase {
         } else {
             return new InstantCommand(() -> this.direction = IntakeDirection.STOPPED);
         }
+        //else if (direction == IntakeDirection.REVERSE) {
+        //     return new InstantCommand(() -> this.direction = (this.direction == IntakeDirection.STOPPED) ? IntakeDirection.REVERSE : IntakeDirection.STOPPED);
+        // } else {
+        //     return new InstantCommand(() -> this.direction = IntakeDirection.STOPPED);
+        // }
     }
 
     public Command intakeUntilLoadedCommand() {
@@ -115,22 +115,25 @@ public class Intake extends SubsystemBase {
                 this);
     }
 
+    public boolean getNoteStatus() {
+        return status == IntakeStatus.LOADED;
+    }
+
     @Override
     public void periodic() {
-        if (intakeSensor.isPresent()) {
-            if (!intakeSensor.get().get()) {
-                status = IntakeStatus.EMPTY;
-            } else {
-                status = IntakeStatus.LOADED;
-            }
-        }
+        status = (intakeSensor.get().get()) ? IntakeStatus.LOADED : IntakeStatus.EMPTY;
 
+        updateIntake();
+        
+    }
+
+    private void updateIntake() {
         if (direction == IntakeDirection.FORWARD) {
-            setSpeed(IntakeMap.INTAKE_FORWARD_SPEED, IntakeMap.FEEDER_FORWARD_SPEED);
+            setSpeed(IntakeMap.INTAKE_FORWARD_SPEED);
         } else if (direction == IntakeDirection.REVERSE) {
-            setSpeed(IntakeMap.INTAKE_REVERSE_SPEED, IntakeMap.FEEDER_REVERSE_SPEED);
+            setSpeed(IntakeMap.INTAKE_REVERSE_SPEED);
         } else {
-            setSpeed(0, 0);
+            setSpeed(0);
         }
     }
 

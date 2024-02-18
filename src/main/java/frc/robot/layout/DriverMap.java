@@ -16,17 +16,16 @@ import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
-// import frc.robot.subsystems.PoseEstimator;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.test;
-// import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
 
   public DriverMap(GameController controller) {
     super(controller);
   }
-
 
 
   abstract double getSwerveXSpeed();
@@ -47,19 +46,20 @@ public abstract class DriverMap extends CommandMap {
 
   abstract JoystickButton getZeroGyroButton();
 
-  abstract JoystickButton getNavigateAndAllignButton();
+  abstract JoystickButton getNavigateAndAllignAmpButton();
+
+  abstract JoystickButton getNavigateAndAllignStageButton();
 
   private void registerDrivetrain() {
     if (Config.Subsystems.DRIVETRAIN_ENABLED) {
       System.out.println("Register Drivetrain");
       var drivetrain = Drivetrain.getInstance();
-      // var vision = Vision.getInstance();
+      var vision = Vision.getInstance();
 
       //--- Drive --- 
       drivetrain.setDefaultCommand(
       drivetrain.driveCommand(
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      getSlowModeToggleButton().onTrue(new InstantCommand(() -> TwoJoyStickDriverMap.IS_SLOWMODE_ENABLED = !DriveMap.IS_SLOWMODE_ENABLED));
       //--- Arcing ---
       if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
         getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
@@ -70,9 +70,12 @@ public abstract class DriverMap extends CommandMap {
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
       }
       
-      getNavigateAndAllignButton().whileTrue(drivetrain.navigateAndAlignCommand(
-        "Go To Stage", () -> Coordinates.RED_SPEAKER.getTranslation()));
-      // getFollowNoteButton().whileTrue(vision.followNoteCommand());
+      getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
+        "Go To Amp"));
+
+      getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
+        
+      getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
     }
   }

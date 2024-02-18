@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -50,9 +51,10 @@ import frc.robot.RobotMap.DriveMap;
 import frc.robot.RobotMap.DriveMap.GyroType;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
-import frc.robot.subsystems.Vision.PoseEstimator;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.PoseEstimator;
+import frc.robot.subsystems.vision.Vision;
 
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -72,6 +74,8 @@ public abstract class MAXSwerve extends SubsystemBase {
   GenericEntry targetAngleEntry = tab.add("Target Angle", 0).getEntry();
   GenericEntry currentAngleEntry = tab.add("Current Angle", 0).getEntry();
   private double targetAngleTelemetry = 0;
+
+  private boolean isSlowModeEnabled = false;
 
   SwerveDriveOdometry odometry;
 
@@ -113,7 +117,6 @@ public abstract class MAXSwerve extends SubsystemBase {
     //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     // else
     //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-
     AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds, new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
                 // in
                 // your Constants class
@@ -404,6 +407,8 @@ public abstract class MAXSwerve extends SubsystemBase {
         );
   }
 
+
+
   public Command followAprilTagCommand() {
     return new RepeatCommand(
         new RunCommand(
@@ -420,6 +425,30 @@ public abstract class MAXSwerve extends SubsystemBase {
             this));
   }
 
+  public Command followNoteCommand(PathPlannerPath pathName){
+      return new FollowPathHolonomic(
+              pathName,
+              this::getPose, // Robot pose supplier
+              this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+              this::driveWithChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+              new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                      new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                      new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                      4.5, // Max module speed, in m/s
+                      0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                      new ReplanningConfig() // Default path replanning config. See the API for the options here
+              ),
+              () -> {
+                  // Boolean supplier that controls when the path will be mirrored for the red alliance
+                  // This will flip the path being followed to the red side of the field.
+                  // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                  return false;
+              },
+              this // Reference to this subsystem to set requirements
+      );
+  }
+
   /**
    * Command to drive to a note detected using Vision - NEEDS TO BE REWORKED TO USE NAVIGATE
    * Preivous ERROR: Robot travels to the robot relative note pose in field relative coordinates
@@ -428,22 +457,23 @@ public abstract class MAXSwerve extends SubsystemBase {
    * @return command to generate a path On-the-fly to a note
    */
   public Command onTheFlyPathCommand(Supplier<Pose2d> targetPose) {
-    return new ProxyCommand(() -> followPathCommand(
+    return new DeferredCommand(() -> followNoteCommand(
         new PathPlannerPath(
             PathPlannerPath.bezierFromPoses(new Pose2d(this.getPose().getTranslation(),
                                                 Rotation2d.fromDegrees(0)),
-                                            new Pose2d(targetPose.get().getTranslation(),
-                                            Rotation2d.fromDegrees(0))),
+                                            targetPose.get()),
             new PathConstraints(
                 RobotMap.SwervePathFollowConstants.MAX_VELOCITY,
                 RobotMap.SwervePathFollowConstants.MAX_ACCELERATION,
                 RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY,
                 RobotMap.SwervePathFollowConstants.MAX_ANG_ACCELERATION),
             new GoalEndState(0, targetPose.get().getRotation()),
-            false),
-        false));
+            false)),
+        //.until(
+         // () -> targetPose.get().getTranslation().getDistance(PoseEstimator.getInstance().getPosition().getTranslation())<1.5))
+          //.finallyDo(() -> System.out.println("uwu owo"));
+    Set.of(this));
   }
-
   /**
    * Command to pathfind to a path - NEEDS TO BE TESTED, also, does it need to be a proxy?
    * @param pathName name of the path that the robot will pathfind to  
@@ -540,7 +570,7 @@ public abstract class MAXSwerve extends SubsystemBase {
             Rotation2d targetAngle = targetVector.getAngle();
             double newSpeed;
             if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
-              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+              newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
             else
               newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
             this.drive(0,0,

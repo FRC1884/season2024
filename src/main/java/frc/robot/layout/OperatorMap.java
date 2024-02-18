@@ -1,18 +1,36 @@
 package frc.robot.layout;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.util.function.DoubleSupplier;
+
+import javax.print.attribute.standard.PrinterMessageFromOperator;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Config;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.subsystems.PWMLEDLights;
-import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.Prototypes;
-import frc.robot.subsystems.Shamper;
+import frc.robot.core.util.controllers.ButtonMap.Axis;
+import frc.robot.subsystems.*;
+import frc.robot.subsystems.Intake.IntakeDirection;
+import frc.robot.RobotMap.Coordinates;
+import frc.robot.RobotMap.PivotMap;
+import frc.robot.RobotMap.ShamperMap;
+import frc.robot.Commands.ShootSequenceCommand;
+import frc.robot.core.util.controllers.BoardController;
 import frc.robot.util.BlinkinUtils;
+import frc.robot.util.FlywheelLookupTable;
 
 public abstract class OperatorMap extends CommandMap {
 
@@ -30,99 +48,143 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getShootAmpButton();
 
-  abstract JoystickButton getShootStopButton();
+  abstract JoystickButton getAmpAlignButton();
 
-  abstract JoystickButton getPivotButtonOne();
-
-  abstract JoystickButton getPivotButtonTwo();
-
-  abstract JoystickButton getPivotButtonOff();
-
-  abstract JoystickButton getFeederButton();
-
-  abstract JoystickButton getFeederStopButton();
-
-  abstract double getClimberAxis();
+  abstract JoystickButton getClimbSequenceButton();
 
   abstract double getManualPivotAxis();
+
+  abstract JoystickButton getArcButton();
+
+  abstract JoystickButton getTrapButton();
+
+  abstract JoystickButton getStageAlignButton();
+
+  abstract JoystickButton getManualShootButton();
+
+  abstract JoystickButton getAmplifyButton();
+
+  abstract JoystickButton getCoopButton();
 
   abstract JoystickButton getLEDPatternOneButton();
 
   abstract JoystickButton getLEDPatternTwoButton();
 
+  abstract JoystickButton getLEDPatternThreeButton();
+
+  abstract JoystickButton getLEDPatternFourButton();
+
+  abstract JoystickButton getLEDPatternFiveButton();
+
   abstract JoystickButton getLEDPatternOffButton();
 
-  private void registerPrototype() {
-    if (Config.Subsystems.PROTOTYPE_ENABLED) {
-      Prototypes prototypes = Prototypes.getInstance();
-      getShootStopButton().whileTrue(prototypes.runAny4Motors(-0.0, 0.0, 0.0, 0));
-      getShootButton().whileTrue(prototypes.runAny4Motors(-0.30, 0.30, 0.0, 0));
-      getFeederButton().whileTrue(prototypes.runAny4Motors(0.0, 0.0, -0.1, 0.0));
-      getFeederStopButton().whileTrue(prototypes.runAny4Motors(0.0, 0.0, 0.1, 0.0));
-    }
-  }
+  abstract Trigger getPivotRaiseButton();
+
+  abstract Trigger getPivotLowerButton();
+
+  abstract double getLEDAxis1();
+
+  abstract double getLEDAxis2();
 
   private void registerIntake() {
     if (Config.Subsystems.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
+      // getIntakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.FORWARD).andThen(
+      // new InstantCommand(() -> shooter.setFeederState(FeederDirection.FORWARD))
+      // ).until(() -> shooter.isNoteLoaded()).andThen(
+      // intake.setIntakeState(Intake.IntakeDirection.STOPPED)
+      // ));
+      getIntakeReverseButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.REVERSE));
 
-      getIntakeStopButton().onTrue(intake.setIntakeState(IntakeDirection.STOPPED));
-      getIntakeButton().onTrue(intake.intakeUntilLoadedCommand());
-      getIntakeReverseButton().onTrue(intake.setIntakeState(IntakeDirection.REVERSE));
     }
   }
 
   private void registerShamper() {
     if (Config.Subsystems.SHAMPER_ENABLED) {
-      Shamper shamper = Shamper.getInstance();
-
-      // getShootButton().whileTrue(shamper.setFlywheelVelocityCommand(0.5));
-      // getShootButton().whileFalse(shamper.stopFlywheelCommand());
-
-      // getShootAmpButton().whileTrue(shamper.runFlywheelPower(0.2));
-      // getShootAmpButton().whileTrue(shamper.stopFlywheel());
-      // getFeederButton().onTrue(shamper.runFeederPower(0.9, false));
-      // // getFeederButton().whileFalse(shamper.runFeederPower(0, false));
-      // getFeederStopButton().onTrue(shamper.runFeederPower(0, false));
-      // //getPivotButtonOne().onTrue(shamper.runPivot(10));
-      // //getPivotButtonTwo().onTrue(shamper.runPivot(20));
-      // getFeederButton().onTrue(shamper.runFeeder(1));
-      // getFeederStopButton().onTrue(shamper.runFeeder(0.0));
-      // shamper.setDefaultCommand(shamper.runPivotPower(() -> getClimberAxis()));
-      // getPivotButtonOne().onTrue(shamper.runPivot(30.0));
-      // getPivotButtonTwo().onTrue(shamper.runPivot(60.0));
-      // getPivotButtonOff().onTrue(shamper.runPivot(0.0));
-      // shamper.setDefaultCommand(shamper.runPivotPower(() -> getManualPivotAxis()));
-
-    }
-  }
-
-  private void registerPivot() {
-    if (Config.Subsystems.PIVOT_ENABLED) {
+      Shamper shooter = Shamper.getInstance();
       Pivot pivot = Pivot.getInstance();
-
-      // getPivotButtonOne().onTrue(shamper.runPivot(10.0));
-      // getPivotButtonTwo().onTrue(shamper.runPivot(20.0));
-      // getPivotButtonOff().onTrue(shamper.runPivot(0.0));
+      FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+      Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
+          : Coordinates.RED_SPEAKER;
+      PoseEstimator poseEstimator = PoseEstimator.getInstance();
     }
   }
+
+  // private void registerFeeder() {
+  // if(Config.Subsystems.FEEDER_ENABLED) {
+  // Feeder feeder = Feeder.getInstance();
+  // getShootSpeakerButton().whileTrue(new InstantCommand(() ->
+  // feeder.setFeederState(FeederDirection.FORWARD)));
+  // getShootAmpButton().whileTrue(new InstantCommand(() ->
+  // feeder.setFeederState(FeederDirection.FORWARD_SLOW)));
+  // getTrapButton().whileTrue(new InstantCommand(() ->
+  // feeder.setFeederState(FeederDirection.FORWARD)));
+  // getShootSpeakerButton().onFalse(new InstantCommand(() ->
+  // feeder.setFeederState(FeederDirection.STOPPED)));
+  // getShootAmpButton().onFalse(new InstantCommand(() ->
+  // feeder.setFeederState(FeederDirection.STOPPED)));
+  // getTrapButton().onFalse(new InstantCommand(() ->
+  // feeder.setFeederState(FeederDirection.STOPPED)));
+  // }
+  // }
 
   private void registerClimber() {
     if (Config.Subsystems.CLIMBER_ENABLED) {
       Climber climber = Climber.getInstance();
-      climber.setDefaultCommand(climber.run(this::getClimberAxis));
+
     }
+  }
+
+  private void registerComplexCommands() {
+    if (Config.Subsystems.SHAMPER_ENABLED && Config.Subsystems.INTAKE_ENABLED
+        && Config.Subsystems.DRIVETRAIN_ENABLED) {
+      Intake intake = Intake.getInstance();
+      Shamper shooter = Shamper.getInstance();
+      Pivot pivot = Pivot.getInstance();
+      FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+      Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
+          : Coordinates.RED_SPEAKER;
+      PoseEstimator poseEstimator = PoseEstimator.getInstance();
+      // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
+      getIntakeButton().onTrue(intake.intakeUntilLoadedCommand());
+
+      getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
+          .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint())
+          .alongWith(shooter.setShootVelocityCommand(() -> lookupTable.get(
+              poseEstimator.getDistanceToPose(target.getTranslation())).getFlywheelV(),
+              () -> lookupTable.get(poseEstimator.getDistanceToPose(target.getTranslation())).getFeederV()))));
+
+      getArcButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+
+      getAmpAlignButton().onTrue(
+          pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
+              shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP)));
+
+      getStageAlignButton().onTrue(
+          pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
+              shooter.setFlywheelVelocityCommand(() -> ShamperMap.TRAP_SPEED)));
+
+      getClimbSequenceButton().onTrue(
+          new SequentialCommandGroup(
+              Climber.getInstance().run(() -> 0.2),
+              new WaitCommand(1),
+              Climber.getInstance().run(() -> 0)));
+      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> -115.0));
+      getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
+    }
+
   }
 
   private void registerLEDs() {
     if (Config.Subsystems.LEDS_ENABLED) {
-      PWMLEDLights lights = PWMLEDLights.getInstance();
-      getLEDPatternOffButton().onTrue(
-          lights.setColorForSecondsCommand(3, BlinkinUtils.ColorPatterns.WHITE));
-      getLEDPatternOneButton().onTrue(
-          lights.setColorCommand(BlinkinUtils.ColorPatterns.SINELON_RAINBOW_PALETTE));
-      getLEDPatternTwoButton().onTrue(
-          lights.setColorCommand(BlinkinUtils.ColorPatterns.CP1_2_END_TO_END_BLEND));
+      AddressableLEDLights lights = AddressableLEDLights.getInstance();
+      // getLEDPatternOffButton().whileTrue(lights.disableCommand());
+      // // getLEDPatternOneButton().onTrue(lights.setRedBlack());
+      // getLEDPatternTwoButton().whileTrue(lights.setDecreasing());
+      // getLEDPatternThreeButton().whileTrue(lights.setRainbow());
+      // getLEDPatternFourButton().whileTrue(lights.setRedDarkRed());
+      // getLEDPatternFiveButton().whileTrue(lights.checkBeam());
+      lights.setDefaultCommand(lights.setValue(this::getLEDAxis1, this::getLEDAxis2));
     }
   }
 
@@ -130,9 +192,9 @@ public abstract class OperatorMap extends CommandMap {
   public void registerCommands() {
     // registerPrototype();
     registerIntake();
-    registerShamper();
     registerClimber();
-    registerPivot();
-    // registerLEDs();
+    registerShamper();
+    registerLEDs();
+    registerComplexCommands();
   }
 }

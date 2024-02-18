@@ -45,28 +45,8 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getPivotButtonOne() {
+  JoystickButton getAmpAlignButton() {
     return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  JoystickButton getPivotButtonTwo() {
-    return controller.getButton(Button.BUTTON_Y);
-  }
-
-  @Override
-  JoystickButton getFeederButton() {
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
-  }
-
-  @Override
-  JoystickButton getFeederStopButton() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
-  }
-
-  @Override
-  double getClimberAxis() {
-    return controller.getAxis(Axis.AXIS_RIGHT_Y);
   }
 
   @Override
@@ -90,8 +70,85 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getPivotButtonOff() {
-    return controller.getButton(Button.BUTTON_A);
+  JoystickButton getLEDPatternThreeButton() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
+  @Override
+  JoystickButton getLEDPatternFourButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  JoystickButton getLEDPatternFiveButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  
+  @Override
+  double getLEDAxis1() {
+    return controller.getAxis(Axis.AXIS_LEFT_X);
+  }
+
+  
+  @Override
+  double getLEDAxis2() {
+    return controller.getAxis(Axis.AXIS_LEFT_Y);
+  }
+
+  @Override
+  JoystickButton getManualShootButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  JoystickButton getArcButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  JoystickButton getPivotRaiseButton()
+  {
+    return null;
+  }
+
+  @Override
+  JoystickButton getPivotLowerButton(){
+    return null;
+  }
+
+  @Override
+  JoystickButton getTrapButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  JoystickButton getStageAlignButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  JoystickButton getAmplifyButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  JoystickButton getCoopButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  JoystickButton getClimbSequenceButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

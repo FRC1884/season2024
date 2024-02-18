@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,7 +12,6 @@ import frc.robot.util.RunForSecondsCommand;
 
 import static frc.robot.util.BlinkinUtils.ColorPatterns.*;
 
-
 public class PWMLEDLights extends SubsystemBase {
     private static PWMLEDLights instance;
 
@@ -20,11 +20,11 @@ public class PWMLEDLights extends SubsystemBase {
         return instance;
     }
 
-    private PWM m_blinkin;
+    private Spark m_blinkin;
 
     //@param pwmPort  The PWM port the Blinkin is connected to.
     public PWMLEDLights() {
-      m_blinkin = new PWM(RobotMap.LEDMap.BLINKIN_PWM_PORT, true);
+      m_blinkin = new Spark(RobotMap.LEDMap.BLINKIN_PWM_PORT);
     }
 
     public void setColor(BlinkinUtils.ColorPatterns pattern) {
@@ -35,7 +35,7 @@ public class PWMLEDLights extends SubsystemBase {
         if ((val >= -1.0) && (val <= 1.0)) {
             // scaling the PWM signal to an integer to ensure that
             // the hundredths digit is odd before setting the color
-            if (Math.round(val * 100 % 2) == 1) m_blinkin.setPosition(val);
+            if (Math.round(val * 100 % 2) == 1) m_blinkin.set(val);
         } else System.out.println("PWM value out of range, argument ignored!");
     }
 
@@ -79,4 +79,3 @@ public class PWMLEDLights extends SubsystemBase {
         return new InstantCommand(() -> setColor(BLACK));
     }
 }
-    

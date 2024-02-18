@@ -5,7 +5,9 @@ import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class RobotMap {
@@ -29,7 +31,7 @@ public class RobotMap {
       PIGEON, NAVX
     }
 
-    public static final GyroType GYRO_TYPE = GyroType.NAVX;
+    public static final GyroType GYRO_TYPE = GyroType.PIGEON;
 
     public static final int PIGEON_ID = 30;
 
@@ -61,7 +63,7 @@ public class RobotMap {
       public static final double ANGULAR_OFFSET = Math.PI;
     }
 
-    /* Back Right Module - Module 3 */  
+    /* Back Right Module - Module 3 */
     public static final class BackRight {
       public static final int DRIVE_ID = 21;
       public static final int ROTATOR_ID = 20;
@@ -72,20 +74,21 @@ public class RobotMap {
 
   // TODO rename to path swerve constants.
   public static final class SwervePathFollowConstants {
-    public static final double MAX_VELOCITY = 1;
-    public static final double MAX_ACCELERATION = 5;
+    public static final double MAX_VELOCITY = 3;
+    public static final double MAX_ACCELERATION = 4;
     public static final double MAX_ANG_VELOCITY = 1;
     public static final double MAX_ANG_ACCELERATION = 1;
 
   }
 
   public static final class Coordinates {
-    public static final Pose2d BLUE_SPEAKER = new Pose2d(0, 5.52, new Rotation2d(Math.PI));
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(0.22, 5.6, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
-    public static final Pose2d RED_SPEAKER = new Pose2d(16.54175, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d RED_SPEAKER = new Pose2d(16.54175 - 0.22, 5.6, new Rotation2d(Math.PI));
     public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
     public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
+    public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
   }
 
   public static class TankDriveMap {
@@ -110,15 +113,21 @@ public class RobotMap {
   }
 
   public static class VisionConfig {
+    public static final boolean DRIVER_CAMERA_ACTIVE = false;
     public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
-    public static final boolean IS_PHOTON_VISION_MODE = false;// TODO: Change to false
-    public static final boolean IS_NEURAL_NET = false;
+    public static final boolean IS_PHOTON_VISION_MODE = true;// TODO: Change to false
+    public static final boolean IS_NEURAL_NET = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
+
+    public static final String DRIVER_CAM_STREAM = "http://drivercam.local:1182/stream.mjpg";
+
     // Field limits
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
+    public static final double VISION_X_MIN_CUTOFF = 3.0;
+    public static final double VISION_X_MAX_CUTOFF = 13.5;
 
     // Limelight - units are meters
     public static final String POSE_LIMELIGHT = "limelight-pose";
@@ -133,25 +142,38 @@ public class RobotMap {
     public static final double POSE_LIME_ROLL = 0.0;
     public static final double POSE_LIME_YAW = 0.0;
 
-    public static final double NN_LIME_X = 0.322; // +X is forward on the robot
-    public static final double NN_LIME_Y = 0.234; // +Y is the the left of the robot
-    public static final double NN_LIME_Z = 0.345; // +Z is up
+    // THESE ARE ALL ROBOT RELATIVE (CENTER OF THE ROBOT IS THE ORIGIN)
+    public static final double NN_LIME_X = -0.343; // +X is forward on the robot
+    public static final double NN_LIME_Y = -0.271; // +Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.487; // +Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
-    public static final double NN_LIME_YAW = 0.0;
-    public static final Transform2d NN_LIME_TO_ROBOT = new Transform2d(NN_LIME_X, NN_LIME_Y, new Rotation2d());
+    public static final double NN_LIME_YAW = Math.PI;
+
+    public static final Transform2d NN_ROBOT_TO_LIME_2D = new Transform2d(NN_LIME_X, NN_LIME_Y,
+        new Rotation2d(NN_LIME_YAW));
+
+    public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y,
+        new Rotation2d(-NN_LIME_YAW));
 
     // Photonvision
+    public static final double POSE_AMBIGUITY_CUTOFF = 0.2;
+
     public static final String POSE_PHOTON_1 = "photoncam-1";
     // Translation Values (location relative to robot center)
-    public static final double CAM_1_X = -0.292; // Forward: camera To Robot XMeters
-    public static final double CAM_1_Y = -0.076; // Left: camera To Robot YMeters
-    public static final double CAM_1_Z = 0.28; // Up: camera To Robot ZMeters
+    public static final double CAM_1_X = 0.3079; // Forward: camera To Robot XMeters
+    public static final double CAM_1_Y = -0.0762; // Left: camera To Robot YMeters
+    public static final double CAM_1_Z = 0.156; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
     public static final double CAM_1_ROLL_RADIANS = 0.0; // camera Roll Radians
-    public static final double CAM_1_PITCH_RADIANS = 0.349; // camera Pitch Radians
+    public static final double CAM_1_PITCH_RADIANS = 0.436; // camera Pitch Radians
     public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
+
+    public static final Transform3d PHOTON_1_ROBOT_TO_CAM = new Transform3d(CAM_1_X, CAM_1_Y, CAM_1_Z,
+        new Rotation3d(CAM_1_ROLL_RADIANS, CAM_1_PITCH_RADIANS, CAM_1_YAW_RADIANS));
+    public static final Transform3d PHOTON_1_CAM_TO_ROBOT = new Transform3d(-CAM_1_X, -CAM_1_Y, -CAM_1_Z,
+        new Rotation3d(-CAM_1_ROLL_RADIANS, -CAM_1_PITCH_RADIANS, -CAM_1_YAW_RADIANS));
 
     // Photonvision
     public static final String POSE_PHOTON_2 = "photoncam-2";
@@ -173,8 +195,8 @@ public class RobotMap {
     public static final double kPositionStdDevTheta = 10;
 
     // Increase these numbers to trust global measurements from vision less.
-    public static final double kVisionStdDevX = 0.5;
-    public static final double kVisionStdDevY = 0.5;
+    public static final double kVisionStdDevX = 2.5;
+    public static final double kVisionStdDevY = 2.5;
     public static final double kVisionStdDevTheta = 500;
   }
 
@@ -194,7 +216,7 @@ public class RobotMap {
   }
 
   public static class IntakeMap {
-    public static final int INTAKE = 13;                      
+    public static final int INTAKE = 13;
     public static final int FEEDER = 18;
 
     public static final double INTAKE_FORWARD_SPEED = 0.8;
@@ -210,7 +232,12 @@ public class RobotMap {
     public static final int BOTTOM_SHOOTER = 40;
     public static final int FEEDER = 42;
     public static final double FLYWHEEL_RADIUS = 0.0508;
-    
+
+
+    public static final double AMP_SPEED_TOP = -1000;
+    public static final double AMP_SPEED_FEEDER = 1000;
+    public static final double TRAP_SPEED = 4000;     // TODO: TUNE
+
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
     public static final double FEEDER_RAMP_RATE = 0.5;
 
@@ -233,15 +260,19 @@ public class RobotMap {
     public static final double LOWER_SETPOINT_LIMIT = 5;
     public static final double UPPER_SETPOINT_LIMIT = 80;
 
+    // TODO: TUNE
+    public static final double PIVOT_AMP_ANGLE = 80;
+    public static final double PIVOT_TRAP_ANGLE = 0;
+
     public static final PIDConstants PID = new PIDConstants(1, 2, 0);
     public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(30, 10);
     public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0, 0, 0, 0);
   }
 
   public static class LEDMap {
-    public static final int BLINKIN_PWM_PORT = 1;
-    public static final boolean BLINKIN_PWM = false;
-    public static final boolean BLINKIN_ON_SPARK = true;
-    public static final int NUMBER_LEDS = 50;
+    public static final int BLINKIN_PWM_PORT = 0;
+    public static final boolean BLINKIN_PWM = true;
+    public static final boolean BLINKIN_ON_SPARK = false;
+    public static final int NUMBER_LEDS = 280;
   }
 }

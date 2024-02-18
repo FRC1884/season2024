@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.986643414085687,
+        "y": 6.780574360007493
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.518209952254426,
+        "y": 6.722020177278586
+      },
+      "isLocked": false,
+      "linkedName": "BTT Centerline"
+    },
+    {
+      "anchor": {
+        "x": 2.894982565999367,
+        "y": 6.323851734722014
+      },
+      "prevControl": {
+        "x": 3.1643318065523425,
+        "y": 6.323851734722014
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -160.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

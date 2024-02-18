@@ -23,28 +23,28 @@ public class TwoJoyStickDriverMap extends DriverMap {
   public double getSwerveXSpeed() {
     if(DriverStation.getAlliance().isPresent() 
     && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-      return -controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/8) 
-      * ((IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
+      return -controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond 
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
     else
-      return controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/8) 
-      * ((IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
+      return controller.getAxis(Axis.AXIS_LEFT_Y) * MaxSwerveConstants.kMaxSpeedMetersPerSecond 
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 
   @Override
   public double getSwerveYSpeed() {
     if(DriverStation.getAlliance().isPresent() 
       && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-      return -controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/8)
-      * ((IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
+      return -controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
     else
-      return controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/8)
-      * ((IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
+      return controller.getAxis(Axis.AXIS_LEFT_X) * MaxSwerveConstants.kMaxSpeedMetersPerSecond
+      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 
   @Override
   public double getSwerveRot() {
     return -controller.getAxis(Axis.AXIS_RIGHT_X) * MaxSwerveConstants.kMaxAngularSpeed
-    * ((IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_ROTATION_MUTLIPLIER : 0.7);
+    * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_ROTATION_MUTLIPLIER : 0.3);
   }
 
   @Override
@@ -54,7 +54,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public JoystickButton getArcingButton(){
-    return controller.getButton(Button.BUTTON_Y); 
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER); 
   }
   
   @Override
@@ -69,7 +69,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public JoystickButton getFollowNoteButton(){
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
@@ -78,8 +78,14 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
 
   @Override
-  public JoystickButton getNavigateAndAllignButton(){
-    return controller.getButton(Button.BUTTON_SHARE);
+  public JoystickButton getNavigateAndAllignAmpButton(){
+    return controller.getButton(Button.BUTTON_B);
+  }
+
+  @Override
+  public JoystickButton getNavigateAndAllignStageButton()
+  {
+    return controller.getButton(Button.BUTTON_A);
   }
     
   @Override

@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
+
+import java.util.function.Supplier;
+
 import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Empty;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
@@ -12,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.ShamperMap;
 
@@ -134,14 +138,27 @@ public class Shamper extends SubsystemBase {
   //   }, this);
   // }
 
-  public Command setFlywheelVelocityCommand(double velocity) {
+  public Command setFlywheelVelocityCommand(Supplier<Double> velocity) {
 
-    return new FunctionalCommand(() -> {
-      topVelocity = velocity;
-      bottomVelocity = velocity;
-    }, () -> {}, (interrupted) -> {System.out.println("Ended command");
-  }, () -> true, this);
+    return setTopVelocityCommand(velocity).alongWith(setBotVelocityCommand(velocity));
   }
+
+  public Command setTopVelocityCommand(Supplier<Double> v) {
+    return new InstantCommand(
+        () -> {
+          topVelocity = v.get();
+        });
+  }
+  
+  public Command setBotVelocityCommand(Supplier<Double> v) {
+    return new InstantCommand(
+        () -> {
+          bottomVelocity = v.get();
+        }
+    );
+  }
+  
+  
 
   public Command stopFlywheelCommand() {
     return new InstantCommand(() -> {
@@ -150,11 +167,18 @@ public class Shamper extends SubsystemBase {
     }, this);
   }
 
-  public Command setFeederVelocityCommand(double velocity) {
+  public Command setFeederVelocityCommand(Supplier<Double> velocity) {
     return new InstantCommand(
         () -> {
-          feederVelocity = velocity;
+          feederVelocity = velocity.get();
         });
+  }
+
+  public Command setShootVelocityCommand(Supplier<Double> vK, Supplier<Double> vF) {
+    return new ParallelCommandGroup(
+      setFlywheelVelocityCommand(vK),
+      setFeederVelocityCommand(vF)
+    );
   }
 
   public Command stopFeederCommand() {

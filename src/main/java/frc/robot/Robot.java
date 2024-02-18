@@ -8,6 +8,7 @@ import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.CANSparkBase;
@@ -33,10 +34,11 @@ import frc.robot.auto.selector.AutoModeSelector;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.AddressableLEDLights;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.Shamper;
-import frc.robot.subsystems.Vision.PoseEstimator;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.PoseEstimator;
+import frc.robot.subsystems.vision.Vision;
 // import frc.robot.subsystems.PrototypeSubsystem;
 import frc.robot.util.SendableMotor;
 import frc.robot.auto.AutoCommands;
@@ -61,13 +63,13 @@ public class Robot extends TimedRobot {
     // TODO put auto chooser here. make sure to use the one from
     // robot/auto/selector/AutoModeSelector.java
     
-    OI.getInstance();
+    //OI.getInstance();
 
     //Autocommands
     // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
     // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
-
-    //AutoCommands.registerAutoCommands();
+    OI.getInstance().registerCommands();
+    AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
     enableLiveWindowInTest(isTest());
@@ -92,7 +94,6 @@ public class Robot extends TimedRobot {
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
-
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.

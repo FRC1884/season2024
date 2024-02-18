@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.270256540518371,
+        "y": 7.424670370029387
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.4504979823083755,
+        "y": 7.412959533479694
+      },
+      "isLocked": false,
+      "linkedName": "CCTS First Shot"
+    },
+    {
+      "anchor": {
+        "x": 8.270256540518371,
+        "y": 5.785153253616065
+      },
+      "prevControl": {
+        "x": 7.134305395572274,
+        "y": 5.972526638348569
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CCTS Second Shot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.55,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 160.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
