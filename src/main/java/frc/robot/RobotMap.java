@@ -223,7 +223,7 @@ public class RobotMap {
     public static final double FLYWHEEL_RADIUS = 0.0508;
     public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
     public static final double AMP_SPEED = 1500;
-    public static final double TRAP_SPEED = 2000;
+    public static final double TRAP_SPEED = 4000;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FLYWHEEL_FF = 0.00015;
@@ -244,7 +244,7 @@ public class RobotMap {
     public static final int MASTER_ID = 16;
     public static final int SLAVE_ID = 17;
 
-    public static final int LIMIT_SWITCH = 0;
+    public static final int LIMIT_SWITCH = 5;
 
     public static final double P = 0.0003;
     public static final double I = 0.0000008;
@@ -276,12 +276,14 @@ public class RobotMap {
     public static final double UPPER_SETPOINT_LIMIT = -120;
     public static final double LOWER_SETPOINT_LIMIT = 0;
     public static final double PIVOT_AMP_ANGLE = -115;
-    public static final double PIVOT_TRAP_ANGLE = -80;
+    public static final double PIVOT_TRAP_ANGLE = -30;
 
     // TODO: Tune these values
-    public static final double kP = 0.3;
-    public static final double kI = 0.0;
-    public static final double kD = 0.0;
+    public static final double kP = 0.5;
+    public static final double kI = 3;
+    public static final double kD = 0.075;
+
+    public static final double kIZone = 0.5;
 
     public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(300, 150);
   }

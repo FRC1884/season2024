@@ -18,7 +18,7 @@ import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.vision.Vision;
 
 /** Reports our expected, desired, and actual poses to dashboards */
 public class PoseEstimator extends SubsystemBase {

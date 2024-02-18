@@ -21,8 +21,8 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake.IntakeDirection;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.Feeder.FeederDirection;
-import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.FlywheelLookupTable;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
@@ -31,7 +31,7 @@ public class AutoCommands {
     public static void registerAutoCommands()
     {   
         FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-        Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+        Pose2d target = DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
         PoseEstimator poseEstimator = PoseEstimator.getInstance();
         Pivot pivot = Pivot.getInstance();
         Shooter shooter = Shooter.getInstance();
@@ -42,7 +42,7 @@ public class AutoCommands {
         NamedCommands.registerCommand("Intake", new IntakeUntilLoadedCommand());
         NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
             new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.FORWARD), Feeder.getInstance()),
-            new WaitCommand(1),
+            new WaitCommand(0.5),
             new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED), Feeder.getInstance())));
     NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand().alongWith(Vision.getInstance().followNoteCommand().onlyIf(
         () -> !Vision.getInstance().getNotePose2d().getTranslation().equals(new Translation2d(0,0)))));

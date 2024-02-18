@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.790408422104303,
-        "y": 6.904235606473433
+        "x": 2.6373441619921745,
+        "y": 6.850839379282182
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.477971343959805,
-        "y": 5.433828157242619
+        "x": 1.3249070838476766,
+        "y": 5.380431930051368
       },
       "isLocked": false,
       "linkedName": "TTB Shot Two"
@@ -63,7 +63,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -150.0,
+    "rotation": -155.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

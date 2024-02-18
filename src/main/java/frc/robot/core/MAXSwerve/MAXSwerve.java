@@ -51,7 +51,7 @@ import frc.robot.RobotMap.DriveMap.GyroType;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants.*;
 import frc.robot.core.TalonSwerve.SwerveConstants;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.vision.Vision;
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;

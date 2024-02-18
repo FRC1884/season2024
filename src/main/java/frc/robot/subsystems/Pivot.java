@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase;
@@ -13,11 +14,13 @@ import com.revrobotics.SparkMaxAlternateEncoder;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.PivotMap;
 
 public class Pivot extends ProfiledPIDSubsystem {
@@ -53,6 +56,9 @@ public class Pivot extends ProfiledPIDSubsystem {
         // pivotEncoder = pivot.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
 
         pivotPID = pivot.getPIDController();
+
+        // disables the integrator if |error| is too high, i.e. above the value of kIZone
+        pivotPID.setIZone(RobotMap.PivotMap.kIZone);
 
         // forwardLimitSwitch = pivot.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
         // forwardLimitSwitch.enableLimitSwitch(false);
@@ -100,7 +106,19 @@ public class Pivot extends ProfiledPIDSubsystem {
 
     public Command updatePosition(Supplier<Double> setpoint)
     {
-        return new InstantCommand(() -> setPosition(setpoint.get()), this);
+        return new RunCommand(() -> setPosition(setpoint.get()), this);
+    }
+
+    // public Command incrementCommand(Supplier<Double> delta)
+    // {
+    //     return new RepeatCommand(
+    //         updatePosition(() -> getPosition().getAsDouble() + delta.get())
+    //     ).alongWith(
+    //         new PrintCommand("" + (getPosition().getAsDouble())));
+    // }
+
+    private DoubleSupplier getPosition() {
+        return pivot.getEncoder()::getPosition;
     }
 
     @Override
@@ -117,7 +135,7 @@ public class Pivot extends ProfiledPIDSubsystem {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("goal", () -> getController().getSetpoint().position, (s) -> setPosition(s));
-        // builder.addBooleanProperty("Forward limit", () -> forwardLimitSwitch.isPressed(), (s) -> {});
+        //builder.addBooleanProperty("Forward limit", () -> forwardLimitSwitch.isPressed(), (s) -> {});
         // builder.addBooleanProperty("Reverse limit", () -> reverseLimitSwitch.get(), (s) -> {});
         builder.addDoubleProperty("encoder", this::getMeasurement, (s) -> {});
         builder.addDoubleProperty("kP", () -> m_controller.getP(), (s) -> m_controller.setP(s));
@@ -125,6 +143,7 @@ public class Pivot extends ProfiledPIDSubsystem {
         builder.addDoubleProperty("kD", () -> m_controller.getD(), (s) -> m_controller.setD(s));
         builder.addBooleanProperty("Zero Pivot", () -> shouldZeroPivot, (b) -> zeroPivot(b));
         builder.addBooleanProperty("at goal", () -> isAtGoal(), null);
+        builder.addDoubleProperty("integrator zone", () -> m_controller.getIZone(), (s) -> m_controller.setIZone(s));
         //builder.addDoubleProperty("Pivot Power", () -> pivot.get(), (s) -> setSpeed(s));
         builder.addDoubleProperty("target V", () -> getController().calculate(getMeasurement()), null);
 

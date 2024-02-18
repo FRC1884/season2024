@@ -93,7 +93,7 @@ public class Shooter extends SubsystemBase {
             bot.burnFlash();
         }
 
-        initDefaultCommand();
+        //initDefaultCommand();
     }
 
     public double getSetpoint() {
@@ -103,7 +103,6 @@ public class Shooter extends SubsystemBase {
     public Command setFlywheelVelocityCommand(Supplier<Double> v) {
         return new RunCommand(
                 () -> {
-                    System.out.println(v.get());
                     leadVel = v.get();
                     followVel = v.get();
                 }, this);
@@ -122,15 +121,13 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        //System.out.println("" + lookupTable.get(
-            //poseEstimator.getDistanceToPose(target.getTranslation())).getRPM());
         updateMotors();
     }
 
-    public void initDefaultCommand() {
-        setDefaultCommand(this.setFlywheelVelocityCommand(()->lookupTable.get(
-            poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()));
-    }
+    // public void initDefaultCommand() {
+    //     setDefaultCommand(this.setFlywheelVelocityCommand(()->lookupTable.get(
+    //         poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()));
+    // }
 
     private void updateMotors() {
         if (top != null) {

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -76,6 +77,10 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getLEDPatternOffButton();
 
+  abstract Trigger getPivotRaiseButton();
+
+  abstract Trigger getPivotLowerButton();
+
   abstract double getLEDAxis1();
 
   abstract double getLEDAxis2();
@@ -122,9 +127,12 @@ public abstract class OperatorMap extends CommandMap {
   private void registerFeeder() {
     if(Config.Subsystems.FEEDER_ENABLED) {
       Feeder feeder = Feeder.getInstance();
-      getShootSpeakerButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
-      getShootAmpButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD_SLOW)));
-      getTrapButton().onTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
+      getShootSpeakerButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
+      getShootAmpButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD_SLOW)));
+      getTrapButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
+      getShootSpeakerButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
+      getShootAmpButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
+      getTrapButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
     }
   }
 
@@ -142,14 +150,17 @@ public abstract class OperatorMap extends CommandMap {
         Shooter shooter = Shooter.getInstance();
          Pivot pivot = Pivot.getInstance();
       FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-      Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+      Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
       // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
       getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
-      getArcButton().whileTrue(new ParallelCommandGroup(pivot.updatePosition(() -> lookupTable
-      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()), 
+
+      getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
+      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()).alongWith( 
       shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
-        poseEstimator.getDistanceToPose(target.getTranslation())).getRPM())));
+        poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()))));
+      getArcButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+
       getAmpAlignButton().onTrue(
         pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
         shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED)));
@@ -163,6 +174,8 @@ public abstract class OperatorMap extends CommandMap {
           Climber.getInstance().run(() -> 0)
         )
       );
+      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> -115.0));
+      getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
     }
     
   }

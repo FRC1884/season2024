@@ -69,7 +69,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public JoystickButton getFollowNoteButton(){
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
@@ -79,7 +79,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public JoystickButton getNavigateAndAllignAmpButton(){
-    return controller.getButton(Button.BUTTON_SHARE);
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override

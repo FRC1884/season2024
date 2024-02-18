@@ -17,7 +17,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.test;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
 
@@ -69,11 +69,10 @@ public abstract class DriverMap extends CommandMap {
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
       }
       
-      getNavigateAndAllignAmpButton().whileTrue(drivetrain.navigateAndAlignCommand(
-        "Go To Amp", () -> Coordinates.RED_AMP.getTranslation()));
+      getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
+        "Go To Amp"));
 
-      getNavigateAndAllignAmpButton().whileTrue(drivetrain.navigateAndAlignCommand(
-        "Go To Stage", () -> Coordinates.RED_STAGE.getTranslation()));
+      getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
         
       getFollowNoteButton().whileTrue(vision.followNoteCommand());
       getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());

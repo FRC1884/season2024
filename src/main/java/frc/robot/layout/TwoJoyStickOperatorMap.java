@@ -66,19 +66,19 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   JoystickButton getLEDPatternThreeButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getLEDPatternThreeButton'");
+    return null;
   }
 
   @Override
   JoystickButton getLEDPatternFourButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getLEDPatternFourButton'");
+    return null;
   }
 
   @Override
   JoystickButton getLEDPatternFiveButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getLEDPatternFiveButton'");
+    return null;
   }
 
   
@@ -96,42 +96,53 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   JoystickButton getManualShootButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getManualShootButton'");
+    return null;
   }
 
   @Override
   JoystickButton getArcButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getArcButton'");
+    return null;
+  }
+
+  @Override
+  JoystickButton getPivotRaiseButton()
+  {
+    return null;
+  }
+
+  @Override
+  JoystickButton getPivotLowerButton(){
+    return null;
   }
 
   @Override
   JoystickButton getTrapButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getTrapButton'");
+    return null;
   }
 
   @Override
   JoystickButton getStageAlignButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getStageAligButton'");
+    return null;
   }
 
   @Override
   JoystickButton getAmplifyButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getAmplifyButton'");
+    return null;
   }
 
   @Override
   JoystickButton getCoopButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getCoopButton'");
+    return null;
   }
 
   @Override
   JoystickButton getClimbSequenceButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getClimbSequenceButton'");
+    return null;
   }
 }

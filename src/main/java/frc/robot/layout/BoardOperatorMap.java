@@ -121,4 +121,14 @@ public class BoardOperatorMap extends OperatorMap {
   JoystickButton getCoopButton() {
     return controller.getButton(Button.BUTTON_EXTRA_2);
   }
+
+  @Override
+  Trigger getPivotRaiseButton(){
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
+  }
+
+  @Override
+  Trigger getPivotLowerButton(){
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > -0.9);
+  }
 }
