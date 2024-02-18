@@ -17,15 +17,6 @@ public class AutoModeSelector {
 
   private AutoModeSelector() {
     modeChooser = new SendableChooser<>();
-    updateAutoModeSelector();
-
-    for(AutoModeList auto : AutoModeList.values()){
-      modeChooser.addOption(auto.name(), auto.getAuto());
-    }
-  }
-
-  public void updateAutoModeSelector() {
-    modeChooser.setDefaultOption("DO_NOTHING", AutoModeList.DO_NOTHING.getAuto());
   }
 
   public SendableChooser<Command> getChooser() {
