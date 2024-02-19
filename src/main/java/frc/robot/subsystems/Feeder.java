@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.FeederMap;
 import frc.robot.RobotMap.ShooterMap;
@@ -20,7 +22,6 @@ import frc.robot.subsystems.Feeder.NoteStatus;
 
 public class Feeder extends SubsystemBase {
     private static Feeder instance;
-    private boolean isDisabled = true;
     private AddressableLEDLights lights;
 
     public static Feeder getInstance() {
@@ -119,21 +120,22 @@ public class Feeder extends SubsystemBase {
     public void periodic() {
         status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         updateMotors();
-         if(!isDisabled){
-            if(beamBreak.get()){
-                lights.setColorCommand(Color.kGreenYellow,true);
-            }
-            else lights.setColorCommand(Color.kRed,true);
-
-        }
     }
+
+    public Command isFeeder(boolean y){
+        return new RunCommand(()-> {
+        if(beamBreak.get())
+        lights.setColorCommand(Color.kRed,y); 
+        else 
+        lights.setColorCommand(Color.kGreenYellow,y);}
+        , this);
+    }
+
     public void Amplify(boolean y){
-        isDisabled = y;
         lights.setColorCommand(Color.kBlue,y);
 
     }
     public void Coop(boolean y){
-        isDisabled = y;
         lights.setColorCommand(Color.kPurple,y);
 
     }

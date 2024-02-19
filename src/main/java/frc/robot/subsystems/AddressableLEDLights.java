@@ -118,6 +118,7 @@ public class AddressableLEDLights extends SubsystemBase {
             // while(z>=x){
             //     m_ledBuffer.setHSV(currLED+x, hue, 255, 255); 
             //     x++;
+
             // }
             while(z>=x){
                 if(c){
@@ -180,8 +181,12 @@ public class AddressableLEDLights extends SubsystemBase {
     public Command setColorCommand(Color color,boolean y) {
         if(y)return new RunCommand(() -> setColor(color), this);
         if(!y) return new RunCommand(()->setColor(Color.kBlack), this);
-        return null;
+        return new RunCommand(()->setColor(color),this);
     }
+
+    public void setColors(Color color ,boolean y) {
+        if(y) setColor(color);
+        if(!y) setColor(Color.kBlack);
 
     public Command setToAllianceColorCommand() {
         return setColorCommand(DriverStation.getAlliance().get().equals(Alliance.Red) ? Color.kRed : Color.kBlue,true);

@@ -103,10 +103,18 @@ public abstract class OperatorMap extends CommandMap {
       getShootAmpButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
       getTrapButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
       getEjectButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
+      getShootSpeakerButton().onTrue(feeder.isFeeder(true));
+      getShootAmpButton().onTrue(feeder.isFeeder(true));
+      getTrapButton().onTrue(feeder.isFeeder(true));
+      getEjectButton().onTrue(feeder.isFeeder(true));
+      getShootSpeakerButton().onFalse(feeder.isFeeder(false));
+      getShootAmpButton().onFalse(feeder.isFeeder(false));
+      getTrapButton().onFalse(feeder.isFeeder(false));
+      getEjectButton().onFalse(feeder.isFeeder(false));
       getAmplifyButton().onTrue(new InstantCommand(()-> feeder.Amplify(true)));
       getAmplifyButton().onFalse(new InstantCommand(()-> feeder.Amplify(false)));
-      getAmplifyButton().onTrue(new InstantCommand(()-> feeder.Coop(true)));
-      getAmplifyButton().onFalse(new InstantCommand(()-> feeder.Coop(false)));
+      getCoopButton().onTrue(new InstantCommand(()-> feeder.Coop(true)));
+      getCoopButton().onFalse(new InstantCommand(()-> feeder.Coop(false)));
     }
   }
 
@@ -190,7 +198,6 @@ public abstract class OperatorMap extends CommandMap {
     Shooter.getInstance();
     Feeder.getInstance();
     Climber.getInstance();
-    AddressableLEDLights.getInstance();
 
 
   }
