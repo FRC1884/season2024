@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,6 +48,8 @@ public class Feeder extends SubsystemBase {
     private Feeder() {
         lights = AddressableLEDLights.getInstance();
         if (FeederMap.FEEDER != -1){
+
+            setName("Feeder");
             feeder = new CANSparkFlex(FeederMap.FEEDER, MotorType.kBrushless);
             feeder.setIdleMode(IdleMode.kBrake);
             feedPID = feeder.getPIDController();
@@ -58,6 +61,10 @@ public class Feeder extends SubsystemBase {
             feeder.setClosedLoopRampRate(FeederMap.FEEDER_RAMP_RATE);
             feeder.setInverted(false);
             feeder.burnFlash();
+
+            var tab = Shuffleboard.getTab("Feeder");
+
+            tab.add(this);
             
             beamBreak = new DigitalInput(FeederMap.BEAMBREAK);
         }
@@ -91,7 +98,7 @@ public class Feeder extends SubsystemBase {
             feedVel = 0;
         }
         else if (direction == FeederDirection.FORWARD_SLOW){
-            feedVel = FeederMap.FEEDER_RPM/14;
+            feedVel = FeederMap.FEEDER_RPM_SLOW;
         }
         else if (direction == FeederDirection.REVERSE){
             feedVel = FeederMap.FEEDER_RPM * -1;

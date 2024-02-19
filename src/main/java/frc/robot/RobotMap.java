@@ -221,7 +221,7 @@ public class RobotMap {
     public static final int BOTTOM_SHOOTER = 14;
     public static final double FLYWHEEL_RADIUS = 0.0508;
     public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
-    public static final double AMP_SPEED = 800;
+    public static final double AMP_SPEED = 600;
     public static final double TRAP_SPEED = 3000;
 
     public static final PIDConstants FLYWHEEL_PID = new PIDConstants(0.00036, 0, 0.015);
@@ -236,6 +236,7 @@ public class RobotMap {
     public static final double FEEDER_FF = 0.00015;
     public static final double FEEDER_RAMP_RATE = 0.5;
     public static final double FEEDER_RPM = 3500 *4; //multiplied by four to account for gear ratio
+    public static final double FEEDER_RPM_SLOW = 1000 * 4;
     public static final int BEAMBREAK = 0;
   }
 
@@ -274,7 +275,7 @@ public class RobotMap {
     public static final double DT = 0.2;
     public static final double UPPER_SETPOINT_LIMIT = -350;
     public static final double LOWER_SETPOINT_LIMIT = 0;
-    public static final double PIVOT_AMP_ANGLE = -330;
+    public static final double PIVOT_AMP_ANGLE = -325;
     public static final double PIVOT_TRAP_ANGLE = -150;
 
     // TODO: Tune these values
@@ -284,7 +285,7 @@ public class RobotMap {
 
     public static final double kIZone = 0.5;
 
-    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(300, 200);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(200, 100);
   }
 
   public static class LEDMap {

@@ -71,6 +71,8 @@ public class Shooter extends SubsystemBase {
 
     private Shooter() {
         if (ShooterMap.TOP_SHOOTER != -1) {
+
+            setName("Shooter");
             top = new CANSparkFlex(ShooterMap.TOP_SHOOTER, MotorType.kBrushless);
             top.setIdleMode(IdleMode.kCoast);
             topPID = top.getPIDController();
@@ -81,6 +83,10 @@ public class Shooter extends SubsystemBase {
 
             top.setClosedLoopRampRate(ShooterMap.FLYWHEEL_RAMP_RATE);
             top.burnFlash();
+
+            var tab = Shuffleboard.getTab("Shooter");
+
+            tab.add(this);
 
         }
         if (ShooterMap.BOTTOM_SHOOTER != -1) {

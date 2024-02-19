@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -24,6 +25,7 @@ public class Climber extends SubsystemBase {
     private CANSparkBase leaderMotor, followerMotor;
 
     private Climber() {
+        setName("Climber");
         leaderMotor = new CANSparkMax(RobotMap.ClimberMap.MASTER_ID, MotorType.kBrushless);
         followerMotor = new CANSparkMax(RobotMap.ClimberMap.SLAVE_ID, MotorType.kBrushless);
 
@@ -42,6 +44,10 @@ public class Climber extends SubsystemBase {
         leaderMotor.burnFlash();
         followerMotor.burnFlash();
         //followerMotor.setInverted(true);
+
+        var tab = Shuffleboard.getTab("Climber");
+
+        tab.add(this);
     }
 
     public Command run(DoubleSupplier power) {

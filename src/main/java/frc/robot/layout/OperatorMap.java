@@ -153,7 +153,7 @@ public abstract class OperatorMap extends CommandMap {
 
       getClimbSequenceButton().whileTrue(
           pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(
-          Climber.getInstance().run(() -> 0.3)));
+          Climber.getInstance().run(() -> 0.3))); 
       getClimbSequenceButton().onFalse(Climber.getInstance().run(() -> -0.3));
 
       getPivotRaiseButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE));
@@ -185,15 +185,24 @@ public abstract class OperatorMap extends CommandMap {
     }
   }
 
+  public void registerSubsystems(){
+    Intake.getInstance();
+    Shooter.getInstance();
+    Feeder.getInstance();
+    Climber.getInstance();
+  }
+
 
 
   @Override
   public void registerCommands() {
-    registerIntake();
-    registerFeeder();
-    registerClimber();
-    registerShooter();
-    //registerLEDs();
-    registerComplexCommands();
+    // registerIntake();
+    // registerFeeder();
+    // registerClimber();
+    // registerShooter();
+    // registerLEDs();
+    // registerComplexCommands();
+
+    registerSubsystems();
   }
 }

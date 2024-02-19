@@ -49,6 +49,8 @@ public class Intake extends SubsystemBase {
 
         tab.addString("status", () -> status.toString());
         tab.addString("direction", () -> direction.toString());
+
+        tab.add(this);
     }
 
     private void setSpeed(double intakeSpeed) {
