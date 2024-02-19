@@ -100,8 +100,7 @@ public abstract class OperatorMap extends CommandMap {
           .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
       getIntakeReverseButton().onTrue(intake.setIntakeState(IntakeDirection.REVERSE));
 
-      getShootAmpButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD))
-          .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
+     
       getShootButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD))
           .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
     }
@@ -163,10 +162,13 @@ public abstract class OperatorMap extends CommandMap {
 
       getArcButton().onFalse(shooter.setShootVelocityCommand(() -> 0.0, () -> 0.0));
 
+      getShootAmpButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD).andThen(shooter.setFeederVelocityCommand(() -> ShamperMap.AMP_SPEED_FEEDER)))
+      .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
+
       getAmpAlignButton().onTrue(
         
           pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
-              shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP).andThen(shooter.setBotVelocityCommand(() -> -ShamperMap.AMP_SPEED_TOP)).andThen(shooter.setFeederVelocityCommand(() -> ShamperMap.AMP_SPEED_FEEDER))));
+              shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP).andThen(shooter.setBotVelocityCommand(() -> -ShamperMap.AMP_SPEED_TOP))));
 
       getAmpAlignButton().onFalse(
           pivot.updatePosition(() -> PivotMap.LOWER_SETPOINT_LIMIT + 1).alongWith(

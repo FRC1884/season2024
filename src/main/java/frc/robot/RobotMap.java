@@ -241,8 +241,8 @@ public class RobotMap {
     public static final double FLYWHEEL_RADIUS = 0.0508;
 
 
-    public static final double AMP_SPEED_TOP = -1000;
-    public static final double AMP_SPEED_FEEDER = 800;
+    public static final double AMP_SPEED_TOP = -1500;
+    public static final double AMP_SPEED_FEEDER = 1500;
     public static final double TRAP_SPEED = 4000;     // TODO: TUNE
 
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
