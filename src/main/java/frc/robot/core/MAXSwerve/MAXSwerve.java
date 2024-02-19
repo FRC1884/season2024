@@ -118,7 +118,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     // else
     //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-    AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds, new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
+    AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds, 
+    new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
                 // in
                 // your Constants class
                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
@@ -435,9 +436,9 @@ public abstract class MAXSwerve extends SubsystemBase {
               new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                       new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                       new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                      4.5, // Max module speed, in m/s
+                      4.8, // Max module speed, in m/s
                       0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                      new ReplanningConfig() // Default path replanning config. See the API for the options here
+                      new ReplanningConfig(true, true) // Default path replanning config. See the API for the options here
               ),
               () -> {
                   // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -518,7 +519,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     PIDController pid = new PIDController(0.01, 0, 0);
     pid.setTolerance(1.5);
     pid.enableContinuousInput(-180, 180);
-    return new ProxyCommand(() ->
+    return new DeferredCommand(() ->
       new RepeatCommand(
         new FunctionalCommand(
           () -> {
@@ -544,7 +545,7 @@ public abstract class MAXSwerve extends SubsystemBase {
               () -> {
                 return pid.atSetpoint();
               },
-              this))
+              this)), Set.of(this)
     );
   }
 
@@ -560,7 +561,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     PIDController pid = new PIDController(0.01, 0, 0);
     pid.setTolerance(1.5);
     pid.enableContinuousInput(-180, 180);
-    return new ProxyCommand(() ->
+    return new DeferredCommand(() ->
         new FunctionalCommand(
           () -> {
             // Init
@@ -587,7 +588,7 @@ public abstract class MAXSwerve extends SubsystemBase {
           () -> {
             return pid.atSetpoint();
           },
-          this)
+          this), Set.of(this)
     );
   }
 

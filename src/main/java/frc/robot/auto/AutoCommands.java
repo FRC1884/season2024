@@ -2,6 +2,8 @@ package frc.robot.auto;
 
 import java.time.Instant;
 
+import org.ejml.dense.row.decompose.TriangularSolver_CDRM;
+
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,8 +11,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.RobotMap.Coordinates;
+import frc.robot.RobotMap.ShamperMap;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Drivetrain;
@@ -28,6 +32,10 @@ public class AutoCommands {
         FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
         Pose2d target = DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
                 : Coordinates.RED_SPEAKER;
+                
+        Translation2d offset = DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? ShamperMap.SHOT_OFFSET 
+        : new Translation2d(ShamperMap.SHOT_OFFSET.getX() *-1, ShamperMap.SHOT_OFFSET.getY() *-1);
+
         PoseEstimator poseEstimator = PoseEstimator.getInstance();
         Pivot pivot = Pivot.getInstance();
         Shamper shooter = Shamper.getInstance();
@@ -40,7 +48,9 @@ public class AutoCommands {
                 .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()));
         NamedCommands.registerCommand("Intake", intake.intakeUntilLoadedCommand());
         NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
-               intake.setIntakeState(IntakeDirection.FORWARD),
+                Drivetrain.getInstance().alignCommand(
+                        () -> target.getTranslation().plus(offset)),
+                intake.setIntakeState(IntakeDirection.FORWARD),
                 new WaitCommand(1),
                 intake.setIntakeState(IntakeDirection.STOPPED)
                 ));
