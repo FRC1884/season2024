@@ -186,7 +186,8 @@ public class AddressableLEDLights extends SubsystemBase {
 
     public void setColors(Color color ,boolean y) {
         if(y) setColor(color);
-        if(!y) setColor(Color.kBlack);
+        else setColor(Color.kBlack);
+    }
 
     public Command setToAllianceColorCommand() {
         return setColorCommand(DriverStation.getAlliance().get().equals(Alliance.Red) ? Color.kRed : Color.kBlue,true);
