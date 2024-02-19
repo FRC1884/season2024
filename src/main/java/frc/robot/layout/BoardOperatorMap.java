@@ -88,7 +88,7 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getLEDPatternFiveButton() {
-    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+    return controller.getButton(Button.BUTTON_EXTRA_10);
   }
 
   @Override

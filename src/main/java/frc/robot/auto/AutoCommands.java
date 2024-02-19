@@ -35,15 +35,16 @@ public class AutoCommands {
         PoseEstimator poseEstimator = PoseEstimator.getInstance();
         Pivot pivot = Pivot.getInstance();
         Shooter shooter = Shooter.getInstance();
+        Feeder feeder = Feeder.getInstance();
         NamedCommands.registerCommand("SpoolShooter", shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
             poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()));
         NamedCommands.registerCommand("Pivot", pivot.updatePosition(() -> lookupTable
         .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()));
         NamedCommands.registerCommand("Intake", new IntakeUntilLoadedCommand());
         NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
-            new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.FORWARD), Feeder.getInstance()),
+            new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD), Feeder.getInstance()),
             new WaitCommand(0.3),
-            new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED), Feeder.getInstance())));
+            new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED), Feeder.getInstance())));
         NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand().alongWith(Vision.getInstance().followNoteCommand().onlyIf(
         () -> !Vision.getInstance().getNotePose2d().getTranslation().equals(new Translation2d(0,0)))));
     // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));

@@ -273,10 +273,10 @@ public class RobotMap {
     public static final double POSITION_TOLERANCE = 1;
     public static final double VELOCITY_TOLERANCE = .5;
     public static final double DT = 0.2;
-    public static final double UPPER_SETPOINT_LIMIT = -350;
+    public static final double UPPER_SETPOINT_LIMIT = -350 * 15/25;
     public static final double LOWER_SETPOINT_LIMIT = 0;
-    public static final double PIVOT_AMP_ANGLE = -325;
-    public static final double PIVOT_TRAP_ANGLE = -150;
+    public static final double PIVOT_AMP_ANGLE = -325 * 15/25;
+    public static final double PIVOT_TRAP_ANGLE = -150 * 15/25;
 
     // TODO: Tune these values
     public static final double kP = 1.5;
@@ -289,9 +289,9 @@ public class RobotMap {
   }
 
   public static class LEDMap {
-    public static final int BLINKIN_PWM_PORT = 5;
+    public static final int BLINKIN_PWM_PORT = 6;
     public static final boolean BLINKIN_PWM = true;
     public static final boolean BLINKIN_ON_SPARK = false;
-    public static final int NUMBER_LEDS = 22;
+    public static final int NUMBER_LEDS = 43;
   }
 }

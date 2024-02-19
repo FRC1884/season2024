@@ -58,8 +58,8 @@ public class FlywheelLookupTable {
     private void createShootMap(double[][] table) {
         for (double[] t : table) {
             Double d = (t[0]);
-            distanceToRPM.put(d, t[1] - 30);
-            distanceToAngleSetpoint.put(d, t[2]);
+            distanceToRPM.put(d, (t[1] + 1000) );
+            distanceToAngleSetpoint.put(d, t[2]* 15/25);
         }
     }
 

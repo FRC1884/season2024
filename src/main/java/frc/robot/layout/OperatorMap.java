@@ -190,19 +190,22 @@ public abstract class OperatorMap extends CommandMap {
     Shooter.getInstance();
     Feeder.getInstance();
     Climber.getInstance();
+    AddressableLEDLights.getInstance();
+
+
   }
 
 
 
   @Override
   public void registerCommands() {
-    // registerIntake();
-    // registerFeeder();
-    // registerClimber();
-    // registerShooter();
+    registerIntake();
+    registerFeeder();
+    registerClimber();
+    registerShooter();
     // registerLEDs();
-    // registerComplexCommands();
+    registerComplexCommands();
 
-    registerSubsystems();
+    // registerSubsystems();
   }
 }

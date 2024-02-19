@@ -177,21 +177,23 @@ public class AddressableLEDLights extends SubsystemBase {
             }
         }, this));
     }
-    public Command setColorCommand(Color color) {
-        return new RunCommand(() -> setColor(color), this);
+    public Command setColorCommand(Color color,boolean y) {
+        if(y)return new RunCommand(() -> setColor(color), this);
+        if(!y) return new RunCommand(()->setColor(Color.kBlack), this);
+        return null;
     }
 
     public Command setToAllianceColorCommand() {
-        return setColorCommand(DriverStation.getAlliance().get().equals(Alliance.Red) ? Color.kRed : Color.kBlue);
+        return setColorCommand(DriverStation.getAlliance().get().equals(Alliance.Red) ? Color.kRed : Color.kBlue,true);
     }
 
     public Command setColorForSecondsCommand(double seconds, Color color) {
-        return new RunForSecondsCommand(seconds, setColorCommand(color))
+        return new RunForSecondsCommand(seconds, setColorCommand(color,true))
                 .andThen(disableCommand());
     }
 
     public Command disableCommand() {
-        return setColorCommand(Color.kBlack);
+        return setColorCommand(Color.kBlack,true);
     }
     
     // public Command checkBeam() {

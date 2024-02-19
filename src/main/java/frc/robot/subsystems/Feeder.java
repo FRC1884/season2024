@@ -119,15 +119,22 @@ public class Feeder extends SubsystemBase {
     public void periodic() {
         status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         updateMotors();
+         if(!isDisabled){
+            if(beamBreak.get()){
+                lights.setColorCommand(Color.kGreenYellow,true);
+            }
+            else lights.setColorCommand(Color.kRed,true);
+
+        }
     }
     public void Amplify(boolean y){
         isDisabled = y;
-        lights.setColorCommand(Color.kBlue);
+        lights.setColorCommand(Color.kBlue,y);
 
     }
     public void Coop(boolean y){
         isDisabled = y;
-        lights.setColorCommand(Color.kPurple);
+        lights.setColorCommand(Color.kPurple,y);
 
     }
 
@@ -137,13 +144,7 @@ public class Feeder extends SubsystemBase {
         builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d) -> {
         });
         builder.addBooleanProperty("BB", () -> beamBreak.get(), null);
-        if(!isDisabled){
-            if(beamBreak.get()){
-                lights.setColorCommand(Color.kGreenYellow);
-            }
-            else lights.setColorCommand(Color.kRed);
-
-        }
+       
 
     }
 }
