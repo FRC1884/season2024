@@ -19,13 +19,16 @@ import edu.wpi.first.util.function.FloatSupplier;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -54,6 +57,9 @@ public class Robot extends TimedRobot {
   private final Field2d m_field = new Field2d();
   private SendableChooser<Command> autoChooser;
 
+  private AddressableLED m_led;
+  private AddressableLEDBuffer m_LedBuffer;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -69,10 +75,19 @@ public class Robot extends TimedRobot {
     // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
     // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
     OI.getInstance().registerCommands();
-    AutoCommands.registerAutoCommands();
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    // AutoCommands.registerAutoCommands();
+    // autoChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
     ctreConfigs = new CTREConfigs();
+
+    // m_led = new AddressableLED(6);
+    // m_LedBuffer = new AddressableLEDBuffer(RobotMap.LEDMap.NUMBER_LEDS);
+    // m_led.setLength(m_LedBuffer.getLength());
+    // for(int i = 0; i < RobotMap.LEDMap.NUMBER_LEDS; i++) {
+    //   m_LedBuffer.setRGB(i, 255, 0, 0);
+    // }
+    // m_led.setData(m_LedBuffer);
+    // m_led.start();
 
     enableLiveWindowInTest(isTest());
     OI.getInstance().registerCommands();
@@ -83,7 +98,6 @@ public class Robot extends TimedRobot {
 
     //var autoModeSelector = AutoModeSelector.getInstance();
     //SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
-    OI.getInstance();
     SmartDashboard.putData("field", m_field);
 
     // if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
@@ -91,14 +105,16 @@ public class Robot extends TimedRobot {
 
     // autoChooser = AutoBuilder.buildAutoChooser();
     // SmartDashboard.putData("Auto Chooser", autoChooser);
-    Drivetrain.getInstance().zeroGyroYaw();
-    Drivetrain.getInstance().setGyroYaw(180);
-    PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
+    
+
+    // Drivetrain.getInstance().zeroGyroYaw();
+    // Drivetrain.getInstance().setGyroYaw(180);
+    // PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
   }
 
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-  }
+  // public Command getAutonomousCommand() {
+  //   return autoChooser.getSelected();
+  // }
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
@@ -114,10 +130,12 @@ public class Robot extends TimedRobot {
       m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
       m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
       m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
+      if (Vision.getInstance().getNotePose2d() != null){
+        m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
+      }
     }
-    if (Vision.getInstance().getNotePose2d() != null){
-      m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
-    }
+
+    // AddressableLEDLights.getInstance().setRainbow();
   }
 
   /**
@@ -134,11 +152,12 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    var autonomousCommand = getAutonomousCommand();
+    // var autonomousCommand = getAutonomousCommand();
 
-      if(autonomousCommand != null){
-        autonomousCommand.schedule();
-      }
+    //   if(autonomousCommand != null){
+    //     autonomousCommand.schedule();
+    //   }
+    
     //Drivetrain.getInstance().setGyroYaw(180);
   }
     
@@ -158,9 +177,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    //AddressableLEDLights.getInstance().periodic();
-  }
+  public void teleopPeriodic() {}
 
   /** This function is called once when the robot is disabled. */
   @Override

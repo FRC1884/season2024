@@ -1,6 +1,10 @@
 package frc.robot.layout;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+
+import java.time.Instant;
+import java.util.Map;
 import java.util.function.DoubleSupplier;
 
 import javax.print.attribute.standard.PrinterMessageFromOperator;
@@ -9,10 +13,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -191,15 +197,31 @@ public abstract class OperatorMap extends CommandMap {
 
   private void registerLEDs() {
     if (Config.Subsystems.LEDS_ENABLED) {
-      AddressableLEDLights lights = AddressableLEDLights.getInstance();
-      // getLEDPatternOffButton().whileTrue(lights.disableCommand());
-      // // getLEDPatternOneButton().onTrue(lights.setRedBlack());
-      // getLEDPatternTwoButton().whileTrue(lights.setDecreasing());
-      // getLEDPatternThreeButton().whileTrue(lights.setRainbow());
-      // getLEDPatternFourButton().whileTrue(lights.setRedDarkRed());
-      // getLEDPatternFiveButton().whileTrue(lights.checkBeam());
-      lights.setDefaultCommand(lights.setValue(this::getLEDAxis1, this::getLEDAxis2));
-    }
+            AddressableLEDLights lights = AddressableLEDLights.getInstance();
+
+            getAmplifyButton().toggleOnTrue(lights.getAmplifyPattern());
+            getCoopButton().toggleOnTrue(lights.getCoOpPattern());
+
+            // FIXME is there a better way to pass the beambreak reading?
+            // if(Config.Subsystems.FEEDER_ENABLED)
+                getIntakeButton().whileTrue(
+                        lights.setColorCommand(Color.kRed)
+                                //.until(Intake.getInstance()::getNoteStatus)
+                                .until(getShootButton()::getAsBoolean)
+                                .andThen(lights.setColorCommand(Color.kGreen))
+                );
+
+            getArcButton().onTrue(
+                    lights.setRedGreen(
+                            // TODO replace with a ConditionalCommand on vision accuracy
+                            () -> Math.abs(getLEDAxis1())
+                    )
+            );
+
+            lights.setDefaultCommand(
+              new ConditionalCommand(lights.setColorCommand(Color.kGreen), lights.disableCommand(), getIntakeButton()::getAsBoolean)
+            );
+        }
   }
 
   @Override

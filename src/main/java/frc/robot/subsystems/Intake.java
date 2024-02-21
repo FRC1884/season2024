@@ -121,7 +121,7 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        System.out.println(direction);
+        //System.out.println(direction);
         if (intakeSensor.isPresent()) {
             if (intakeSensor.get().get()) {
                 status = IntakeStatus.EMPTY;

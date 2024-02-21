@@ -90,13 +90,13 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   
   @Override
   double getLEDAxis1() {
-    return controller.getAxis(Axis.AXIS_LEFT_X);
+    return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
 
   
   @Override
   double getLEDAxis2() {
-    return controller.getAxis(Axis.AXIS_LEFT_Y);
+    return controller.getAxis(Axis.AXIS_LEFT_X);
   }
 
   @Override
@@ -107,8 +107,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getArcButton() {
-    // TODO Auto-generated method stub
-    return null;
+    return controller.getButton(Button.BUTTON_RIGHT_JOYSTICK);
   }
 
   @Override
@@ -130,20 +129,17 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getStageAlignButton() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   JoystickButton getAmplifyButton() {
-    // TODO Auto-generated method stub
-    return null;
+    return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
 
   @Override
   JoystickButton getCoopButton() {
-    // TODO Auto-generated method stub
-    return null;
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
   @Override
