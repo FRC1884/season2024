@@ -3,37 +3,64 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.3
+        "x": 2.157199863615132,
+        "y": 6.183321696172636
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9815373154336995,
-        "y": 8.103898889684714
+        "x": 5.635318317712241,
+        "y": 6.522935956000301
       },
       "isLocked": false,
-      "linkedName": "TTB Shot One"
+      "linkedName": "CTS Preload"
     },
     {
       "anchor": {
-        "x": 4.61647553822925,
-        "y": 6.347273407813577
+        "x": 8.305389050150424,
+        "y": 5.773442417070284
       },
       "prevControl": {
-        "x": 3.8669819992992327,
-        "y": 6.394116753996702
+        "x": 7.702120842292447,
+        "y": 6.527527676892744
+      },
+      "nextControl": {
+        "x": 8.352232396333552,
+        "y": 5.714888234341376
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.2300179322204885,
+        "y": 6.042791657619781
+      },
+      "prevControl": {
+        "x": 6.068619269906157,
+        "y": 6.956236908194216
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CCTS First Shot"
+      "linkedName": "CTS First Shot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.1,
+      "rotationDegrees": 180.0,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.8,
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +84,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": -173.0,
     "rotateFast": true
   },
   "reversed": false,

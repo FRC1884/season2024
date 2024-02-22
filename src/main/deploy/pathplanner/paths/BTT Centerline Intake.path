@@ -16,21 +16,61 @@
     },
     {
       "anchor": {
-        "x": 5.986643414085687,
-        "y": 6.780574360007493
+        "x": 8.281967377058862,
+        "y": 7.436381206571257
       },
       "prevControl": {
-        "x": 5.70558333698693,
-        "y": 6.780574360007493
+        "x": 8.000907299960105,
+        "y": 7.436381206571257
+      },
+      "nextControl": {
+        "x": 8.56302745415762,
+        "y": 7.436381206571257
+      },
+      "isLocked": false,
+      "linkedName": "BTT Centerline"
+    },
+    {
+      "anchor": {
+        "x": 1.969826478882628,
+        "y": 6.979658581285779
+      },
+      "prevControl": {
+        "x": 5.2664269665201235,
+        "y": 7.208019893928518
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BTT Centerline"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.7,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 4.0,
@@ -39,7 +79,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": -140.0,
     "rotateFast": false
   },
   "reversed": false,

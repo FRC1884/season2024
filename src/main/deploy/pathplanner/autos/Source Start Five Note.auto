@@ -74,18 +74,6 @@
         {
           "type": "named",
           "data": {
-            "name": "VisionIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BTT Centerline Score"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot"
           }
         },
