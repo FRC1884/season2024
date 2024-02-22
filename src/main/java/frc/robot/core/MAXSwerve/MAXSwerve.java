@@ -531,9 +531,9 @@ public abstract class MAXSwerve extends SubsystemBase {
     TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
     TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
     
-    ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0, X_CONSTRAINTS);
-    ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0, Y_CONSTRAINTS);
-    ProfiledPIDController omegaController = new ProfiledPIDController(2, 0, 0, OMEGA_CONSTRAINTS);
+    ProfiledPIDController xController = new ProfiledPIDController(0.01, 0, 0, X_CONSTRAINTS);
+    ProfiledPIDController yController = new ProfiledPIDController(0.01, 0, 0, Y_CONSTRAINTS);
+    ProfiledPIDController omegaController = new ProfiledPIDController(0.01, 0, 0, OMEGA_CONSTRAINTS);
 
     xController.setTolerance(0.3);
     yController.setTolerance(0.3);
