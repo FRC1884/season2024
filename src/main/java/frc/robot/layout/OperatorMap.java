@@ -103,10 +103,8 @@ public abstract class OperatorMap extends CommandMap {
       getShootAmpButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
       getTrapButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
       getEjectButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
-      getAmplifyButton().onTrue(new InstantCommand(()-> feeder.Amplify(true)));
-      getAmplifyButton().onFalse(new InstantCommand(()-> feeder.Amplify(false)));
-      getAmplifyButton().onTrue(new InstantCommand(()-> feeder.Coop(true)));
-      getAmplifyButton().onFalse(new InstantCommand(()-> feeder.Coop(false)));
+     
+
     }
   }
 
@@ -171,17 +169,10 @@ public abstract class OperatorMap extends CommandMap {
   private void registerLEDs() {
     if (Config.Subsystems.LEDS_ENABLED) {
       AddressableLEDLights lights = AddressableLEDLights.getInstance();
-      //getAmplifyButton().onTrue(null)
-      // lights.setDefaultCommand(lights.setRainbow());
-      // getAmplifyButton();
-      // getCoopButton();
-      // getLEDPatternOffButton().whileTrue(lights.disableCommand());
-      // // getLEDPatternOneButton().onTrue(lights.setRedBlack());
-      // getLEDPatternTwoButton().whileTrue(lights.setDecreasing());
-      // getLEDPatternThreeButton().whileTrue(lights.setRainbow());
-      // getLEDPatternFourButton().whileTrue(lights.setRedDarkRed());
-      // getLEDPatternFiveButton().whileTrue(lights.checkBeam());
-      // lights.setDefaultCommand(lights.setValue(this::getLEDAxis1, this::getLEDAxis2));
+      getAmplifyButton().onTrue(lights.getAmplifyPattern());
+      getAmplifyButton().onFalse(lights.disableCommand());
+      getCoopButton().onTrue(lights.getCoOpPattern());
+      getCoopButton().onFalse(lights.disableCommand());
     }
   }
 
@@ -203,7 +194,7 @@ public abstract class OperatorMap extends CommandMap {
     registerFeeder();
     registerClimber();
     registerShooter();
-    // registerLEDs();
+    registerLEDs();
     registerComplexCommands();
 
     // registerSubsystems();

@@ -120,23 +120,14 @@ public class Feeder extends SubsystemBase {
         status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         updateMotors();
          if(!isDisabled){
-            if(beamBreak.get()){
-                lights.setColorCommand(Color.kGreenYellow,true);
+            if(status == NoteStatus.LOADED){
+                lights.setColorCommand(Color.kGreenYellow);
             }
-            else lights.setColorCommand(Color.kRed,true);
+            else lights.setColorCommand(Color.kRed);
 
         }
     }
-    public void Amplify(boolean y){
-        isDisabled = y;
-        lights.setColorCommand(Color.kBlue,y);
 
-    }
-    public void Coop(boolean y){
-        isDisabled = y;
-        lights.setColorCommand(Color.kPurple,y);
-
-    }
 
     @Override
     public void initSendable(SendableBuilder builder) {
