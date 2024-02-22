@@ -538,7 +538,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     xController.setTolerance(0.3);
     yController.setTolerance(0.3);
     omegaController.setTolerance(Units.degreesToRadians(3));
-    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+    omegaController.enableContinuousInput(-180, 180);
 
     return new DeferredCommand(() ->
       new RepeatCommand(
