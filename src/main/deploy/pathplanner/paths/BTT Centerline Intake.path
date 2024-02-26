@@ -16,19 +16,41 @@
     },
     {
       "anchor": {
-        "x": 5.986643414085687,
-        "y": 6.780574360007493
+        "x": 8.293678213604645,
+        "y": 7.448092043117039
       },
       "prevControl": {
-        "x": 5.70558333698693,
-        "y": 6.780574360007493
+        "x": 8.012618136505887,
+        "y": 7.448092043117039
+      },
+      "nextControl": {
+        "x": 8.574738290703403,
+        "y": 7.448092043117039
+      },
+      "isLocked": false,
+      "linkedName": "BTT Centerline"
+    },
+    {
+      "anchor": {
+        "x": 1.9932481519741916,
+        "y": 7.06163443710625
+      },
+      "prevControl": {
+        "x": 5.283993221338797,
+        "y": 7.254863240111645
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BTT Centerline"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -174.10937358379596,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": -140.0,
     "rotateFast": false
   },
   "reversed": false,

@@ -88,18 +88,6 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "VisionIntake"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "TTB Centerline Shoot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
                         "name": "Shoot"
                       }
                     }

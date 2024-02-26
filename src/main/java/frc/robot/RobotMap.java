@@ -273,7 +273,7 @@ public class RobotMap {
     public static final double PIVOT_AMP_ANGLE = 80;
     public static final double PIVOT_TRAP_ANGLE = 0;
 
-    public static final PIDConstants PID = new PIDConstants(1, 2, 0);
+    public static final PIDConstants PID = new PIDConstants(1, 0, 0);
     public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(30, 10);
     public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0, 0, 0, 0);
   }
@@ -282,6 +282,6 @@ public class RobotMap {
     public static final int BLINKIN_PWM_PORT = 6;
     public static final boolean BLINKIN_PWM = true;
     public static final boolean BLINKIN_ON_SPARK = false;
-    public static final int NUMBER_LEDS = 22;
+    public static final int NUMBER_LEDS = 36;
   }
 }

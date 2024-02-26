@@ -69,6 +69,7 @@ public class Pivot extends ProfiledPIDSubsystem {
         pivot.setSoftLimit(SoftLimitDirection.kReverse, 2);
         pivot.setSoftLimit(SoftLimitDirection.kForward, 80);
 
+        pivot.setInverted(true);
         pivot.burnFlash();
 
         var tab = Shuffleboard.getTab("Pivot");
