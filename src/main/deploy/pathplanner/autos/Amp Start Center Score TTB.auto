@@ -34,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Amp Start To Top Note"
+                        "pathName": "CTS Shot 1"
                       }
                     },
                     {
@@ -46,7 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "TTB Top"
+                        "pathName": "CTS Pickup 2"
                       }
                     },
                     {
@@ -58,31 +58,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "TTB Mid"
+                        "pathName": "CTS Pickup 3"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
                         "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "TTB Bottom"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "TTB Centerline Intake"
                       }
                     }
                   ]

@@ -9,23 +9,23 @@
       "prevControl": null,
       "nextControl": {
         "x": 1.4708394010225951,
-        "y": 7.3
+        "y": 6.8
       },
       "isLocked": false,
       "linkedName": "Amp Start"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.3
+        "x": 2.157199863615132,
+        "y": 6.183321696172636
       },
       "prevControl": {
-        "x": 2.111045813028386,
-        "y": 7.3
+        "x": 1.513103853597149,
+        "y": 6.698598504187023
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TTB Shot One"
+      "linkedName": "CTS Preload"
     }
   ],
   "rotationTargets": [],
@@ -38,15 +38,15 @@
     "maxAngularAcceleration": 240.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -135.0,
+    "velocity": 0,
+    "rotation": -160.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
     "rotation": 180.0,
-    "velocity": 0.0
+    "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

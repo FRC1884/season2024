@@ -45,18 +45,16 @@ public class Robot extends TimedRobot {
     //OI.getInstance();
 
     //Autocommands
-    // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
-    // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
     OI.getInstance().registerCommands();
     AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       enableLiveWindowInTest(true);
-    // var autoModeSelector = AutoModeSelector.getInstance();
-    // SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
+
     SmartDashboard.putData("field", m_field);
-    Drivetrain.getInstance().zeroGyroYaw();
+    if(Config.Subsystems.DRIVETRAIN_ENABLED)
+     Drivetrain.getInstance().zeroGyroYaw();
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -117,16 +115,11 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
-    //OI.getInstance().registerCommands();
-    //Drivetrain.getInstance().zeroGyroYaw();
-    //Drivetrain.getInstance().setGyroYaw(0);
-    //PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    //AddressableLEDLights.getInstance().periodic();
   }
 
   /** This function is called once when the robot is disabled. */

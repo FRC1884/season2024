@@ -103,56 +103,6 @@ public abstract class OperatorMap extends CommandMap {
         }
     }
 
-    private void registerComplexCommands(){
-        if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.Intake.INTAKE_ENABLED
-                && Config.Subsystems.DRIVETRAIN_ENABLED) {
-            Shooter shooter = Shooter.getInstance();
-            Pivot pivot = Pivot.getInstance();
-            FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-            Feeder feeder = Feeder.getInstance();
-            Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
-            PoseEstimator poseEstimator = PoseEstimator.getInstance();
-            Intake intake = Intake.getInstance();
-            // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
-            getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
-
-            getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
-                    .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()).alongWith(
-                    shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
-                            poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()))));
-            getArcButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
-
-            getAmpAlignButton().onTrue(
-                    pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
-                            shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED)));
-            getAmpAlignButton().onFalse(
-                    shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(
-                            pivot.updatePosition(() -> -1.0)
-                    ));
-            getStageAlignButton().onTrue(
-                    pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
-                            shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
-            getStageAlignButton().onFalse(
-                    shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(
-                            pivot.updatePosition(() -> -1.0)
-                    ));
-
-            getClimbSequenceButton().whileTrue(
-                    pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(
-                            Climber.getInstance().run(() -> 0.3)));
-            getClimbSequenceButton().onFalse(Climber.getInstance().run(() -> -0.3));
-
-            getPivotRaiseButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE));
-            getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
-            getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
-            getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
-            getClimberLowerButton().whileTrue(Climber.getInstance().run(() -> -0.3));
-            getClimberLowerButton().onFalse(Climber.getInstance().run(() -> -0.0));
-            // getEjectButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.REVERSE)).alongWith(intake.se));
-        }
-
-    }
-
     private void registerLEDs() {
         if (Config.Subsystems.LEDS_ENABLED) {
             AddressableLEDLights lights = AddressableLEDLights.getInstance();
@@ -181,21 +131,77 @@ public abstract class OperatorMap extends CommandMap {
         }
     }
 
-    public void registerSubsystems(){
-        Intake.getInstance();
-        Shooter.getInstance();
-        Feeder.getInstance();
-        Climber.getInstance();
+  private void registerComplexCommands(){
+    if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.Intake.INTAKE_ENABLED
+        && Config.Subsystems.DRIVETRAIN_ENABLED) {
+        Shooter shooter = Shooter.getInstance();
+         Pivot pivot = Pivot.getInstance();
+      FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+      Feeder feeder = Feeder.getInstance();
+      Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+      PoseEstimator poseEstimator = PoseEstimator.getInstance();
+      Intake intake = Intake.getInstance();
+      // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
+      getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
+
+      getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
+      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()).alongWith( 
+      shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
+        poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()))));
+      getArcButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+
+      getAmpAlignButton().onTrue(
+        pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
+        shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED)));
+      getAmpAlignButton().onFalse(
+        shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(
+        pivot.updatePosition(() -> -1.0)
+        ));
+      getStageAlignButton().onTrue(
+        pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
+        shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
+      getStageAlignButton().onFalse(
+        shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(
+        pivot.updatePosition(() -> -1.0)
+        ));
+
+      getClimbSequenceButton().whileTrue(
+          pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(
+          Climber.getInstance().run(() -> 0.3))); 
+      getClimbSequenceButton().onFalse(Climber.getInstance().run(() -> -0.3));
+
+      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE));
+      getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
+      getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
+      getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
+       getClimberLowerButton().whileTrue(Climber.getInstance().run(() -> -0.3));
+      getClimberLowerButton().onFalse(Climber.getInstance().run(() -> -0.0));
+      // getEjectButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.REVERSE)).alongWith(intake.se));
     }
+    
+  }
+
+  public void registerSubsystems(){
+    Intake.getInstance();
+    Shooter.getInstance();
+    Feeder.getInstance();
+    Climber.getInstance();
+    AddressableLEDLights.getInstance();
+
+
+  }
 
 
 
-    @Override
-    public void registerCommands() {
-        registerIntake();
-        registerFeeder();
-        registerLEDs();
-        registerComplexCommands();
-        // registerSubsystems();
-    }
+  @Override
+  public void registerCommands() {
+    registerIntake();
+    registerFeeder();
+    registerClimber();
+    registerShooter();
+    registerLEDs();
+    registerComplexCommands();
+
+    // registerSubsystems();
+  }
 }

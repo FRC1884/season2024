@@ -119,7 +119,15 @@ public class Feeder extends SubsystemBase {
     public void periodic() {
         status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         updateMotors();
+         if(!isDisabled){
+            if(status == NoteStatus.LOADED){
+                lights.setColorCommand(Color.kGreenYellow);
+            }
+            else lights.setColorCommand(Color.kRed);
+
+        }
     }
+
 
     @Override
     public void initSendable(SendableBuilder builder) {
