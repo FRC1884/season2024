@@ -55,7 +55,7 @@ public class AutoCommands {
                 intake.setIntakeState(IntakeDirection.STOPPED)
                 ));
         NamedCommands.registerCommand("VisionIntake",
-                intake.intakeUntilLoadedCommand().alongWith(Vision.getInstance().followNoteCommand().onlyIf(
+                intake.intakeUntilLoadedCommand().alongWith(Vision.getInstance().onTheFlyToNoteCommand().onlyIf(
                         () -> !Vision.getInstance().getNotePose2d().getTranslation().equals(new Translation2d(0, 0)))));
         // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
         // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));

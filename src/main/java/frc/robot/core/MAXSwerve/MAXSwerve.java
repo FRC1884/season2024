@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +29,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -608,6 +611,65 @@ public abstract class MAXSwerve extends SubsystemBase {
             false),
         false);
   }
+
+  /**
+   * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
+   * @param targetPose the Supplier<Pose2d> that the robot should drive to
+   * @return command to PID align to a pose on the field
+   */
+  public Command chasePoseCommand(Supplier<Pose2d> target){
+    TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+    
+    ProfiledPIDController xController = new ProfiledPIDController(0.1, 0, 0, X_CONSTRAINTS);
+    ProfiledPIDController yController = new ProfiledPIDController(0.1, 0, 0, Y_CONSTRAINTS);
+    ProfiledPIDController omegaController = new ProfiledPIDController(0.01, 0, 0, OMEGA_CONSTRAINTS);
+
+    xController.setTolerance(0.3);
+    yController.setTolerance(0.3);
+    omegaController.setTolerance(Units.degreesToRadians(3));
+    omegaController.enableContinuousInput(-180, 180);
+
+    return new DeferredCommand(() ->
+      new RepeatCommand(
+        new FunctionalCommand(
+          () -> {
+            // Init
+          },
+          () -> {
+
+            double xSpeed = xController.calculate(this.getPose().getX(), target.get().getX());
+            double ySpeed = yController.calculate(this.getPose().getY(), target.get().getY());
+            double omegaSpeed = omegaController.calculate(this.getGyroYawDegrees(), target.get().getRotation().getDegrees());
+
+            this.drive(xSpeed,ySpeed, omegaSpeed, true, true);
+          },
+
+          interrupted -> {
+            this.drive(0,0,0, true, true);
+            System.out.println("30 cm away now");
+          },
+
+        () -> {
+          return xController.atGoal() && yController.atGoal() && omegaController.atGoal();
+        },
+        this)), Set.of(this)
+    );
+  }
+
+  /**
+   * Command to drive using Trapezoidal PID to a set distance away from a pose, then on-the-fly path to the pose 
+   * @param targetPose the Supplier<Pose2d> that the robot should drive to
+   * @return command to PID align to and then on-the-fly path to a pose on the field
+   */
+  public Command chaseThenOnTheFlyCommand(Supplier<Pose2d> target){
+    return new SequentialCommandGroup(
+      chasePoseCommand(target),
+      onTheFlyPathCommand(target)
+    );
+  }
+
 
   // public Command goSpeakerOrSource(boolean hasNote) {
   //   if (hasNote) {

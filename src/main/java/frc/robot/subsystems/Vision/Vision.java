@@ -328,7 +328,7 @@ public class Vision extends SubsystemBase {
   public Translation2d estimateCameraToTargetTranslation(double targetDistanceMeters, double targetOffsetAngle_Horizontal){
     Rotation2d yaw = Rotation2d.fromDegrees(targetOffsetAngle_Horizontal);
     return new Translation2d(
-      yaw.getCos() * (targetDistanceMeters + 0.30), yaw.getSin() * targetDistanceMeters);
+      yaw.getCos() * (targetDistanceMeters), yaw.getSin() * targetDistanceMeters);
   }
 /**
    * @param cameraToTargetTranslation2d the translation from estimate camera to target
@@ -373,7 +373,24 @@ public class Vision extends SubsystemBase {
    * Commnad to go to the note
    * @return a follow path command to drive to the note
    */
-  public Command followNoteCommand(){
+  public Command onTheFlyToNoteCommand(){
     return Drivetrain.getInstance().onTheFlyPathCommand(this::getNotePose2d); //doing this::getNotePose2d converts to a supplier
   }
+
+  /**
+   * Commnad to go to in front of note using PID
+   * @return a PID command to drive in front of a note
+   */
+  public Command PID_thenOnTheFlyToNoteCommand(){
+    return Drivetrain.getInstance().chaseThenOnTheFlyCommand(this::getNotePose2d);
+  }
+
+  /**
+   * Commnad to go to in front of note using PID and then drive to the note
+   * @return a PID and then on-the-fly command to drive onto a note
+   */
+  public Command PIDtoNoteCommand(){
+    return Drivetrain.getInstance().chasePoseCommand(this::getNotePose2d);
+  }
+
 }
