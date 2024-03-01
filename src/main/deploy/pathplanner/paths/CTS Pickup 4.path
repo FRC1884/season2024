@@ -3,80 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 4.0
+        "x": 4.2300179322204885,
+        "y": 6.042791657619781
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.075224007794662,
-        "y": 4.028527771748838
+        "x": 5.690964545081144,
+        "y": 7.0052043322732604
       },
       "isLocked": false,
-      "linkedName": "BTT Shot One"
+      "linkedName": "CTS First Shot"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 4.0
+        "x": 8.279435515585794,
+        "y": 4.11382718436913
       },
       "prevControl": {
-        "x": 1.8853973531770176,
-        "y": 3.985680585483853
+        "x": 7.857202662241063,
+        "y": 5.325451893967052
       },
       "nextControl": {
-        "x": 2.1146026468229824,
-        "y": 4.014319414516147
+        "x": 8.3625425302776,
+        "y": 3.875346185688296
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.613922488900611,
-        "y": 4.11050362756931
+        "x": 4.2300179322204885,
+        "y": 6.042791657619781
       },
       "prevControl": {
-        "x": 2.531946633080141,
-        "y": 4.087081954477746
-      },
-      "nextControl": {
-        "x": 2.6958983447210816,
-        "y": 4.133925300660874
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.21575404634404,
-        "y": 5.574358195791997
-      },
-      "prevControl": {
-        "x": 2.192332373252477,
-        "y": 3.981684425565712
+        "x": 6.829157454097373,
+        "y": 7.197962808800202
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BTT Shot Two"
+      "linkedName": "CTS First Shot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": 180.0,
-      "rotateFast": true
-    },
-    {
       "waypointRelativePos": 1,
-      "rotationDegrees": 180.0,
+      "rotationDegrees": 98.2971449698368,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.75,
       "command": {
         "type": "parallel",
         "data": {
@@ -100,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
-    "rotateFast": true
+    "rotation": -173.0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 140.0,
+    "rotation": -173.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

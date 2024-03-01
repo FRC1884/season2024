@@ -66,6 +66,18 @@
                       "data": {
                         "name": "Shoot"
                       }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CTS Pickup 4"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
                     }
                   ]
                 }
