@@ -80,14 +80,9 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putData("Auto Chooser", autoChooser);
     ctreConfigs = new CTREConfigs();
 
-    // m_led = new AddressableLED(6);
+    // m_led = new AddressableLED(4);
     // m_LedBuffer = new AddressableLEDBuffer(RobotMap.LEDMap.NUMBER_LEDS);
-    // m_led.setLength(m_LedBuffer.getLength());
-    // for(int i = 0; i < RobotMap.LEDMap.NUMBER_LEDS; i++) {
-    //   m_LedBuffer.setRGB(i, 255, 0, 0);
-    // }
-    // m_led.setData(m_LedBuffer);
-    // m_led.start();
+    // m_led.setLength(m_LedBuffer.getLength());l
 
     enableLiveWindowInTest(isTest());
     OI.getInstance().registerCommands();
@@ -134,6 +129,13 @@ public class Robot extends TimedRobot {
         m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
       }
     }
+
+    
+    // for(int i = 0; i < RobotMap.LEDMap.NUMBER_LEDS; i++) {
+    //   m_LedBuffer.setRGB(i, 0, 0, 255);
+    // }
+    // m_led.setData(m_LedBuffer);
+    // m_led.start();
 
     // AddressableLEDLights.getInstance().setRainbow();
   }

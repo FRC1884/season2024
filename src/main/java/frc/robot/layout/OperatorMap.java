@@ -1,6 +1,7 @@
 package frc.robot.layout;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 
 import java.time.Instant;
@@ -84,9 +85,9 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getLEDPatternOffButton();
 
-  abstract Trigger getPivotRaiseButton();
-
   abstract Trigger getPivotLowerButton();
+
+  abstract Trigger getPivotRaiseButton();
 
   abstract double getLEDAxis1();
 
@@ -189,8 +190,8 @@ public abstract class OperatorMap extends CommandMap {
               Climber.getInstance().run(() -> 0.2),
               new WaitCommand(1),
               Climber.getInstance().run(() -> 0)));
-      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> -115.0));
-      getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
+      getPivotLowerButton().onTrue(pivot.updatePosition(() -> 0.0).alongWith(new PrintCommand("hi")));
+      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> 75.0).alongWith(new PrintCommand("bye")));
     }
 
   }
@@ -199,28 +200,44 @@ public abstract class OperatorMap extends CommandMap {
     if (Config.Subsystems.LEDS_ENABLED) {
             AddressableLEDLights lights = AddressableLEDLights.getInstance();
 
-            getAmplifyButton().toggleOnTrue(lights.getAmplifyPattern());
-            getCoopButton().toggleOnTrue(lights.getCoOpPattern());
+            getAmplifyButton().toggleOnTrue(lights.getAmplifyPattern())
+              // .toggleOnFalse(
+              //   new ConditionalCommand(
+              //     lights.setBlinkingCommand(Color.kGreenYellow, Color.kBlack, 6),
+              //     lights.setColorCommand(Color.kRed),
+              //     Intake.getInstance()::getNoteStatus)
+              // )
+            ;
+            getCoopButton().toggleOnTrue(lights.getCoOpPattern())
+              // .toggleOnFalse(
+              //   new ConditionalCommand(
+              //     lights.setBlinkingCommand(Color.kGreenYellow, Color.kBlack, 6),
+              //     lights.setColorCommand(Color.kRed),
+              //     Intake.getInstance()::getNoteStatus)
+              // )
+            ;
+
+            new Trigger(Intake.getInstance()::getNoteStatus)
+              .debounce(0.25)
+              .whileTrue(lights.setBlinkingCommand(Color.kGreenYellow, Color.kBlack, 6));
 
             // FIXME is there a better way to pass the beambreak reading?
             // if(Config.Subsystems.FEEDER_ENABLED)
-                getIntakeButton().whileTrue(
-                        lights.setColorCommand(Color.kRed)
-                                //.until(Intake.getInstance()::getNoteStatus)
-                                .until(getShootButton()::getAsBoolean)
-                                .andThen(lights.setColorCommand(Color.kGreen))
-                );
+            // getIntakeButton().whileTrue(
+            //         lights.setColorCommand(Color.kRed)
+            //                 //.until(Intake.getInstance()::getNoteStatus)
+            //                 .until(Intake.getInstance()::getNoteStatus)
+            //                 .andThen(lights.setColorCommand(Color.kGreenYellow))
+            // );
 
-            getArcButton().onTrue(
-                    lights.setRedGreen(
-                            // TODO replace with a ConditionalCommand on vision accuracy
-                            () -> Math.abs(getLEDAxis1())
-                    )
-            );
+            // getArcButton().onTrue(
+            //         lights.setRedGreen(
+            //                 // TODO replace with a ConditionalCommand on vision accuracy
+            //                 () -> Math.abs(getLEDAxis1())
+            //         )
+            // );
 
-            lights.setDefaultCommand(
-              new ConditionalCommand(lights.setColorCommand(Color.kGreen), lights.disableCommand(), getIntakeButton()::getAsBoolean)
-            );
+            lights.setDefaultCommand(lights.setColorCommand(Color.kRed));
         }
   }
 
@@ -230,7 +247,7 @@ public abstract class OperatorMap extends CommandMap {
     registerIntake();
     registerClimber();
     registerShamper();
-    registerLEDs();
+    //registerLEDs();
     registerComplexCommands();
   }
 }

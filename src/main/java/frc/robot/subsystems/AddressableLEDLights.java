@@ -34,7 +34,6 @@ public class AddressableLEDLights extends SubsystemBase {
         m_ledBuffer = new AddressableLEDBuffer(NUMBER_LEDS);
         m_led.setData(m_ledBuffer);
         m_led.start();
-        // setDefaultCommand(setRainbow());
     }
 
     public Command setRedGreen(DoubleSupplier confidence) {
@@ -56,12 +55,19 @@ public class AddressableLEDLights extends SubsystemBase {
         , this);
     }
 
+    public Command setBlinkingCommand(Color colorOne, Color colorTwo, double frequency) {
+        return Commands.repeatingSequence(
+            setColorCommand(colorOne).withTimeout(1.0 / frequency),
+            setColorCommand(colorTwo).withTimeout(1.0 / frequency)
+        );
+    }
+
     private void setColor(Color color) {
         for(int i = 0; i < NUMBER_LEDS; i++) {
             m_ledBuffer.setRGB(
                 i, 
-                (int) color.red * 255, 
                 (int) color.green * 255, 
+                (int) color.red * 255, 
                 (int) color.blue * 255
             );
         }
@@ -132,7 +138,7 @@ public class AddressableLEDLights extends SubsystemBase {
     }
 
     public Command setColorCommand(Color color) {
-        return new RunCommand(() -> setColor(color), this);
+        return Commands.run(() -> setColor(color), this);
     }
 
     public Command setToAllianceColorCommand(Supplier<Alliance> alliance) {

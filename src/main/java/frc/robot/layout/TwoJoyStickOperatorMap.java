@@ -111,13 +111,13 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getPivotRaiseButton()
+  JoystickButton getPivotLowerButton()
   {
     return null;
   }
 
   @Override
-  JoystickButton getPivotLowerButton(){
+  JoystickButton getPivotRaiseButton(){
     return null;
   }
 

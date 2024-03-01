@@ -16,7 +16,7 @@ public final class Config {
     public static final boolean LEDS_ENABLED = true;
 
     public static final class Intake {
-      public static final boolean SENSOR_ENABLED = false;
+      public static final boolean SENSOR_ENABLED = true;
     }
   }
 

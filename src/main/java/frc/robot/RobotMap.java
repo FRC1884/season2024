@@ -228,7 +228,7 @@ public class RobotMap {
 
     public static final double INTAKE_REVERSE_SPEED = -0.4;
     public static final double FEEDER_REVERSE_SPEED = -0.4;
-    public static final int SENSOR = 0;
+    public static final int SENSOR = 9;
 
     public static final double INTAKE_DELAY = 0.1
     ;
@@ -266,22 +266,22 @@ public class RobotMap {
     public static final int PIVOT = 19;
     public static final double TOLERANCE = 1;
     public static final double DT = 0.2;
-    public static final double LOWER_SETPOINT_LIMIT = 10;
-    public static final double UPPER_SETPOINT_LIMIT = 80;
+    public static final double LOWER_SETPOINT_LIMIT = 0;
+    public static final double UPPER_SETPOINT_LIMIT = 90;
 
     // TODO: TUNE
     public static final double PIVOT_AMP_ANGLE = 80;
     public static final double PIVOT_TRAP_ANGLE = 0;
 
-    public static final PIDConstants PID = new PIDConstants(1, 0, 0);
-    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(30, 10);
+    public static final PIDConstants PID = new PIDConstants(0.8, 3, 0);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(70, 30);
     public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0, 0, 0, 0);
   }
 
   public static class LEDMap {
-    public static final int BLINKIN_PWM_PORT = 6;
+    public static final int BLINKIN_PWM_PORT = 4;
     public static final boolean BLINKIN_PWM = true;
     public static final boolean BLINKIN_ON_SPARK = false;
-    public static final int NUMBER_LEDS = 36;
+    public static final int NUMBER_LEDS = 32;
   }
 }
