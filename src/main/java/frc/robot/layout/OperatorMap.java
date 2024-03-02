@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import javax.print.attribute.standard.PrinterMessageFromOperator;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Config;
@@ -196,32 +198,14 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerLEDs() {
-    if (Config.Subsystems.LEDS_ENABLED) {
-            AddressableLEDLights lights = AddressableLEDLights.getInstance();
+      if (Config.Subsystems.LEDS_ENABLED && Config.Subsystems.INTAKE_ENABLED) {
+          AddressableLEDLights lights = AddressableLEDLights.getInstance();
+          Intake intake = Intake.getInstance();
 
-            getAmplifyButton().toggleOnTrue(lights.getAmplifyPattern());
-            getCoopButton().toggleOnTrue(lights.getCoOpPattern());
-
-            // FIXME is there a better way to pass the beambreak reading?
-            // if(Config.Subsystems.FEEDER_ENABLED)
-                getIntakeButton().whileTrue(
-                        lights.setColorCommand(Color.kRed)
-                                //.until(Intake.getInstance()::getNoteStatus)
-                                .until(getShootButton()::getAsBoolean)
-                                .andThen(lights.setColorCommand(Color.kGreen))
-                );
-
-            getArcButton().onTrue(
-                    lights.setRedGreen(
-                            // TODO replace with a ConditionalCommand on vision accuracy
-                            () -> Math.abs(getLEDAxis1())
-                    )
-            );
-
-            lights.setDefaultCommand(
-              new ConditionalCommand(lights.setColorCommand(Color.kGreen), lights.disableCommand(), getIntakeButton()::getAsBoolean)
-            );
-        }
+          getAmplifyButton().onTrue(lights.toggleAmplifyState(intake::getNoteStatus));
+          getCoopButton().onTrue(lights.toggleCoopState(intake::getNoteStatus));
+          lights.setDefaultCommand(lights.useState(lights::getState));
+      }
   }
 
   @Override
