@@ -128,12 +128,12 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  Trigger getPivotRaiseButton(){
+  Trigger getPivotLowerButton(){
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
   }
 
   @Override
-  Trigger getPivotLowerButton(){
+  Trigger getPivotRaiseButton(){
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > -0.9);
   }
 }

@@ -72,7 +72,6 @@ public class Intake extends SubsystemBase {
 
         tab.addString("status", () -> status.toString());
         tab.addString("direction", () -> direction.toString());
-        System.out.println("Intake!");
         tab.add(this);
     }
 
@@ -131,7 +130,6 @@ public class Intake extends SubsystemBase {
         }
 
         updateIntake();
-        
     }
 
     private void updateIntake() {

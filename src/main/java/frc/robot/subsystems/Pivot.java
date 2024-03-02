@@ -138,7 +138,6 @@ public class Pivot extends ProfiledPIDSubsystem {
     }
 
 
-
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("goal", () -> getController().getSetpoint().position, (s) -> setPosition(s));
