@@ -37,10 +37,7 @@ public class AddressableLEDLights extends SubsystemBase {
     private AddressableLED m_led;
     private AddressableLEDBuffer m_ledBuffer;
     private int m_rainbowFirstPixelHue = 0;
-    private int currLED, value = 255, direction = -1;
-    private boolean isAmplify = false, isCoop = false;
-
-    private double dashStart = 0;
+    private int value = 255, direction = -1;
 
     private AddressableLEDLights() {
         m_led = new AddressableLED(LEDMap.BLINKIN_PWM_PORT);

@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import javax.print.attribute.standard.PrinterMessageFromOperator;
@@ -23,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Config;
@@ -106,12 +104,12 @@ public abstract class OperatorMap extends CommandMap {
 
       getIntakeStopButton().onTrue(intake.setIntakeState(IntakeDirection.STOPPED));
       getIntakeButton().whileTrue(intake.intakeUntilLoadedCommand())
-          .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
+              .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
       getIntakeReverseButton().onTrue(intake.setIntakeState(IntakeDirection.REVERSE));
 
-     
+
       getShootButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD))
-          .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
+              .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
     }
   }
 
@@ -121,7 +119,7 @@ public abstract class OperatorMap extends CommandMap {
       Pivot pivot = Pivot.getInstance();
       FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
       Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
-          : Coordinates.RED_SPEAKER;
+              : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
     }
   }
@@ -153,45 +151,45 @@ public abstract class OperatorMap extends CommandMap {
 
   private void registerComplexCommands() {
     if (Config.Subsystems.SHAMPER_ENABLED && Config.Subsystems.INTAKE_ENABLED
-        && Config.Subsystems.DRIVETRAIN_ENABLED) {
+            && Config.Subsystems.DRIVETRAIN_ENABLED) {
       Intake intake = Intake.getInstance();
       Shamper shooter = Shamper.getInstance();
       Pivot pivot = Pivot.getInstance();
       FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
       Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
-          : Coordinates.RED_SPEAKER;
+              : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
       // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
 
       getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
-          .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint())
-          .alongWith(shooter.setShootVelocityCommand(() -> lookupTable.get(
-              poseEstimator.getDistanceToPose(target.getTranslation())).getFlywheelV(),
-              () -> lookupTable.get(poseEstimator.getDistanceToPose(target.getTranslation())).getFeederV()))));
+                      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint())
+              .alongWith(shooter.setShootVelocityCommand(() -> lookupTable.get(
+                              poseEstimator.getDistanceToPose(target.getTranslation())).getFlywheelV(),
+                      () -> lookupTable.get(poseEstimator.getDistanceToPose(target.getTranslation())).getFeederV()))));
 
       getArcButton().onFalse(shooter.setShootVelocityCommand(() -> 0.0, () -> 0.0));
 
       getShootAmpButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD).andThen(shooter.setFeederVelocityCommand(() -> ShamperMap.AMP_SPEED_FEEDER)))
-      .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
+              .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
 
       getAmpAlignButton().onTrue(
-        
-          pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
-              shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP).andThen(shooter.setBotVelocityCommand(() -> -ShamperMap.AMP_SPEED_TOP))));
+
+              pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
+                      shooter.setTopVelocityCommand(() -> ShamperMap.AMP_SPEED_TOP).andThen(shooter.setBotVelocityCommand(() -> -ShamperMap.AMP_SPEED_TOP))));
 
       getAmpAlignButton().onFalse(
-          pivot.updatePosition(() -> PivotMap.LOWER_SETPOINT_LIMIT + 1).alongWith(
-              shooter.setFlywheelVelocityCommand(() -> 0.0).andThen(shooter.setFeederVelocityCommand(() -> 0.0))));
+              pivot.updatePosition(() -> PivotMap.LOWER_SETPOINT_LIMIT + 1).alongWith(
+                      shooter.setFlywheelVelocityCommand(() -> 0.0).andThen(shooter.setFeederVelocityCommand(() -> 0.0))));
 
       getStageAlignButton().onTrue(
-          pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
-              shooter.setFlywheelVelocityCommand(() -> ShamperMap.TRAP_SPEED)));
+              pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
+                      shooter.setFlywheelVelocityCommand(() -> ShamperMap.TRAP_SPEED)));
 
       getClimbSequenceButton().onTrue(
-          new SequentialCommandGroup(
-              Climber.getInstance().run(() -> 0.2),
-              new WaitCommand(1),
-              Climber.getInstance().run(() -> 0)));
+              new SequentialCommandGroup(
+                      Climber.getInstance().run(() -> 0.2),
+                      new WaitCommand(1),
+                      Climber.getInstance().run(() -> 0)));
       getPivotLowerButton().onTrue(pivot.updatePosition(() -> 0.0).alongWith(new PrintCommand("hi")));
       getPivotRaiseButton().onTrue(pivot.updatePosition(() -> 75.0).alongWith(new PrintCommand("bye")));
     }
@@ -199,14 +197,14 @@ public abstract class OperatorMap extends CommandMap {
   }
 
   private void registerLEDs() {
-      if (Config.Subsystems.LEDS_ENABLED && Config.Subsystems.INTAKE_ENABLED) {
-          AddressableLEDLights lights = AddressableLEDLights.getInstance();
-          Intake intake = Intake.getInstance();
+    if (Config.Subsystems.LEDS_ENABLED && Config.Subsystems.INTAKE_ENABLED) {
+      AddressableLEDLights lights = AddressableLEDLights.getInstance();
+      Intake intake = Intake.getInstance();
 
-          getAmplifyButton().onTrue(lights.toggleAmplifyState(intake::getNoteStatus));
-          getCoopButton().onTrue(lights.toggleCoopState(intake::getNoteStatus));
-          lights.setDefaultCommand(lights.useState(lights::getState));
-      }
+      getAmplifyButton().onTrue(lights.toggleAmplifyState(intake::getNoteStatus));
+      getCoopButton().onTrue(lights.toggleCoopState(intake::getNoteStatus));
+      lights.setDefaultCommand(lights.useState(lights::getState));
+    }
   }
 
   @Override
