@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotMap.LEDMap;
 import frc.robot.util.RunForSecondsCommand;
 
+import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import static frc.robot.RobotMap.LEDMap.NUMBER_LEDS;
@@ -22,11 +25,22 @@ public class AddressableLEDLights extends SubsystemBase {
         return instance;
     }
 
+     public enum LEDState {
+        NO_NOTE,
+        HAS_NOTE,
+        AMPLIFY,
+        COOP;
+    }
+
+    private LEDState state = LEDState.NO_NOTE;
+
     private AddressableLED m_led;
     private AddressableLEDBuffer m_ledBuffer;
     private int m_rainbowFirstPixelHue = 0;
     private int currLED, value = 255, direction = -1;
     private boolean isAmplify = false, isCoop = false;
+
+    private double dashStart = 0;
 
     private AddressableLEDLights() {
         m_led = new AddressableLED(LEDMap.BLINKIN_PWM_PORT);
@@ -37,31 +51,47 @@ public class AddressableLEDLights extends SubsystemBase {
         // setDefaultCommand(setRainbow());
     }
 
-    public Command setRedGreen(DoubleSupplier confidence) {
-        return new RunCommand(
-            ()->{
-                for(int i = 0; i < NUMBER_LEDS; i++) {
-                    m_ledBuffer.setHSV(
-                        i,
-                        (int) (confidence.getAsDouble() * 60),
-                        255,
-                        255
-                    );
-                }
-                m_rainbowFirstPixelHue++;
-                m_rainbowFirstPixelHue %= 180;
-                m_led.setData(m_ledBuffer);
-                m_led.start();
-            }
-        , this);
+    public LEDState getState() {
+        return state;
+    }
+
+    private Command setNoteStatusState(BooleanSupplier beamBroken) {
+        return Commands.runOnce(()-> {
+            if (beamBroken.getAsBoolean()) this.state = LEDState.HAS_NOTE;
+            else this.state = LEDState.NO_NOTE;
+        });
+    }
+
+    public Command toggleAmplifyState(BooleanSupplier beamBroken) {
+        return getState() == LEDState.AMPLIFY
+                ? setNoteStatusState(beamBroken)
+                : Commands.runOnce(() -> this.state = LEDState.AMPLIFY);
+    }
+
+    public Command toggleCoopState(BooleanSupplier beamBroken) {
+        return getState() == LEDState.COOP
+                ? setNoteStatusState(beamBroken)
+                : Commands.runOnce(() -> this.state = LEDState.COOP);
+    }
+
+    public Command useState(Supplier<LEDState> state) {
+        return Commands.select(
+                Map.of(
+                        LEDState.NO_NOTE, setColorCommand(Color.kRed),
+                        LEDState.HAS_NOTE, setBlinking(Color.kGreen, Color.kBlack, 6.0),
+                        LEDState.AMPLIFY, getAmplifyPattern(),
+                        LEDState.COOP, getCoOpPattern()
+                ),
+                this::getState
+        ).repeatedly();
     }
 
     private void setColor(Color color) {
         for(int i = 0; i < NUMBER_LEDS; i++) {
             m_ledBuffer.setRGB(
                 i, 
-                (int) color.red * 255, 
-                (int) color.green * 255, 
+                (int) color.green * 255,
+                (int) color.red * 255,
                 (int) color.blue * 255
             );
         }
@@ -69,8 +99,8 @@ public class AddressableLEDLights extends SubsystemBase {
         m_led.start();
     }
 
-    public Command setRainbow() {
-        return new RepeatCommand(new InstantCommand(() -> {
+    private Command setRainbow() {
+        return Commands.runOnce(() -> {
             // For every pixel
             for (var i = 0; i < NUMBER_LEDS; i++) {
                 // Calculate the hue - hue is easier for rainbows because the color
@@ -85,26 +115,32 @@ public class AddressableLEDLights extends SubsystemBase {
             m_rainbowFirstPixelHue %= 180;
             m_led.setData(m_ledBuffer);
             m_led.start();
-        }, this));
+        }, this).repeatedly();
     }
 
-    public Command getAmplifyPattern() {
-        return setPhaseInOut(DriverStation.getAlliance().get().equals(Alliance.Red) ? 240 : 120)
-        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    private Command getAmplifyPattern() {
+        return setPhaseInOut(DriverStation.getAlliance().get().equals(Alliance.Red) ? () -> 240 : () -> 120)
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
-    public Command getCoOpPattern() {
+    private Command getCoOpPattern() {
         return setRainbow()
-        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
-    public Command setPhaseInOut(int h) {
-        return new RepeatCommand(new InstantCommand(() -> {
+    private Command setBlinking(Color onColor, Color offColor, double frequency) {
+        return Commands.repeatingSequence(
+                setColorCommand(onColor).withTimeout(1.0 / frequency),
+                setColorCommand(offColor).withTimeout(1.0 / frequency));
+    }
+
+    private Command setPhaseInOut(IntSupplier h) {
+        return Commands.runOnce(() -> {
                 for(int i = 0; i < NUMBER_LEDS; i++) {
-                    m_ledBuffer.setHSV(i, h, 255, value);
+                    m_ledBuffer.setHSV(i, h.getAsInt(), 255, value);
                 }
 
-                value += 10*direction;
+                value += 10 * direction;
 
                 if(value <= 0) {
                     value = 0;
@@ -112,34 +148,20 @@ public class AddressableLEDLights extends SubsystemBase {
                 }
                 if(value >= 255) {
                     value = 255;
+
                     direction = -1;
                 }
 
                 m_led.setData(m_ledBuffer);
                 m_led.start();
-        }, this)).beforeStarting(()->value = 255);
+        }, this).repeatedly().beforeStarting(() -> value = 255);
     }
 
-    public Command setDoubleChase(Color colorOne, Color colorTwo) {
-        return new RepeatCommand(new InstantCommand(()->{
-            for(int i = 0; i < NUMBER_LEDS; i++) {
-                m_ledBuffer.setLED(i, i > NUMBER_LEDS/2 ? (currLED % 3 == 0 ? colorOne : colorTwo) : (currLED % 3 == 0 ? colorTwo : colorOne));
-            }
-            currLED++;
-            m_led.setData(m_ledBuffer);
-            m_led.start();
-        }));
-    }
-
-    public Command setColorCommand(Color color) {
-        return new RunCommand(() -> setColor(color), this);
+    private Command setColorCommand(Color color) {
+        return Commands.run(() -> setColor(color), this);
     }
 
     public Command setToAllianceColorCommand(Supplier<Alliance> alliance) {
         return setColorCommand(alliance.get().equals(Alliance.Red) ? Color.kRed : Color.kBlue).ignoringDisable(true);
-    }
-
-    public Command disableCommand() {
-        return setColorCommand(Color.kBlack);
     }
 }
