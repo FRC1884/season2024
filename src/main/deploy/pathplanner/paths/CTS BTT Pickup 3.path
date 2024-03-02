@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
+        "x": 1.9,
         "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.950884408209095,
+        "x": 5.850884408209096,
         "y": -0.9071898672224057
       },
       "isLocked": false,
@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 2.0,
+        "x": 1.9,
         "y": 4.0
       },
       "prevControl": {
-        "x": 5.957004024310731,
+        "x": 5.857004024310729,
         "y": -0.9022565366970214
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "BTT Shot One"
     }
   ],
   "rotationTargets": [

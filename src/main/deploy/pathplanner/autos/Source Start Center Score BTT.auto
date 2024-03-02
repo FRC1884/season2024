@@ -5,7 +5,7 @@
       "x": 0.5140226040718452,
       "y": 2.085273693299884
     },
-    "rotation": -177.9545915111128
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -26,60 +26,60 @@
                 "data": {
                   "name": "Pivot"
                 }
-              }
-            ]
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Source To Bottom Note"
-                }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "CTS BTT Pickup 1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "CTS BTT Pickup 2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "CTS BTT Pickup 3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Source To Bottom Note"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CTS BTT Pickup 1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CTS BTT Pickup 2"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CTS BTT Pickup 3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    }
+                  ]
                 }
               }
             ]

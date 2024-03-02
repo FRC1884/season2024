@@ -92,17 +92,16 @@ public abstract class MAXSwerve extends SubsystemBase {
       MAXSwerveModule br) {
     
     switch (RobotMap.DriveMap.GYRO_TYPE) {
+      case NAVX_1_VERT: 
+        gyro = new AHRS(SPI.Port.kMXP); 
+      break; 
       case NAVX:
-        gyro = new AHRS(SPI.Port.kMXP);
-        break;
-      case PIGEON:
-        gyro = new Pigeon2(DriveMap.PIGEON_ID);
-        break;
-      default:
-        break;
+        gyro = new AHRS(SPI.Port.kMXP); 
+      break; 
+      case PIGEON: 
+      gyro = new Pigeon2(DriveMap.PIGEON_ID); break; default: break;
     } 
-
-    // gyro.getConfigurator().DefaultTimeoutSeconds = 50;
+    // gyro.getConfigurator().DefaultTimeoutSecnds = 50;
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;
@@ -117,7 +116,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     var alliance = DriverStation.getAlliance();
     // if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
     //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
-    // else if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Blue)
+    // else if (alliance.isPresent() && .get() == DriverStation.Alliance.Blue)
     //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     // else
     //   this.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
@@ -133,6 +132,10 @@ public abstract class MAXSwerve extends SubsystemBase {
             // options
             // here
             ), getShouldFlip(), this);
+
+        var tab = Shuffleboard.getTab("DT");
+        tab.add(this);
+
   }
 
   public Rotation2d getYawRot2d() {
@@ -143,8 +146,9 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public double getGyroYawDegrees() {
-    // TODO Auto-generated method stub
     switch (RobotMap.DriveMap.GYRO_TYPE) {
+      case NAVX_1_VERT:
+        return -Double.valueOf(((AHRS)gyro).getYaw());
       case NAVX:
         return -Double.valueOf(((AHRS)gyro).getYaw()); //Must be negative to CCW is positive
       case PIGEON:
@@ -561,8 +565,40 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public Command alignCommand(Supplier<Translation2d> target){
-    PIDController pid = new PIDController(0.01, 0, 0);
-    pid.setTolerance(1.5);
+    // PIDController pid = new PIDController(0.01, 0, 0);
+    // pid.setTolerance(1.5);
+    // pid.enableContinuousInput(-180, 180);
+    // return new DeferredCommand(() ->
+    //     new FunctionalCommand(
+    //       () -> {
+    //         // Init
+    //       },
+    //       () -> {
+    //         Translation2d currentTranslation = this.getPose().getTranslation();
+    //         Translation2d targetVector = currentTranslation.minus(target.get());
+    //         Rotation2d targetAngle = targetVector.getAngle();
+    //         double newSpeed;
+    //         if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+    //           newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
+    //         else
+    //           newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
+    //         this.drive(0,0,
+    //         newSpeed, true, true);
+    //         targetAngleEntry.setDouble(targetAngle.getDegrees());
+    //         currentAngleEntry.setDouble(this.getGyroYawDegrees());
+    //       },
+    //       interrupted -> {
+    //           pid.close();
+    //           //this.drive(0,0,0,true,true);
+    //           System.out.println("Allignment OVer");  
+    //       },
+    //       () -> {
+    //         return pid.atSetpoint();
+    //       },
+    //       this), Set.of(this)
+    // );
+    PIDController pid = new PIDController(0.01, 0.001, 0);
+    pid.setTolerance(5);
     pid.enableContinuousInput(-180, 180);
     return new DeferredCommand(() ->
         new FunctionalCommand(
@@ -575,23 +611,22 @@ public abstract class MAXSwerve extends SubsystemBase {
             Rotation2d targetAngle = targetVector.getAngle();
             double newSpeed;
             if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
-              newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
             else
-              newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
             this.drive(0,0,
             newSpeed, true, true);
-            targetAngleEntry.setDouble(targetAngle.getDegrees());
-            currentAngleEntry.setDouble(this.getGyroYawDegrees());
-          },
-          interrupted -> {
-              pid.close();
-              //this.drive(0,0,0,true,true);
-              System.out.println("Allignment OVer");  
-          },
-          () -> {
-            return pid.atSetpoint();
-          },
-          this), Set.of(this)
+            
+              },
+              interrupted -> {
+                pid.close();
+                this.drive(0.0,0.0,0.0,true,true);
+                System.out.println("Pid donzoed");
+              },
+              () -> {
+                return pid.atSetpoint();
+              },
+              this), Set.of(this)
     );
   }
 
@@ -620,41 +655,40 @@ public abstract class MAXSwerve extends SubsystemBase {
   public Command chasePoseCommand(Supplier<Pose2d> target){
     TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
     TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
-    TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+    //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
     
-    ProfiledPIDController xController = new ProfiledPIDController(0.1, 0, 0, X_CONSTRAINTS);
-    ProfiledPIDController yController = new ProfiledPIDController(0.1, 0, 0, Y_CONSTRAINTS);
-    ProfiledPIDController omegaController = new ProfiledPIDController(0.01, 0, 0, OMEGA_CONSTRAINTS);
+    ProfiledPIDController xController = new ProfiledPIDController(0.08, 0, 0, X_CONSTRAINTS);
+    ProfiledPIDController yController = new ProfiledPIDController(0.08, 0, 0, Y_CONSTRAINTS);
+    PIDController omegaPID = new PIDController(0.01, 0, 0);
 
-    xController.setTolerance(0.3);
-    yController.setTolerance(0.3);
-    omegaController.setTolerance(Units.degreesToRadians(3));
-    omegaController.enableContinuousInput(-180, 180);
+    xController.setTolerance(0.5);
+    yController.setTolerance(0.5);
+    omegaPID.setTolerance(3);
+    omegaPID.enableContinuousInput(-180, 180);
 
     return new DeferredCommand(() ->
-      new RepeatCommand(
         new FunctionalCommand(
           () -> {
             // Init
           },
           () -> {
 
-            double xSpeed = xController.calculate(this.getPose().getX(), target.get().getX());
-            double ySpeed = yController.calculate(this.getPose().getY(), target.get().getY());
-            double omegaSpeed = omegaController.calculate(this.getGyroYawDegrees(), target.get().getRotation().getDegrees());
+            // double xSpeed = xController.calculate(this.getPose().getX(), target.get().getX());
+            // double ySpeed = yController.calculate(this.getPose().getY(), target.get().getY());
+            double omegaSpeed = omegaPID.calculate(this.getGyroYawDegrees(), target.get().getRotation().getDegrees());
 
-            this.drive(xSpeed,ySpeed, omegaSpeed, true, true);
+            this.drive(0,0, omegaSpeed, true, true);
           },
 
           interrupted -> {
             this.drive(0,0,0, true, true);
-            System.out.println("30 cm away now");
+            System.out.println("angle aligned now");
           },
 
         () -> {
-          return xController.atGoal() && yController.atGoal() && omegaController.atGoal();
+          return omegaPID.atSetpoint(); // &&xController.atGoal() && yController.atGoal();
         },
-        this)), Set.of(this)
+        this), Set.of(this)
     );
   }
 
@@ -797,6 +831,9 @@ public abstract class MAXSwerve extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder){
     builder.addDoubleProperty("Yaw", () -> getGyroYawDegrees(), null);
+    builder.addDoubleProperty("A ", () -> Double.valueOf(((AHRS)gyro).getPitch()), null);
+    builder.addDoubleProperty("Roll", () -> Double.valueOf(((AHRS)gyro).getRoll()), null);
+
   }
 }
 

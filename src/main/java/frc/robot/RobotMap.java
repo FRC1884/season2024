@@ -29,7 +29,7 @@ public class RobotMap {
   public static class DriveMap {
 
     public enum GyroType {
-      PIGEON, NAVX
+      PIGEON, NAVX, NAVX_1_VERT
     }
 
     public static final GyroType GYRO_TYPE = GyroType.NAVX;
@@ -228,7 +228,7 @@ public class RobotMap {
 
     public static final double INTAKE_REVERSE_SPEED = -0.4;
     public static final double FEEDER_REVERSE_SPEED = -0.4;
-    public static final int SENSOR = 9;
+    public static final int SENSOR = 6;
 
     public static final double INTAKE_DELAY = 0.1
     ;
@@ -254,7 +254,7 @@ public class RobotMap {
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.00002);
     public static final double FEEDER_FF = 0.000165;
 
-    public static final Translation2d SHOT_OFFSET = new Translation2d(0, 0.20);
+    public static final Translation2d SHOT_OFFSET = new Translation2d(0, 0.20 +0.3);
   }
 
   public static class ClimberMap {

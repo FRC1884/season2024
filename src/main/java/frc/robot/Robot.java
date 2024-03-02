@@ -75,9 +75,7 @@ public class Robot extends TimedRobot {
     // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
     // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
     OI.getInstance().registerCommands();
-    // AutoCommands.registerAutoCommands();
-    // autoChooser = AutoBuilder.buildAutoChooser();
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
     // m_led = new AddressableLED(4);
@@ -98,18 +96,18 @@ public class Robot extends TimedRobot {
     // if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
     //   Prototypes.getInstance();
 
-    // autoChooser = AutoBuilder.buildAutoChooser();
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     
 
-    // Drivetrain.getInstance().zeroGyroYaw();
+    Drivetrain.getInstance().zeroGyroYaw();
     // Drivetrain.getInstance().setGyroYaw(180);
-    // PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
+    PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
   }
 
-  // public Command getAutonomousCommand() {
-  //   return autoChooser.getSelected();
-  // }
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
@@ -154,11 +152,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    // var autonomousCommand = getAutonomousCommand();
+    var autonomousCommand = getAutonomousCommand();
 
-    //   if(autonomousCommand != null){
-    //     autonomousCommand.schedule();
-    //   }
+      if(autonomousCommand != null){
+        autonomousCommand.schedule();
+      }
     
     //Drivetrain.getInstance().setGyroYaw(180);
   }

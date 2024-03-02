@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7445135467407455,
-        "y": 2.7278019483896907
+        "x": 2.496814123442796,
+        "y": 2.213348107152705
       },
       "isLocked": false,
       "linkedName": "TTB Shot Four"
     },
     {
       "anchor": {
-        "x": 8.281967377058862,
-        "y": 0.7612043754757987
+        "x": 8.082883155780575,
+        "y": 0.7
       },
       "prevControl": {
-        "x": 8.066299637121805,
-        "y": 0.7504209884789468
+        "x": 7.867215415843518,
+        "y": 0.6892166130031481
       },
       "nextControl": {
-        "x": 8.51618410797449,
-        "y": 0.772915212021579
+        "x": 8.317099886696203,
+        "y": 0.7117108365457803
       },
       "isLocked": false,
       "linkedName": "TTB Centerline"
@@ -36,8 +36,8 @@
         "y": 3.9699735890199306
       },
       "prevControl": {
-        "x": 3.0355126045487455,
-        "y": 2.41243232843099
+        "x": 2.5553683061717036,
+        "y": 2.1079505782406716
       },
       "nextControl": null,
       "isLocked": false,
@@ -73,7 +73,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 240.0
   },

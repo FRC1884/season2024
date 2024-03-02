@@ -33,7 +33,7 @@ public class AutoCommands {
         Pose2d target = DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
                 : Coordinates.RED_SPEAKER;
                 
-        Translation2d offset = DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? ShamperMap.SHOT_OFFSET 
+        Translation2d offset = DriverStation.getAlliance().get() == (DriverStation.Alliance.Red) ? ShamperMap.SHOT_OFFSET 
         : new Translation2d(ShamperMap.SHOT_OFFSET.getX() *-1, ShamperMap.SHOT_OFFSET.getY() *-1);
 
         PoseEstimator poseEstimator = PoseEstimator.getInstance();
@@ -52,7 +52,7 @@ public class AutoCommands {
                         () -> target.getTranslation().plus(offset)),
                 intake.setIntakeState(IntakeDirection.FORWARD),
                 new WaitCommand(1),
-                intake.setIntakeState(IntakeDirection.STOPPED)
+                intake.setIntakeState(IntakeDirection.REVERSE)
                 ));
         NamedCommands.registerCommand("VisionIntake",
                 intake.intakeUntilLoadedCommand().alongWith(Vision.getInstance().onTheFlyToNoteCommand().onlyIf(
