@@ -180,22 +180,22 @@ public class Vision extends SubsystemBase {
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
 
-       //Code for robot relative note tracking
-       Transform2d robotToNoteTransform = VisionConfig.NN_ROBOT_TO_LIME_2D.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
-       Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle();
-       noteRobotRelativePose = new Pose2d(robotToNoteTransform.getTranslation(), targetAngleRobotRelative);
+        //Code for robot relative note tracking
+        Transform2d robotToNoteTransform = VisionConfig.NN_ROBOT_TO_LIME_2D.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
+        Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle();
+        noteRobotRelativePose = new Pose2d(robotToNoteTransform.getTranslation(), targetAngleRobotRelative);
 
-       //Code for field relative note tracking
-       Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
+        //Code for field relative note tracking
+        Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
 
-       Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);
-       noteFieldRelativePose = camPoseFieldRelative.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
-       Translation2d currentBotTranslation = currentBotPoseFieldRelative.getTranslation();
-       Translation2d targetVector = currentBotTranslation.minus(noteFieldRelativePose.getTranslation());
-       Rotation2d targetAngle = targetVector.getAngle();
-       
-       noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
-        }
+        Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);
+        noteFieldRelativePose = camPoseFieldRelative.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
+        Translation2d currentBotTranslation = currentBotPoseFieldRelative.getTranslation();
+        Translation2d targetVector = currentBotTranslation.minus(noteFieldRelativePose.getTranslation());
+        Rotation2d targetAngle = targetVector.getAngle();
+        
+        noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
+      }
     }
 
   }
