@@ -731,7 +731,7 @@ public abstract class MAXSwerve extends SubsystemBase {
           },
 
         () -> {
-          return omegaPID.atSetpoint(); // &&xController.atGoal() && yController.atGoal();
+          return omegaPID.atSetpoint() && xController.atGoal() && yController.atGoal();
         },
         this), Set.of(this)
     );
