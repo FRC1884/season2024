@@ -1,16 +1,11 @@
 package frc.robot.layout;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
-import frc.robot.core.util.controllers.ButtonMap.Dpad;
 import frc.robot.core.util.controllers.GameController;
 
 public class TwoJoyStickDriverMap extends DriverMap {

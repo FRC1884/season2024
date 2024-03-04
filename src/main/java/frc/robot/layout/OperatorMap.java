@@ -1,25 +1,8 @@
 package frc.robot.layout;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-
-import java.time.Instant;
-import java.util.Map;
-import java.util.function.DoubleSupplier;
-
-import javax.print.attribute.standard.PrinterMessageFromOperator;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -28,15 +11,10 @@ import frc.robot.Config;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.Intake.IntakeDirection;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PivotMap;
 import frc.robot.RobotMap.ShamperMap;
-import frc.robot.Commands.ShootSequenceCommand;
-import frc.robot.core.util.controllers.BoardController;
-import frc.robot.util.BlinkinUtils;
 import frc.robot.util.FlywheelLookupTable;
 
 public abstract class OperatorMap extends CommandMap {
@@ -96,11 +74,6 @@ public abstract class OperatorMap extends CommandMap {
   private void registerIntake() {
     if (Config.Subsystems.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
-      // getIntakeButton().onTrue(intake.setIntakeState(Intake.IntakeDirection.FORWARD).andThen(
-      // new InstantCommand(() -> shooter.setFeederState(FeederDirection.FORWARD))
-      // ).until(() -> shooter.isNoteLoaded()).andThen(
-      // intake.setIntakeState(Intake.IntakeDirection.STOPPED)
-      // ));
 
       getIntakeStopButton().onTrue(intake.setIntakeState(IntakeDirection.STOPPED));
       getIntakeButton().whileTrue(intake.intakeUntilLoadedCommand())
@@ -124,23 +97,6 @@ public abstract class OperatorMap extends CommandMap {
     }
   }
 
-  // private void registerFeeder() {
-  // if(Config.Subsystems.FEEDER_ENABLED) {
-  // Feeder feeder = Feeder.getInstance();
-  // getShootSpeakerButton().whileTrue(new InstantCommand(() ->
-  // feeder.setFeederState(FeederDirection.FORWARD)));
-  // getShootAmpButton().whileTrue(new InstantCommand(() ->
-  // feeder.setFeederState(FeederDirection.FORWARD_SLOW)));
-  // getTrapButton().whileTrue(new InstantCommand(() ->
-  // feeder.setFeederState(FeederDirection.FORWARD)));
-  // getShootSpeakerButton().onFalse(new InstantCommand(() ->
-  // feeder.setFeederState(FeederDirection.STOPPED)));
-  // getShootAmpButton().onFalse(new InstantCommand(() ->
-  // feeder.setFeederState(FeederDirection.STOPPED)));
-  // getTrapButton().onFalse(new InstantCommand(() ->
-  // feeder.setFeederState(FeederDirection.STOPPED)));
-  // }
-  // }
 
   private void registerClimber() {
     if (Config.Subsystems.CLIMBER_ENABLED) {
@@ -159,7 +115,6 @@ public abstract class OperatorMap extends CommandMap {
       Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
               : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
-      // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
 
       getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
                       .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint())
@@ -209,11 +164,10 @@ public abstract class OperatorMap extends CommandMap {
 
   @Override
   public void registerCommands() {
-    // registerPrototype();
     registerIntake();
     registerClimber();
     registerShamper();
-    //registerLEDs();
+    registerLEDs();
     registerComplexCommands();
   }
 }

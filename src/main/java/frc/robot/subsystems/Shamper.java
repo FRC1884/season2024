@@ -113,31 +113,8 @@ public class Shamper extends SubsystemBase {
     }
 
     var tab = Shuffleboard.getTab("Shamper");
-
-    if (top != null) {
-      // tab.add("top", top);
-      // tab.add("top pid", topPid);
-    }
-
-    if (bottom != null) {
-      // tab.add("bottom", bottom);
-      // tab.add("bottom pid", bottomPid);
-    }
-
-    if (feeder != null) {
-      // tab.add("feeder", feeder);
-      // tab.add("feeder pid", feederPid);
-    }
-
     tab.add("shamper", this);
   }
-
-  // public Command setFlywheelVelocityCommand(double velocity) {
-  //   return new InstantCommand(() -> {
-  //     topVelocity = velocity;
-  //     bottomVelocity = velocity;
-  //   }, this);
-  // }
 
   public Command setFlywheelVelocityCommand(Supplier<Double> velocity) {
 
