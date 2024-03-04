@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public class MaxSwerveConstants {
+  public static final boolean INVERT_GYRO = false;
   public static final double kMaxSpeedMetersPerSecond = 4.8;
   public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
@@ -24,12 +25,6 @@ public class MaxSwerveConstants {
           new Translation2d(kWheelBase / 2, -kTrackWidth / 2), // Front Right
           new Translation2d(-kWheelBase / 2, kTrackWidth / 2), // Back Left
           new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); // Back Right
-
-  // Angular offsets of the modules relative to the chassis in radians
-  //   public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-  //   public static final double kFrontRightChassisAngularOffset = 0;
-  //   public static final double kBackLeftChassisAngularOffset = Math.PI;
-  //   public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
   public static final boolean kGyroReversed = false;
 
@@ -67,14 +62,14 @@ public class MaxSwerveConstants {
     public static final double kTurningEncoderPositionPIDMaxInput =
         kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.04;
+    public static final double kDrivingP = 0.09;
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
     public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 0.5;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;

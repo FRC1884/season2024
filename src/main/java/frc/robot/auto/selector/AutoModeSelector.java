@@ -13,25 +13,14 @@ public class AutoModeSelector {
     return instance;
   }
 
-  private final SendableChooser<Command> modeChooserRed;
-  private final SendableChooser<Command> modeChooserBlue;
+  private final SendableChooser<Command> modeChooser;
 
   private AutoModeSelector() {
-    modeChooserRed = new SendableChooser<>();
-    modeChooserBlue = new SendableChooser<>();
-    updateAutoModeSelector();
+    modeChooser = new SendableChooser<>();
   }
 
-  public void updateAutoModeSelector() {
-    modeChooserRed.setDefaultOption("DO_NOTHING", AutoModeList.DO_NOTHING.getAuto());
-    modeChooserBlue.setDefaultOption("DO_NOTHING", AutoModeList.DO_NOTHING.getAuto());
+  public SendableChooser<Command> getChooser() {
+    return modeChooser;
   }
 
-  public SendableChooser<Command> getRedChooser() {
-    return modeChooserRed;
-  }
-
-  public SendableChooser<Command> getBlueChooser() {
-    return modeChooserBlue;
-  }
 }

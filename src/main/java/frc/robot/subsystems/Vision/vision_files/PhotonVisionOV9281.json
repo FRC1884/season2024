@@ -1,0 +1,36 @@
+{
+    "camera": "Arducam OV9281 USB Camera (0c45:6366)",
+    "platform": "Macintosh; Intel Mac OS X 10_15_7",
+    "camera_matrix": [
+        [
+            899.3306854214203,
+            0,
+            602.6838474094002
+        ],
+        [
+            0,
+            898.4222734913243,
+            352.1982399161578
+        ],
+        [
+            0,
+            0,
+            1
+        ]
+    ],
+    "distortion_coefficients": [
+        0.08163001932547587,
+        -0.24218082303481855,
+        0.0021190948626797147,
+        0.00003167090187182674,
+        0.1953904851875148
+    ],
+    "distortion_model": "rectilinear",
+    "avg_reprojection_error": 0.37126068406096624,
+    "img_size": [
+        1280,
+        720
+    ],
+    "keyframes": 9,
+    "calibration_time": "Fri, 09 Feb 2024 18:09:11 GMT"
+}

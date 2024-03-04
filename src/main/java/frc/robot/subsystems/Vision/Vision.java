@@ -5,29 +5,28 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.VisionConfig;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
+
 import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
-/*
- * This class requires MAJOR CLEANUP. There needs to be a proper pyramid of hierarchy. Vision should NOT be able to control anything related to pose. It should only
- * broadcast its current pose, if it has one, for use by the Pose class. Vision --> Pose. Vision should NEVER be able to control robot odometry.
- *
- */
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
   private Pose2d botPose;
+  private Pose2d estimatePose;
   private double limeLatency;
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
@@ -36,18 +35,18 @@ public class Vision extends SubsystemBase {
   private PhotonCamera photonCam_1;
   private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
-  private PhotonPoseEstimator photonPoseEstimator;
-  private Transform3d robotToCam;
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
   private double detectVerticalOffset = 0;
 
-  private int targetSeenCount = 0;
-
-  private boolean aimTarget = false;
   private boolean detectTarget = false;
   private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
+  private Pose2d targetRobotRelativePose;
+  private Pose2d noteFieldRelativePose;
+  private Pose2d noteRobotRelativePose;
+
+  private ShuffleboardTab tab = Shuffleboard.getTab("Driver Cam");
 
   // testing
   private final DecimalFormat df = new DecimalFormat();
@@ -62,19 +61,19 @@ public class Vision extends SubsystemBase {
   // TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
   private Vision() {
     setName("Vision");
-    botPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(0)));
+    botPose = new Pose2d();
+    estimatePose = new Pose2d();
+    noteFieldRelativePose = new Pose2d();
+    noteRobotRelativePose = new Pose2d();
+    targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
     limeLatency = 0.0;
-    // botPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
-    // targetSeenCount = 0;
-    // aimHorizontalOffset = 0;
-    // aimVerticalOffset = 0;
 
     // Changes vision mode between limelight and photonvision for easy switching
-    if (VisionConfig.isLimelightMode) {
+    if (VisionConfig.IS_LIMELIGHT_MODE) {
       // configure both limelights
-      LimelightHelpers.setLEDMode_ForceOff(VisionConfig.POSE_LIMELIGHT);
-      setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.aprilTagPipeline);
+      LimelightHelpers.setLEDMode_ForceOn(VisionConfig.POSE_LIMELIGHT);
+      setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.APRILTAG_PIPELINE);
       LimelightHelpers.setCameraPose_RobotSpace(
           VisionConfig.POSE_LIMELIGHT,
           VisionConfig.POSE_LIME_X,
@@ -83,22 +82,16 @@ public class Vision extends SubsystemBase {
           VisionConfig.POSE_LIME_ROLL,
           VisionConfig.POSE_LIME_PITCH,
           VisionConfig.POSE_LIME_YAW);
-
-      if (VisionConfig.isNeuralNet) {
-        LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
-        setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.noteDetectorPipeline);
-        LimelightHelpers.setCameraPose_RobotSpace(
-            VisionConfig.NN_LIMELIGHT,
-            VisionConfig.NN_LIME_X,
-            VisionConfig.NN_LIME_Y,
-            VisionConfig.NN_LIME_Z,
-            VisionConfig.NN_LIME_ROLL,
-            VisionConfig.NN_LIME_PITCH,
-            VisionConfig.NN_LIME_YAW);
-      }
     }
-    if (VisionConfig.isPhotonVisionMode) { // Configure photonvision camera
+
+    if (VisionConfig.IS_NEURAL_NET) {
+        LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
+        setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
+      }
+
+    if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
+      //photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       photon1HasTargets = false;
       try {
         aprilTagFieldLayout =
@@ -106,21 +99,10 @@ public class Vision extends SubsystemBase {
       } catch (Exception e) {
         System.out.println("Field layout not found");
       }
-      // Mounting information of photoncamera for making PhotonPoseEstimator object
-      robotToCam =
-          new Transform3d(
-              new Translation3d(VisionConfig.CAM_1_X, VisionConfig.CAM_1_Y, VisionConfig.CAM_1_Z),
-              new Rotation3d(
-                  VisionConfig.CAM_1_ROLL_RADIANS,
-                  VisionConfig.CAM_1_PITCH_RADIANS,
-                  VisionConfig.CAM_1_YAW_RADIANS));
-      // TODO for 9th graders - create PhotonPoseEstimator object
-      photonPoseEstimator =
-          new PhotonPoseEstimator(
-              aprilTagFieldLayout,
-              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-              photonCam_1,
-              robotToCam);
+    }
+
+    if (VisionConfig.DRIVER_CAMERA_ACTIVE){
+      tab.addCamera("Driver Camera", "Drive cam", VisionConfig.DRIVER_CAM_STREAM);
     }
 
     // printing purposes
@@ -143,67 +125,109 @@ public class Vision extends SubsystemBase {
             .getEntry("json")
             .getString("")
             .equals("");
+      
+    if (VisionConfig.IS_LIMELIGHT_MODE && apriltagLimelightConnected) {
+      jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
 
-    if (VisionConfig.isLimelightMode && apriltagLimelightConnected) {
-      if (visionAccurate()) {
-        jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
-        // json dump more accurate?
-        // Update Vision robotpose - need to read more about coordinate systems centered
-        // Blue alliance means origin is bottom right of the field
-        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)) {
-          botPose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-        }
-        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
-          botPose = LimelightHelpers.getBotPose2d_wpiRed(VisionConfig.POSE_LIMELIGHT);
-        }
+      estimatePose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
+
+      if (visionAccurate(estimatePose)) {
+        // Blue alliance means origin is bottom right of the field 
         limeLatency =
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
-      }
-
-      // aimHorizontalOffset = jsonResults.results.getTX();
-      // aimVerticalOffset = jsonResults.getTY();
-      // aimTarget = LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
-
-      // Robot.log.logger.recordOutput("aimLL-VertOffset", aimVerticalOffset);
-      // RobotTelemetry.print("aimLL-VertOffset: " + aimVerticalOffset);
-    }
-
-    if (NNLimelightConnected) {
-      detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
-      detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
-      if (detectTarget) {
-        detectHorizontalOffset = LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT);
-        detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
+        botPose = estimatePose;
       }
     }
-    // this method can call update() if vision pose estimation needs to be updated in
-    // Vision.java
 
     // Photonvision Result
     // The documentation for this is here:
     // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
-    // The example code was missing, and we came up with this:
-    if (VisionConfig.isPhotonVisionMode) {
-      var result = photonCam_1.getLatestResult();
-      photon1HasTargets = result.hasTargets();
-      if (photon1HasTargets) {
-        var update = photonPoseEstimator.update();
-        Pose3d currentPose3d = update.get().estimatedPose;
-        botPose = currentPose3d.toPose2d();
-        photonTimestamp = update.get().timestampSeconds;
+    // The example code was missing, and we came up with this: 
+    // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
+    if (VisionConfig.IS_PHOTON_VISION_MODE) {
+      var result_1 = photonCam_1.getLatestResult();
+      photon1HasTargets = result_1.hasTargets();
+
+      if (result_1.getMultiTagResult().estimatedPose.isPresent){
+        photonTimestamp = result_1.getTimestampSeconds();
+        Transform3d fieldToCamera = result_1.getMultiTagResult().estimatedPose.best;
+        Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
+        botPose = new Pose2d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), new Rotation2d(fieldCamToRobot.getRotation().getZ()));
+      }
+
+      else if (photon1HasTargets) {
+        PhotonTrackedTarget target = result_1.getBestTarget();
+        if (target.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
+          photonTimestamp = result_1.getTimestampSeconds();
+
+          Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
+          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
+          botPose = currentPose3d.toPose2d();
+        }
       }
     }
+
+    //Does math to see where the note is
+    if (VisionConfig.IS_NEURAL_NET && NNLimelightConnected) {
+      detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
+      detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
+      //var rrResults = detectJsonResults.targetingResults.targets_Retro[0];
+
+      if (detectTarget) {
+        detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); //HAD TO NEGATIVE TO MAKE CCW POSITIVE
+        detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
+        double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_Z, VisionConfig.NN_LIME_PITCH, 0, detectVerticalOffset);
+        //Note: limelight is already CCW positive, so tx does not have to be * -1
+        Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
+
+        //Code for robot relative note tracking
+        Transform2d robotToNoteTransform = VisionConfig.NN_ROBOT_TO_LIME_2D.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
+        Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle();
+        noteRobotRelativePose = new Pose2d(robotToNoteTransform.getTranslation(), targetAngleRobotRelative);
+
+        //Code for field relative note tracking
+        Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
+
+        Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);
+        noteFieldRelativePose = camPoseFieldRelative.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
+        Translation2d currentBotTranslation = currentBotPoseFieldRelative.getTranslation();
+        Translation2d targetVector = currentBotTranslation.minus(noteFieldRelativePose.getTranslation());
+        Rotation2d targetAngle = targetVector.getAngle();
+        
+        noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
+
+        }
+    }
+
   }
 
+  /**
+   * @return Pose2d location of note Field Relative
+   */
+  public Pose2d getNotePose2d(){
+    return noteFieldRelativePose;
+  }
+
+
+  /**
+   * @return Timestamp of photonvision's latest reading
+   */
   public double getPhotonTimestamp() {
     return photonTimestamp;
   }
 
+  /**
+   * @return boolean if photonvision has targets
+   */
   public boolean photonHasTargets() {
     return photon1HasTargets;
   }
-
+  
+  /**
+   * @return RobotPose2d with the apriltag as the origin (for chase apriltag command)
+   */
   public Pose2d getRobotPose2d_TargetSpace() {
     return LimelightHelpers.getBotPose2d_TargetSpace(VisionConfig.POSE_LIMELIGHT);
   }
@@ -220,8 +244,8 @@ public class Vision extends SubsystemBase {
   /**
    * @return if vision should be trusted more than estimated pose
    */
-  public boolean visionAccurate() {
-    return isValidPose() && (isInMap() || multipleTargetsInView());
+  public boolean visionAccurate(Pose2d currentPose) {
+    return isValidPose() && (isInMap(currentPose) || multipleTargetsInView());
   }
 
   /**
@@ -229,19 +253,19 @@ public class Vision extends SubsystemBase {
    */
   public boolean isValidPose() {
     /* Disregard Vision if there are no targets in view */
-    if (VisionConfig.isLimelightMode) {
+    if (VisionConfig.IS_LIMELIGHT_MODE) {
       return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
     }
-    if (VisionConfig.isPhotonVisionMode) {
+    if (VisionConfig.IS_PHOTON_VISION_MODE) {
       return photonHasTargets();
     }
     return false;
   }
 
   // This is a suss function - need to test it
-  public boolean isInMap() {
-    return ((botPose.getX() > 0.0 && botPose.getX() <= VisionConfig.FIELD_LENGTH_METERS)
-        && (botPose.getY() > 0.0 && botPose.getY() <= VisionConfig.FIELD_WIDTH_METERS));
+  public boolean isInMap(Pose2d currentPose) {
+    return ((currentPose.getX() >= 0.0 && currentPose.getX() <= VisionConfig.FIELD_LENGTH_METERS)
+        && (currentPose.getY() >= 0.0 && currentPose.getY() <= VisionConfig.FIELD_WIDTH_METERS));
   }
 
   /**
@@ -259,16 +283,20 @@ public class Vision extends SubsystemBase {
   }
 
   // Getter for visionBotPose - NEED TO DO TESTING TO MAKE SURE NO NULL ERRORS
+
   public Pose2d visionBotPose() {
     return botPose;
   }
 
+  /**
+   * @return the total latency of the limelight camera
+   */
   public double getTotalLatency() {
     return limeLatency;
   }
 
   /**
-   * Gets the camera capture time in seconds.
+   * Gets the camera capture time in seconds. Only used for limelight
    *
    * @param latencyMillis the latency of the camera in milliseconds
    * @return the camera capture time in seconds
@@ -286,13 +314,14 @@ public class Vision extends SubsystemBase {
   }
 
   /**
+   * Gets target distance from the camera
    * @param cameraHeight distance from lens to floor of camera in meters
    * @param cameraAngle pitch of camera in radians
    * @param targetHeight distance from floor to center of target in meters
    * @param targetOffsetAngle_Vertical ty entry from limelight of target crosshair (in degrees)
    * @return the distance to the target in meters
    */
-  public double targetDistanceMeters(
+  public double targetDistanceMetersCamera(
       double cameraHeight,
       double cameraAngle,
       double targetHeight,
@@ -301,31 +330,76 @@ public class Vision extends SubsystemBase {
     return (targetHeight - cameraHeight) / Math.tan(angleToGoalRadians);
   }
 
-  /**
-   * Prints the vision, estimated, and odometry pose to SmartDashboard
-   *
-   * @param values the array of limelight raw values
+   /**
+   * @param targetDistanceMeters component of distance from camera to target
+   * @param targetOffsetAngle_Horizontal tx entry from limelight of target crosshair (in degrees)
+   * @return the translation to the target in meters
    */
-  /*
-  public void printDebug(double[] poseArray) {
-      if (poseArray.length > 0) {
-          SmartDashboard.putString("LimelightX", df.format(botPose3d.getTranslation().getX()));
-          SmartDashboard.putString("LimelightY", df.format(botPose3d.getTranslation().getY()));
-          SmartDashboard.putString("LimelightZ", df.format(botPose3d.getTranslation().getZ()));
-          SmartDashboard.putString(
-                  "LimelightRoll",
-                  df.format(Units.radiansToDegrees(botPose3d.getRotation().getX())));
-          SmartDashboard.putString(
-                  "LimelightPitch",
-                  df.format(Units.radiansToDegrees(botPose3d.getRotation().getY())));
-          SmartDashboard.putString(
-                  "LimelightYaw",
-                  df.format(Units.radiansToDegrees(botPose3d.getRotation().getZ())));
-      }
-      SmartDashboard.putString("EstimatedPoseX", df.format(Robot.pose.getEstimatedPose().getX()));
-      SmartDashboard.putString("EstimatedPoseY", df.format(Robot.pose.getEstimatedPose().getY()));
-      SmartDashboard.putString(
-              "EstimatedPoseTheta", df.format(Robot.pose.getHeading().getDegrees()));
+  public Translation2d estimateCameraToTargetTranslation(double targetDistanceMeters, double targetOffsetAngle_Horizontal){
+    Rotation2d yaw = Rotation2d.fromDegrees(targetOffsetAngle_Horizontal);
+    return new Translation2d(
+      yaw.getCos() * (targetDistanceMeters + 0.40), yaw.getSin() * targetDistanceMeters);
   }
+/**
+   * @param cameraToTargetTranslation2d the translation from estimate camera to target
+   * @param targetOffsetAngle_Horizontal tx entry from limelight of target crosshair (in degrees)
+   * @return the position of the target in terms of the camera
    */
+  public Pose2d estimateCameraToTargetPose2d(Translation2d cameraToTargetTranslation2d, double targetOffsetAngle_Horizontal){
+    return new Pose2d(cameraToTargetTranslation2d, Rotation2d.fromDegrees(targetOffsetAngle_Horizontal));
+  }
+
+
+/**
+   * @param camToTargetPose the camera to target pose 2d
+   * @param camToRobot the transform from the x and y of the camera to the center of the robot
+   * @return the position of the target relative to the robot
+   */
+  public Pose2d camPoseToRobotRelativeTargetPose2d(Pose2d camToTargetPose, Transform2d camToRobot){
+    return camToTargetPose.transformBy(camToRobot);
+    
+  }
+
+  /**
+   * RobotRelativePose of the current target
+   * @return the position of the target relative to the robot
+   */
+  public Pose2d targetPoseRobotSpace(){
+    return targetRobotRelativePose;
+  }
+
+  /**
+   * @param notePoseRobotRelative the RobotRelative Pose2d of the note
+   * @param botPoseFieldRelative The FieldRelative Pose2d of the robot
+   * @return the FieldRelative Pose2d of the note
+   */
+  public Pose2d notePoseFieldSpace(Pose2d notePoseRobotRelative, Pose2d botPoseFieldRelative){
+    Transform2d noteTransform = new Transform2d(notePoseRobotRelative.getTranslation(), notePoseRobotRelative.getRotation());
+    Pose2d notePose = botPoseFieldRelative.transformBy(noteTransform);
+    return notePose; 
+  }
+
+  /**
+   * Commnad to go to the note using purely on-the-fly
+   * @return a follow path command to drive to the note
+   */
+  public Command onTheFlyToNoteCommand(){
+    return Drivetrain.getInstance().onTheFlyPathCommand(this::getNotePose2d); //doing this::getNotePose2d converts to a supplier
+  }
+
+  /**
+   * Commnad to go to in front of note using PID
+   * @return a PID command to drive in front of a note
+   */
+  public Command PID_thenOnTheFlyToNoteCommand(){
+    return Drivetrain.getInstance().chaseThenOnTheFlyCommand(this::getNotePose2d);
+  }
+
+  /**
+   * Commnad to go to in front of note using PID and then drive to the note
+   * @return a PID and then on-the-fly command to drive onto a note
+   */
+  public Command PIDtoNoteCommand(){
+    return Drivetrain.getInstance().chasePoseCommand(this::getNotePose2d);
+  }
 }

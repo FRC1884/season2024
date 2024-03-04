@@ -1,6 +1,7 @@
 package frc.robot;
 
 import frc.robot.core.util.controllers.GameController;
+import frc.robot.layout.BoardOperatorMap;
 import frc.robot.layout.TwoJoyStickDriverMap;
 import frc.robot.layout.TwoJoyStickOperatorMap;
 
@@ -34,8 +35,15 @@ public class OI {
     // and commands takes the string input from the waypoints in the path and
     // associates that to the command that you want to run, but thats just a
     // theory, a game theory.
+
     new TwoJoyStickDriverMap(driver).registerCommands();
-    new TwoJoyStickOperatorMap(operator).registerCommands();
+    if(Config.Controllers.BOARD_OPERATOR_ENABLED){
+      new BoardOperatorMap(operator).registerCommands();
+    }
+    else if (Config.Controllers.JOYSTICK_OPERATOR_ENABLED){
+      new TwoJoyStickOperatorMap(operator).registerCommands();
+    }
+    
   }
 
   private OI() {
@@ -43,10 +51,10 @@ public class OI {
     driver =
         new GameController(
             RobotMap.ControllerMap.DRIVER_JOYSTICK,
-            ExampleConfig.Controllers.getDriverController());
+            Config.Controllers.getDriverController());
     operator =
         new GameController(
             RobotMap.ControllerMap.OPERATOR_JOYSTICK,
-            ExampleConfig.Controllers.getOperatorController());
+            Config.Controllers.getOperatorController());
   }
 }

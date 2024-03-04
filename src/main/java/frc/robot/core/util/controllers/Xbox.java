@@ -17,8 +17,8 @@ public class Xbox implements ButtonMap {
     map.put(Button.BUTTON_RIGHT_BUMPER, 6);
     map.put(Button.BUTTON_SHARE, 7);
     map.put(Button.BUTTON_OPTIONS, 8);
-    // map.put(Button.BUTTON_START, 10);
-    // map.put(Button.BUTTON_TOUCHPAD, 11);
+    map.put(Button.BUTTON_START, 10);
+    map.put(Button.BUTTON_TOUCHPAD, 11);
 
     return map;
   }

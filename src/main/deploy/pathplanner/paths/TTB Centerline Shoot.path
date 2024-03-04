@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.281967377058862,
+        "y": 0.7963368851131419
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.308996019351441,
+        "y": 0.6402943088770461
+      },
+      "isLocked": false,
+      "linkedName": "TTB Centerline"
+    },
+    {
+      "anchor": {
+        "x": 2.7995873971770147,
+        "y": 3.3427932782613623
+      },
+      "prevControl": {
+        "x": 3.2034623003763216,
+        "y": 3.1133189014435736
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 140.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0.0
+  },
+  "useDefaultConstraints": true
+}
