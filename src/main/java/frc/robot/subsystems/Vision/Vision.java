@@ -182,7 +182,7 @@ public class Vision extends SubsystemBase {
 
         //Code for robot relative note tracking
         Transform2d robotToNoteTransform = VisionConfig.NN_ROBOT_TO_LIME_2D.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
-        Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle();
+        Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle().plus(new Rotation2d(Math.PI));
         noteRobotRelativePose = new Pose2d(robotToNoteTransform.getTranslation(), targetAngleRobotRelative);
 
         //Code for field relative note tracking

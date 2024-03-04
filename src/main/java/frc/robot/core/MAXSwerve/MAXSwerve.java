@@ -704,11 +704,11 @@ public abstract class MAXSwerve extends SubsystemBase {
     
     ProfiledPIDController xController = new ProfiledPIDController(0.15, 0, 0, X_CONSTRAINTS);
     ProfiledPIDController yController = new ProfiledPIDController(0.15, 0, 0, Y_CONSTRAINTS);
-    PIDController omegaPID = new PIDController(0.05, 0, 0);
+    PIDController omegaPID = new PIDController(0.01, 0, 0);
 
-    xController.setTolerance(0.5);
-    yController.setTolerance(0.5);
-    omegaPID.setTolerance(3);
+    xController.setTolerance(0.15);
+    yController.setTolerance(0.1);
+    omegaPID.setTolerance(1.5);
     omegaPID.enableContinuousInput(-180, 180);
 
     return new DeferredCommand(() ->
@@ -722,7 +722,7 @@ public abstract class MAXSwerve extends SubsystemBase {
             double ySpeed = yController.calculate(0, target.get().getY());
             double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
 
-            this.drive(0,0, omegaSpeed, false, true);
+            this.drive(xSpeed, ySpeed, omegaSpeed, false, true);
           },
 
           interrupted -> {
