@@ -1,42 +1,23 @@
 package frc.robot.layout;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-
-import java.time.Instant;
-import java.util.Map;
-import java.util.function.DoubleSupplier;
-
-import javax.print.attribute.standard.PrinterMessageFromOperator;
-
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Config;
-import frc.robot.core.util.controllers.CommandMap;
-import frc.robot.core.util.controllers.GameController;
-import frc.robot.subsystems.Intake.IntakeDirection;
-import frc.robot.core.util.controllers.ButtonMap.Axis;
-import frc.robot.subsystems.*;
-import frc.robot.subsystems.Intake.IntakeDirection;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PivotMap;
 import frc.robot.RobotMap.ShamperMap;
-import frc.robot.Commands.ShootSequenceCommand;
-import frc.robot.core.util.controllers.BoardController;
-import frc.robot.util.BlinkinUtils;
+import frc.robot.core.util.controllers.CommandMap;
+import frc.robot.core.util.controllers.GameController;
+import frc.robot.subsystems.*;
+import frc.robot.subsystems.Intake.IntakeDirection;
 import frc.robot.util.FlywheelLookupTable;
 
 public abstract class OperatorMap extends CommandMap {
@@ -151,10 +132,11 @@ public abstract class OperatorMap extends CommandMap {
 
   private void registerComplexCommands() {
     if (Config.Subsystems.SHAMPER_ENABLED && Config.Subsystems.INTAKE_ENABLED
-            && Config.Subsystems.DRIVETRAIN_ENABLED) {
+            && Config.Subsystems.DRIVETRAIN_ENABLED && Config.Subsystems.CLIMBER_ENABLED) {
       Intake intake = Intake.getInstance();
       Shamper shooter = Shamper.getInstance();
       Pivot pivot = Pivot.getInstance();
+      Climber climber = Climber.getInstance();
       FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
       Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
               : Coordinates.RED_SPEAKER;
@@ -185,11 +167,33 @@ public abstract class OperatorMap extends CommandMap {
               pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
                       shooter.setFlywheelVelocityCommand(() -> ShamperMap.TRAP_SPEED)));
 
-      getClimbSequenceButton().onTrue(
-              new SequentialCommandGroup(
-                      Climber.getInstance().run(() -> 0.2),
-                      new WaitCommand(1),
-                      Climber.getInstance().run(() -> 0)));
+      getClimbSequenceButton()
+        // keep it held for 0.5s for it to take effect (up to operator preference)
+        .debounce(0.5)
+        .onTrue(
+        Commands.repeatingSequence(
+          // raise the climber and move the pivot out of the way at the same time
+          Climber.getInstance().updatePosition(() -> 2.0).alongWith(
+            pivot.updatePosition(() -> 0.0)
+          )
+            // both of the updates will run constantly, so cancel both
+            // of them after a reasonable amount of time has passed
+            // so that they don't overtake the rest of the sequence
+            .withTimeout(2.0),
+          // pretty sure having drive in here is non-negotiable
+          // since we need to align
+          // drive up to an offset from the tag
+          // can i actually do this? will the z-axis make a genuine difference?
+          Drivetrain.getInstance().alignToTagCommand(new Pose2d(1.0, 0.0, new Rotation2d())),
+          // if not, just pathplan a forward distance:
+          // Drivetrain.getInstance().goToPoint(
+            // Drivetrain.getInstance().getPose().plus(new Transform2d(1.0, 0.0, new Rotation2d()))),
+          Commands.waitSeconds(1.0),
+          // lower elevator -> climb!
+          Climber.getInstance().updatePosition(() -> 0.0)
+        )
+      );
+
       getPivotLowerButton().onTrue(pivot.updatePosition(() -> 0.0).alongWith(new PrintCommand("hi")));
       getPivotRaiseButton().onTrue(pivot.updatePosition(() -> 75.0).alongWith(new PrintCommand("bye")));
     }

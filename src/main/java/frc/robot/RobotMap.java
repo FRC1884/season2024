@@ -260,6 +260,14 @@ public class RobotMap {
   public static class ClimberMap {
     public static final int LEADER = 30;
     public static final int FOLLOWER = 31;
+    public static final double TOLERANCE = 1;
+    public static final double DT = 0.2;
+    public static final double LOWER_SETPOINT_LIMIT = 0;
+    public static final double UPPER_SETPOINT_LIMIT = 90;
+
+    public static final PIDConstants PID = new PIDConstants(0.8, 3, 0);
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(70, 30);
+    public static final ArmFeedforward FEEDFORWARD = new ArmFeedforward(0, 0, 0, 0);
   }
 
   public static class PivotMap {
