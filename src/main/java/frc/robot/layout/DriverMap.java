@@ -76,7 +76,7 @@ public abstract class DriverMap extends CommandMap {
 
       getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
         
-      getFollowNoteButton().whileTrue(vision.PID_thenOnTheFlyToNoteCommand());
+      getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand());
       getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
     }
   }
