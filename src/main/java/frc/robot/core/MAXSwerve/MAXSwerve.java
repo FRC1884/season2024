@@ -418,20 +418,24 @@ public abstract class MAXSwerve extends SubsystemBase {
 
 
 
-  public Command followAprilTagCommand() {
+  public Command followAprilTagCommand(Pose2d offset) {
     return new RepeatCommand(
-        new RunCommand(
-            () -> this.followPathCommand(
-                new PathPlannerPath(
-                    PathPlannerPath.bezierFromPoses(
-                        Vision.getInstance().getRobotPose2d_TargetSpace(),
-                        new Pose2d(1.0, 0.0, new Rotation2d())), // Need to make this better
-                    null,
-                    null),
-                false // null vaules because these are to be obtained from vision when that
-            // is finished
-            ),
-            this));
+      new RunCommand(
+        ()->this.alignToTagCommand(offset),
+        this));
+  }
+
+  public Command alignToTagCommand(Pose2d offset) {
+    return this.followPathCommand(
+      new PathPlannerPath(
+        PathPlannerPath.bezierFromPoses(
+          Vision.getInstance().getRobotPose2d_TargetSpace(),
+          offset), // Need to make this better
+        null,
+        null),
+      false // null vaules because these are to be obtained from vision when that
+      // is finished
+    );
   }
 
   public Command followNoteCommand(PathPlannerPath pathName){
