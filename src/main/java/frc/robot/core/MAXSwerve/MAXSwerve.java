@@ -568,6 +568,51 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   /**
+   * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
+   * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+   * @return command to PID align to a pose that is ROBOT RELATIVE
+   */
+  public Command chasePoseRobotRelativeCommand(Supplier<Pose2d> target){
+    TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+    
+    ProfiledPIDController xController = new ProfiledPIDController(0.15, 0, 0, X_CONSTRAINTS);
+    ProfiledPIDController yController = new ProfiledPIDController(0.15, 0, 0, Y_CONSTRAINTS);
+    PIDController omegaPID = new PIDController(0.01, 0, 0);
+
+    xController.setTolerance(0.10);
+    yController.setTolerance(0.05);
+    omegaPID.setTolerance(1.5);
+    omegaPID.enableContinuousInput(-180, 180);
+
+    return new DeferredCommand(() ->
+        new FunctionalCommand(
+          () -> {
+            // Init
+          },
+          () -> {
+
+            double xSpeed = xController.calculate(0, target.get().getX());
+            double ySpeed = yController.calculate(0, target.get().getY());
+            double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
+
+            this.drive(xSpeed, ySpeed, omegaSpeed, false, true);
+          },
+
+          interrupted -> {
+            this.drive(0,0,0, false, true);
+            System.out.println("Aligned now");
+          },
+
+        () -> {
+          return omegaPID.atSetpoint() && xController.atGoal() && yController.atGoal();
+        },
+        this), Set.of(this)
+    );
+  }
+
+  /**
    * Command to drive using Trapezoidal PID to a set distance away from a pose, then on-the-fly path to the pose 
    * @param targetPose the Supplier<Pose2d> that the robot should drive to
    * @return command to PID align to and then on-the-fly path to a pose on the field
