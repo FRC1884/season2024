@@ -64,6 +64,7 @@ public class Vision extends SubsystemBase {
     estimatePose = new Pose2d();
     noteFieldRelativePose = new Pose2d();
     noteRobotRelativePose = new Pose2d();
+    noteRobotRelativePose = new Pose2d();
     targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
     limeLatency = 0.0;
