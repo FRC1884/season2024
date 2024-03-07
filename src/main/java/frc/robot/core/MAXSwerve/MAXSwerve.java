@@ -706,8 +706,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     ProfiledPIDController yController = new ProfiledPIDController(0.15, 0, 0, Y_CONSTRAINTS);
     PIDController omegaPID = new PIDController(0.01, 0, 0);
 
-    xController.setTolerance(0.15);
-    yController.setTolerance(0.1);
+    xController.setTolerance(0.10);
+    yController.setTolerance(0.05);
     omegaPID.setTolerance(1.5);
     omegaPID.enableContinuousInput(-180, 180);
 
