@@ -5,8 +5,6 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.RobotMap.PrototypeMap;

@@ -21,11 +21,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -35,7 +32,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -43,12 +39,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Config;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.subsystems.PoseEstimator;
@@ -56,8 +52,6 @@ import frc.robot.subsystems.PoseEstimator;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-
-import org.photonvision.PhotonCamera;
 
 public abstract class MAXSwerve extends SubsystemBase {
 
@@ -278,7 +272,8 @@ public abstract class MAXSwerve extends SubsystemBase {
             Translation2d targetVector = currentTranslation.minus(target.get());
             Rotation2d targetAngle = targetVector.getAngle();
             double newSpeed;
-            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+            // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+            if(Config.IS_ALLIANCE_RED)
               newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
             else
               newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
@@ -327,16 +322,17 @@ public abstract class MAXSwerve extends SubsystemBase {
       // This will flip the path being followed to the red side of the field.
       // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-      var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-        return alliance.get() == DriverStation.Alliance.Red;
-      }
-      return false;
+      // var alliance = DriverStation.getAlliance();
+      // if (alliance.isPresent()) {
+      //   return alliance.get() == DriverStation.Alliance.Red;
+      // }
+      return Config.IS_ALLIANCE_RED; 
     };
   }
 
   public void startingOdometry(Pose2d startingPose) {
-    PoseEstimator.getInstance().resetPoseEstimate(startingPose);
+    //PoseEstimator.getInstance().resetPoseEstimate(startingPose);
+    PoseEstimator.getInstance().resetPoseEstimate(new Pose2d(startingPose.getX(), startingPose.getY(), this.getYawRot2d()));
   }
 
   public Command followPathCommand(String pathName, boolean isFirstPath) {
@@ -349,15 +345,17 @@ public abstract class MAXSwerve extends SubsystemBase {
         new InstantCommand(
             () -> {
               // Reset odometry for the first path you run during auto
-              if (isFirstPath && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+              // if (isFirstPath && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+              if(isFirstPath && Config.IS_ALLIANCE_BLUE){
                 PathPoint startingPoint = pathName.getPoint(0);
                 Pose2d startingPose = new Pose2d(
                     startingPoint.position, this.getYawRot2d());
                 //VERY IMPORTANT SO THAT ODOMETRY IS NOT OVERRIDEN AS BEING THE ORIGIN
                 PoseEstimator.getInstance().resetPoseEstimate(startingPose);
-                //this.resetOdometry(startingPose);
+                this.resetOdometry(startingPose);
               }
-              else if(isFirstPath && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+              // else if(isFirstPath && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+              if(isFirstPath && Config.IS_ALLIANCE_RED)
               {
                 PathPoint startingPoint = pathName.getPoint(0);
                 double startingX = RobotMap.VisionConfig.FIELD_LENGTH_METERS - startingPoint.position.getX();
@@ -368,7 +366,8 @@ public abstract class MAXSwerve extends SubsystemBase {
               }
             }),
         AutoBuilder.followPath(pathName).andThen(() -> System.out.println("Helo there")),
-        new InstantCommand(() -> System.out.println("Tihs"))
+        new InstantCommand(() -> System.out.println(PoseEstimator.getInstance().getEstimatedPose())),
+        new InstantCommand(() -> System.out.println(getPose()))
         );
   }
 
@@ -482,7 +481,8 @@ public abstract class MAXSwerve extends SubsystemBase {
             Translation2d targetVector = currentTranslation.minus(target.get());
             Rotation2d targetAngle = targetVector.getAngle();
             double newSpeed;
-            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+            // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+            if(Config.IS_ALLIANCE_RED)
               newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
             else
               newSpeed = pid.calculate(this.getGyroYawDegrees(), targetAngle.getDegrees());
@@ -566,6 +566,52 @@ public abstract class MAXSwerve extends SubsystemBase {
         this)), Set.of(this)
     );
   }
+
+  /**
+   * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
+   * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+   * @return command to PID align to a pose that is ROBOT RELATIVE
+   */
+  public Command chasePoseRobotRelativeCommand(Supplier<Pose2d> target){
+    TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+    
+    ProfiledPIDController xController = new ProfiledPIDController(1, 0, 0, X_CONSTRAINTS);
+    ProfiledPIDController yController = new ProfiledPIDController(1, 0, 0, Y_CONSTRAINTS);
+    PIDController omegaPID = new PIDController(0.01, 0, 0);
+
+    xController.setTolerance(0.10);
+    yController.setTolerance(0.0);
+    omegaPID.setTolerance(1.5);
+    omegaPID.enableContinuousInput(-180, 180);
+
+    return new DeferredCommand(() ->
+        new FunctionalCommand(
+          () -> {
+            // Init
+          },
+          () -> {
+
+            double xSpeed = xController.calculate(0, target.get().getX());
+            double ySpeed = yController.calculate(0, target.get().getY());
+            double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
+
+            this.drive(xSpeed, ySpeed, 0, false, true);
+          },
+
+          interrupted -> {
+            this.drive(0,0,0, false, true);
+            System.out.println("Aligned now");
+          },
+
+        () -> {
+          return omegaPID.atSetpoint() && xController.atGoal() && yController.atGoal();
+        },
+        this), Set.of(this)
+    );
+  }
+
 
   /**
    * Command to drive using Trapezoidal PID to a set distance away from a pose, then on-the-fly path to the pose 

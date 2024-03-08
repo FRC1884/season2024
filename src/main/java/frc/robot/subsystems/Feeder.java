@@ -10,18 +10,12 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.FeederMap;
-import frc.robot.RobotMap.ShooterMap;
-import frc.robot.subsystems.Feeder.FeederDirection;
-import frc.robot.subsystems.Feeder.NoteStatus;
 
 public class Feeder extends SubsystemBase {
     private static Feeder instance;
-    private boolean isDisabled = true;
-    private AddressableLEDLights lights;
+    private boolean isDisabled = false;
 
     public static Feeder getInstance() {
         if(instance == null) instance = new Feeder();
@@ -46,7 +40,6 @@ public class Feeder extends SubsystemBase {
     private double feedVel;
 
     private Feeder() {
-        lights = AddressableLEDLights.getInstance();
         if (FeederMap.FEEDER != -1){
 
             setName("Feeder");
@@ -119,13 +112,6 @@ public class Feeder extends SubsystemBase {
     public void periodic() {
         status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         updateMotors();
-         if(!isDisabled){
-            if(status == NoteStatus.LOADED){
-                lights.setColorCommand(Color.kGreenYellow);
-            }
-            else lights.setColorCommand(Color.kRed);
-
-        }
     }
 
 

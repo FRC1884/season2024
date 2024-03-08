@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
-import frc.robot.core.util.controllers.ButtonMap.Dpad;
 import frc.robot.core.util.controllers.GameController;
 
 public class TwoJoyStickOperatorMap extends OperatorMap {

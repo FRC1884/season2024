@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -13,17 +12,14 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Config;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.ShooterMap;
-import frc.robot.subsystems.Intake.IntakeStatus;
 import frc.robot.util.FlywheelLookupTable;
 
 /**
@@ -66,8 +62,9 @@ public class Shooter extends SubsystemBase {
     private GenericEntry shooterRPMEntry = tab.add("Shooter RPM", 0).getEntry();
 
     FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-    Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
-    PoseEstimator poseEstimator = PoseEstimator.getInstance();
+   // Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+    Pose2d target = Config.IS_ALLIANCE_BLUE ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+   PoseEstimator poseEstimator = PoseEstimator.getInstance();
 
     private Shooter() {
         if (ShooterMap.TOP_SHOOTER != -1) {
@@ -134,8 +131,9 @@ public class Shooter extends SubsystemBase {
         shooterRPMEntry.setDouble(lookupTable.get(
             poseEstimator.getDistanceToPose(target.getTranslation())).getRPM());
         FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-      Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
-      PoseEstimator poseEstimator = PoseEstimator.getInstance();
+    //   Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+        Pose2d target = Config.IS_ALLIANCE_BLUE ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+        PoseEstimator poseEstimator = PoseEstimator.getInstance();
         shooterAngleEntry.setDouble(lookupTable
         .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint());
     }

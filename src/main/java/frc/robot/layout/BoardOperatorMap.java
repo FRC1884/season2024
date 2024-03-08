@@ -1,14 +1,9 @@
 package frc.robot.layout;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
-import frc.robot.core.util.controllers.BoardController;
 import frc.robot.core.util.controllers.GameController;
 
 public class BoardOperatorMap extends OperatorMap {
@@ -50,6 +45,7 @@ public class BoardOperatorMap extends OperatorMap {
   double getManualClimberAxis(){
     return controller.getAxis(Axis.AXIS_LEFT_X);
   }
+
   @Override
   JoystickButton getManualShootButton() {
     return controller.getButton(Button.BUTTON_A);

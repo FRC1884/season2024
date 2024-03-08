@@ -2,8 +2,6 @@ package frc.robot.util;
 
 import frc.robot.RobotMap;
 
-import java.math.BigDecimal;
-
 public class BlinkinUtils {
     public enum ColorPatterns {
         /*

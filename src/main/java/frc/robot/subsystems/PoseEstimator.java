@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Config;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
@@ -106,13 +107,15 @@ public class PoseEstimator extends SubsystemBase {
     drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
 
     Translation2d currentTranslation = getPosition().getTranslation();
-    double targetVectorLength = currentTranslation.getDistance(Coordinates.RED_SPEAKER.getTranslation());
+    Pose2d targetCoordinate = Config.IS_ALLIANCE_BLUE ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;;
+
+    double targetVectorLength = currentTranslation.getDistance(targetCoordinate.getTranslation());
     rToSpeaker.setDouble(targetVectorLength);
 
   }
   
   public Double getDistanceToPose(Translation2d pose) {
-    return getPosition().getTranslation().getDistance(pose);
+        return getPosition().getTranslation().getDistance(pose);
   }
 
   /**
@@ -163,8 +166,9 @@ public class PoseEstimator extends SubsystemBase {
    * @param poseMeters
    */
   public void resetPoseEstimate(Pose2d poseMeters) {
-    poseEstimator.resetPosition(drivetrain.getYawRot2d(), drivetrain.getModulePositions(), poseMeters);
     drivetrain.resetOdometry(poseMeters);
+    poseEstimator.resetPosition(drivetrain.getYawRot2d(), drivetrain.getModulePositions(), drivetrain.getPose());
+    
   }
 
   public void resetHeading(Rotation2d angle) {

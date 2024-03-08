@@ -5,6 +5,9 @@ import frc.robot.core.util.controllers.ButtonMap;
 import frc.robot.core.util.controllers.Xbox;
 
 public class Config {
+
+  public static final boolean IS_ALLIANCE_RED = false;
+  public static final boolean IS_ALLIANCE_BLUE = !IS_ALLIANCE_RED;
   public static final class Subsystems {
     public static final boolean DRIVETRAIN_ENABLED = true;
     public static final boolean CLIMBER_ENABLED = false;
