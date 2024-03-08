@@ -120,7 +120,7 @@ public class AddressableLEDLights extends SubsystemBase {
     }
 
     private Command getAmplifyPattern() {
-        return setPhaseInOut(DriverStation.getAlliance().get().equals(Alliance.Red) ? () -> 240 : () -> 120)
+        return setPhaseInOut(() -> DriverStation.getAlliance().get())
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
@@ -135,10 +135,15 @@ public class AddressableLEDLights extends SubsystemBase {
                 setColorCommand(offColor).withTimeout(1.0 / frequency));
     }
 
-    private Command setPhaseInOut(IntSupplier h) {
+    private Command setPhaseInOut(Supplier<Alliance> a) {
         return Commands.runOnce(() -> {
             for(int i = 0; i < NUMBER_LEDS; i++) {
-                m_ledBuffer.setHSV(i, h.getAsInt(), 255, value);
+                m_ledBuffer.setHSV(
+                    i, 
+                    a.get().equals(Alliance.Red) ? 240 : 120, 
+                    255, 
+                    value
+                );
             }
 
             value += 10 * direction;
