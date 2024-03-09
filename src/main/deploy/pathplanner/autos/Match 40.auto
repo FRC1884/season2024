@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5140226040718452,
-      "y": 2.085273693299884
+      "x": 0.4708394010225951,
+      "y": 7.3
     },
     "rotation": 180.0
   },
@@ -32,15 +32,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 3.0
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
-                        "pathName": "Source To Bottom Note"
+                        "pathName": "CTS Shot 1"
                       }
                     },
                     {
@@ -52,7 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 1"
+                        "pathName": "CTS Pickup 2"
                       }
                     },
                     {
@@ -64,19 +58,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "CTS BTT Pickup 3"
+                        "pathName": "CTS Pickup 3"
                       }
                     },
                     {

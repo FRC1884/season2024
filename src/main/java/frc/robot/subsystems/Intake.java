@@ -7,9 +7,11 @@ import java.util.function.Supplier;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -20,6 +22,9 @@ import frc.robot.RobotMap.IntakeMap;
 
 public class Intake extends SubsystemBase {
     private static Intake instance;
+
+    private ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake Data");
+    private GenericEntry noteStatusEntry = intakeTab.add("Has Note", false).getEntry();
 
     public static Intake getInstance() {
         if (instance == null) {
@@ -130,6 +135,13 @@ public class Intake extends SubsystemBase {
         }
 
         updateIntake();
+
+        if (status == IntakeStatus.LOADED){
+            noteStatusEntry.setBoolean(true);
+        }
+        else{
+            noteStatusEntry.setBoolean(false);
+        }
     }
 
     private void updateIntake() {

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5140226040718452,
-      "y": 2.085273693299884
+      "x": 0.5048436289991337,
+      "y": 4.1046482092964185
     },
     "rotation": 180.0
   },
@@ -32,15 +32,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 3.0
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
-                        "pathName": "Source To Bottom Note"
+                        "pathName": "Speaker To Bottom Note"
                       }
                     },
                     {
@@ -52,7 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 1"
+                        "pathName": "BTT Bottom Note"
                       }
                     },
                     {
@@ -64,7 +58,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 2"
+                        "pathName": "BTT Mid Note"
                       }
                     },
                     {
@@ -76,7 +70,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 3"
+                        "pathName": "BTT Top Note"
                       }
                     },
                     {

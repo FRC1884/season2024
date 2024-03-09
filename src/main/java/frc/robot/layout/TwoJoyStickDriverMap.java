@@ -25,6 +25,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
       * ((IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 
+
   @Override
   public double getSwerveYSpeed() {
     if(DriverStation.getAlliance().isPresent() 
@@ -53,7 +54,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
   }
   
   @Override
-  public JoystickButton getTestButton() {
+  public JoystickButton getRaiseShampreButton() {
     return controller.getButton(Button.BUTTON_B);
   }
 

@@ -44,6 +44,7 @@ public class Vision extends SubsystemBase {
   private LimelightHelpers.LimelightResults jsonResults, detectJsonResults;
   private Pose2d targetRobotRelativePose;
   private Pose2d noteFieldRelativePose;
+  private Pose2d noteRobotRelativePose;
   private ShuffleboardTab tab = Shuffleboard.getTab("Driver Cam");
 
   // testing
@@ -62,6 +63,7 @@ public class Vision extends SubsystemBase {
     botPose = new Pose2d();
     estimatePose = new Pose2d();
     noteFieldRelativePose = new Pose2d();
+    noteRobotRelativePose = new Pose2d();
     targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
     limeLatency = 0.0;
@@ -163,6 +165,9 @@ public class Vision extends SubsystemBase {
           botPose = currentPose3d.toPose2d();
         }
       }
+      else{
+        photon1HasTargets = false;
+      }
     }
 
     //Does math to see where the note is
@@ -178,6 +183,12 @@ public class Vision extends SubsystemBase {
         //Note: limelight is already CCW positive, so tx does not have to be * -1
         Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
 
+        //Code for robot relative note tracking
+        Transform2d robotToNoteTransform = VisionConfig.NN_ROBOT_TO_LIME_2D.plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
+        Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle().plus(new Rotation2d(Math.PI));
+        noteRobotRelativePose = new Pose2d(robotToNoteTransform.getTranslation(), targetAngleRobotRelative);
+
+        //Code for field relative note tracking
         Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
 
         Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);
@@ -187,8 +198,7 @@ public class Vision extends SubsystemBase {
         Rotation2d targetAngle = targetVector.getAngle();
         
         noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
-
-        }
+      }
     }
 
   }
@@ -198,6 +208,13 @@ public class Vision extends SubsystemBase {
    */
   public Pose2d getNotePose2d(){
     return noteFieldRelativePose;
+  }
+
+  /**
+   * @return Pose2d location of note Field Relative
+   */
+  public Pose2d getRobotRelativeNotePose2d(){
+    return noteRobotRelativePose;
   }
 
 
@@ -393,4 +410,11 @@ public class Vision extends SubsystemBase {
     return Drivetrain.getInstance().chasePoseCommand(this::getNotePose2d);
   }
 
+  /**
+   * Commnad to go to in front of note using PID and then drive to the note
+   * @return a PID and then on-the-fly command to drive onto a note
+   */
+  public Command PIDtoNoteRobotRelativeCommand(){
+    return Drivetrain.getInstance().chasePoseRobotRelativeCommand(this::getRobotRelativeNotePose2d);
+  }
 }

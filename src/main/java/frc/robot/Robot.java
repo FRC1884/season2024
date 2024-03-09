@@ -69,30 +69,32 @@ public class Robot extends TimedRobot {
     // robot/auto/selector/AutoModeSelector.java
     
     OI.getInstance().registerCommands();
-    
+    AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
-    enableLiveWindowInTest(isTest());
-    OI.getInstance().registerCommands();
-
+   
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       {enableLiveWindowInTest(true);
       System.out.println("enabled test mode");}
+
     SmartDashboard.putData("field", m_field);
 
-
+    if(Config.Subsystems.DRIVETRAIN_ENABLED){
+      Drivetrain.getInstance().zeroGyroYaw();
+      PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
+    }
     // --- Autos ---
-    AutoCommands.registerAutoCommands();
+
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
 
     // --- Configure pose estimation
-    Drivetrain.getInstance().zeroGyroYaw();
-    PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
+   
   }
 
   public Command getAutonomousCommand() {
+    System.out.println(autoChooser.getSelected());
     return autoChooser.getSelected();
   }
   /**
@@ -129,6 +131,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+
+
     CommandScheduler.getInstance().cancelAll();
 
     var autonomousCommand = getAutonomousCommand();

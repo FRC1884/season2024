@@ -110,7 +110,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         new SwerveModulePosition[] {
             fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
         });
-    var alliance = DriverStation.getAlliance();
+
     // if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red)
     //   this.resetOdometry(new Pose2d(15, 5.18, Rotation2d.fromDegrees(0)));
     // else if (alliance.isPresent() && .get() == DriverStation.Alliance.Blue)
@@ -299,7 +299,7 @@ public abstract class MAXSwerve extends SubsystemBase {
   }
 
   public void startingOdometry(Pose2d startingPose) {
-    PoseEstimator.getInstance().resetPoseEstimate(startingPose);
+    PoseEstimator.getInstance().resetPoseEstimate(new Pose2d(startingPose.getX(), startingPose.getY(), this.getYawRot2d()));
   }
 
   public Command followPathCommand(String pathName, boolean isFirstPath) {
@@ -317,8 +317,9 @@ public abstract class MAXSwerve extends SubsystemBase {
                 Pose2d startingPose = new Pose2d(
                     startingPoint.position, this.getYawRot2d());
                 //VERY IMPORTANT SO THAT ODOMETRY IS NOT OVERRIDEN AS BEING THE ORIGIN
+               
+                this.resetOdometry(startingPose);
                 PoseEstimator.getInstance().resetPoseEstimate(startingPose);
-                //this.resetOdometry(startingPose);
               }
               else if(isFirstPath && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
               {
@@ -568,6 +569,52 @@ public abstract class MAXSwerve extends SubsystemBase {
 
         () -> {
           return omegaPID.atSetpoint(); // &&xController.atGoal() && yController.atGoal();
+        },
+        this), Set.of(this)
+    );
+  }
+
+  /**
+   * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
+   * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+   * @return command to PID align to a pose that is ROBOT RELATIVE
+   */
+  public Command chasePoseRobotRelativeCommand(Supplier<Pose2d> target){
+    TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+    
+    ProfiledPIDController xController = new ProfiledPIDController(0.5, 0, 0, X_CONSTRAINTS);
+    ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0, Y_CONSTRAINTS);
+    PIDController omegaPID = new PIDController(0.01, 0, 0);
+
+    xController.setTolerance(0.10);
+    yController.setTolerance(0.03);
+    omegaPID.setTolerance(1.5);
+    omegaPID.enableContinuousInput(-180, 180);
+
+    return new DeferredCommand(() ->
+        new FunctionalCommand(
+          () -> {
+            // Init
+          },
+          () -> {;
+
+            double xSpeed = xController.calculate(0, target.get().getX());
+            double ySpeed = yController.calculate(0, target.get().getY());
+            double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
+
+            this.drive(xSpeed, 0, omegaSpeed, false, true);
+          },
+
+          interrupted -> {
+            this.drive(0,0,0, false, true);
+            omegaPID.close();
+            System.out.println("Aligned now");
+          },
+
+        () -> {
+          return omegaPID.atSetpoint() && xController.atGoal() && yController.atGoal();
         },
         this), Set.of(this)
     );

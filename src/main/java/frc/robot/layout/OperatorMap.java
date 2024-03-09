@@ -1,5 +1,7 @@
 package frc.robot.layout;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -47,6 +49,8 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getManualShootButton();
 
+  abstract double getManualClimberAxis();
+
   abstract JoystickButton getAmplifyButton();
 
   abstract JoystickButton getCoopButton();
@@ -63,9 +67,9 @@ public abstract class OperatorMap extends CommandMap {
 
   abstract JoystickButton getLEDPatternOffButton();
 
-  abstract Trigger getPivotLowerButton();
+  // abstract Trigger getPivotLowerButton();
 
-  abstract Trigger getPivotRaiseButton();
+  // abstract Trigger getPivotRaiseButton();
 
   abstract double getLEDAxis1();
 
@@ -101,7 +105,8 @@ public abstract class OperatorMap extends CommandMap {
   private void registerClimber() {
     if (Config.Subsystems.CLIMBER_ENABLED) {
       Climber climber = Climber.getInstance();
-
+      climber.setDefaultCommand(climber.run(() -> getManualClimberAxis()));
+      
     }
   }
 
@@ -112,17 +117,18 @@ public abstract class OperatorMap extends CommandMap {
       Shamper shooter = Shamper.getInstance();
       Pivot pivot = Pivot.getInstance();
       FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-      Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
+      Supplier<Pose2d> target = () -> (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
               : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
 
       getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
-                      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint())
+                      .get(poseEstimator.getDistanceToPose(() -> target.get().getTranslation())).getAngleSetpoint())
               .alongWith(shooter.setShootVelocityCommand(() -> lookupTable.get(
-                              poseEstimator.getDistanceToPose(target.getTranslation())).getFlywheelV(),
-                      () -> lookupTable.get(poseEstimator.getDistanceToPose(target.getTranslation())).getFeederV()))));
+                              poseEstimator.getDistanceToPose(() -> target.get().getTranslation())).getFlywheelV(),
+                      () -> lookupTable.get(poseEstimator.getDistanceToPose(() -> target.get().getTranslation())).getFeederV()))));
 
-      getArcButton().onFalse(shooter.setShootVelocityCommand(() -> 0.0, () -> 0.0));
+      getArcButton().onFalse(pivot.updatePosition(() -> PivotMap.LOWER_SETPOINT_LIMIT + 1).alongWith(
+        shooter.setShootVelocityCommand(() -> 0.0, () -> 0.0)).andThen(shooter.setFeederVelocityCommand(() -> 0.0)));
 
       getShootAmpButton().onTrue(intake.setIntakeState(IntakeDirection.FORWARD).andThen(shooter.setFeederVelocityCommand(() -> ShamperMap.AMP_SPEED_FEEDER)))
               .onFalse(intake.setIntakeState(IntakeDirection.STOPPED));
@@ -145,8 +151,8 @@ public abstract class OperatorMap extends CommandMap {
                       Climber.getInstance().run(() -> 0.2),
                       new WaitCommand(1),
                       Climber.getInstance().run(() -> 0)));
-      getPivotLowerButton().onTrue(pivot.updatePosition(() -> 0.0).alongWith(new PrintCommand("hi")));
-      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> 75.0).alongWith(new PrintCommand("bye")));
+      // getPivotLowerButton().onTrue(pivot.updatePosition(() -> 0.0).alongWith(new PrintCommand("hi")));
+      // getPivotRaiseButton().onTrue(pivot.updatePosition(() -> 75.0).alongWith(new PrintCommand("bye")));
     }
 
   }
@@ -156,9 +162,11 @@ public abstract class OperatorMap extends CommandMap {
       AddressableLEDLights lights = AddressableLEDLights.getInstance();
       Intake intake = Intake.getInstance();
 
+      // these might need to require the subsystem to interrupt but not cancel the default state
       getAmplifyButton().onTrue(lights.toggleAmplifyState(intake::getNoteStatus));
       getCoopButton().onTrue(lights.toggleCoopState(intake::getNoteStatus));
-      lights.setDefaultCommand(lights.useState(lights::getState));
+      // because default commands don't work for some reason
+      new Trigger(() -> true).whileTrue(lights.useState(lights::getState));
     }
   }
 

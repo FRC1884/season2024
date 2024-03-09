@@ -2,16 +2,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import frc.robot.Config;
 import frc.robot.RobotMap.LEDMap;
 
 import java.util.Map;
 import java.util.function.BooleanSupplier;
-import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import static frc.robot.RobotMap.LEDMap.NUMBER_LEDS;
@@ -80,13 +78,6 @@ public class AddressableLEDLights extends SubsystemBase {
         ).repeatedly();
     }
 
-    private Command setBlinkingCommand(Color colorOne, Color colorTwo, double frequency) {
-        return Commands.repeatingSequence(
-            setColorCommand(colorOne).withTimeout(1.0 / frequency),
-            setColorCommand(colorTwo).withTimeout(1.0 / frequency)
-        );
-    }
-
     private void setColor(Color color) {
         for(int i = 0; i < NUMBER_LEDS; i++) {
             m_ledBuffer.setRGB(
@@ -120,7 +111,7 @@ public class AddressableLEDLights extends SubsystemBase {
     }
 
     private Command getAmplifyPattern() {
-        return setPhaseInOut(() -> DriverStation.getAlliance().get())
+        return setPhaseInOut(() -> Config.IS_ALLIANCE_RED)
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
@@ -135,12 +126,12 @@ public class AddressableLEDLights extends SubsystemBase {
                 setColorCommand(offColor).withTimeout(1.0 / frequency));
     }
 
-    private Command setPhaseInOut(Supplier<Alliance> a) {
+    private Command setPhaseInOut(BooleanSupplier isRed) {
         return Commands.runOnce(() -> {
             for(int i = 0; i < NUMBER_LEDS; i++) {
                 m_ledBuffer.setHSV(
                     i, 
-                    a.get().equals(Alliance.Red) ? 240 : 120, 
+                    isRed.getAsBoolean() ? 240 : 120, 
                     255, 
                     value
                 );
@@ -166,8 +157,5 @@ public class AddressableLEDLights extends SubsystemBase {
     private Command setColorCommand(Color color) {
         return Commands.run(() -> setColor(color), this);
     }
-
-    public Command setToAllianceColorCommand(Supplier<Alliance> alliance) {
-        return setColorCommand(alliance.get().equals(Alliance.Red) ? Color.kRed : Color.kBlue).ignoringDisable(true);
-    }
+    
 }

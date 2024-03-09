@@ -111,20 +111,14 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getPivotLowerButton()
-  {
-    return null;
-  }
-
-  @Override
-  JoystickButton getPivotRaiseButton(){
-    return null;
-  }
-
-  @Override
   JoystickButton getTrapButton() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  double getManualClimberAxis() {
+    return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
 
   @Override
