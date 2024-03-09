@@ -42,6 +42,7 @@ public class PoseEstimator extends SubsystemBase {
   private GenericEntry yPoseDiffEntry = tab.add("YODom Diff", 0).getEntry();
   private GenericEntry totalDiffEntry = tab.add("totalDiff", 0).getEntry();
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
+  private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
 
   private PoseEstimator() {
     // config = new PoseConfig();
@@ -82,6 +83,10 @@ public class PoseEstimator extends SubsystemBase {
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
         addVisionMeasurement(tempEstimatePose, photonTimestamp);
+        aprilTagTelemEntry.setBoolean(true);
+      }
+      else{
+        aprilTagTelemEntry.setBoolean(false);
       }
     }
 

@@ -32,6 +32,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -115,6 +116,10 @@ public abstract class MAXSwerve extends SubsystemBase {
             // options
             // here
             ), getShouldFlip(), this);
+
+        setName("Swerve");
+        var tab = Shuffleboard.getTab("Swerve");
+        tab.add(this);
   }
 
   public Rotation2d getYawRot2d() {
@@ -274,9 +279,9 @@ public abstract class MAXSwerve extends SubsystemBase {
             double newSpeed;
             // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
             if(Config.IS_ALLIANCE_RED)
-              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
             else
-              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees());
+              newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
             this.drive(xSpeed.get(),ySpeed.get(),
             newSpeed, true, true);
             
@@ -577,12 +582,12 @@ public abstract class MAXSwerve extends SubsystemBase {
     TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
     //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
     
-    ProfiledPIDController xController = new ProfiledPIDController(1, 0, 0, X_CONSTRAINTS);
-    ProfiledPIDController yController = new ProfiledPIDController(1, 0, 0, Y_CONSTRAINTS);
+    ProfiledPIDController xController = new ProfiledPIDController(0.5, 0, 0, X_CONSTRAINTS);
+    ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0, Y_CONSTRAINTS);
     PIDController omegaPID = new PIDController(0.01, 0, 0);
 
     xController.setTolerance(0.10);
-    yController.setTolerance(0.0);
+    yController.setTolerance(0.03);
     omegaPID.setTolerance(1.5);
     omegaPID.enableContinuousInput(-180, 180);
 
@@ -597,11 +602,12 @@ public abstract class MAXSwerve extends SubsystemBase {
             double ySpeed = yController.calculate(0, target.get().getY());
             double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
 
-            this.drive(xSpeed, ySpeed, 0, false, true);
+            this.drive(xSpeed, 0, omegaSpeed, false, true);
           },
 
           interrupted -> {
             this.drive(0,0,0, false, true);
+            omegaPID.close();
             System.out.println("Aligned now");
           },
 
@@ -704,6 +710,20 @@ public abstract class MAXSwerve extends SubsystemBase {
    */
   public double getHeading() {
     return getGyroYawDegrees();
+  }
+
+  private void updateAlignAngle(double angle){
+    DriveMap.SPEAKER_ALIGN_OFFSET = angle;
+  }
+
+  private double getALignAngle(){
+    return DriveMap.SPEAKER_ALIGN_OFFSET;
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder)
+  {
+    builder.addDoubleProperty("Manual Align offset", () -> getALignAngle(), (a) -> updateAlignAngle(a));
   }
 
   public SequentialCommandGroup TestAllCommand() {

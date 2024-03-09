@@ -78,7 +78,8 @@ public abstract class OperatorMap extends CommandMap {
   private void registerIntake() {
     if (Config.Subsystems.Intake.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
-     getOuttakeButton().onTrue(new InstantCommand(() -> intake.setIntakeState(Intake.IntakeDirection.REVERSE), intake));
+    // getOuttakeButton().onTrue(new InstantCommand(() -> intake.setIntakeState(Intake.IntakeDirection.REVERSE), intake));
+     
       
 
     }
@@ -153,7 +154,7 @@ public abstract class OperatorMap extends CommandMap {
           Climber.getInstance().run(() -> 0.3))); 
       getClimbSequenceButton().onFalse(Climber.getInstance().run(() -> -0.3));
 
-      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE));
+      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> (PivotMap.PIVOT_AMP_ANGLE +40.0)));
       getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
       getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
       getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
@@ -173,16 +174,15 @@ public abstract class OperatorMap extends CommandMap {
       getAmplifyButton().onTrue(lights.toggleAmplifyState(feeder::isNoteLoaded));
       getAmplifyButton().onTrue(lights.toggleAmplifyState(feeder::isNoteLoaded));
       // little paranoid about how suppliers work so im not gonna offload the usestate parameter 
-      new Trigger(() -> true).whileTrue(lights.useState(lights::getState));
+      new Trigger(() -> !getAmplifyButton().getAsBoolean() && !getCoopButton().getAsBoolean()).whileTrue(lights.useState(lights::getState));
     }
   }
 
-  public void registerSubsystems(){
+  public void registerSubsystems() {
     Intake.getInstance();
     Shooter.getInstance();
     Feeder.getInstance();
     Climber.getInstance();
-    AddressableLEDLights.getInstance();
   }
 
   @Override

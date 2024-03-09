@@ -37,6 +37,8 @@ public class RobotMap {
 
     public static final double SLOW_MODE_ROTATION_MUTLIPLIER = 0.2;
 
+    public static double SPEAKER_ALIGN_OFFSET = 0;
+
     public static boolean IS_SLOWMODE_ENABLED = false;
 
     /* Module Specific Constants */
@@ -289,7 +291,7 @@ public class RobotMap {
   }
 
   public static class LEDMap {
-    public static final int BLINKIN_PWM_PORT = 2;
+    public static final int BLINKIN_PWM_PORT = 6;
     public static final boolean BLINKIN_PWM = true;
     public static final boolean BLINKIN_ON_SPARK = false;
     public static final int NUMBER_LEDS = 43;
