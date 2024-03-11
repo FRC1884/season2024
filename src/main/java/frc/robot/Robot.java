@@ -115,6 +115,9 @@ public class Robot extends TimedRobot {
       if (Vision.getInstance().getNotePose2d() != null){
         m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
       }
+      if (Vision.getInstance().getRobotRelativeNotePose2d() != null){
+        m_field.getObject("Note Pose Robot Rel").setPose(Vision.getInstance().getRobotRelativeNotePose2d());
+      }
     }
 
   }

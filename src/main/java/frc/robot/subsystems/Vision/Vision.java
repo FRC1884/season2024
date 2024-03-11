@@ -418,3 +418,4 @@ public class Vision extends SubsystemBase {
     return Drivetrain.getInstance().chasePoseRobotRelativeCommand(this::getRobotRelativeNotePose2d);
   }
 }
+
