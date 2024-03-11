@@ -12,20 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class RobotMap {
-  public enum PoseMap {
-    SOURCE_BLUE(new Pose2d(0, 0, new Rotation2d(0)));
-
-    private final Pose2d targetPose;
-
-    PoseMap(Pose2d targetPose) {
-      this.targetPose = targetPose;
-    }
-
-    public Pose2d getTargetPose() {
-      return targetPose;
-    }
-  }
-
   public static class DriveMap {
 
     public enum GyroType {
@@ -40,7 +26,7 @@ public class RobotMap {
 
     public static final double SLOW_MODE_TRANSLATE_MULTIPLIER = 0.2;
 
-    public static final double SLOW_MODE_ROTATION_MUTLIPLIER = 4;
+    public static final double SLOW_MODE_ROTATION_MUTLIPLIER = 0.4;
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
@@ -83,7 +69,7 @@ public class RobotMap {
   }
 
   public static final class Coordinates {
-    public static final Pose2d BLUE_SPEAKER = new Pose2d(0.22, 5.6, new Rotation2d(Math.PI));
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(0.12, 5.6, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_AMP = new Pose2d(1.79, 7.60, new Rotation2d(Math.PI / 2));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.3, 1.11, Rotation2d.fromDegrees(-55));
     public static final Pose2d RED_SPEAKER = new Pose2d(16.54175 - 0.22, 5.6, new Rotation2d(Math.PI));
@@ -228,7 +214,7 @@ public class RobotMap {
 
     public static final double INTAKE_REVERSE_SPEED = -0.4;
     public static final double FEEDER_REVERSE_SPEED = -0.4;
-    public static final int SENSOR = 6;
+    public static final int SENSOR = 0;
 
     public static final double INTAKE_DELAY = 0.1
     ;
@@ -241,8 +227,8 @@ public class RobotMap {
     public static final double FLYWHEEL_RADIUS = 0.0508;
 
 
-    public static final double AMP_SPEED_TOP = -1500;
-    public static final double AMP_SPEED_FEEDER = 1500;
+    public static final double AMP_SPEED_TOP = -2500;
+    public static final double AMP_SPEED_FEEDER = 2500;
     public static final double TRAP_SPEED = 4000;     // TODO: TUNE
 
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
@@ -254,7 +240,7 @@ public class RobotMap {
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.00002);
     public static final double FEEDER_FF = 0.000165;
 
-    public static final Translation2d SHOT_OFFSET = new Translation2d(0, 0.20 +0.3);
+    public static final Translation2d SHOT_OFFSET = new Translation2d(0, 0.20 + 0.3);
   }
 
   public static class ClimberMap {
@@ -270,7 +256,7 @@ public class RobotMap {
     public static final double UPPER_SETPOINT_LIMIT = 90;
 
     // TODO: TUNE
-    public static final double PIVOT_AMP_ANGLE = 80;
+    public static final double PIVOT_AMP_ANGLE = 75;
     public static final double PIVOT_TRAP_ANGLE = 0;
 
     public static final PIDConstants PID = new PIDConstants(0.8, 3, 0);

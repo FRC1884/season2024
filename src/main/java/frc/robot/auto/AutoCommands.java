@@ -1,6 +1,7 @@
 package frc.robot.auto;
 
 import java.time.Instant;
+import java.util.function.Supplier;
 
 import org.ejml.dense.row.decompose.TriangularSolver_CDRM;
 
@@ -30,7 +31,7 @@ import frc.robot.subsystems.Shamper;
 public class AutoCommands {
     public static void registerAutoCommands() {
         FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-        Pose2d target = DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
+        Supplier<Pose2d> target = () -> DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
                 : Coordinates.RED_SPEAKER;
                 
         Translation2d offset = DriverStation.getAlliance().get() == (DriverStation.Alliance.Red) ? ShamperMap.SHOT_OFFSET 
@@ -41,15 +42,15 @@ public class AutoCommands {
         Shamper shooter = Shamper.getInstance();
         Intake intake = Intake.getInstance();
         NamedCommands.registerCommand("SpoolShooter", shooter.setShootVelocityCommand(() -> lookupTable.get(
-                poseEstimator.getDistanceToPose(target.getTranslation())).getFlywheelV(),
-                () -> lookupTable.get(poseEstimator.getDistanceToPose(target.getTranslation())).getFeederV()));
+                poseEstimator.getDistanceToPose(() -> target.get().getTranslation())).getFlywheelV(),
+                () -> lookupTable.get(poseEstimator.getDistanceToPose(() -> target.get().getTranslation())).getFeederV()));
                 
         NamedCommands.registerCommand("Pivot", pivot.updatePosition(() -> lookupTable
-                .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()));
+                .get(poseEstimator.getDistanceToPose(() -> target.get().getTranslation())).getAngleSetpoint()));
         NamedCommands.registerCommand("Intake", intake.intakeUntilLoadedCommand());
         NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
                 Drivetrain.getInstance().alignCommand(
-                        () -> target.getTranslation().plus(offset)),
+                        () -> target.get().getTranslation().plus(offset)),
                 intake.setIntakeState(IntakeDirection.FORWARD),
                 new WaitCommand(1),
                 intake.setIntakeState(IntakeDirection.REVERSE)
@@ -61,6 +62,7 @@ public class AutoCommands {
         // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));
         // NamedCommands.registerCommand("Shoot", new PrintCommand("Shoot"));
         // NamedCommands.registerCommand("StopShooter", new PrintCommand("Stop
-        // Spooling"));
+        // Spooling"));P
+        
     }
 }

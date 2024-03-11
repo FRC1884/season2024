@@ -38,7 +38,6 @@ import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.AddressableLEDLights;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.Prototypes;
 import frc.robot.subsystems.Shamper;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.PoseEstimator;
@@ -69,43 +68,33 @@ public class Robot extends TimedRobot {
     // TODO put auto chooser here. make sure to use the one from
     // robot/auto/selector/AutoModeSelector.java
     
-    //OI.getInstance();
-
-    //Autocommands
-    // NamedCommands.registerCommand("Intake", new PrintCommand("Intaking now"));
-    // NamedCommands.registerCommand("Shoot", new PrintCommand("Shooting now"));
     OI.getInstance().registerCommands();
     AutoCommands.registerAutoCommands();
     ctreConfigs = new CTREConfigs();
 
-    // m_led = new AddressableLED(4);
-    // m_LedBuffer = new AddressableLEDBuffer(RobotMap.LEDMap.NUMBER_LEDS);
-    // m_led.setLength(m_LedBuffer.getLength());l
-
-    enableLiveWindowInTest(isTest());
-    OI.getInstance().registerCommands();
-
+   
     if(RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
       {enableLiveWindowInTest(true);
       System.out.println("enabled test mode");}
 
-    //var autoModeSelector = AutoModeSelector.getInstance();
-    //SmartDashboard.putData("Blue Autos", autoModeSelector.getChooser());
     SmartDashboard.putData("field", m_field);
 
-    // if(Config.Subsystems.PROTOTYPE_ENABLED && RobotMap.PrototypeMap.LIVE_WINDOW_ENABLED)
-    //   Prototypes.getInstance();
+    if(Config.Subsystems.DRIVETRAIN_ENABLED){
+      Drivetrain.getInstance().zeroGyroYaw();
+      PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
+    }
+    // --- Autos ---
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    
 
-    Drivetrain.getInstance().zeroGyroYaw();
-    // Drivetrain.getInstance().setGyroYaw(180);
-    PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose());
+
+    // --- Configure pose estimation
+   
   }
 
   public Command getAutonomousCommand() {
+    System.out.println(autoChooser.getSelected());
     return autoChooser.getSelected();
   }
   /**
@@ -131,14 +120,6 @@ public class Robot extends TimedRobot {
       }
     }
 
-    
-    // for(int i = 0; i < RobotMap.LEDMap.NUMBER_LEDS; i++) {
-    //   m_LedBuffer.setRGB(i, 0, 0, 255);
-    // }
-    // m_led.setData(m_LedBuffer);
-    // m_led.start();
-
-    // AddressableLEDLights.getInstance().setRainbow();
   }
 
   /**
@@ -153,6 +134,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+
+
     CommandScheduler.getInstance().cancelAll();
 
     var autonomousCommand = getAutonomousCommand();
@@ -173,9 +156,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
-    //Drivetrain.getInstance().zeroGyroYaw();
-    //Drivetrain.getInstance().setGyroYaw(0);
-    //PoseEstimator.getInstance().resetPoseEstimate(Vision.getInstance().visionBotPose());
   }
 
   /** This function is called periodically during operator control. */

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5048436289991337,
-      "y": 4.1046482092964185
+      "x": 0.4708394010225951,
+      "y": 7.3
     },
-    "rotation": -177.9545915111128
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -18,13 +18,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SpoolShooter"
+                  "name": "Pivot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Pivot"
+                  "name": "SpoolShooter"
                 }
               },
               {
@@ -34,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Speaker To Bottom Note"
+                        "pathName": "Amp Start To Top Note"
                       }
                     },
                     {
@@ -46,7 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 1"
+                        "pathName": "CCTS Far Top"
                       }
                     },
                     {
@@ -58,7 +58,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 2"
+                        "pathName": "CCTS Mid Top"
                       }
                     },
                     {
@@ -70,7 +70,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 3"
+                        "pathName": "CCTS Mid Mid"
                       }
                     },
                     {

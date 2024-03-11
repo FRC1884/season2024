@@ -50,6 +50,12 @@ public class BoardOperatorMap extends OperatorMap {
   double getManualPivotAxis() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
+
+  @Override
+  double getManualClimberAxis(){
+    return controller.getAxis(Axis.AXIS_LEFT_X);
+  }
+  
   @Override
   JoystickButton getManualShootButton() {
     return controller.getButton(Button.BUTTON_A);
@@ -127,13 +133,13 @@ public class BoardOperatorMap extends OperatorMap {
     return controller.getButton(Button.BUTTON_EXTRA_2);
   }
 
-  @Override
-  Trigger getPivotLowerButton(){
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
-  }
+  // @Override
+  // Trigger getPivotLowerButton(){
+  //   return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
+  // }
 
-  @Override
-  Trigger getPivotRaiseButton(){
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > -0.9);
-  }
+  // @Override
+  // Trigger getPivotRaiseButton(){
+  //   return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > -0.9);
+  // }
 }

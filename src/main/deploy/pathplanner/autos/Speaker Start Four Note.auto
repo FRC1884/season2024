@@ -5,7 +5,7 @@
       "x": 0.5048436289991337,
       "y": 4.1046482092964185
     },
-    "rotation": -177.9545915111128
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -46,7 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 1"
+                        "pathName": "BTT Bottom Note"
                       }
                     },
                     {
@@ -58,7 +58,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 2"
+                        "pathName": "BTT Mid Note"
                       }
                     },
                     {
@@ -70,7 +70,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS BTT Pickup 3"
+                        "pathName": "BTT Top Note"
                       }
                     },
                     {

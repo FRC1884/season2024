@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -9,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -106,13 +109,20 @@ public class PoseEstimator extends SubsystemBase {
     drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
 
     Translation2d currentTranslation = getPosition().getTranslation();
-    double targetVectorLength = currentTranslation.getDistance(Coordinates.RED_SPEAKER.getTranslation());
+    Pose2d targetCoordinate =  (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
+              : Coordinates.RED_SPEAKER;
+
+    double targetVectorLength = currentTranslation.getDistance(targetCoordinate.getTranslation());
     rToSpeaker.setDouble(targetVectorLength);
 
   }
   
   public Double getDistanceToPose(Translation2d pose) {
     return getPosition().getTranslation().getDistance(pose);
+  }
+
+  public Double getDistanceToPose(Supplier<Translation2d> pose) {
+    return getPosition().getTranslation().getDistance(pose.get());
   }
 
   /**
@@ -163,8 +173,8 @@ public class PoseEstimator extends SubsystemBase {
    * @param poseMeters
    */
   public void resetPoseEstimate(Pose2d poseMeters) {
-    poseEstimator.resetPosition(drivetrain.getYawRot2d(), drivetrain.getModulePositions(), poseMeters);
     drivetrain.resetOdometry(poseMeters);
+    poseEstimator.resetPosition(drivetrain.getYawRot2d(), drivetrain.getModulePositions(), drivetrain.getPose());
   }
 
   public void resetHeading(Rotation2d angle) {

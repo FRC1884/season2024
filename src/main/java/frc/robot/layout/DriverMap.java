@@ -1,25 +1,14 @@
 package frc.robot.layout;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Config;
-import frc.robot.RobotMap;
 import frc.robot.RobotMap.Coordinates;
-import frc.robot.RobotMap.DriveMap;
-import frc.robot.RobotMap.PrototypeMap;
 import frc.robot.RobotMap.ShamperMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.PoseEstimator;
-import frc.robot.subsystems.Prototypes;
-import frc.robot.subsystems.test;
+import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Vision.Vision;
 
 public abstract class DriverMap extends CommandMap {
@@ -39,7 +28,7 @@ public abstract class DriverMap extends CommandMap {
   
   abstract JoystickButton getArcingButton();
 
-  abstract JoystickButton getTestButton();
+  abstract JoystickButton getRaiseShampreButton();
 
   abstract JoystickButton getFollowAprilTagButton();
 
@@ -53,23 +42,19 @@ public abstract class DriverMap extends CommandMap {
 
   private void registerDrivetrain() {
     if (Config.Subsystems.DRIVETRAIN_ENABLED) {
-      System.out.println("Register Drivetrain");
       var drivetrain = Drivetrain.getInstance();
       var vision = Vision.getInstance();
 
       //--- Drive --- 
       drivetrain.setDefaultCommand(
       drivetrain.driveCommand(
-      this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
-      //--- Arcing ---
-      if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
+              this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
+      
+      //--- Alignment ---
+      
         getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
-              this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.RED_SPEAKER.getTranslation().plus(ShamperMap.SHOT_OFFSET)));
-      }
-      else{
-        getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
-              this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation().minus(ShamperMap.SHOT_OFFSET)));
-      }
+              this::getSwerveXSpeed,this::getSwerveYSpeed, () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? Coordinates.RED_SPEAKER.getTranslation().plus(ShamperMap.SHOT_OFFSET) : Coordinates.BLUE_SPEAKER.getTranslation().minus(ShamperMap.SHOT_OFFSET)));
+      
       
       getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
         "Go To Amp"));
@@ -81,8 +66,15 @@ public abstract class DriverMap extends CommandMap {
     }
   }
 
+  private void shamper(){
+      Pivot pivot = Pivot.getInstance();
+      getRaiseShampreButton().onTrue(pivot.updatePosition(() -> 70.0));
+  }
+
+
   @Override
   public void registerCommands() {
     registerDrivetrain();
+    shamper();
   }
 }
