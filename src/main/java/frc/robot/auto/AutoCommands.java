@@ -62,6 +62,7 @@ public class AutoCommands {
         // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));
         // NamedCommands.registerCommand("Shoot", new PrintCommand("Shoot"));
         // NamedCommands.registerCommand("StopShooter", new PrintCommand("Stop
-        // Spooling"));
+        // Spooling"));P
+        
     }
 }
