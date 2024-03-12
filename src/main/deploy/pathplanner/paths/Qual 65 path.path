@@ -3,59 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6256951537210513,
-        "y": 6.234170426165493
+        "x": 2.4324283942685536,
+        "y": 3.9302476829149002
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.2417905970368714,
-        "y": 7.194459022923054
+        "x": 2.258027867887035,
+        "y": 6.775729955455471
       },
       "isLocked": false,
-      "linkedName": "CTS First Shot"
+      "linkedName": "TTB Shot Four"
     },
     {
       "anchor": {
-        "x": 8.293678213604645,
-        "y": 7.436381206571257
+        "x": 8.288614490658505,
+        "y": 7.4457951357634125
       },
       "prevControl": {
-        "x": 8.750400838890123,
-        "y": 7.401248696933912
+        "x": 6.171014443497061,
+        "y": 6.893377732156067
       },
       "nextControl": {
-        "x": 7.8337392575295155,
-        "y": 7.471761126269344
+        "x": 8.499730917330869,
+        "y": 7.5008689861996825
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.6256951537210513,
-        "y": 6.234170426165493
+        "x": 2.9648089484858215,
+        "y": 6.381034027328877
       },
       "prevControl": {
-        "x": 5.394031472132031,
-        "y": 6.936820618915861
+        "x": 6.714420265688478,
+        "y": 7.032741257491393
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CTS First Shot"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.65,
-      "rotationDegrees": -160.0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0.45,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.55,
       "command": {
         "type": "parallel",
         "data": {
@@ -79,13 +73,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -173.0,
-    "rotateFast": false
+    "rotation": -170.53767779197443,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -173.0,
+    "rotation": 150.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

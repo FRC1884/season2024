@@ -1,0 +1,63 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.6373441619921745,
+        "y": 6.850839379282182
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.617532744499452,
+        "y": 7.023562282418683
+      },
+      "isLocked": false,
+      "linkedName": "TTB Shot Two"
+    },
+    {
+      "anchor": {
+        "x": 6.957663105115334,
+        "y": 6.234170426165493
+      },
+      "prevControl": {
+        "x": 6.296776899880104,
+        "y": 6.51871865341955
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "playoffs 1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.05,
+      "rotationDegrees": 180.0,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 149.80837703904245,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 156.64443514071405,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -147.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

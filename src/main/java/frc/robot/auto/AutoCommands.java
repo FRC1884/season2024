@@ -39,8 +39,7 @@ public class AutoCommands {
             new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD), Feeder.getInstance()),
             new WaitCommand(0.3),
             new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED), Feeder.getInstance())));
-        NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand().alongWith(Vision.getInstance().onTheFlyToNoteCommand().onlyIf(
-        () -> !Vision.getInstance().getNotePose2d().getTranslation().equals(new Translation2d(0,0)))));
+        NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand().raceWith(Vision.getInstance().PIDtoNoteRobotRelativeCommand()));
     // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
     // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));
     // NamedCommands.registerCommand("Shoot", new PrintCommand("Shoot"));

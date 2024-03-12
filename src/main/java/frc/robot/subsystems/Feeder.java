@@ -69,7 +69,6 @@ public class Feeder extends SubsystemBase {
 
     public boolean isNoteLoaded(){
         //Once tripped
-        System.out.println(status == NoteStatus.LOADED);
         return (status == NoteStatus.LOADED);
     }
 
