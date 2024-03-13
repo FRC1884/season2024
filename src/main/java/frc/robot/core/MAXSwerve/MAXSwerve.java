@@ -618,7 +618,6 @@ public abstract class MAXSwerve extends SubsystemBase {
     );
   }
 
-
   /**
    * Command to drive using Trapezoidal PID to a set distance away from a pose, then on-the-fly path to the pose 
    * @param targetPose the Supplier<Pose2d> that the robot should drive to
