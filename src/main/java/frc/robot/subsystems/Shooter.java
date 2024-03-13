@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Config;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.ShooterMap;
+import frc.robot.util.ActionSetpoint;
 import frc.robot.util.FlywheelLookupTable;
 
 /**
@@ -57,13 +59,8 @@ public class Shooter extends SubsystemBase {
 
     private double leadVel, followVel;
 
-    private ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
-    private GenericEntry shooterAngleEntry = tab.add("Shooter Angle", 0).getEntry();
-    private GenericEntry shooterRPMEntry = tab.add("Shooter RPM", 0).getEntry();
-
     FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-   // Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
-    Pose2d target = Config.IS_ALLIANCE_BLUE ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+    Supplier<Pose2d> target = () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
    PoseEstimator poseEstimator = PoseEstimator.getInstance();
 
     private Shooter() {
@@ -128,14 +125,6 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         updateMotors();
-        shooterRPMEntry.setDouble(lookupTable.get(
-            poseEstimator.getDistanceToPose(target.getTranslation())).getRPM());
-        FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-    //   Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
-        Pose2d target = Config.IS_ALLIANCE_BLUE ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
-        PoseEstimator poseEstimator = PoseEstimator.getInstance();
-        shooterAngleEntry.setDouble(lookupTable
-        .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint());
     }
 
     // public void initDefaultCommand() {
@@ -162,10 +151,13 @@ public class Shooter extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("lead velocity", () -> leadVel, (v) -> leadVel = v);
         builder.addDoubleProperty("follow velocity", () -> followVel, (v) -> followVel = v);
-        builder.addDoubleProperty("real top velo", () -> top.getEncoder().getVelocity(), (d) -> {
-        });
-        builder.addDoubleProperty("real bottom velo", () -> bot.getEncoder().getVelocity(), (d) -> {
-        });
+        builder.addDoubleProperty("real top velo", () -> top.getEncoder().getVelocity(), (d) -> {});
+        builder.addDoubleProperty("real bottom velo", () -> bot.getEncoder().getVelocity(), (d) -> {});
+
+        Supplier<ActionSetpoint> getSetpoint = () -> lookupTable.get(poseEstimator.getDistanceToPose(target.get().getTranslation()));
+
+        builder.addDoubleProperty("lookup rpm", () -> getSetpoint.get().getRPM(), (d) -> {});
+        builder.addDoubleProperty("lookup angle", () -> getSetpoint.get().getAngleSetpoint(), (d) -> {});
     }
 
 }

@@ -16,44 +16,14 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveXSpeed() {
-    // if(DriverStation.getAlliance().isPresent() 
-    // && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-    //   return -controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
-    //   * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    // else
-    //   return controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
-    //   * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-
-    if(Config.IS_ALLIANCE_BLUE){
-      return -controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
+      return -controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4)
        * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    }
-
-    else {
-      return controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
-       * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    }
   }
 
   @Override
   public double getSwerveYSpeed() {
-    // if(DriverStation.getAlliance().isPresent() 
-    //   && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-    //   return -controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/2)
-    //   * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    // else
-    //   return controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/2)
-    //   * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-        if(Config.IS_ALLIANCE_BLUE){
-      return -controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
+      return controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4)
        * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    }
-
-    else {
-      return controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
-       * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    }
-
   }
 
   @Override

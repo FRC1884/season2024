@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -111,7 +112,7 @@ public class AddressableLEDLights extends SubsystemBase {
     }
 
     private Command getAmplifyPattern() {
-        return setPhaseInOut(() -> Config.IS_ALLIANCE_RED)
+        return setPhaseInOut(() -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 

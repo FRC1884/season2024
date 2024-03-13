@@ -25,7 +25,6 @@ public class ShootSequenceCommand extends SequentialCommandGroup {
     Pivot pivot = Pivot.getInstance();
     PoseEstimator poseEstimator = PoseEstimator.getInstance();
     FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-    Pose2d target = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
 
     public ShootSequenceCommand() {
         addCommands(
