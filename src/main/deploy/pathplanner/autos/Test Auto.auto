@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4956646539264222,
-      "y": 7.326468459818163
+      "x": 0.5048436289991337,
+      "y": 4.1046482092964185
     },
     "rotation": 180.0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Start To Top Note"
+            "pathName": "Speaker To Bottom Note"
           }
         }
       ]

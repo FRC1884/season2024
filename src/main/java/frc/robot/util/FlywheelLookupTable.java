@@ -1,13 +1,5 @@
 package frc.robot.util;
 
-import static frc.robot.util.BlinkinUtils.ColorPatterns.valueOf;
-
-import java.util.TreeMap;
-
-import edu.wpi.first.math.interpolation.Interpolatable;
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
-import edu.wpi.first.math.interpolation.Interpolator;
-import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class FlywheelLookupTable {
@@ -26,13 +18,13 @@ public class FlywheelLookupTable {
     private double[][] lookupTable = {
             { 1, 2600,-115-10},
             { 1.45, 2600, -87-10},
-            { 1.95, 2600, -67-5},
-            { 2.47, 3000, -52},
+            { 1.95, 2600, -67},
+            { 2.47, 3000, -52+5},
           //  { 2.49, 3700, -52- 12},
           //  { 2.90, 3800, -52- 12},
           //  { 2.96, 4000, -30 - 12},
-            { 3.48, 4000, -19 },
-            { 3.95, 4050, -10},
+            { 3.48, 4000, -19 +5},
+            { 3.95, 4050, -10 +5},
             { 4.43, 4200, -4}
     };
 

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.328810723241988,
-        "y": 0.7377827023842345
+        "x": 6.8842313045336425,
+        "y": 7.3172894847454515
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.355839365534567,
-        "y": 0.5817401261481384
+        "x": 5.433953243045222,
+        "y": 6.977667407055125
       },
       "isLocked": false,
-      "linkedName": "TTB Centerline"
+      "linkedName": "playoffs 2"
     },
     {
       "anchor": {
-        "x": 2.7995873971770147,
-        "y": 3.3427932782613623
+        "x": 3.6256951537210513,
+        "y": 6.234170426165493
       },
       "prevControl": {
-        "x": 3.2034623003763216,
-        "y": 3.1133189014435736
+        "x": 5.30544759202726,
+        "y": 6.950130481836991
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "playoffs shoot"
     }
   ],
   "rotationTargets": [],
@@ -39,14 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.0,
+    "rotation": -172.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 180.0,
-    "velocity": 0.0
+    "rotation": -172.0,
+    "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -7,21 +7,19 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.FeederMap;
-import frc.robot.RobotMap.ShooterMap;
-import frc.robot.subsystems.Feeder.FeederDirection;
-import frc.robot.subsystems.Feeder.NoteStatus;
 
 public class Feeder extends SubsystemBase {
     private static Feeder instance;
-    private boolean isDisabled = true;
-    private AddressableLEDLights lights;
+    private boolean isDisabled = false;
+    private ShuffleboardTab feederTab = Shuffleboard.getTab("Feeder Tab");
+    private GenericEntry hasNoteEntry = feederTab.add("Has Note", false).getEntry();
 
     public static Feeder getInstance() {
         if(instance == null) instance = new Feeder();
@@ -46,7 +44,6 @@ public class Feeder extends SubsystemBase {
     private double feedVel;
 
     private Feeder() {
-        lights = AddressableLEDLights.getInstance();
         if (FeederMap.FEEDER != -1){
 
             setName("Feeder");
@@ -71,7 +68,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public boolean isNoteLoaded(){
-        //Once tripped 
+        //Once tripped
         return (status == NoteStatus.LOADED);
     }
 
@@ -119,12 +116,11 @@ public class Feeder extends SubsystemBase {
     public void periodic() {
         status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         updateMotors();
-         if(!isDisabled){
-            if(status == NoteStatus.LOADED){
-                lights.setColorCommand(Color.kGreenYellow);
-            }
-            else lights.setColorCommand(Color.kRed);
-
+        if (status == NoteStatus.LOADED){
+            hasNoteEntry.setBoolean(true);
+        }
+        else{
+            hasNoteEntry.setBoolean(false);
         }
     }
 
@@ -134,7 +130,7 @@ public class Feeder extends SubsystemBase {
         builder.addDoubleProperty("feeder velocity", () -> feedVel, (v) -> feedVel = v);
         builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d) -> {
         });
-        builder.addBooleanProperty("BB", () -> beamBreak.get(), null);
+        builder.addBooleanProperty("HasNote", () -> isNoteLoaded(), null);
        
 
     }

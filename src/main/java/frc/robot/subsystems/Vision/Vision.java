@@ -166,6 +166,9 @@ public class Vision extends SubsystemBase {
           botPose = currentPose3d.toPose2d();
         }
       }
+      else{
+        photon1HasTargets = false;
+      }
     }
 
     //Does math to see where the note is

@@ -1,6 +1,5 @@
 package frc.robot.layout;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Config;
 import frc.robot.RobotMap.Coordinates;
@@ -50,7 +49,16 @@ public abstract class DriverMap extends CommandMap {
       this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));
 
       //--- Arcing ---
-      if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
+      // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
+      //   getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
+      //         this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.RED_SPEAKER.getTranslation()));
+      // }
+      // else{
+      //   getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
+      //         this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
+      // }
+
+      if(Config.IS_ALLIANCE_RED){
         getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.RED_SPEAKER.getTranslation()));
       }
@@ -58,6 +66,7 @@ public abstract class DriverMap extends CommandMap {
         getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(
               this::getSwerveXSpeed,this::getSwerveYSpeed, () -> Coordinates.BLUE_SPEAKER.getTranslation()));
       }
+
       
       // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
       //   "Go To Amp"));

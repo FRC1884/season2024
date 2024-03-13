@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7445135467407455,
-        "y": 2.7278019483896907
+        "x": 3.2228859892812496,
+        "y": 2.2367697802442676
       },
       "isLocked": false,
       "linkedName": "TTB Shot Four"
     },
     {
       "anchor": {
-        "x": 8.281967377058862,
-        "y": 0.7963368851131419
+        "x": 8.328810723241988,
+        "y": 0.7377827023842345
       },
       "prevControl": {
-        "x": 8.994789118208669,
-        "y": 0.5498471241547994
+        "x": 8.41260664832921,
+        "y": 0.8320531181073556
       },
       "nextControl": {
-        "x": 7.02890786666024,
-        "y": 1.2296378373070564
+        "x": 8.235124030875733,
+        "y": 0.6323851734722011
       },
       "isLocked": false,
       "linkedName": "TTB Centerline"
@@ -36,15 +36,21 @@
         "y": 3.9302476829149002
       },
       "prevControl": {
-        "x": 2.754452527449989,
-        "y": 2.670070732438184
+        "x": 3.187753479643905,
+        "y": 2.248480616790049
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 166.18497465873844,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {

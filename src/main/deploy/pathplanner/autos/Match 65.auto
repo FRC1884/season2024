@@ -32,15 +32,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS Shot 1"
+                        "pathName": "Amp Start To Top Note"
                       }
                     },
                     {
@@ -52,7 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS Pickup 2"
+                        "pathName": "TTB Top"
                       }
                     },
                     {
@@ -64,7 +58,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS Pickup 3"
+                        "pathName": "TTB Mid"
                       }
                     },
                     {
@@ -76,7 +70,19 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS Pickup 4"
+                        "pathName": "TTB Bottom"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Qual 65 path"
                       }
                     },
                     {

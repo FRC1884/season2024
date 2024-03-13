@@ -37,6 +37,8 @@ public class RobotMap {
 
     public static final double SLOW_MODE_ROTATION_MUTLIPLIER = 0.2;
 
+    public static double SPEAKER_ALIGN_OFFSET = 0;
+
     public static boolean IS_SLOWMODE_ENABLED = false;
 
     /* Module Specific Constants */

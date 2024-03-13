@@ -1,10 +1,7 @@
 package frc.robot.layout;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.CommandMap;
@@ -81,7 +78,8 @@ public abstract class OperatorMap extends CommandMap {
   private void registerIntake() {
     if (Config.Subsystems.Intake.INTAKE_ENABLED) {
       Intake intake = Intake.getInstance();
-     getOuttakeButton().onTrue(new InstantCommand(() -> intake.setIntakeState(Intake.IntakeDirection.REVERSE), intake));
+    // getOuttakeButton().onTrue(new InstantCommand(() -> intake.setIntakeState(Intake.IntakeDirection.REVERSE), intake));
+     
       
 
     }
@@ -111,7 +109,7 @@ public abstract class OperatorMap extends CommandMap {
   private void registerClimber() {
     if (Config.Subsystems.CLIMBER_ENABLED) {
       Climber climber = Climber.getInstance();
-      
+      climber.setDefaultCommand(climber.run(() -> getManualClimberAxis()));
     }
   }
 
@@ -122,12 +120,14 @@ public abstract class OperatorMap extends CommandMap {
          Pivot pivot = Pivot.getInstance();
       FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
       Feeder feeder = Feeder.getInstance();
-      Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+      // Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
+       Pose2d target = (Config.IS_ALLIANCE_BLUE) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
       PoseEstimator poseEstimator = PoseEstimator.getInstance();
       Intake intake = Intake.getInstance();
       // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
+      // getIntakeButton().onTrue(new RunCommand(() -> intake.setIntakeState(IntakeDirection.FORWARD), intake));
+      //   getIntakeButton().onTrue(new RunCommand(() -> intake.setIntakeState(IntakeDirection.STOPPED), intake));
       getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
-
       getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
       .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()).alongWith( 
       shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
@@ -154,7 +154,7 @@ public abstract class OperatorMap extends CommandMap {
           Climber.getInstance().run(() -> 0.3))); 
       getClimbSequenceButton().onFalse(Climber.getInstance().run(() -> -0.3));
 
-      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE));
+      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> (PivotMap.PIVOT_AMP_ANGLE +40.0)));
       getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
       getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
       getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
@@ -167,26 +167,23 @@ public abstract class OperatorMap extends CommandMap {
 
 
   private void registerLEDs() {
-    if (Config.Subsystems.LEDS_ENABLED) {
+    if (Config.Subsystems.LEDS_ENABLED && Config.Subsystems.FEEDER_ENABLED) {
       AddressableLEDLights lights = AddressableLEDLights.getInstance();
-      getAmplifyButton().onTrue(lights.getAmplifyPattern());
-      getAmplifyButton().onFalse(lights.disableCommand());
-      getCoopButton().onTrue(lights.getCoOpPattern());
-      getCoopButton().onFalse(lights.disableCommand());
+      Feeder feeder = Feeder.getInstance();
+
+      getAmplifyButton().onTrue(lights.toggleAmplifyState(feeder::isNoteLoaded));
+      getAmplifyButton().onTrue(lights.toggleAmplifyState(feeder::isNoteLoaded));
+      // little paranoid about how suppliers work so im not gonna offload the usestate parameter 
+      new Trigger(() -> !getAmplifyButton().getAsBoolean() && !getCoopButton().getAsBoolean()).whileTrue(lights.useState(lights::getState));
     }
   }
 
-  public void registerSubsystems(){
+  public void registerSubsystems() {
     Intake.getInstance();
     Shooter.getInstance();
     Feeder.getInstance();
     Climber.getInstance();
-    AddressableLEDLights.getInstance();
-
-
   }
-
-
 
   @Override
   public void registerCommands() {
@@ -194,7 +191,7 @@ public abstract class OperatorMap extends CommandMap {
     registerFeeder();
     registerClimber();
     registerShooter();
-    registerLEDs();
+    //registerLEDs();
     registerComplexCommands();
 
     // registerSubsystems();

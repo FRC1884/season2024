@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4708394010225951,
-      "y": 7.3
+      "x": 1.3374413054104268,
+      "y": 5.6
     },
     "rotation": 180.0
   },
@@ -34,13 +34,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "CTS Shot 1"
+                        "waitTime": 1.5
                       }
                     },
                     {
@@ -52,31 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CTS Pickup 2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "CTS Pickup 3"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "CTS Pickup 4"
+                        "pathName": "Subwoofer 1"
                       }
                     },
                     {
