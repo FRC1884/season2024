@@ -45,7 +45,8 @@ public abstract class DriverMap extends CommandMap {
         if (Config.Subsystems.DRIVETRAIN_ENABLED) {
             System.out.println("Register Drivetrain");
             var drivetrain = Drivetrain.getInstance();
-            var vision = Vision.getInstance();
+
+                var vision = Vision.getInstance();
 
             //--- Drive ---
             drivetrain.setDefaultCommand(drivetrain.driveCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, this::getSwerveRot));

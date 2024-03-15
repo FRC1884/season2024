@@ -1,7 +1,7 @@
 package frc.robot.util;
 
 public class ActionSetpoint {
-  private double rpm, angleSetpoint;
+  private final double rpm, angleSetpoint;
 
   ActionSetpoint(double rpm, double aS) {
     this.rpm = rpm;
@@ -12,7 +12,7 @@ public class ActionSetpoint {
     return rpm;
   }
 
-  public double getAngleSetpoint() {
+  public double getAngle() {
     return angleSetpoint;
   }
 }
