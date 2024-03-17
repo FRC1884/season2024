@@ -81,6 +81,10 @@ public abstract class OperatorMap extends CommandMap {
 
     abstract Trigger getClimberLowerButton();
 
+    abstract JoystickButton getSubwooferShotButton();
+
+    abstract JoystickButton getPodiumShotButton();
+
     private void registerIntake() {
         if (Config.Subsystems.INTAKE_ENABLED) {
             Intake intake = Intake.getInstance();
@@ -139,6 +143,16 @@ public abstract class OperatorMap extends CommandMap {
 
             getClimbSequenceButton().whileTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(climber.run(() -> 0.3)));
             getClimbSequenceButton().onFalse(climber.run(() -> -0.3));
+        }
+
+        if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
+            
+            Shooter shooter = Shooter.getInstance();
+            Pivot pivot = Pivot.getInstance();
+            getSubwooferShotButton().onTrue(pivot.updatePosition(() -> ActionSetpoint.SUBWOOFER_SHOT.getAngle()));
+            getSubwooferShotButton().onTrue(shooter.updatePosition(() -> ActionSetpoint.SUBWOOFER_SHOT.getRPM()));
+            getPodiumShotButton().onTrue(pivot.updatePosition(() -> ActionSetpoint.PODIUM_SHOT.getAngle()));
+            getPodiumShotButton().onTrue(shooter.updatePosition(() -> ActionSetpoint.PODIUM_SHOT.getRPM()));
         }
 
         if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.INTAKE_ENABLED && Config.Subsystems.DRIVETRAIN_ENABLED && Config.Subsystems.PIVOT_ENABLED) {

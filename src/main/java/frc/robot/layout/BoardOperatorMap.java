@@ -147,4 +147,15 @@ public class BoardOperatorMap extends OperatorMap {
   JoystickButton getEjectButton(){
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
+
+  @Override
+  JoystickButton getSubwooferShotButton() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  JoystickButton getPodiumShotButton() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+   
+  }
 }
