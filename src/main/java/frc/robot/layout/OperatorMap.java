@@ -2,7 +2,9 @@ package frc.robot.layout;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.CommandMap;
@@ -14,7 +16,6 @@ import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PivotMap;
 import frc.robot.RobotMap.ShooterMap;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
-import frc.robot.subsystems.Intake;
 import frc.robot.util.ActionSetpoint;
 import frc.robot.util.FlywheelLookupTable;
 
@@ -187,16 +188,28 @@ public abstract class OperatorMap extends CommandMap {
 
 
     private void registerLEDs() {
-        if (Config.Subsystems.LEDS_ENABLED && Config.Subsystems.FEEDER_ENABLED) {
-            AddressableLEDLights lights = AddressableLEDLights.getInstance();
-            Feeder feeder = Feeder.getInstance();
+        AddressableLEDLights lights = AddressableLEDLights.getInstance();
+      Intake intake = Intake.getInstance();
 
-            getAmplifyButton().onTrue(lights.toggleAmplifyState(feeder::isNoteLoaded));
-            getAmplifyButton().onTrue(lights.toggleAmplifyState(feeder::isNoteLoaded));
-            // little paranoid about how suppliers work so im not gonna offload the usestate parameter
-            new Trigger(() -> !getAmplifyButton().getAsBoolean() && !getCoopButton().getAsBoolean()).whileTrue(lights.useState(lights::getState));
-        }
+      getAmplifyButton().onTrue(
+        lights.getAmplifyPatternCommand()
+          .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+          .withTimeout(4.0)
+          //.andThen(lights.setNoteStatusCommand(getAmpAlignButton()::getAsBoolean)
+      );
+
+      getCoopButton().onTrue(
+        lights.getCoOpPatternCommand()
+          .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+          .withTimeout(4.0)
+          //.andThen(lights.setNoteStatusCommand(getAmpAlignButton()::getAsBoolean))
+      );
+
+      // will get canceled on both triggers until the rising edge is detected
+      //lights.setDefaultCommand(lights.getCoOpPatternCommand());
+      lights.setDefaultCommand(lights.setNoteStatusCommand(()-> getIntakeButton().getAsBoolean()));
     }
+
 
     public void registerSubsystems() {
         Intake.getInstance();
@@ -205,15 +218,14 @@ public abstract class OperatorMap extends CommandMap {
         Climber.getInstance();
     }
 
-    @Override
-    public void registerCommands() {
-        registerIntake();
-        registerFeeder();
-        registerPivot();
-        registerClimber();
-        registerShooter();
-        //registerLEDs();
-        registerComplexCommands();
+  @Override
+  public void registerCommands() {
+    registerIntake();
+    registerFeeder();
+    registerClimber();
+    registerShooter();
+    //registerLEDs();
+    registerComplexCommands();
 
         // registerSubsystems();
     }
