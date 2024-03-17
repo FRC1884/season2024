@@ -153,6 +153,10 @@ public abstract class OperatorMap extends CommandMap {
             getSubwooferShotButton().onTrue(shooter.setFlywheelVelocityCommand(() -> ActionSetpoint.SUBWOOFER_SHOT.getRPM()));
             getPodiumShotButton().onTrue(pivot.updatePosition(() -> ActionSetpoint.PODIUM_SHOT.getAngle()));
             getPodiumShotButton().onTrue(shooter.setFlywheelVelocityCommand(() -> ActionSetpoint.PODIUM_SHOT.getRPM()));
+            getSubwooferShotButton().onFalse(pivot.updatePosition(()->0.0));
+            getSubwooferShotButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+            getPodiumShotButton().onFalse(pivot.updatePosition(()->0.0));
+            getPodiumShotButton().onFalse(shooter.setFlywheelVelocityCommand(()->0.0));
         }
 
         if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.INTAKE_ENABLED && Config.Subsystems.DRIVETRAIN_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
