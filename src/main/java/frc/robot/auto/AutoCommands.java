@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Config;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.RobotMap.Coordinates;
+import frc.robot.RobotMap.ShooterMap;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Feeder;
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 
 public class AutoCommands {
         public static void registerAutoCommands() {
-                FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+                FlywheelLookupTable lookupTable = ShooterMap.SPEAKER_LOOKUP_TABLE;
 
                 // default to red speaker to avoid null pointer exception
                 Supplier<Pose2d> getTarget = () -> DriverStation.getAlliance().isPresent()
