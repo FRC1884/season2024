@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,6 +21,8 @@ import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Vision.Vision;
+
+import java.util.function.Supplier;
 
 /** Reports our expected, desired, and actual poses to dashboards */
 public class PoseEstimator extends SubsystemBase {
@@ -112,7 +115,12 @@ public class PoseEstimator extends SubsystemBase {
     drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
 
     Translation2d currentTranslation = getPosition().getTranslation();
-    Pose2d targetCoordinate = Config.IS_ALLIANCE_BLUE ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;;
+
+    if (DriverStation.getAlliance().isEmpty()) {
+      return;
+    }
+
+    Pose2d targetCoordinate = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
 
     double targetVectorLength = currentTranslation.getDistance(targetCoordinate.getTranslation());
     rToSpeaker.setDouble(targetVectorLength);
@@ -121,6 +129,10 @@ public class PoseEstimator extends SubsystemBase {
   
   public Double getDistanceToPose(Translation2d pose) {
         return getPosition().getTranslation().getDistance(pose);
+  }
+
+  public Double getDistanceToPose(Supplier<Translation2d> pose) {
+        return getPosition().getTranslation().getDistance(pose.get());
   }
 
   /**
