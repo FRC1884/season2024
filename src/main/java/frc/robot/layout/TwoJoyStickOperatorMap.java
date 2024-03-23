@@ -169,12 +169,12 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   @Override
   JoystickButton getSubwooferShotButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getSubwooferShotButton'");
+    throw new Error("Unimplemented method 'getSubwooferShotButton'");
   }
 
   @Override
   JoystickButton getPodiumShotButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getAmpShotButton'");
+    throw new Error("Unimplemented method 'getAmpShotButton'");
   }
 }
