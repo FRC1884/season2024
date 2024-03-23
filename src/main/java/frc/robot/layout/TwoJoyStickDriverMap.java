@@ -77,4 +77,9 @@ public class TwoJoyStickDriverMap extends DriverMap {
   public void registerCommands() {
     super.registerCommands();
   }
+
+  @Override
+  JoystickButton getAmpAlignButton() {
+    return controller.getButton(Button.BUTTON_START);
+  }
 }

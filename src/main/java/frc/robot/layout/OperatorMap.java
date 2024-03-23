@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.core.MAXSwerve.MAXSwerve;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.*;
@@ -162,6 +163,7 @@ public abstract class OperatorMap extends CommandMap {
         if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.INTAKE_ENABLED && Config.Subsystems.DRIVETRAIN_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
             Shooter shooter = Shooter.getInstance();
             Pivot pivot = Pivot.getInstance();
+            Drivetrain drive = Drivetrain.getInstance();
             FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
 
             // if alliance isn't populating default to red to avoid null pointer
@@ -177,13 +179,17 @@ public abstract class OperatorMap extends CommandMap {
                     pivot.updatePosition(() -> getActionSetpoint.get().getAngle())
                             .alongWith(
                                     shooter.setFlywheelVelocityCommand(() -> getActionSetpoint.get().getRPM())
-                            ));
+
+                            
+                            )
+                            );
 
             getArcButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
 
             getAmpAlignButton().onTrue(
                     pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE)
-                            .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED)));
+                            .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED))
+                            );
 
             getAmpAlignButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
 

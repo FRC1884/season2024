@@ -25,6 +25,8 @@ public abstract class DriverMap extends CommandMap {
 
     abstract double getSwerveRot();
 
+    abstract JoystickButton getAmpAlignButton();
+
     abstract JoystickButton getSlowModeToggleButton();
 
     abstract JoystickButton getArcingButton();
@@ -67,6 +69,7 @@ public abstract class DriverMap extends CommandMap {
 
             getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand());
             getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
+            getAmpAlignButton().onTrue(drivetrain.followPathCommand("Amp Align", false));
         }
     }
 
