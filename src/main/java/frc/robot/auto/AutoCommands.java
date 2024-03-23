@@ -6,12 +6,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Config;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.ShooterMap;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
@@ -37,6 +39,7 @@ public class AutoCommands {
                 Pivot pivot = Pivot.getInstance();
                 Shooter shooter = Shooter.getInstance();
                 Feeder feeder = Feeder.getInstance();
+                Drivetrain drivetrain = Drivetrain.getInstance();
 
                 NamedCommands.registerCommand("Intake", new IntakeUntilLoadedCommand());
 
@@ -57,6 +60,13 @@ public class AutoCommands {
 
                 NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand()
                                 .raceWith(Vision.getInstance().PIDtoNoteRobotRelativeCommand()));
+
+                NamedCommands.registerCommand("SpeakerAlign", new SequentialCommandGroup(
+                        new RepeatCommand(new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(() -> getTarget.get())).
+                        until(() -> drivetrain.atSpeakerAlignAngle())),
+                        new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(null))));
+
+
                 // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
                 // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));
                 // NamedCommands.registerCommand("Shoot", new PrintCommand("Shoot"));

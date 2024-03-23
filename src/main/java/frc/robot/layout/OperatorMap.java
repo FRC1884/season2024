@@ -253,7 +253,7 @@ public abstract class OperatorMap extends CommandMap {
 
         // will get canceled on both triggers until the rising edge is detected
         // lights.setDefaultCommand(lights.getCoOpPatternCommand());
-        lights.setDefaultCommand(lights.setNoteStatusCommand(() -> getIntakeButton().getAsBoolean()));
+        lights.setDefaultCommand(lights.setNoteStatusCommand(() -> getIntakeButton().getAsBoolean()).repeatedly());
     }
 
     public void registerSubsystems() {

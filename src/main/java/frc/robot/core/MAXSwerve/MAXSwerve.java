@@ -6,6 +6,7 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.commands.PathfindThenFollowPathHolonomic;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -49,8 +50,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Config;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveMap;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -105,7 +108,10 @@ public abstract class MAXSwerve extends SubsystemBase {
                 new SwerveModulePosition[]{
                         fl.getPosition(), fr.getPosition(), bl.getPosition(), br.getPosition()
                 });
-        AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds,
+        if (Config.Auto.IS_AUTO_OVERRIDE_SPEAKER) {
+            PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
+        }
+                AutoBuilder.configureHolonomic(this::getPose, this::startingOdometry, this::getChassisSpeeds, this::driveWithChassisSpeeds,
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
                         // in
                         // your Constants class
@@ -139,6 +145,15 @@ public abstract class MAXSwerve extends SubsystemBase {
                 return ((Pigeon2) gyro).getYaw();
             default:
                 return 0.0;
+        }
+    }
+
+    public Optional<Rotation2d> getRotationTargetOverride() {
+        if(Drivetrain.getInstance().getSpeakerAlignAngle() != null) {
+            return Optional.of(Drivetrain.getInstance().getSpeakerAlignAngle());
+        }
+        else {
+            return Optional.empty();
         }
     }
 

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 5.2228368163728565,
+        "y": 1.7089357153187112
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9999999999999996,
-        "y": 7.0
+        "x": 3.387041801830552,
+        "y": 2.5992962973717297
       },
       "isLocked": false,
-      "linkedName": "BTT Shot Four"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.8695350486278715,
-        "y": 6.628333484912334
+        "x": 2.4324283942685536,
+        "y": 3.9302476829149002
       },
       "prevControl": {
-        "x": 4.8695350486278715,
-        "y": 6.628333484912334
+        "x": 2.157059142087208,
+        "y": 3.2877194278250936
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TTB Shot Four"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 150.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
