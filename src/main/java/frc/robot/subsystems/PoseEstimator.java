@@ -81,7 +81,7 @@ public class PoseEstimator extends SubsystemBase {
       }
     }
     // TODO Photonvision mode - Needs editing and filtering
-    if (VisionConfig.IS_PHOTON_VISION_MODE && tempEstimatePose != null
+    if (VisionConfig.IS_PHOTON_VISION_ENABLED && tempEstimatePose != null
         && (tempEstimatePose.getX() > VisionConfig.VISION_X_MAX_CUTOFF || tempEstimatePose.getX() < VisionConfig.VISION_X_MIN_CUTOFF)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
