@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.util.FlywheelLookupTable;
 
 public class RobotMap {
   public enum PoseMap {
@@ -219,6 +220,7 @@ public class RobotMap {
   }
 
   public static class ShooterMap {
+
     public static final int TOP_SHOOTER = 11;
     public static final int BOTTOM_SHOOTER = 14;
     public static final double FLYWHEEL_RADIUS = 0.0508;
@@ -230,6 +232,26 @@ public class RobotMap {
     public static final double FLYWHEEL_FF = 0.00015;
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
 
+    public static final double[][] SPEAKER_SHOT_VALUES = {
+      { 1, 2600,-115-10},
+      { 1.45, 2600, -87-10},
+      { 1.95, 2600, -67},
+      { 2.47, 3000, -52+5},
+    //  { 2.49, 3700, -52- 12},
+    //  { 2.90, 3800, -52- 12},
+    //  { 2.96, 4000, -30 - 12},
+      { 3.48, 4000, -19 +5},
+      { 3.95, 4050, -10 +5},
+      { 4.43, 4200, -4}
+    };
+      
+    public static final double [][] FERRY_SHOT_VALUES = {
+      {0, 0, 0}
+    };
+
+    public static final FlywheelLookupTable SPEAKER_LOOKUP_TABLE = new FlywheelLookupTable(SPEAKER_SHOT_VALUES);
+
+    public static final FlywheelLookupTable FERRY_LOOKUP_TABLE = new FlywheelLookupTable(FERRY_SHOT_VALUES);
   }
 
   public static class FeederMap {

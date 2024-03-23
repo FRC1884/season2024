@@ -42,7 +42,7 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  double getManualClimberAxis(){
+  double getManualClimberAxis() {
     return controller.getAxis(Axis.AXIS_LEFT_X);
   }
 
@@ -52,8 +52,7 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getClimbSequenceButton()
-  {
+  JoystickButton getClimbSequenceButton() {
     return controller.getButton(Button.BUTTON_TOUCHPAD);
   }
 
@@ -92,15 +91,19 @@ public class BoardOperatorMap extends OperatorMap {
     return controller.getAxis(Axis.AXIS_LEFT_X);
   }
 
-  
   @Override
   double getLEDAxis2() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
 
   @Override
-  JoystickButton getArcButton() {
+  JoystickButton getSpeakerShotAlignButton() {
     return controller.getButton(Button.BUTTON_SHARE);
+  }
+
+  @Override
+  JoystickButton getFerryShotAlignButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_10); //TODO: BIND TO ANOTHER BUTTON
   }
 
   @Override
@@ -124,27 +127,27 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  Trigger getPivotRaiseButton(){
+  Trigger getPivotRaiseButton() {
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
   }
 
   @Override
-  Trigger getPivotLowerButton(){
+  Trigger getPivotLowerButton() {
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) < -0.9);
   }
 
   @Override
-  Trigger getClimberRaiseButton(){
+  Trigger getClimberRaiseButton() {
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_Y) > 0.9);
   }
 
-   @Override
-  Trigger getClimberLowerButton(){
+  @Override
+  Trigger getClimberLowerButton() {
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_Y) < -0.9);
   }
 
   @Override
-  JoystickButton getEjectButton(){
+  JoystickButton getEjectButton() {
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
@@ -156,6 +159,6 @@ public class BoardOperatorMap extends OperatorMap {
   @Override
   JoystickButton getPodiumShotButton() {
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
-   
+
   }
 }

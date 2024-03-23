@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
 
     private double leadVel, followVel;
 
-    FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
+    FlywheelLookupTable lookupTable = ShooterMap.SPEAKER_LOOKUP_TABLE;
     Supplier<Pose2d> target = () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == (DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
     PoseEstimator poseEstimator = PoseEstimator.getInstance();
 
