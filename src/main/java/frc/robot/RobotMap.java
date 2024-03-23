@@ -117,7 +117,8 @@ public class RobotMap {
     public static final boolean DRIVER_CAMERA_ACTIVE = false;
     public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
-    public static final boolean IS_PHOTON_VISION_MODE = true;// TODO: Change to false
+    public static final boolean IS_PHOTON_VISION_ENABLED = true;
+    public static final boolean IS_PHOTON_TWO_ENABLED = true;
     public static final boolean IS_NEURAL_NET = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
@@ -183,7 +184,13 @@ public class RobotMap {
     public static final double CAM_2_ROLL_RADIANS = 0.0; // camera Roll Radians
     public static final double CAM_2_PITCH_RADIANS = 0.2618; // camera Pitch Radians
     public static final double CAM_2_YAW_RADIANS = 0.0; // camera Yaw Radians
+
+
+    public static final Transform3d PHOTON_2_ROBOT_TO_CAM = new Transform3d(CAM_2_X, CAM_2_Y, CAM_2_Z, new Rotation3d(CAM_2_ROLL_RADIANS, CAM_2_PITCH_RADIANS, CAM_2_YAW_RADIANS));
+    public static final Transform3d PHOTON_2_CAM_TO_ROBOT = new Transform3d(-CAM_2_X, -CAM_2_Y, -CAM_2_Z, new Rotation3d(-CAM_2_ROLL_RADIANS, -CAM_2_PITCH_RADIANS, -CAM_2_YAW_RADIANS)); 
+
   }
+
 
   public static class PoseConfig {
     // Increase these numbers to trust your model's state estimates less.

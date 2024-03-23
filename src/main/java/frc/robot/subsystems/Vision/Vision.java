@@ -32,9 +32,16 @@ public class Vision extends SubsystemBase {
   private boolean NNLimelightConnected = false;
 
   private double photonTimestamp;
+  private double photonTimestamp2;
   private PhotonCamera photonCam_1;
   private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
+
+  private PhotonCamera photonCam_2;
+  private boolean photon2HasTargets;
+
+  private boolean photonHasTargets;
+
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -89,16 +96,25 @@ public class Vision extends SubsystemBase {
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
       }
 
-    if (VisionConfig.IS_PHOTON_VISION_MODE) { // Configure photonvision camera
+    //Code to make the first photon vision camera object
+    if (VisionConfig.IS_PHOTON_VISION_ENABLED) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       //photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       photon1HasTargets = false;
+      photonHasTargets = false;
+
       try {
         aprilTagFieldLayout =
             AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       } catch (Exception e) {
         System.out.println("Field layout not found");
       }
+    }
+
+    //Code to make the second photon vision camera object if it is enabled
+    if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_TWO_ENABLED) {
+      photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
+      photon2HasTargets = false;
     }
 
     if (VisionConfig.DRIVER_CAMERA_ACTIVE){
@@ -145,31 +161,135 @@ public class Vision extends SubsystemBase {
     // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
     // The example code was missing, and we came up with this: 
     // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
-    if (VisionConfig.IS_PHOTON_VISION_MODE) {
+
+    if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_TWO_ENABLED) {
       var result_1 = photonCam_1.getLatestResult();
       photon1HasTargets = result_1.hasTargets();
 
+      var result_2 = photonCam_2.getLatestResult();
+      photon2HasTargets = result_2.hasTargets();
+      /* Case 1
+       * if only the first camera has a multi tag pose, use its estimate
+       */
       if (result_1.getMultiTagResult().estimatedPose.isPresent){
         photonTimestamp = result_1.getTimestampSeconds();
         Transform3d fieldToCamera = result_1.getMultiTagResult().estimatedPose.best;
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
         botPose = new Pose2d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), new Rotation2d(fieldCamToRobot.getRotation().getZ()));
+        photonHasTargets = true;
+      }
+      /* Case 2
+       * if only the second camera has a multi tag pose, use its estimate
+       */
+      else if (result_2.getMultiTagResult().estimatedPose.isPresent){
+        photonTimestamp = result_2.getTimestampSeconds();
+        Transform3d fieldToCamera = result_2.getMultiTagResult().estimatedPose.best;
+        Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_2_CAM_TO_ROBOT);
+        botPose = new Pose2d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), new Rotation2d(fieldCamToRobot.getRotation().getZ()));
+        photonHasTargets = true;
+      }
+      /* Case 3
+       * if both cameras have a single tag pose, use whichever camera is closer to the AprilTag
+       */
+      else if (photon1HasTargets && photon2HasTargets){
+         PhotonTrackedTarget target_1 = result_1.getBestTarget();
+         PhotonTrackedTarget target_2 = result_2.getBestTarget();
+
+         if (target_1.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF && target_2.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF) {
+          Transform3d bestCameraToTarget1 = target_1.getBestCameraToTarget();
+          Transform3d bestCameraToTarget2 = target_2.getBestCameraToTarget();
+          
+          double target_1_distance = bestCameraToTarget1.getX();
+          double target_2_distance = bestCameraToTarget2.getX();
+
+          if (target_1_distance < target_2_distance){
+            photonTimestamp = result_1.getTimestampSeconds();
+            Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
+            Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget1, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
+            botPose = currentPose3d.toPose2d();
+            photonHasTargets = true;
+          }
+          else {
+            photonTimestamp = result_2.getTimestampSeconds();
+            Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_2.getFiducialId()).get();
+            Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget2, tagPose, VisionConfig.PHOTON_2_CAM_TO_ROBOT);
+            botPose = currentPose3d.toPose2d();
+            photonHasTargets = true;
+          }
+         }
+         else {
+          photonHasTargets = false;
+         }
+      }
+      /* Case 4
+       * if only the first camera has a single tag pose, use it if it is below a certain ambuguity threshold
+       */
+      else if (photon1HasTargets){
+        PhotonTrackedTarget target_1 = result_1.getBestTarget();
+        if (target_1.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
+          photonTimestamp = result_1.getTimestampSeconds();
+          Transform3d bestCameraToTarget = target_1.getBestCameraToTarget();
+          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
+          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
+          botPose = currentPose3d.toPose2d();
+          photonHasTargets = true;
+        }
+        else {
+          photonHasTargets = false;
+        }
+      }
+      
+      else if (photon2HasTargets){
+        PhotonTrackedTarget target_2 = result_2.getBestTarget();
+        if (target_2.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
+          photonTimestamp = result_2.getTimestampSeconds();
+          Transform3d bestCameraToTarget = target_2.getBestCameraToTarget();
+          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_2.getFiducialId()).get();
+          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_2_CAM_TO_ROBOT);
+          botPose = currentPose3d.toPose2d();
+          photonHasTargets = true;
+        }
+        else {
+          photonHasTargets = false;
+        }
+      }
+      else {
+        photonHasTargets = false;
+      }
+    } 
+    
+    //Case if there is only one PhotonVision Camera connected
+    else if (!VisionConfig.IS_PHOTON_TWO_ENABLED && VisionConfig.IS_PHOTON_VISION_ENABLED) {
+      var result = photonCam_1.getLatestResult();
+      photon1HasTargets = result.hasTargets();
+
+      if (result.getMultiTagResult().estimatedPose.isPresent){
+        photonTimestamp = result.getTimestampSeconds();
+        Transform3d fieldToCamera = result.getMultiTagResult().estimatedPose.best;
+        Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
+        botPose = new Pose2d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), new Rotation2d(fieldCamToRobot.getRotation().getZ()));
+        photonHasTargets = true;
       }
       else if (photon1HasTargets) {
-        PhotonTrackedTarget target = result_1.getBestTarget();
+        PhotonTrackedTarget target = result.getBestTarget();
         if (target.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
-          photonTimestamp = result_1.getTimestampSeconds();
+          photonTimestamp = result.getTimestampSeconds();
 
           Transform3d bestCameraToTarget = target.getBestCameraToTarget();
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
           botPose = currentPose3d.toPose2d();
+          photonHasTargets = true;
+        }
+        else {
+          photonHasTargets = false;
         }
       }
-      else{
-        photon1HasTargets = false;
+      else {
+        photonHasTargets = false;
       }
     }
+
 
     //Does math to see where the note is
     if (VisionConfig.IS_NEURAL_NET && NNLimelightConnected) {
@@ -264,7 +384,7 @@ public class Vision extends SubsystemBase {
     if (VisionConfig.IS_LIMELIGHT_MODE) {
       return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
     }
-    if (VisionConfig.IS_PHOTON_VISION_MODE) {
+    if (VisionConfig.IS_PHOTON_VISION_ENABLED) {
       return photonHasTargets();
     }
     return false;
