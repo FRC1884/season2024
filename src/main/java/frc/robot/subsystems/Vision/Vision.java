@@ -325,6 +325,14 @@ public class Vision extends SubsystemBase {
   }
 
   /**
+   * 
+   * @return whether the limelight currently sees a game piece
+   */
+  public boolean gamePieceDetected(){
+    return detectTarget;
+  }
+
+  /**
    * @return Pose2d location of note Field Relative
    */
   public Pose2d getNotePose2d(){
@@ -350,7 +358,7 @@ public class Vision extends SubsystemBase {
    * @return boolean if photonvision has targets
    */
   public boolean photonHasTargets() {
-    return photon1HasTargets;
+    return photonHasTargets;
   }
   
   /**
