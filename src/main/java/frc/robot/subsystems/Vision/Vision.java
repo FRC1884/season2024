@@ -175,7 +175,8 @@ public class Vision extends SubsystemBase {
         photonTimestamp = result_1.getTimestampSeconds();
         Transform3d fieldToCamera = result_1.getMultiTagResult().estimatedPose.best;
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
-        botPose = new Pose2d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), new Rotation2d(fieldCamToRobot.getRotation().getZ()));
+        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
+        botPose = botPose3d.toPose2d();
         photonHasTargets = true;
       }
       /* Case 2
@@ -185,7 +186,8 @@ public class Vision extends SubsystemBase {
         photonTimestamp = result_2.getTimestampSeconds();
         Transform3d fieldToCamera = result_2.getMultiTagResult().estimatedPose.best;
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_2_CAM_TO_ROBOT);
-        botPose = new Pose2d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), new Rotation2d(fieldCamToRobot.getRotation().getZ()));
+        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
+        botPose = botPose3d.toPose2d();
         photonHasTargets = true;
       }
       /* Case 3
@@ -267,7 +269,8 @@ public class Vision extends SubsystemBase {
         photonTimestamp = result.getTimestampSeconds();
         Transform3d fieldToCamera = result.getMultiTagResult().estimatedPose.best;
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
-        botPose = new Pose2d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), new Rotation2d(fieldCamToRobot.getRotation().getZ()));
+        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
+        botPose = botPose3d.toPose2d();
         photonHasTargets = true;
       }
       else if (photon1HasTargets) {
@@ -358,7 +361,7 @@ public class Vision extends SubsystemBase {
    * @return boolean if photonvision has targets
    */
   public boolean photonHasTargets() {
-    return photonHasTargets;
+    return photonHasTargets|| photon1HasTargets;
   }
   
   /**

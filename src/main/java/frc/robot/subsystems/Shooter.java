@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -103,6 +104,11 @@ public class Shooter extends SubsystemBase {
         } else {
             bot = Optional.empty();
         }
+
+        var tab = Shuffleboard.getTab("Shooter");
+
+        tab.add(this);
+
     }
 
     public Command setFlywheelVelocityCommand(Supplier<Double> v) {

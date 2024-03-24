@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-   
+    PoseEstimator.getInstance().setEstimatedPose(Drivetrain.getInstance().getPose());
   }
 
   public Command getAutonomousCommand() {

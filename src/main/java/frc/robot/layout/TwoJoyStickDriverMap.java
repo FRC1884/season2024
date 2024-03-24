@@ -22,7 +22,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveYSpeed() {
-      return controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4)
+      return -controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4)
        * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 

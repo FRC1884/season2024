@@ -59,7 +59,7 @@ public class Feeder extends SubsystemBase {
             motorPID.setFF(FeederMap.FEEDER_FF);
 
             motor.setClosedLoopRampRate(FeederMap.FEEDER_RAMP_RATE);
-            motor.setInverted(true);
+            motor.setInverted(false);
 
             motor.burnFlash();
 

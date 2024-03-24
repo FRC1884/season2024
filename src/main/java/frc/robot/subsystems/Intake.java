@@ -42,7 +42,7 @@ public class Intake extends SubsystemBase {
             var motor = intake.get();
 
             motor.restoreFactoryDefaults();
-            motor.setInverted(false);
+            motor.setInverted(true);
             motor.setSmartCurrentLimit(20);
             motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
             motor.burnFlash();

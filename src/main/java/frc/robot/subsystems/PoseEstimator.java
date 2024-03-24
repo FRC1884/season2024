@@ -46,6 +46,7 @@ public class PoseEstimator extends SubsystemBase {
   private GenericEntry totalDiffEntry = tab.add("totalDiff", 0).getEntry();
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
   private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
+  private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
 
   private PoseEstimator() {
     // config = new PoseConfig();
@@ -81,10 +82,13 @@ public class PoseEstimator extends SubsystemBase {
       }
     }
     // TODO Photonvision mode - Needs editing and filtering
-    if (VisionConfig.IS_PHOTON_VISION_ENABLED && tempEstimatePose != null
-        && (tempEstimatePose.getX() > VisionConfig.VISION_X_MAX_CUTOFF || tempEstimatePose.getX() < VisionConfig.VISION_X_MIN_CUTOFF)) { // Limelight mode
+    if (VisionConfig.IS_PHOTON_VISION_ENABLED && tempEstimatePose != null) { 
+      double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
-        double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
+        addVisionMeasurement(tempEstimatePose, photonTimestamp);
+        aprilTagTelemEntry.setBoolean(true);
+      }
+      if (enableVisionOverride.getBoolean(false)){
         addVisionMeasurement(tempEstimatePose, photonTimestamp);
         aprilTagTelemEntry.setBoolean(true);
       }
