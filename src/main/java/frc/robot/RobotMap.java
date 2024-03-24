@@ -30,7 +30,7 @@ public class RobotMap {
       PIGEON, NAVX
     }
 
-    public static final GyroType GYRO_TYPE = GyroType.PIGEON;
+    public static final GyroType GYRO_TYPE = GyroType.NAVX;
 
     public static final int PIGEON_ID = 30;
 
@@ -47,29 +47,29 @@ public class RobotMap {
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
     public static final class FrontLeft {
-      public static final int DRIVE_ID = 1;
-      public static final int ROTATOR_ID = 2;
+      public static final int DRIVE_ID = 15;
+      public static final int ROTATOR_ID = 14;
       public static final double ANGULAR_OFFSET = -Math.PI / 2;;
     }
 
     /* Front Right Module - Module 1 */
     public static final class FrontRight {
-      public static final int DRIVE_ID = 3;
-      public static final int ROTATOR_ID = 4;
+      public static final int DRIVE_ID = 11;
+      public static final int ROTATOR_ID = 10;
       public static final double ANGULAR_OFFSET = 0;
     }
 
     /* Back Left Module - Module 2 */
     public static final class BackLeft {
-      public static final int DRIVE_ID = 5;
-      public static final int ROTATOR_ID = 6;
+      public static final int DRIVE_ID = 17;
+      public static final int ROTATOR_ID = 16;
       public static final double ANGULAR_OFFSET = Math.PI;
     }
 
     /* Back Right Module - Module 3 */
     public static final class BackRight {
-      public static final int DRIVE_ID = 7;
-      public static final int ROTATOR_ID = 8;
+      public static final int DRIVE_ID = 13;
+      public static final int ROTATOR_ID = 12;
       public static final double ANGULAR_OFFSET = Math.PI / 2;
     }
 
@@ -119,9 +119,9 @@ public class RobotMap {
     public static final boolean DRIVER_CAMERA_ACTIVE = false;
     public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
-    public static final boolean IS_PHOTON_VISION_ENABLED = true;
-    public static final boolean IS_PHOTON_TWO_ENABLED = true;
-    public static final boolean IS_NEURAL_NET = true;
+    public static final boolean IS_PHOTON_VISION_ENABLED = false;
+    public static final boolean IS_PHOTON_TWO_ENABLED = false;
+    public static final boolean IS_NEURAL_NET = false;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
 
@@ -221,7 +221,7 @@ public class RobotMap {
     public static final double WHEEL_RADIUS = 0.0508;
   }
   public static class IntakeMap {
-    public static final int INTAKE_ID = 9;
+    public static final int INTAKE_ID = 20;
 
     public static final double INTAKE_FORWARD_SPEED = 1;
 
@@ -230,8 +230,8 @@ public class RobotMap {
 
   public static class ShooterMap {
 
-    public static final int TOP_SHOOTER = 11;
-    public static final int BOTTOM_SHOOTER = 14;
+    public static final int TOP_SHOOTER = 30;
+    public static final int BOTTOM_SHOOTER = 31;
     public static final double FLYWHEEL_RADIUS = 0.0508;
     public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
     public static final double AMP_SPEED = 600;
@@ -264,7 +264,7 @@ public class RobotMap {
   }
 
   public static class FeederMap {
-    public static final int FEEDER = 10;
+    public static final int FEEDER = 21;
     public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.015);
     public static final double FEEDER_FF = 0.00015;
     public static final double FEEDER_RAMP_RATE = 0.5;
@@ -302,7 +302,7 @@ public class RobotMap {
   }
 
   public static class PivotMap {
-    public static final int PIVOT_ID = 13;
+    public static final int PIVOT_ID = 22;
     public static final double POSITION_TOLERANCE = 1;
     public static final double VELOCITY_TOLERANCE = .5;
     public static final double DT = 0.2;
@@ -322,7 +322,7 @@ public class RobotMap {
   }
 
   public static class LEDMap {
-    public static final int BLINKIN_PWM_PORT = 6;
+    public static final int BLINKIN_PWM_PORT = 0;
     public static final boolean BLINKIN_PWM = true;
     public static final boolean BLINKIN_ON_SPARK = false;
     public static final int NUMBER_LEDS = 42;

@@ -42,11 +42,16 @@ public class Pivot extends ProfiledPIDSubsystem {
             // disables the integrator if |error| is too high, i.e. above the value of kIZone
 
             // TODO: test if the soft limits work at all
-            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) PivotMap.UPPER_SETPOINT_LIMIT);
-            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float) PivotMap.LOWER_SETPOINT_LIMIT);
+            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float) PivotMap.UPPER_SETPOINT_LIMIT);
+            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) PivotMap.LOWER_SETPOINT_LIMIT);
 
             motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
             motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+
+            var tab = Shuffleboard.getTab("Pivot");
+
+            tab.add(this);
+
 
 
             // forwardLimitSwitch = pivot.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);

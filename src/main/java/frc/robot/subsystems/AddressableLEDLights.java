@@ -122,11 +122,12 @@ public class AddressableLEDLights extends SubsystemBase {
   }
 
   public Command setNoteStatusCommand(BooleanSupplier beamBroken) {
-    return Commands.either(
-      setBlinkingCommand(Color.kGreenYellow, Color.kBlack, 6.0),
+    return (Commands.either(
+      setColorCommand(Color.kGreenYellow),
       setColorCommand(Color.kRed),
+
       () -> beamBroken.getAsBoolean()
-    ).repeatedly();
+    ).alongWith(new PrintCommand("" + beamBroken.getAsBoolean()))).repeatedly();
   }
 
   private Command setRainbowCommand() {
@@ -159,9 +160,10 @@ public class AddressableLEDLights extends SubsystemBase {
   }
 
   public Command setBlinkingCommand(Color onColor, Color offColor, double frequency) {
-    return Commands.repeatingSequence(
+    return Commands.sequence(
       setColorCommand(onColor).withTimeout(1.0 / frequency),
-      setColorCommand(offColor).withTimeout(1.0 / frequency));
+      setColorCommand(offColor).withTimeout(1.0 / frequency),
+      Commands.none());
   }
 
   public Command setBlinkingLeftCommand(Color onColor, Color offColor, double frequency) {
@@ -205,7 +207,7 @@ public class AddressableLEDLights extends SubsystemBase {
   }
 
   public Command setColorCommand(Color color) {
-    return Commands.run(() -> setColor(color), this);
+    return Commands.runOnce(() -> setColor(color), this);
   }
 
   public Command setColorLeftCommand(Color color) {

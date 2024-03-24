@@ -59,7 +59,7 @@ public class Feeder extends SubsystemBase {
             motorPID.setFF(FeederMap.FEEDER_FF);
 
             motor.setClosedLoopRampRate(FeederMap.FEEDER_RAMP_RATE);
-            motor.setInverted(false);
+            motor.setInverted(true);
 
             motor.burnFlash();
 
@@ -76,7 +76,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public boolean isNoteLoaded() {
-        return (status == NoteStatus.LOADED);
+        return beamBreak.isPresent() ? !beamBreak.get().get() : true;
     }
 
     public void setFeederState(FeederDirection direction) {
@@ -103,6 +103,7 @@ public class Feeder extends SubsystemBase {
     @Override
     public void periodic() {
         status = (beamBreak.isPresent() && beamBreak.get().get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
+        // System.out.println("Beambreak " + ((beamBreak.isPresent() ? beamBreak.get().get() : false) ? "TRUE" : "FALSE or OFF"));
         updateSpeed();
     }
 

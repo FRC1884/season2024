@@ -138,7 +138,7 @@ public abstract class OperatorMap extends CommandMap {
 
     private void registerComplexCommands() {
         if (Config.Subsystems.INTAKE_ENABLED && Config.Subsystems.FEEDER_ENABLED) {
-            getIntakeButton().whileTrue(new IntakeUntilLoadedCommand());
+            getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
         }
 
         if (Config.Subsystems.CLIMBER_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
@@ -163,6 +163,7 @@ public abstract class OperatorMap extends CommandMap {
             getSubwooferShotButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
             getPodiumShotButton().onFalse(pivot.updatePosition(() -> 0.0));
             getPodiumShotButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+
         }
 
         if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.INTAKE_ENABLED
@@ -217,6 +218,8 @@ public abstract class OperatorMap extends CommandMap {
                     .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
             getStageAlignButton()
                     .onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+                
+
 
             // getEjectButton().whileTrue(new InstantCommand(() ->
             // feeder.setFeederState(FeederDirection.REVERSE)).alongWith(intake.se));
@@ -235,7 +238,7 @@ public abstract class OperatorMap extends CommandMap {
 
     private void registerLEDs() {
         AddressableLEDLights lights = AddressableLEDLights.getInstance();
-        Intake intake = Intake.getInstance();
+        Feeder feeder = Feeder.getInstance();
 
         getAmplifyButton().onTrue(
                 lights.getAmplifyPatternCommand()
@@ -253,7 +256,7 @@ public abstract class OperatorMap extends CommandMap {
 
         // will get canceled on both triggers until the rising edge is detected
         // lights.setDefaultCommand(lights.getCoOpPatternCommand());
-        lights.setDefaultCommand(lights.setNoteStatusCommand(() -> getIntakeButton().getAsBoolean()).repeatedly());
+        lights.setDefaultCommand(lights.setNoteStatusCommand(feeder::isNoteLoaded));
     }
 
     public void registerSubsystems() {
@@ -269,7 +272,8 @@ public abstract class OperatorMap extends CommandMap {
         registerFeeder();
         registerClimber();
         registerShooter();
-        // registerLEDs();
+        registerPivot();
+        registerLEDs();
         registerComplexCommands();
 
         // registerSubsystems();

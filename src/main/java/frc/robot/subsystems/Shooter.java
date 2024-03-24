@@ -72,6 +72,7 @@ public class Shooter extends SubsystemBase {
             pid.setI(ShooterMap.FLYWHEEL_PID.kI);
             pid.setD(ShooterMap.FLYWHEEL_PID.kD);
             pid.setFF(ShooterMap.FLYWHEEL_FF);
+            motor.setSmartCurrentLimit(40);
 
             motor.setClosedLoopRampRate(ShooterMap.FLYWHEEL_RAMP_RATE);
             motor.burnFlash();
@@ -92,6 +93,10 @@ public class Shooter extends SubsystemBase {
             pid.setI(ShooterMap.FLYWHEEL_PID.kI);
             pid.setD(ShooterMap.FLYWHEEL_PID.kD);
             pid.setFF(ShooterMap.FLYWHEEL_FF);
+
+            motor.setSmartCurrentLimit(40);
+            motor.setInverted(true);
+
 
             motor.setClosedLoopRampRate(ShooterMap.FLYWHEEL_RAMP_RATE);
             motor.burnFlash();
