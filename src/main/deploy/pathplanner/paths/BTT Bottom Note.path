@@ -8,11 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0752240077946618,
-        "y": 4.028527771748839
+        "x": 2.075224007794662,
+        "y": 4.028527771748838
       },
       "isLocked": false,
       "linkedName": "BTT Shot One"
+    },
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 4.0
+      },
+      "prevControl": {
+        "x": 1.8853973531770176,
+        "y": 3.985680585483853
+      },
+      "nextControl": {
+        "x": 2.1146026468229824,
+        "y": 4.014319414516147
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -46,9 +62,14 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
+      "waypointRelativePos": 2.0,
       "rotationDegrees": 180.0,
       "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [],

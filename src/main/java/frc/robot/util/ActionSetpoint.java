@@ -1,9 +1,11 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.geometry.Pose2d;
-
 public class ActionSetpoint {
-  private double rpm, angleSetpoint;
+
+  public static final ActionSetpoint SUBWOOFER_SHOT = new ActionSetpoint(2600, -125);
+  public static final ActionSetpoint PODIUM_SHOT = new ActionSetpoint(4000, -90); // TODO - Needs to be changed
+
+  private final double rpm, angleSetpoint;
 
   ActionSetpoint(double rpm, double aS) {
     this.rpm = rpm;
@@ -14,7 +16,7 @@ public class ActionSetpoint {
     return rpm;
   }
 
-  public double getAngleSetpoint() {
+  public double getAngle() {
     return angleSetpoint;
   }
 }

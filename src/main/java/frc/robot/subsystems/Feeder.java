@@ -10,132 +10,112 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Config;
 import frc.robot.RobotMap.FeederMap;
-import frc.robot.RobotMap.ShooterMap;
-import frc.robot.subsystems.Feeder.FeederDirection;
-import frc.robot.subsystems.Feeder.NoteStatus;
+
+import java.util.Optional;
 
 public class Feeder extends SubsystemBase {
     private static Feeder instance;
-    private boolean isDisabled = true;
-    private AddressableLEDLights lights;
 
     public static Feeder getInstance() {
-        if(instance == null) instance = new Feeder();
+        if (instance == null) instance = new Feeder();
         return instance;
     }
 
-    public static enum NoteStatus {
+    public enum NoteStatus {
         EMPTY, LOADED
     }
 
-    public static enum FeederDirection{
+    public enum FeederDirection {
         FORWARD, FORWARD_SLOW, REVERSE, STOPPED
     }
 
     private NoteStatus status = NoteStatus.EMPTY;
 
-    
-    private CANSparkBase feeder;
-    private SparkPIDController feedPID;
-    private DigitalInput beamBreak;
+
+    private Optional<CANSparkBase> feeder;
+    private Optional<SparkPIDController> feedPID;
+    private Optional<DigitalInput> beamBreak;
 
     private double feedVel;
 
     private Feeder() {
-        lights = AddressableLEDLights.getInstance();
-        if (FeederMap.FEEDER != -1){
+        super();
 
-            setName("Feeder");
-            feeder = new CANSparkFlex(FeederMap.FEEDER, MotorType.kBrushless);
-            feeder.setIdleMode(IdleMode.kBrake);
-            feedPID = feeder.getPIDController();
-            feedPID.setP(FeederMap.FEEDER_PID.kP);
-            feedPID.setI(FeederMap.FEEDER_PID.kI);
-            feedPID.setD(FeederMap.FEEDER_PID.kD);
-            feedPID.setFF(FeederMap.FEEDER_FF);
+        if (Config.Subsystems.FEEDER_ENABLED) {
+            feeder = Optional.of(new CANSparkFlex(FeederMap.FEEDER, MotorType.kBrushless));
 
-            feeder.setClosedLoopRampRate(FeederMap.FEEDER_RAMP_RATE);
-            feeder.setInverted(false);
-            feeder.burnFlash();
+            var motor = feeder.get();
+            motor.setIdleMode(IdleMode.kBrake);
+
+            feedPID = Optional.of(motor.getPIDController());
+
+            var motorPID = feedPID.get();
+            motorPID.setP(FeederMap.FEEDER_PID.kP);
+            motorPID.setI(FeederMap.FEEDER_PID.kI);
+            motorPID.setD(FeederMap.FEEDER_PID.kD);
+            motorPID.setFF(FeederMap.FEEDER_FF);
+
+            motor.setClosedLoopRampRate(FeederMap.FEEDER_RAMP_RATE);
+            motor.setInverted(false);
+
+            motor.burnFlash();
 
             var tab = Shuffleboard.getTab("Feeder");
 
             tab.add(this);
-            
-            beamBreak = new DigitalInput(FeederMap.BEAMBREAK);
+
+            beamBreak = Optional.of(new DigitalInput(FeederMap.BEAMBREAK));
+        } else {
+            feeder = Optional.empty();
+            feedPID = Optional.empty();
+            beamBreak = Optional.empty();
         }
     }
 
-    public boolean isNoteLoaded(){
-        //Once tripped 
+    public boolean isNoteLoaded() {
         return (status == NoteStatus.LOADED);
     }
 
-    public void runFeeder(){
-        feedVel = FeederMap.FEEDER_RPM;
-    }
-
-    public void setFeederState(FeederDirection direction){
-        // switch (direction){
-        //     case FORWARD:
-        //     {feedVel = ShooterMap.FEEDER_RPM;
-        //     System.out.println("Hello");
-        //     }
-        //     case REVERSE:
-        //     feedVel = -ShooterMap.FEEDER_RPM;
-        //     case STOPPED:
-        //     feedVel = 0;
-        // }
-
-        if(direction == FeederDirection.FORWARD){
+    public void setFeederState(FeederDirection direction) {
+        if (direction == FeederDirection.FORWARD) {
             feedVel = FeederMap.FEEDER_RPM;
-        }
-        else if (direction == FeederDirection.STOPPED){
+        } else if (direction == FeederDirection.STOPPED) {
             feedVel = 0;
-        }
-        else if (direction == FeederDirection.FORWARD_SLOW){
+        } else if (direction == FeederDirection.FORWARD_SLOW) {
             feedVel = FeederMap.FEEDER_RPM_SLOW;
-        }
-        else if (direction == FeederDirection.REVERSE){
+        } else if (direction == FeederDirection.REVERSE) {
             feedVel = FeederMap.FEEDER_RPM * -1;
         }
 
     }
 
-    private void updateMotors() {
-        if (feeder != null) {
+    private void updateSpeed() {
+        if (feeder.isPresent() && feedPID.isPresent()) {
             if (feedVel != 0) {
-                feedPID.setReference(feedVel, ControlType.kVelocity);
-            } else
-                feeder.set(0);
+                feedPID.get().setReference(feedVel, ControlType.kVelocity);
+            } else feeder.get().set(0);
         }
     }
 
     @Override
     public void periodic() {
-        status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
-        updateMotors();
-         if(!isDisabled){
-            if(status == NoteStatus.LOADED){
-                lights.setColorCommand(Color.kGreenYellow);
-            }
-            else lights.setColorCommand(Color.kRed);
-
-        }
+        status = (beamBreak.isPresent() && beamBreak.get().get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
+        updateSpeed();
     }
 
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty("feeder velocity", () -> feedVel, (v) -> feedVel = v);
-        builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d) -> {
-        });
-        builder.addBooleanProperty("BB", () -> beamBreak.get(), null);
-       
+        super.initSendable(builder);
 
+        builder.addDoubleProperty("feeder velocity", () -> feedVel, (v) -> feedVel = v);
+        builder.addDoubleProperty("real feeder velo",
+                () -> feeder.map(canSparkBase -> canSparkBase.getEncoder().getVelocity()).orElse(0.0),
+                (d) -> {}
+        );
+        builder.addBooleanProperty("has note", this::isNoteLoaded, null);
     }
 }

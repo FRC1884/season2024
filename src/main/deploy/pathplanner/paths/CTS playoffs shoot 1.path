@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.957663105115334,
+        "y": 6.234170426165493
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.599174794354029,
+        "y": 6.482002753128704
+      },
+      "isLocked": false,
+      "linkedName": "playoffs 1"
+    },
+    {
+      "anchor": {
+        "x": 3.6256951537210513,
+        "y": 6.234170426165493
+      },
+      "prevControl": {
+        "x": 4.5344136859194935,
+        "y": 6.417749927619722
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "playoffs shoot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -172.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.157199863615132,
+        "y": 6.183321696172636
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.1024935745764948,
+        "y": 5.958801173984146
+      },
+      "isLocked": false,
+      "linkedName": "CTS Preload"
+    },
+    {
+      "anchor": {
+        "x": 5.883723021608086,
+        "y": 7.2530366592364715
+      },
+      "prevControl": {
+        "x": 4.883723021608086,
+        "y": 7.2530366592364715
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -160.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

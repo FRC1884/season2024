@@ -2,12 +2,17 @@ package frc.robot.subsystems;
 
 import static frc.robot.core.TalonSwerve.SwerveConstants.*;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MAXSwerve;
 import frc.robot.core.MAXSwerve.MAXSwerveModule;
+import frc.robot.core.TalonSwerve.Swerve;
+import frc.robot.core.TalonSwerve.SwerveConstants;
 
 /**
  * <b>Use {@link #getInstance()} to access all subsystems.</b><br>
@@ -31,6 +36,9 @@ import frc.robot.core.MAXSwerve.MAXSwerveModule;
  */
 public class Drivetrain extends MAXSwerve {
   private static Drivetrain instance;
+  
+  private Rotation2d speakerAlignAngle;
+  public Rotation2d noteAlignAngle;
 
   /**
    * <b>Use this to access the subsystem using its static instance.</b><br>
@@ -96,8 +104,6 @@ public class Drivetrain extends MAXSwerve {
           double sR =
               thetaController.calculate(
                   getPose().getRotation().getRadians(), targetPose.getRotation().getRadians());
-
-          // need to get rotpos? felt cute now might delete later (ꈍᴗꈍ)♡
           // drive(ChassisSpeeds.fromFieldRelativeSpeeds(sX, sY, sR, getPose().getRotation()),
           // true);
           drive(sX, sY, sR, true, true);
@@ -152,5 +158,28 @@ public class Drivetrain extends MAXSwerve {
   @Override
   public void periodic() {
     super.periodic();
+
+  }
+
+  public void setSpeakerAlignAngle(Supplier<Pose2d> target) {
+    if(target != null) {
+      this.speakerAlignAngle = this.getPose().getTranslation().minus(target.get().getTranslation()).getAngle();
+    }
+    else {
+      this.speakerAlignAngle = null;
+    }
+  }
+
+  public boolean atSpeakerAlignAngle() {
+    if(Math.abs(speakerAlignAngle.getDegrees() - this.getPose().getRotation().getDegrees()) < DriveMap.SPEAKER_ALIGN_TOLERANCE) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  public Rotation2d getSpeakerAlignAngle() {
+    return speakerAlignAngle;
   }
 }

@@ -1,14 +1,15 @@
 package frc.robot.layout;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.core.MAXSwerve.MAXSwerve;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.*;
@@ -19,7 +20,10 @@ import frc.robot.RobotMap.PivotMap;
 import frc.robot.RobotMap.ShooterMap;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.util.ActionSetpoint;
 import frc.robot.util.FlywheelLookupTable;
+
+import java.util.function.Supplier;
 
 public abstract class OperatorMap extends CommandMap {
 
@@ -43,7 +47,9 @@ public abstract class OperatorMap extends CommandMap {
 
     abstract double getManualClimberAxis();
 
-    abstract JoystickButton getArcButton();
+    abstract JoystickButton getSpeakerShotAlignButton();
+
+    abstract JoystickButton getFerryShotAlignButton();
 
     abstract JoystickButton getTrapButton();
 
@@ -81,127 +87,193 @@ public abstract class OperatorMap extends CommandMap {
 
     abstract Trigger getClimberLowerButton();
 
+    abstract JoystickButton getSubwooferShotButton();
+
+    abstract JoystickButton getPodiumShotButton();
+
     private void registerIntake() {
-        if (Config.Subsystems.Intake.INTAKE_ENABLED) {
+        if (Config.Subsystems.INTAKE_ENABLED) {
             Intake intake = Intake.getInstance();
-            getOuttakeButton().onTrue(new InstantCommand(() -> intake.setIntakeState(Intake.IntakeDirection.REVERSE), intake));
+            // getOuttakeButton().onTrue(new InstantCommand(() ->
+            // intake.setIntakeState(Intake.IntakeDirection.REVERSE), intake));
 
+        }
+    }
 
+    private void registerShooter() {
+        if (Config.Subsystems.SHOOTER_ENABLED) {
         }
     }
 
     private void registerFeeder() {
-        if(Config.Subsystems.FEEDER_ENABLED) {
-            Feeder feeder = Feeder.getInstance();
-            getShootSpeakerButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
-            getShootAmpButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD_SLOW)));
-            getTrapButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD)));
-            getEjectButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.REVERSE)));
-            getShootSpeakerButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
-            getShootAmpButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
-            getTrapButton().onFalse(new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED)));
+        Feeder feeder = Feeder.getInstance();
+
+        var feederForward = new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD));
+        var feederReverse = new InstantCommand(() -> feeder.setFeederState(FeederDirection.REVERSE));
+        var feederStop = new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED));
+        var feederSlow = new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD_SLOW));
+
+        getShootSpeakerButton().whileTrue(feederForward);
+        getShootSpeakerButton().onFalse(feederStop);
+
+        getShootAmpButton().whileTrue(feederSlow);
+        getShootAmpButton().onFalse(feederStop);
+
+        getTrapButton().whileTrue(feederForward);
+        getTrapButton().onFalse(feederStop);
+
+        getEjectButton().whileTrue(feederReverse);
+        getEjectButton().onFalse(feederStop);
+    }
+
+    private void registerClimber() {
+        if (Config.Subsystems.CLIMBER_ENABLED) {
+            Climber climber = Climber.getInstance();
+            climber.setDefaultCommand(climber.run(this::getManualClimberAxis));
+
+            getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
+            getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
+            getClimberLowerButton().whileTrue(Climber.getInstance().run(() -> -0.3));
+            getClimberLowerButton().onFalse(Climber.getInstance().run(() -> -0.0));
+        }
+    }
+
+    private void registerComplexCommands() {
+        if (Config.Subsystems.INTAKE_ENABLED && Config.Subsystems.FEEDER_ENABLED) {
+            getIntakeButton().whileTrue(new IntakeUntilLoadedCommand());
+        }
+
+        if (Config.Subsystems.CLIMBER_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
+            var pivot = Pivot.getInstance();
+            var climber = Climber.getInstance();
+
+            getClimbSequenceButton()
+                    .whileTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(climber.run(() -> 0.3)));
+            getClimbSequenceButton().onFalse(climber.run(() -> -0.3));
+        }
+
+        if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
+
+            Shooter shooter = Shooter.getInstance();
+            Pivot pivot = Pivot.getInstance();
+            getSubwooferShotButton().onTrue(pivot.updatePosition(() -> ActionSetpoint.SUBWOOFER_SHOT.getAngle()));
+            getSubwooferShotButton()
+                    .onTrue(shooter.setFlywheelVelocityCommand(() -> ActionSetpoint.SUBWOOFER_SHOT.getRPM()));
+            getPodiumShotButton().onTrue(pivot.updatePosition(() -> ActionSetpoint.PODIUM_SHOT.getAngle()));
+            getPodiumShotButton().onTrue(shooter.setFlywheelVelocityCommand(() -> ActionSetpoint.PODIUM_SHOT.getRPM()));
+            getSubwooferShotButton().onFalse(pivot.updatePosition(() -> 0.0));
+            getSubwooferShotButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+            getPodiumShotButton().onFalse(pivot.updatePosition(() -> 0.0));
+            getPodiumShotButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+        }
+
+        if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.INTAKE_ENABLED
+                && Config.Subsystems.DRIVETRAIN_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
+            Shooter shooter = Shooter.getInstance();
+            Pivot pivot = Pivot.getInstance();
+            FlywheelLookupTable speakerLookupTable = ShooterMap.SPEAKER_LOOKUP_TABLE;
+            FlywheelLookupTable ferryLookupTable = ShooterMap.FERRY_LOOKUP_TABLE;
+
+            // if alliance isn't populating default to red to avoid null pointer
+            Supplier<Pose2d> speakerTarget = () -> DriverStation.getAlliance().isPresent()
+                    && (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
+                            : Coordinates.RED_SPEAKER;
+
+            Supplier<Pose2d> ferryTarget = () -> new Pose2d(0,0, new Rotation2d(0)); //TODO: Find Target Pose
+
+            PoseEstimator poseEstimator = PoseEstimator.getInstance();
+
+            // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
+
+            Supplier<ActionSetpoint> getSpeakerActionSetpoint = () -> speakerLookupTable
+                    .get(poseEstimator.getDistanceToPose(speakerTarget.get().getTranslation()));
+
+            getSpeakerShotAlignButton().whileTrue(
+                    pivot.updatePosition(() -> getSpeakerActionSetpoint.get().getAngle())
+                            .alongWith(
+                                    shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
+
+            getSpeakerShotAlignButton()
+                    .onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+
+
+            Supplier<ActionSetpoint> getFerryActionSetpoint = () -> ferryLookupTable.get(poseEstimator.getDistanceToPose(ferryTarget.get().getTranslation()));
+            
+            getFerryShotAlignButton().whileTrue(
+                    pivot.updatePosition(() -> getFerryActionSetpoint.get().getAngle())
+                            .alongWith(
+                                    shooter.setFlywheelVelocityCommand(() -> getFerryActionSetpoint.get().getRPM())
+                            ));
+
+            getFerryShotAlignButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+
+            getAmpAlignButton().onTrue(
+                    pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE)
+                            .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED))
+                            );
+
+            getAmpAlignButton()
+                    .onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+
+            getStageAlignButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE)
+                    .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
+            getStageAlignButton()
+                    .onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+
+            // getEjectButton().whileTrue(new InstantCommand(() ->
+            // feeder.setFeederState(FeederDirection.REVERSE)).alongWith(intake.se));
+        }
+
+    }
+
+    private void registerPivot() {
+        if (Config.Subsystems.PIVOT_ENABLED) {
+            Pivot pivot = Pivot.getInstance();
+
+            getPivotRaiseButton().onTrue(pivot.updatePosition(() -> (PivotMap.PIVOT_AMP_ANGLE + 40.0)));
+            getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
         }
     }
 
     private void registerLEDs() {
-        if (Config.Subsystems.LEDS_ENABLED) {
-            AddressableLEDLights lights = AddressableLEDLights.getInstance();
+        AddressableLEDLights lights = AddressableLEDLights.getInstance();
+        Intake intake = Intake.getInstance();
 
-            getAmplifyButton().onTrue(lights.setPhaseInOut(240)
-                    .alongWith(new WaitCommand(5.0)));
-            getCoopButton().onTrue(lights.setDoubleChase(Color.kRed, Color.kBlue)
-                    .alongWith(new WaitCommand(5.0)));
+        getAmplifyButton().onTrue(
+                lights.getAmplifyPatternCommand()
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                        .withTimeout(4.0)
+        // .andThen(lights.setNoteStatusCommand(getAmpAlignButton()::getAsBoolean)
+        );
 
-            // FIXME is there a better way to pass the beambreak reading?
-            if(Config.Subsystems.FEEDER_ENABLED)
-                getIntakeButton().whileTrue(
-                        lights.setColorCommand(Color.kRed)
-                                .until(Feeder.getInstance()::isNoteLoaded)
-                                .andThen(lights.setColorCommand(Color.kGreen))
-                );
+        getCoopButton().onTrue(
+                lights.getCoOpPatternCommand()
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+                        .withTimeout(4.0)
+        // .andThen(lights.setNoteStatusCommand(getAmpAlignButton()::getAsBoolean))
+        );
 
-            getArcButton().whileTrue(
-                    lights.setRedGreen(
-                            // TODO replace with a ConditionalCommand on vision accuracy
-                            () -> Math.abs(getLEDAxis1())
-                    )
-            );
-
-            lights.setDefaultCommand(lights.setToAllianceColorCommand());
-        }
+        // will get canceled on both triggers until the rising edge is detected
+        // lights.setDefaultCommand(lights.getCoOpPatternCommand());
+        lights.setDefaultCommand(lights.setNoteStatusCommand(() -> getIntakeButton().getAsBoolean()).repeatedly());
     }
 
-  private void registerComplexCommands(){
-    if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.Intake.INTAKE_ENABLED
-        && Config.Subsystems.DRIVETRAIN_ENABLED) {
-        Shooter shooter = Shooter.getInstance();
-         Pivot pivot = Pivot.getInstance();
-      FlywheelLookupTable lookupTable = FlywheelLookupTable.getInstance();
-      Feeder feeder = Feeder.getInstance();
-      Pose2d target = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER : Coordinates.RED_SPEAKER;
-      PoseEstimator poseEstimator = PoseEstimator.getInstance();
-      Intake intake = Intake.getInstance();
-      // getShootSpeakerButton().onTrue(new ShootSequenceCommand());
-      getIntakeButton().onTrue(new IntakeUntilLoadedCommand());
-
-      getArcButton().whileTrue((pivot.updatePosition(() -> lookupTable
-      .get(poseEstimator.getDistanceToPose(target.getTranslation())).getAngleSetpoint()).alongWith( 
-      shooter.setFlywheelVelocityCommand(() -> lookupTable.get(
-        poseEstimator.getDistanceToPose(target.getTranslation())).getRPM()))));
-      getArcButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
-
-      getAmpAlignButton().onTrue(
-        pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).alongWith(
-        shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED)));
-      getAmpAlignButton().onFalse(
-        shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(
-        pivot.updatePosition(() -> -1.0)
-        ));
-      getStageAlignButton().onTrue(
-        pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE).alongWith(
-        shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
-      getStageAlignButton().onFalse(
-        shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(
-        pivot.updatePosition(() -> -1.0)
-        ));
-
-      getClimbSequenceButton().whileTrue(
-          pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(
-          Climber.getInstance().run(() -> 0.3))); 
-      getClimbSequenceButton().onFalse(Climber.getInstance().run(() -> -0.3));
-
-      getPivotRaiseButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE));
-      getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
-      getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
-      getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
-       getClimberLowerButton().whileTrue(Climber.getInstance().run(() -> -0.3));
-      getClimberLowerButton().onFalse(Climber.getInstance().run(() -> -0.0));
-      // getEjectButton().whileTrue(new InstantCommand(() -> feeder.setFeederState(FeederDirection.REVERSE)).alongWith(intake.se));
+    public void registerSubsystems() {
+        Intake.getInstance();
+        Shooter.getInstance();
+        Feeder.getInstance();
+        Climber.getInstance();
     }
-    
-  }
 
-  public void registerSubsystems(){
-    Intake.getInstance();
-    Shooter.getInstance();
-    Feeder.getInstance();
-    Climber.getInstance();
-    AddressableLEDLights.getInstance();
+    @Override
+    public void registerCommands() {
+        registerIntake();
+        registerFeeder();
+        registerClimber();
+        registerShooter();
+        // registerLEDs();
+        registerComplexCommands();
 
-
-  }
-
-
-
-  @Override
-  public void registerCommands() {
-    registerIntake();
-    registerFeeder();
-    registerClimber();
-    registerShooter();
-    registerLEDs();
-    registerComplexCommands();
-
-    // registerSubsystems();
-  }
+        // registerSubsystems();
+    }
 }

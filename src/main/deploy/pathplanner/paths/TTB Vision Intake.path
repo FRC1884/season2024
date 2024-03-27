@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4324283942685536,
+        "y": 3.9302476829149002
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.423249419195842,
+        "y": 2.8471286243349403
+      },
+      "isLocked": false,
+      "linkedName": "TTB Shot Four"
+    },
+    {
+      "anchor": {
+        "x": 5.911259946826221,
+        "y": 1.7915464909731151
+      },
+      "prevControl": {
+        "x": 4.837319863318973,
+        "y": 1.6355039147370192
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 150.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

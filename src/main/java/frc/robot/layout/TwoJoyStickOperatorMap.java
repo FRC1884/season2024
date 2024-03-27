@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
-import frc.robot.core.util.controllers.ButtonMap.Dpad;
 import frc.robot.core.util.controllers.GameController;
 
 public class TwoJoyStickOperatorMap extends OperatorMap {
@@ -18,12 +17,12 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  public Trigger getClimberRaiseButton(){
+  public Trigger getClimberRaiseButton() {
     return null;
   }
 
   @Override
-  public Trigger getClimberLowerButton(){
+  public Trigger getClimberLowerButton() {
     return null;
   }
 
@@ -91,24 +90,25 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  double getManualClimberAxis(){
+  JoystickButton getFerryShotAlignButton() {
+    return null;
+  }
+
+  @Override
+  double getManualClimberAxis() {
     return 0;
   }
 
-
-
-  
   @Override
   double getLEDAxis1() {
     return controller.getAxis(Axis.AXIS_LEFT_X);
   }
 
   @Override
-  JoystickButton getEjectButton(){
+  JoystickButton getEjectButton() {
     return null;
   }
 
-  
   @Override
   double getLEDAxis2() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
@@ -121,19 +121,18 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getArcButton() {
+  JoystickButton getSpeakerShotAlignButton() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  JoystickButton getPivotRaiseButton()
-  {
+  JoystickButton getPivotRaiseButton() {
     return null;
   }
 
   @Override
-  JoystickButton getPivotLowerButton(){
+  JoystickButton getPivotLowerButton() {
     return null;
   }
 
@@ -165,5 +164,17 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   JoystickButton getClimbSequenceButton() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  JoystickButton getSubwooferShotButton() {
+    // TODO Auto-generated method stub
+    throw new Error("Unimplemented method 'getSubwooferShotButton'");
+  }
+
+  @Override
+  JoystickButton getPodiumShotButton() {
+    // TODO Auto-generated method stub
+    throw new Error("Unimplemented method 'getAmpShotButton'");
   }
 }

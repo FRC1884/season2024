@@ -1,7 +1,7 @@
 package frc.robot.layout;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Config;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
@@ -16,24 +16,14 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public double getSwerveXSpeed() {
-    if(DriverStation.getAlliance().isPresent() 
-    && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-      return -controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
-      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    else
-      return controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4) 
-      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
+      return -controller.getAxis(Axis.AXIS_LEFT_Y) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4)
+       * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 
   @Override
   public double getSwerveYSpeed() {
-    if(DriverStation.getAlliance().isPresent() 
-      && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-      return -controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/2)
-      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
-    else
-      return controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/2)
-      * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
+      return controller.getAxis(Axis.AXIS_LEFT_X) * (MaxSwerveConstants.kMaxSpeedMetersPerSecond/4)
+       * ((DriveMap.IS_SLOWMODE_ENABLED) ? DriveMap.SLOW_MODE_TRANSLATE_MULTIPLIER : 1);
   }
 
   @Override
@@ -64,7 +54,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public JoystickButton getFollowNoteButton(){
-    return controller.getButton(Button.BUTTON_Y);
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
   }
 
   @Override
@@ -86,5 +76,10 @@ public class TwoJoyStickDriverMap extends DriverMap {
   @Override
   public void registerCommands() {
     super.registerCommands();
+  }
+
+  @Override
+  JoystickButton getAmpAlignButton() {
+    return controller.getButton(Button.BUTTON_START);
   }
 }

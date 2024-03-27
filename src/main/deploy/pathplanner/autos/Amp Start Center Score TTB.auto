@@ -32,6 +32,12 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "CTS Shot 1"
@@ -59,6 +65,18 @@
                       "type": "path",
                       "data": {
                         "pathName": "CTS Pickup 3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CTS Pickup 4"
                       }
                     },
                     {

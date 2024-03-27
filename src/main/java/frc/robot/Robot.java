@@ -1,13 +1,5 @@
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleSupplier;
-import java.util.function.LongConsumer;
-import java.util.function.LongSupplier;
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -53,11 +45,14 @@ public class Robot extends TimedRobot {
       enableLiveWindowInTest(true);
 
     SmartDashboard.putData("field", m_field);
-    if(Config.Subsystems.DRIVETRAIN_ENABLED)
-     Drivetrain.getInstance().zeroGyroYaw();
+    if(Config.Subsystems.DRIVETRAIN_ENABLED){
+      Drivetrain.getInstance().zeroGyroYaw();
+      PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose()); 
+    }
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
+   
   }
 
   public Command getAutonomousCommand() {
@@ -102,6 +97,7 @@ public class Robot extends TimedRobot {
 
       if(autonomousCommand != null){
         autonomousCommand.schedule();
+        
       }
     //Drivetrain.getInstance().setGyroYaw(180);
   }
@@ -109,7 +105,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override

@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.util.FlywheelLookupTable;
 
 public class RobotMap {
   public enum PoseMap {
@@ -37,7 +38,11 @@ public class RobotMap {
 
     public static final double SLOW_MODE_ROTATION_MUTLIPLIER = 0.2;
 
+    public static double SPEAKER_ALIGN_OFFSET = 0;
+
     public static boolean IS_SLOWMODE_ENABLED = false;
+
+    public static double SPEAKER_ALIGN_TOLERANCE = 1.5;
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
@@ -114,7 +119,8 @@ public class RobotMap {
     public static final boolean DRIVER_CAMERA_ACTIVE = false;
     public static final boolean VISION_OVERRIDE_ENABLED = false;
     public static final boolean IS_LIMELIGHT_MODE = false;
-    public static final boolean IS_PHOTON_VISION_MODE = true;// TODO: Change to false
+    public static final boolean IS_PHOTON_VISION_ENABLED = true;
+    public static final boolean IS_PHOTON_TWO_ENABLED = true;
     public static final boolean IS_NEURAL_NET = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
@@ -180,7 +186,13 @@ public class RobotMap {
     public static final double CAM_2_ROLL_RADIANS = 0.0; // camera Roll Radians
     public static final double CAM_2_PITCH_RADIANS = 0.2618; // camera Pitch Radians
     public static final double CAM_2_YAW_RADIANS = 0.0; // camera Yaw Radians
+
+
+    public static final Transform3d PHOTON_2_ROBOT_TO_CAM = new Transform3d(CAM_2_X, CAM_2_Y, CAM_2_Z, new Rotation3d(CAM_2_ROLL_RADIANS, CAM_2_PITCH_RADIANS, CAM_2_YAW_RADIANS));
+    public static final Transform3d PHOTON_2_CAM_TO_ROBOT = new Transform3d(-CAM_2_X, -CAM_2_Y, -CAM_2_Z, new Rotation3d(-CAM_2_ROLL_RADIANS, -CAM_2_PITCH_RADIANS, -CAM_2_YAW_RADIANS)); 
+
   }
+
 
   public static class PoseConfig {
     // Increase these numbers to trust your model's state estimates less.
@@ -217,6 +229,7 @@ public class RobotMap {
   }
 
   public static class ShooterMap {
+
     public static final int TOP_SHOOTER = 11;
     public static final int BOTTOM_SHOOTER = 14;
     public static final double FLYWHEEL_RADIUS = 0.0508;
@@ -228,6 +241,26 @@ public class RobotMap {
     public static final double FLYWHEEL_FF = 0.00015;
     public static final double FLYWHEEL_RAMP_RATE = 0.5;
 
+    public static final double[][] SPEAKER_SHOT_VALUES = {
+      { 1, 2600,-115-10},
+      { 1.45, 2600, -87-10},
+      { 1.95, 2600, -67},
+      { 2.47, 3000, -52+5},
+    //  { 2.49, 3700, -52- 12},
+    //  { 2.90, 3800, -52- 12},
+    //  { 2.96, 4000, -30 - 12},
+      { 3.48, 4000, -19 +5},
+      { 3.95, 4050, -10 +5},
+      { 4.43, 4200, -4}
+    };
+      
+    public static final double [][] FERRY_SHOT_VALUES = {
+      {0, 0, 0}
+    };
+
+    public static final FlywheelLookupTable SPEAKER_LOOKUP_TABLE = new FlywheelLookupTable(SPEAKER_SHOT_VALUES);
+
+    public static final FlywheelLookupTable FERRY_LOOKUP_TABLE = new FlywheelLookupTable(FERRY_SHOT_VALUES);
   }
 
   public static class FeederMap {
@@ -292,6 +325,6 @@ public class RobotMap {
     public static final int BLINKIN_PWM_PORT = 6;
     public static final boolean BLINKIN_PWM = true;
     public static final boolean BLINKIN_ON_SPARK = false;
-    public static final int NUMBER_LEDS = 43;
+    public static final int NUMBER_LEDS = 42;
   }
 }
