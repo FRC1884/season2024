@@ -128,11 +128,9 @@ public abstract class OperatorMap extends CommandMap {
         if (Config.Subsystems.CLIMBER_ENABLED) {
             Climber climber = Climber.getInstance();
             climber.setDefaultCommand(climber.run(this::getManualClimberAxis));
+            
+            //TODO: Manual control of climb sequence
 
-            getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
-            getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
-            getClimberLowerButton().whileTrue(Climber.getInstance().run(() -> -0.3));
-            getClimberLowerButton().onFalse(Climber.getInstance().run(() -> -0.0));
         }
     }
 
@@ -144,10 +142,8 @@ public abstract class OperatorMap extends CommandMap {
         if (Config.Subsystems.CLIMBER_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
             var pivot = Pivot.getInstance();
             var climber = Climber.getInstance();
-
-            getClimbSequenceButton()
-                    .whileTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(climber.run(() -> 0.3)));
-            getClimbSequenceButton().onFalse(climber.run(() -> -0.3));
+            
+            //TODO: Climb sequence goes hedre
         }
 
         if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
