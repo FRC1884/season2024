@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,25 +23,29 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.ClimberMap;
 import frc.robot.RobotMap.ShooterMap;
 
 public class Climber extends SubsystemBase {
     private static Climber instance;
-    private ProfiledPIDController leaderProfile;
-    private ProfiledPIDController followerProfile;
 
     public static Climber getInstance() {
         if(instance == null) instance = new Climber();
         return instance;
     }
 
+    private ProfiledPIDController leaderProfile, followerProfile;
     private CANSparkBase leaderMotor, followerMotor;
+    private Servo servo1, servo2;
+    private boolean lockState;
 
     private Climber() {
         setName("Climber");
+        var tab = Shuffleboard.getTab("Climber");
+        tab.add(this);
 
-        leaderMotor = new CANSparkMax(RobotMap.ClimberMap.MASTER_ID, MotorType.kBrushless);
-        followerMotor = new CANSparkMax(RobotMap.ClimberMap.SLAVE_ID, MotorType.kBrushless);
+        leaderMotor = new CANSparkMax(RobotMap.ClimberMap.LEADER_ID, MotorType.kBrushless);
+        followerMotor = new CANSparkMax(RobotMap.ClimberMap.FOLLOWER_ID, MotorType.kBrushless);
         var pidL = leaderMotor.getPIDController();
             pidL.setP(ShooterMap.FLYWHEEL_PID.kP);
             pidL.setI(ShooterMap.FLYWHEEL_PID.kI);
@@ -67,9 +72,24 @@ public class Climber extends SubsystemBase {
         followerMotor.burnFlash();
         //followerMotor.setInverted(true);
 
-        var tab = Shuffleboard.getTab("Climber");
+        servo1 = new Servo(ClimberMap.SERVO_ID_1);
+        servo2 = new Servo(ClimberMap.SERVO_ID_2);
 
-        tab.add(this);
+        lockState = false;
+    }
+
+    private void setPosition(double pos){
+        servo1.set(pos);
+        servo2.set(pos);
+    }
+
+    public Command toggleClimberLockStatusCommand() {
+
+        return Commands.runOnce(
+            () -> {
+                lockState = !lockState;
+            }
+        );
     }
 
     public Command run(DoubleSupplier power) {
@@ -97,10 +117,20 @@ public class Climber extends SubsystemBase {
         );
     }
 
+    @Override
+    public void periodic(){
+        if(lockState){
+            servo1.set(ClimberMap.TOP_VALUE);
+            servo2.set(ClimberMap.TOP_VALUE);
+        } else if (!lockState){
+            servo1.set(ClimberMap.LOCKED_VALUE);
+            servo2.set(ClimberMap.LOCKED_VALUE);
+        }
+    }
+
 
     @Override
     public void initSendable(SendableBuilder builder){
-        builder.addDoubleProperty("Climber Power", () -> leaderMotor.get(), (s) -> leaderMotor.set(s));
-
+        builder.addDoubleProperty("Climber Position", () -> servo1.get(), (s) -> setPosition(s));
     }
 }

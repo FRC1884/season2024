@@ -37,6 +37,11 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
+  JoystickButton getChangeClimberLockStatusButton(){
+    return controller.getButton(Button.BUTTON_EXTRA_3);
+  }
+
+  @Override
   double getManualPivotAxis() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
   }

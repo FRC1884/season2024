@@ -275,8 +275,8 @@ public class RobotMap {
   }
 
   public static class ClimberMap {
-    public static final int MASTER_ID = 16;
-    public static final int SLAVE_ID = 17;
+    public static final int LEADER_ID = 16;
+    public static final int FOLLOWER_ID = 17;
 
     public static final int LIMIT_SWITCH = 5;
 
@@ -286,20 +286,11 @@ public class RobotMap {
 
     public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(5, 10);
 
-    public enum Setpoints {
-      DOWN(0),
-      UP(1000);
+    public static final int SERVO_ID_1 = 1;
+    public static final int SERVO_ID_2 = 2;
 
-      private double ticks;
-
-      Setpoints(double ticks) {
-        this.ticks = ticks;
-      }
-
-      public double getTicks() {
-        return ticks;
-      }
-    }
+    public static final double TOP_VALUE = 1;
+    public static final double LOCKED_VALUE = 0;
   }
 
   public static class PivotMap {
