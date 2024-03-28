@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -45,7 +46,7 @@ public class Feeder extends SubsystemBase {
         super();
 
         if (Config.Subsystems.FEEDER_ENABLED) {
-            feeder = Optional.of(new CANSparkFlex(FeederMap.FEEDER, MotorType.kBrushless));
+            feeder = Optional.of(new CANSparkMax(FeederMap.FEEDER, MotorType.kBrushless));
 
             var motor = feeder.get();
             motor.setIdleMode(IdleMode.kBrake);

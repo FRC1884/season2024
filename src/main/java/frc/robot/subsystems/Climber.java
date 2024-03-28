@@ -78,9 +78,14 @@ public class Climber extends SubsystemBase {
         lockState = false;
     }
 
-    private void setPosition(double pos){
-        servo1.set(pos);
-        servo2.set(pos);
+
+    private void setPositions(double pos){
+        if(servo1.get() != pos){
+            servo1.set(pos);
+        }
+        if(servo2.get() != pos){
+            servo2.set(pos);
+        }
     }
 
     public Command toggleClimberLockStatusCommand() {
@@ -120,17 +125,15 @@ public class Climber extends SubsystemBase {
     @Override
     public void periodic(){
         if(lockState){
-            servo1.set(ClimberMap.TOP_VALUE);
-            servo2.set(ClimberMap.TOP_VALUE);
+            setPositions(ClimberMap.TOP_VALUE);
         } else if (!lockState){
-            servo1.set(ClimberMap.LOCKED_VALUE);
-            servo2.set(ClimberMap.LOCKED_VALUE);
+            setPositions(ClimberMap.LOCKED_VALUE);
         }
     }
 
 
     @Override
     public void initSendable(SendableBuilder builder){
-        builder.addDoubleProperty("Climber Position", () -> servo1.get(), (s) -> setPosition(s));
+        builder.addDoubleProperty("Climber Position", () -> servo1.get(), (s) -> setPositions(s));
     }
 }
