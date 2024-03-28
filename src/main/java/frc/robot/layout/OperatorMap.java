@@ -254,6 +254,8 @@ public abstract class OperatorMap extends CommandMap {
         // .andThen(lights.setNoteStatusCommand(getAmpAlignButton()::getAsBoolean))
         );
 
+        getIntakeButton().whileTrue(lights.setAlingmentNoteStatusCommand(feeder::isNoteLoaded).repeatedly());
+
         // will get canceled on both triggers until the rising edge is detected
         // lights.setDefaultCommand(lights.getCoOpPatternCommand());
         lights.setDefaultCommand(lights.setNoteStatusCommand(feeder::isNoteLoaded));

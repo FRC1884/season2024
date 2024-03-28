@@ -77,7 +77,7 @@ public class Vision extends SubsystemBase {
     limeLatency = 0.0;
 
     // Changes vision mode between limelight and photonvision for easy switching
-    if (VisionConfig.IS_LIMELIGHT_MODE) {
+    if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE) {
       // configure both limelights
       LimelightHelpers.setLEDMode_ForceOn(VisionConfig.POSE_LIMELIGHT);
       setLimelightPipeline(VisionConfig.POSE_LIMELIGHT, VisionConfig.APRILTAG_PIPELINE);
@@ -91,7 +91,7 @@ public class Vision extends SubsystemBase {
           VisionConfig.POSE_LIME_YAW);
     }
 
-    if (VisionConfig.IS_NEURAL_NET) {
+    if (VisionConfig.IS_NEURAL_NET_LIMELIGHT) {
         LimelightHelpers.setLEDMode_ForceOff(VisionConfig.NN_LIMELIGHT);
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
       }
@@ -142,7 +142,7 @@ public class Vision extends SubsystemBase {
             .getString("")
             .equals("");
       
-    if (VisionConfig.IS_LIMELIGHT_MODE && apriltagLimelightConnected) {
+    if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE && apriltagLimelightConnected) {
       jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
 
       estimatePose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
@@ -172,23 +172,25 @@ public class Vision extends SubsystemBase {
        * if only the first camera has a multi tag pose, use its estimate
        */
       if (result_1.getMultiTagResult().estimatedPose.isPresent){
+        System.out.println("!");
         photonTimestamp = result_1.getTimestampSeconds();
         Transform3d fieldToCamera = result_1.getMultiTagResult().estimatedPose.best;
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
         Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
         botPose = botPose3d.toPose2d();
-        photonHasTargets = true;
+        photon2HasTargets = false;
       }
       /* Case 2
        * if only the second camera has a multi tag pose, use its estimate
        */
       else if (result_2.getMultiTagResult().estimatedPose.isPresent){
+        System.out.println("!!");
         photonTimestamp = result_2.getTimestampSeconds();
         Transform3d fieldToCamera = result_2.getMultiTagResult().estimatedPose.best;
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_2_CAM_TO_ROBOT);
         Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
         botPose = botPose3d.toPose2d();
-        photonHasTargets = true;
+        photon1HasTargets = false;
       }
       /* Case 3
        * if both cameras have a single tag pose, use whichever camera is closer to the AprilTag
@@ -201,26 +203,27 @@ public class Vision extends SubsystemBase {
           Transform3d bestCameraToTarget1 = target_1.getBestCameraToTarget();
           Transform3d bestCameraToTarget2 = target_2.getBestCameraToTarget();
           
-          double target_1_distance = bestCameraToTarget1.getX();
-          double target_2_distance = bestCameraToTarget2.getX();
+          double target_1_distance = getTargetDistance(bestCameraToTarget1);
+          double target_2_distance = getTargetDistance(bestCameraToTarget2);
 
           if (target_1_distance < target_2_distance){
             photonTimestamp = result_1.getTimestampSeconds();
             Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
             Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget1, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
             botPose = currentPose3d.toPose2d();
-            photonHasTargets = true;
+            photon2HasTargets = false;
           }
           else {
             photonTimestamp = result_2.getTimestampSeconds();
             Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_2.getFiducialId()).get();
             Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget2, tagPose, VisionConfig.PHOTON_2_CAM_TO_ROBOT);
             botPose = currentPose3d.toPose2d();
-            photonHasTargets = true;
+            photon1HasTargets = false;
           }
          }
          else {
-          photonHasTargets = false;
+          photon1HasTargets = false;
+          photon2HasTargets = false;
          }
       }
       /* Case 4
@@ -234,13 +237,11 @@ public class Vision extends SubsystemBase {
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
           botPose = currentPose3d.toPose2d();
-          photonHasTargets = true;
         }
         else {
-          photonHasTargets = false;
+          photon1HasTargets = false;
         }
-      }
-      
+      }   
       else if (photon2HasTargets){
         PhotonTrackedTarget target_2 = result_2.getBestTarget();
         if (target_2.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
@@ -252,11 +253,12 @@ public class Vision extends SubsystemBase {
           photonHasTargets = true;
         }
         else {
-          photonHasTargets = false;
+          photon2HasTargets = false;
         }
       }
       else {
-        photonHasTargets = false;
+        photon1HasTargets = false;
+        photon2HasTargets = false;
       }
     } 
     
@@ -271,7 +273,6 @@ public class Vision extends SubsystemBase {
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
         Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
         botPose = botPose3d.toPose2d();
-        photonHasTargets = true;
       }
       else if (photon1HasTargets) {
         PhotonTrackedTarget target = result.getBestTarget();
@@ -282,20 +283,19 @@ public class Vision extends SubsystemBase {
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
           botPose = currentPose3d.toPose2d();
-          photonHasTargets = true;
         }
         else {
-          photonHasTargets = false;
+          photon1HasTargets = false;
         }
       }
       else {
-        photonHasTargets = false;
+        photon1HasTargets = false;
       }
     }
 
 
     //Does math to see where the note is
-    if (VisionConfig.IS_NEURAL_NET && NNLimelightConnected) {
+    if (VisionConfig.IS_NEURAL_NET_LIMELIGHT && NNLimelightConnected) {
       detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
       detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
       //var rrResults = detectJsonResults.targetingResults.targets_Retro[0];
@@ -361,7 +361,7 @@ public class Vision extends SubsystemBase {
    * @return boolean if photonvision has targets
    */
   public boolean photonHasTargets() {
-    return photonHasTargets|| photon1HasTargets;
+    return photon1HasTargets||photon2HasTargets;
   }
   
   /**
@@ -378,6 +378,13 @@ public class Vision extends SubsystemBase {
     return LimelightHelpers.getTargetPose2d_RobotSpace(VisionConfig.POSE_LIMELIGHT);
   }
 
+  /**
+   * @return 3D distance to tag
+   */
+  public double getTargetDistance(Transform3d robotToTarget) {
+    return Math.sqrt(Math.pow(robotToTarget.getX(),2) + Math.pow(robotToTarget.getY(),2) + Math.pow(robotToTarget.getZ(),2));
+  }
+
   // APRILTAG HELPER METHODS
 
   /**
@@ -392,7 +399,7 @@ public class Vision extends SubsystemBase {
    */
   public boolean isValidPose() {
     /* Disregard Vision if there are no targets in view */
-    if (VisionConfig.IS_LIMELIGHT_MODE) {
+    if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE) {
       return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
     }
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) {

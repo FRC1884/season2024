@@ -74,7 +74,7 @@ public class PoseEstimator extends SubsystemBase {
     updateOdometryEstimate(); // Updates using wheel encoder data only
     // Updates using the vision estimate
     Pose2d tempEstimatePose = Vision.getInstance().visionBotPose();
-    if (VisionConfig.IS_LIMELIGHT_MODE && tempEstimatePose != null
+    if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE && tempEstimatePose != null
         && (tempEstimatePose.getX() > VisionConfig.VISION_X_MAX_CUTOFF || tempEstimatePose.getX() < VisionConfig.VISION_X_MIN_CUTOFF)) { // Limelight mode
       if (isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
         double currentTimestamp = Vision.getInstance().getTimestampSeconds(Vision.getInstance().getTotalLatency());

@@ -7,17 +7,17 @@ import edu.wpi.first.math.util.Units;
 
 public class MaxSwerveConstants {
   public static final boolean INVERT_GYRO = false;
-  public static final double kMaxSpeedMetersPerSecond = 4.8;
+  public static final double kMaxSpeedMetersPerSecond = 4.8/3.0;
   public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-  public static final double kDirectionSlewRate = 1.2; // radians per second
+  public static final double kDirectionSlewRate = 2.2; // radians per second
   public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
   public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
   // Chassis configuration
-  public static final double kTrackWidth = Units.inchesToMeters(26.5);
+  public static final double kTrackWidth = 0.6 /*Units.inchesToMeters(26.5)*/;
   // Distance between centers of right and left wheels on robot
-  public static final double kWheelBase = Units.inchesToMeters(26.5);
+  public static final double kWheelBase = 0.6 /*Units.inchesToMeters(26.5)*/;
   // Distance between front and back wheels on robot
   public static final SwerveDriveKinematics kDriveKinematics =
       new SwerveDriveKinematics(
@@ -69,7 +69,7 @@ public class MaxSwerveConstants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 0.5;
+    public static final double kTurningP = 1.0;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;
@@ -79,7 +79,7 @@ public class MaxSwerveConstants {
     public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-    public static final int kDrivingMotorCurrentLimit = 50; // amps
+    public static final int kDrivingMotorCurrentLimit = 40; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
 

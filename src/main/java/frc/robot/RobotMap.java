@@ -118,10 +118,10 @@ public class RobotMap {
   public static class VisionConfig {
     public static final boolean DRIVER_CAMERA_ACTIVE = false;
     public static final boolean VISION_OVERRIDE_ENABLED = false;
-    public static final boolean IS_LIMELIGHT_MODE = true;
+    public static final boolean IS_LIMELIGHT_APRILTAG_MODE = false;
     public static final boolean IS_PHOTON_VISION_ENABLED = true;
-    public static final boolean IS_PHOTON_TWO_ENABLED = false;
-    public static final boolean IS_NEURAL_NET = true;
+    public static final boolean IS_PHOTON_TWO_ENABLED = true;
+    public static final boolean IS_NEURAL_NET_LIMELIGHT = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
 
@@ -183,7 +183,7 @@ public class RobotMap {
     public static final double CAM_2_Z = 0.3173; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
-    public static final double CAM_2_ROLL_RADIANS = 0.0; // camera Roll Radians
+    public static final double CAM_2_ROLL_RADIANS = Math.PI; // camera Roll Radians
     public static final double CAM_2_PITCH_RADIANS = 0.4887; // camera Pitch Radians
     public static final double CAM_2_YAW_RADIANS = Math.PI; // camera Yaw Radians
 
