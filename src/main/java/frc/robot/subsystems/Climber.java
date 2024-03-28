@@ -34,15 +34,48 @@ public class Climber extends SubsystemBase {
         return instance;
     }
 
+    private ProfiledPIDController leaderProfile, followerProfile;
+    private CANSparkBase leaderMotor, followerMotor;
     private Servo servo1, servo2;
+    private boolean lockState;
 
     private Climber() {
         setName("Climber");
         var tab = Shuffleboard.getTab("Climber");
         tab.add(this);
 
+        leaderMotor = new CANSparkMax(RobotMap.ClimberMap.LEADER_ID, MotorType.kBrushless);
+        followerMotor = new CANSparkMax(RobotMap.ClimberMap.FOLLOWER_ID, MotorType.kBrushless);
+        var pidL = leaderMotor.getPIDController();
+            pidL.setP(ShooterMap.FLYWHEEL_PID.kP);
+            pidL.setI(ShooterMap.FLYWHEEL_PID.kI);
+            pidL.setD(ShooterMap.FLYWHEEL_PID.kD);
+            pidL.setFF(ShooterMap.FLYWHEEL_FF);
+        var pidF = followerMotor.getPIDController();
+            pidF.setP(ShooterMap.FLYWHEEL_PID.kP);
+            pidF.setI(ShooterMap.FLYWHEEL_PID.kI);
+            pidF.setD(ShooterMap.FLYWHEEL_PID.kD);
+            pidF.setFF(ShooterMap.FLYWHEEL_FF);
+        leaderMotor.restoreFactoryDefaults();
+        followerMotor.restoreFactoryDefaults();
+
+        leaderMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        followerMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
+        leaderMotor.setSmartCurrentLimit(30);
+        followerMotor.setSmartCurrentLimit(30);
+
+        // leaderMotor.setInverted(false);
+
+        followerMotor.follow(leaderMotor, true);
+        leaderMotor.burnFlash();
+        followerMotor.burnFlash();
+        //followerMotor.setInverted(true);
+
         servo1 = new Servo(ClimberMap.SERVO_ID_1);
         servo2 = new Servo(ClimberMap.SERVO_ID_2);
+
+        lockState = false;
     }
 
     private void setPosition(double pos){
@@ -50,23 +83,49 @@ public class Climber extends SubsystemBase {
         servo2.set(pos);
     }
 
-    public Command positionUp() {
+    public Command toggleClimberLockStatusCommand() {
 
         return Commands.runOnce(
             () -> {
-                servo1.set(ClimberMap.TOP_VALUE);
-                servo2.set(ClimberMap.TOP_VALUE);
+                lockState = !lockState;
+            }
+        );
+    }
+
+    public Command run(DoubleSupplier power) {
+        return new InstantCommand(()->leaderMotor.set(power.getAsDouble()), this);
+    }
+
+    public SequentialCommandGroup alignSequence(){
+        return new SequentialCommandGroup(positionUp(), new WaitCommand(5), positionDown()); // TODO: Change for time it takes to bring climber all the way up
+    }
+
+    public Command positionUp() {
+        return Commands.runOnce(
+            () -> {
+                leaderProfile.setGoal(0); // TODO: Change value 0 to highest position the climber can reach
+                followerProfile.setGoal(0);
             }
         ); // TODO: Change value 0 to highest position the climber can reach
     }
-
     public Command positionDown() {
         return Commands.runOnce(
             () -> {
-                servo1.set(ClimberMap.LOCKED_VALUE);
-                servo2.set(ClimberMap.LOCKED_VALUE);
+                leaderProfile.setGoal(0); // TODO: Change value 0 to lowest position the climber can reach
+                followerProfile.setGoal(0); // TODO: Change value 0 to lowest position the climber can reach
             }
         );
+    }
+
+    @Override
+    public void periodic(){
+        if(lockState){
+            servo1.set(ClimberMap.TOP_VALUE);
+            servo2.set(ClimberMap.TOP_VALUE);
+        } else if (!lockState){
+            servo1.set(ClimberMap.LOCKED_VALUE);
+            servo2.set(ClimberMap.LOCKED_VALUE);
+        }
     }
 
 

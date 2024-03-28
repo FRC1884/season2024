@@ -90,6 +90,11 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
+  JoystickButton getChangeClimberLockStatusButton(){
+    return null;
+  }
+
+  @Override
   JoystickButton getFerryShotAlignButton() {
     return null;
   }

@@ -41,6 +41,8 @@ public abstract class OperatorMap extends CommandMap {
 
     abstract JoystickButton getClimbSequenceButton();
 
+    abstract JoystickButton getChangeClimberLockStatusButton();
+
     abstract double getManualPivotAxis();
 
     abstract double getManualClimberAxis();
@@ -129,8 +131,12 @@ public abstract class OperatorMap extends CommandMap {
             Climber climber = Climber.getInstance();
             climber.setDefaultCommand(climber.run(this::getManualClimberAxis));
             
-            //TODO: Manual control of climb sequence
+            getClimberRaiseButton().whileTrue(Climber.getInstance().run(() -> 0.3));
+            getClimberRaiseButton().onFalse(Climber.getInstance().run(() -> -0.0));
+            getClimberLowerButton().whileTrue(Climber.getInstance().run(() -> -0.3));
+            getClimberLowerButton().onFalse(Climber.getInstance().run(() -> -0.0));
 
+            getChangeClimberLockStatusButton().onTrue(climber.toggleClimberLockStatusCommand());
         }
     }
 
@@ -143,7 +149,9 @@ public abstract class OperatorMap extends CommandMap {
             var pivot = Pivot.getInstance();
             var climber = Climber.getInstance();
             
-            //TODO: Climb sequence goes hedre
+            getClimbSequenceButton()
+                    .whileTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(climber.run(() -> 0.3)));
+            getClimbSequenceButton().onFalse(climber.run(() -> -0.3));
         }
 
         if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.PIVOT_ENABLED) {

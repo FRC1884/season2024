@@ -275,12 +275,21 @@ public class RobotMap {
   }
 
   public static class ClimberMap {
-    
+    public static final int LEADER_ID = 16;
+    public static final int FOLLOWER_ID = 17;
+
+    public static final int LIMIT_SWITCH = 5;
+
+    public static final double P = 0.0003;
+    public static final double I = 0.0000008;
+    public static final double D = 0.0000006;
+
+    public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(5, 10);
+
     public static final int SERVO_ID_1 = 1;
     public static final int SERVO_ID_2 = 2;
 
     public static final double TOP_VALUE = 1;
-    public static final double RESTING_VALUE = 0.1;
     public static final double LOCKED_VALUE = 0;
   }
 
