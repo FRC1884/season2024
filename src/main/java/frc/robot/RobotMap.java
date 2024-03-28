@@ -124,6 +124,7 @@ public class RobotMap {
     public static final boolean IS_NEURAL_NET_LIMELIGHT = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
+    public static final int MOVING_AVG_TAPS = 5; //TODO: Change to optimum value
 
     public static final String DRIVER_CAM_STREAM = "http://drivercam.local:1182/stream.mjpg";    
 
@@ -147,9 +148,9 @@ public class RobotMap {
     public static final double POSE_LIME_YAW = 0.0;
 
     //THESE ARE ALL ROBOT RELATIVE (CENTER OF THE ROBOT IS THE ORIGIN)
-    public static final double NN_LIME_X = -0.308; // +X is forward on the robot
-    public static final double NN_LIME_Y = -0.300; // +Y is the the left of the robot
-    public static final double NN_LIME_Z = 0.497; // +Z is up
+    public static final double NN_LIME_X = -0.3969; // +X is forward on the robot
+    public static final double NN_LIME_Y = -0.19685; // +Y is the the left of the robot
+    public static final double NN_LIME_Z = 0.4325; // +Z is up
     public static final double NN_LIME_PITCH = -0.349;
     public static final double NN_LIME_ROLL = 0.0;
     public static final double NN_LIME_YAW = Math.PI;
@@ -159,7 +160,7 @@ public class RobotMap {
     public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y, new Rotation2d(-NN_LIME_YAW));
 
     // Photonvision
-    public static final double POSE_AMBIGUITY_CUTOFF = 0.2;
+    public static final double POSE_AMBIGUITY_CUTOFF = 0.25;
 
     public static final String POSE_PHOTON_1 = "photoncam-1";
     // Translation Values (location relative to robot center)

@@ -47,6 +47,7 @@ public class PoseEstimator extends SubsystemBase {
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
   private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
   private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
+  
 
   private PoseEstimator() {
     // config = new PoseConfig();

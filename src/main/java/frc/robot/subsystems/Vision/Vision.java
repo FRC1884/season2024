@@ -2,6 +2,7 @@ package frc.robot.subsystems.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,15 +33,12 @@ public class Vision extends SubsystemBase {
   private boolean NNLimelightConnected = false;
 
   private double photonTimestamp;
-  private double photonTimestamp2;
   private PhotonCamera photonCam_1;
   private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
 
   private PhotonCamera photonCam_2;
   private boolean photon2HasTargets;
-
-  private boolean photonHasTargets;
 
 
   // For Note detection in the future
@@ -53,6 +51,13 @@ public class Vision extends SubsystemBase {
   private Pose2d noteFieldRelativePose;
   private Pose2d noteRobotRelativePose;
   private ShuffleboardTab tab = Shuffleboard.getTab("Driver Cam");
+
+  //Pose Filtering
+  private Pose2d filteredVisionPose;
+  private LinearFilter xFilter; 
+  private LinearFilter yFilter; 
+  private LinearFilter thetaFilter; 
+  private boolean isBotPoseChanged;
 
   // testing
   private final DecimalFormat df = new DecimalFormat();
@@ -75,6 +80,12 @@ public class Vision extends SubsystemBase {
     targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
     limeLatency = 0.0;
+
+    // Creates Filters for x, y and Theta
+    xFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
+    yFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
+    thetaFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
+    isBotPoseChanged = false;
 
     // Changes vision mode between limelight and photonvision for easy switching
     if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE) {
@@ -101,7 +112,6 @@ public class Vision extends SubsystemBase {
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       //photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       photon1HasTargets = false;
-      photonHasTargets = false;
 
       try {
         aprilTagFieldLayout =
@@ -127,6 +137,7 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
+    isBotPoseChanged = false;
     /*Ensures empty json not fed to pipeline*/
     apriltagLimelightConnected =
         !NetworkTableInstance.getDefault()
@@ -153,6 +164,7 @@ public class Vision extends SubsystemBase {
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
         botPose = estimatePose;
+        isBotPoseChanged = true;
       }
     }
 
@@ -163,6 +175,7 @@ public class Vision extends SubsystemBase {
     // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
 
     if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_TWO_ENABLED) {
+
       var result_1 = photonCam_1.getLatestResult();
       photon1HasTargets = result_1.hasTargets();
 
@@ -178,6 +191,7 @@ public class Vision extends SubsystemBase {
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
         Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
         botPose = botPose3d.toPose2d();
+        isBotPoseChanged = true;
         photon2HasTargets = false;
       }
       /* Case 2
@@ -190,6 +204,7 @@ public class Vision extends SubsystemBase {
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_2_CAM_TO_ROBOT);
         Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
         botPose = botPose3d.toPose2d();
+        isBotPoseChanged = true;
         photon1HasTargets = false;
       }
       /* Case 3
@@ -211,6 +226,7 @@ public class Vision extends SubsystemBase {
             Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
             Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget1, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
             botPose = currentPose3d.toPose2d();
+            isBotPoseChanged = true;
             photon2HasTargets = false;
           }
           else {
@@ -218,6 +234,7 @@ public class Vision extends SubsystemBase {
             Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_2.getFiducialId()).get();
             Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget2, tagPose, VisionConfig.PHOTON_2_CAM_TO_ROBOT);
             botPose = currentPose3d.toPose2d();
+            isBotPoseChanged = true;
             photon1HasTargets = false;
           }
          }
@@ -237,6 +254,7 @@ public class Vision extends SubsystemBase {
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
           botPose = currentPose3d.toPose2d();
+          isBotPoseChanged = true;
         }
         else {
           photon1HasTargets = false;
@@ -250,7 +268,7 @@ public class Vision extends SubsystemBase {
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_2.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_2_CAM_TO_ROBOT);
           botPose = currentPose3d.toPose2d();
-          photonHasTargets = true;
+          isBotPoseChanged = true;
         }
         else {
           photon2HasTargets = false;
@@ -273,6 +291,7 @@ public class Vision extends SubsystemBase {
         Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
         Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
         botPose = botPose3d.toPose2d();
+        isBotPoseChanged = true;
       }
       else if (photon1HasTargets) {
         PhotonTrackedTarget target = result.getBestTarget();
@@ -283,6 +302,7 @@ public class Vision extends SubsystemBase {
           Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
           Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
           botPose = currentPose3d.toPose2d();
+          isBotPoseChanged = true;
         }
         else {
           photon1HasTargets = false;
@@ -293,6 +313,13 @@ public class Vision extends SubsystemBase {
       }
     }
 
+
+    // Filtering x, y and theta
+    if(isBotPoseChanged){
+      filteredVisionPose = new Pose2d(xFilter.calculate(botPose.getX()), 
+                                      yFilter.calculate(botPose.getY()), 
+                                      Rotation2d.fromDegrees(thetaFilter.calculate(botPose.getRotation().getDegrees())));
+    }
 
     //Does math to see where the note is
     if (VisionConfig.IS_NEURAL_NET_LIMELIGHT && NNLimelightConnected) {
@@ -325,6 +352,7 @@ public class Vision extends SubsystemBase {
       }
     }
 
+  
   }
 
   /**
@@ -432,6 +460,11 @@ public class Vision extends SubsystemBase {
 
   public Pose2d visionBotPose() {
     return botPose;
+  }
+
+  public Pose2d getFilterVisionPose(){
+    return filteredVisionPose;
+
   }
 
   /**

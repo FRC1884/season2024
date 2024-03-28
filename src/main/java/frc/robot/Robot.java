@@ -2,7 +2,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +27,8 @@ public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private final Field2d m_field = new Field2d();
   private SendableChooser<Command> autoChooser;
+  private ShuffleboardTab tab = Shuffleboard.getTab("Odometry Data");
+  private GenericEntry visionFilterEntry = tab.add("Vision Filter Overide", false).getEntry();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -69,14 +74,20 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     if(Config.Subsystems.DRIVETRAIN_ENABLED) {
-      // UNTESTED GLASS TELEMETRY CODE - MAY RESULT IN NULL POINTERS
       m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
       m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
       m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
-    }
+    }  
     if (Vision.getInstance().getNotePose2d() != null){
       m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
+      
     }
+
+    if (visionFilterEntry.getBoolean(false)){
+      m_field.getObject("Filtered Vision Pose").setPose(Vision.getInstance().getFilterVisionPose());
+    }
+    
+
   }
 
   /**
