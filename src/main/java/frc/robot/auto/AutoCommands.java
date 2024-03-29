@@ -1,5 +1,6 @@
 package frc.robot.auto;
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -47,9 +48,9 @@ public class AutoCommands {
                                 () -> lookupTable.get(poseEstimator.getDistanceToPose(getTarget.get().getTranslation()))
                                                 .getRPM()));
 
-                NamedCommands.registerCommand("Pivot", pivot.updatePosition(
-                                () -> lookupTable.get(poseEstimator.getDistanceToPose(getTarget.get().getTranslation()))
-                                                .getAngle()));
+                NamedCommands.registerCommand("LowerPivot", pivot.updatePosition(() -> 1.0));
+
+                NamedCommands.registerCommand("RaisePivot", pivot.run(pivot::getDefaultCommand));
 
                 NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
                                 new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD),
