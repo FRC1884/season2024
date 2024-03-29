@@ -63,16 +63,6 @@ public abstract class OperatorMap extends CommandMap {
 
     abstract JoystickButton getCoopButton();
 
-    abstract JoystickButton getLEDPatternOneButton();
-
-    abstract JoystickButton getLEDPatternTwoButton();
-
-    abstract JoystickButton getLEDPatternThreeButton();
-
-    abstract JoystickButton getLEDPatternFourButton();
-
-    abstract JoystickButton getLEDPatternFiveButton();
-
     abstract JoystickButton getLEDPatternOffButton();
 
     abstract Trigger getPivotRaiseButton();

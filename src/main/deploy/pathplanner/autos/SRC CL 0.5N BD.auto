@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.445,
+      "y": 2.05
+    },
+    "rotation": 179.99469134034814
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SRCStart-5CLNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5CLNote-Bulldoze.1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "SRCStart",
+  "choreoAuto": true
+}

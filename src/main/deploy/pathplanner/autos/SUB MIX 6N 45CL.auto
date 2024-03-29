@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.33,
+      "y": 5.55
+    },
+    "rotation": 179.99469134034814
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MSWStart-TWNote.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TWNote-MWNote.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MWNote-BWNote.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BWNote-45CLNoteVI"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4CLNoteVI.1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4CLNote-SWLShot.1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SWLShot-45CLNoteVI"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5CLNoteVI.1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5CLNote-SWLShot.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "SUBStart",
+  "choreoAuto": true
+}

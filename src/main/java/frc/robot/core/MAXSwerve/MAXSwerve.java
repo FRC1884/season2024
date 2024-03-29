@@ -102,6 +102,9 @@ public abstract class MAXSwerve extends SubsystemBase {
         this.bl = bl;
         this.br = br;
 
+        //Zero Gyro
+        zeroGyroYaw();
+
         odometry = new SwerveDriveOdometry(
                 MaxSwerveConstants.kDriveKinematics,
                 getYawRot2d(),
@@ -130,14 +133,12 @@ public abstract class MAXSwerve extends SubsystemBase {
     }
 
     public Rotation2d getYawRot2d() {
-        // TODO Auto-generated method stub
         return (MaxSwerveConstants.INVERT_GYRO)
                 ? Rotation2d.fromDegrees(360 - getGyroYawDegrees())
                 : Rotation2d.fromDegrees(getGyroYawDegrees());
     }
 
     public double getGyroYawDegrees() {
-        // TODO Auto-generated method stub
         switch (RobotMap.DriveMap.GYRO_TYPE) {
             case NAVX:
                 return -Double.valueOf(((AHRS) gyro).getYaw()); //Must be negative to CCW is positive

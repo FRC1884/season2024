@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,6 +41,7 @@ public class PoseEstimator extends SubsystemBase {
 
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Drivetrain drivetrain;
+  //private final KalmanFilter<N1, N1, N1> visionKalmanFilter;
 
   private ShuffleboardTab tab = Shuffleboard.getTab("Odometry Data");
   private GenericEntry xPoseDiffEntry = tab.add("XOdom Diff", 0).getEntry();
@@ -68,6 +71,9 @@ public class PoseEstimator extends SubsystemBase {
                 PoseConfig.kVisionStdDevX,
                 PoseConfig.kVisionStdDevY,
                 PoseConfig.kVisionStdDevTheta));
+    
+    //Kalman vision filter
+    //visionKalmanFilter = new KalmanFilter<>(Nat.N1(), Nat.N2(), Nat.N3(), );
   }
 
   @Override

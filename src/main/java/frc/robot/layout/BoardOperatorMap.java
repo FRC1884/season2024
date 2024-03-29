@@ -62,33 +62,8 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getLEDPatternOneButton() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getLEDPatternTwoButton() {
-    return controller.getButton(Button.BUTTON_B);
-  }
-
-  @Override
   JoystickButton getLEDPatternOffButton() {
     return controller.getButton(Button.BUTTON_EXTRA_2);
-  }
-
-  @Override
-  JoystickButton getLEDPatternThreeButton() {
-    return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  JoystickButton getLEDPatternFourButton() {
-    return controller.getButton(Button.BUTTON_Y);
-  }
-
-  @Override
-  JoystickButton getLEDPatternFiveButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_10);
   }
 
   @Override

@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.445,
+      "y": 7.34
+    },
+    "rotation": 179.99469134034814
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AMPStart-1CLNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1CLNote-Bulldoze.1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "AMPStart",
+  "choreoAuto": true
+}

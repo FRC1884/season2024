@@ -121,6 +121,7 @@ public class RobotMap {
     public static final boolean IS_LIMELIGHT_APRILTAG_MODE = false;
     public static final boolean IS_PHOTON_VISION_ENABLED = true;
     public static final boolean IS_PHOTON_TWO_ENABLED = true;
+    public static final boolean IS_PHOTON_THREE_ENABLED = true;
     public static final boolean IS_NEURAL_NET_LIMELIGHT = true;
     public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
                                                                   // estimate
@@ -165,7 +166,7 @@ public class RobotMap {
     public static final String POSE_PHOTON_1 = "photoncam-1";
     // Translation Values (location relative to robot center)
     public static final double CAM_1_X = 0.30726; // Forward: camera To Robot XMeters
-    public static final double CAM_1_Y = -0.17780; // Left: camera To Robot YMeters
+    public static final double CAM_1_Y = 0.17780 + 0.0127; // Left: camera To Robot YMeters
     public static final double CAM_1_Z = 0.156; // Up: camera To Robot ZMeters
 
     // Rotation mounting angles (roll-pitch-yaw) in RADIANS
@@ -191,6 +192,22 @@ public class RobotMap {
 
     public static final Transform3d PHOTON_2_ROBOT_TO_CAM = new Transform3d(CAM_2_X, CAM_2_Y, CAM_2_Z, new Rotation3d(CAM_2_ROLL_RADIANS, CAM_2_PITCH_RADIANS, CAM_2_YAW_RADIANS));
     public static final Transform3d PHOTON_2_CAM_TO_ROBOT = new Transform3d(-CAM_2_X, -CAM_2_Y, -CAM_2_Z, new Rotation3d(-CAM_2_ROLL_RADIANS, -CAM_2_PITCH_RADIANS, -CAM_2_YAW_RADIANS)); 
+
+    // Photonvision
+    public static final String POSE_PHOTON_3 = "laser-cam";
+
+    // Translation Values (location relative to robot center)
+    public static final double CAM_3_X = 0.30726; // Forward: camera To Robot XMeters
+    public static final double CAM_3_Y = - 0.17780 + 0.0254; // Left: camera To Robot YMeters
+    public static final double CAM_3_Z = 0.156; // Up: camera To Robot ZMeters
+
+    // Rotation mounting angles (roll-pitch-yaw) in RADIANS
+    public static final double CAM_3_ROLL_RADIANS = 0; // camera Roll Radians
+    public static final double CAM_3_PITCH_RADIANS = 0.191986; // camera Pitch Radians
+    public static final double CAM_3_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
+
+    public static final Transform3d PHOTON_3_ROBOT_TO_CAM = new Transform3d(CAM_3_X, CAM_3_Y, CAM_3_Z, new Rotation3d(CAM_3_ROLL_RADIANS, CAM_3_PITCH_RADIANS, CAM_3_YAW_RADIANS));
+    public static final Transform3d PHOTON_3_CAM_TO_ROBOT = new Transform3d(-CAM_3_X, -CAM_3_Y, -CAM_3_Z, new Rotation3d(-CAM_3_ROLL_RADIANS, -CAM_3_PITCH_RADIANS, -CAM_3_YAW_RADIANS)); 
 
   }
 

@@ -57,35 +57,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getLEDPatternOneButton() {
-    return null;
-  }
-
-  @Override
-  JoystickButton getLEDPatternTwoButton() {
-    return null;
-  }
-
-  @Override
   JoystickButton getLEDPatternOffButton() {
-    return null;
-  }
-
-  @Override
-  JoystickButton getLEDPatternThreeButton() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  JoystickButton getLEDPatternFourButton() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  JoystickButton getLEDPatternFiveButton() {
-    // TODO Auto-generated method stub
     return null;
   }
 

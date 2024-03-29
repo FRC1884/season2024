@@ -1,8 +1,12 @@
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -13,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.PoseEstimator;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.auto.AutoCommands;
 
@@ -50,14 +56,14 @@ public class Robot extends TimedRobot {
       enableLiveWindowInTest(true);
 
     SmartDashboard.putData("field", m_field);
+    
     if(Config.Subsystems.DRIVETRAIN_ENABLED){
-      Drivetrain.getInstance().zeroGyroYaw();
       PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose()); 
     }
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    PoseEstimator.getInstance().setEstimatedPose(Drivetrain.getInstance().getPose());
+    //PoseEstimator.getInstance().setEstimatedPose(Drivetrain.getInstance().getPose());
   }
 
   public Command getAutonomousCommand() {
@@ -106,9 +112,25 @@ public class Robot extends TimedRobot {
 
     var autonomousCommand = getAutonomousCommand();
 
-      if(autonomousCommand != null){
+      // Supplier<Pose2d> getTarget = () -> DriverStation.getAlliance().isPresent()
+      // && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+      // ? RobotMap.Coordinates.BLUE_SPEAKER
+      // : RobotMap.Coordinates.RED_SPEAKER;
+
+      if(autonomousCommand != null) {
         autonomousCommand.schedule();
-        
+        // if(Config.Subsystems.DRIVETRAIN_ENABLED && Config.Subsystems.PIVOT_ENABLED) {
+        //   Pivot pivot = Pivot.getInstance();
+        //   pivot.setDefaultCommand(pivot.updatePosition(
+        //     () -> RobotMap.ShooterMap.SPEAKER_LOOKUP_TABLE.get(PoseEstimator.getInstance().getDistanceToPose(getTarget.get().getTranslation()))
+        //       .getAngle()));
+        // }
+        // if(Config.Subsystems.DRIVETRAIN_ENABLED && Config.Subsystems.SHOOTER_ENABLED) {
+        //   Shooter shooter = Shooter.getInstance();
+        //   shooter.setDefaultCommand(shooter.setFlywheelVelocityCommand(
+        //     () -> RobotMap.ShooterMap.SPEAKER_LOOKUP_TABLE.get(PoseEstimator.getInstance().getDistanceToPose(getTarget.get().getTranslation()))
+        //       .getRPM()));
+        // }
       }
     //Drivetrain.getInstance().setGyroYaw(180);
   }
