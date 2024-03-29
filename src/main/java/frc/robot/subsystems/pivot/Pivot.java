@@ -1,0 +1,101 @@
+package frc.robot.subsystems.pivot;
+
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.Config;
+import frc.robot.RobotMap.PivotMap;
+
+import java.util.function.Supplier;
+
+
+public class Pivot extends ProfiledPIDSubsystem {
+    private static Pivot instance;
+
+    public static Pivot getInstance() {
+        if (instance == null) instance = new Pivot();
+        return instance;
+    }
+
+    private final PivotHardware hardware = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+        case SINGLE_ACTUATOR -> SingleActuatorPivot.getInstance();
+        case DUAL_ACTUATOR -> DualActuatorPivot.getInstance();
+        case NONE -> SimPivot.getInstance();
+    };
+
+    private Pivot() {
+        super(new ProfiledPIDController(PivotMap.kP, PivotMap.kI, PivotMap.kD, PivotMap.PROFILE_CONSTRAINTS));
+
+        m_controller.setIZone(PivotMap.kIZone);
+        m_controller.setTolerance(PivotMap.POSITION_TOLERANCE, PivotMap.VELOCITY_TOLERANCE);
+
+        var tab = Shuffleboard.getTab("Pivot");
+        tab.add(this);
+
+        setGoal(0);
+        enable();
+    }
+
+    @Override
+    protected void useOutput(double v, TrapezoidProfile.State state) {
+        var feedforward = 0; // pivotFeedforward.calculate(state.position, state.velocity);
+
+        hardware.setVoltage(v + feedforward);
+    }
+
+    @Override
+    protected double getMeasurement() {
+        return hardware.getEncoderPosition();
+    }
+
+    public boolean isAtGoal() {
+        return getController().atGoal();
+    }
+
+    public void setPosition(double setpoint) {
+        if (setpoint < PivotMap.LOWER_SETPOINT_LIMIT && setpoint > PivotMap.UPPER_SETPOINT_LIMIT)
+            getController().setGoal(setpoint);
+    }
+
+    public Command setPositionCommand(Supplier<Double> setpoint) {
+        return new RunCommand(() -> setPosition(setpoint.get()));
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.addDoubleProperty("goal", () -> getController().getSetpoint().position, this::setPosition);
+        builder.addDoubleProperty("encoder", this::getMeasurement, (s) -> {
+        });
+
+        builder.addDoubleProperty("kP", m_controller::getP, m_controller::setP);
+        builder.addDoubleProperty("kI", m_controller::getI, m_controller::setI);
+        builder.addDoubleProperty("kD", m_controller::getD, m_controller::setD);
+        builder.addDoubleProperty("kIZone", m_controller::getIZone, m_controller::setIZone);
+
+        builder.addDoubleProperty("max velo", () -> m_controller.getConstraints().maxVelocity,
+                (v) -> m_controller.setConstraints(new TrapezoidProfile.Constraints(v, m_controller.getConstraints().maxAcceleration)));
+        builder.addDoubleProperty("max accel", () -> m_controller.getConstraints().maxAcceleration,
+                (v) -> m_controller.setConstraints(new TrapezoidProfile.Constraints(m_controller.getConstraints().maxVelocity, v)));
+
+        builder.addDoubleProperty("forward limit", hardware::getForwardLimit, hardware::setForwardLimit);
+        builder.addDoubleProperty("reverse limit", hardware::getReverseLimit, hardware::setReverseLimit);
+
+        builder.addBooleanProperty("Zero Pivot", () -> false, (b) -> {
+            if (b) hardware.zeroEncoder();
+        });
+
+        builder.addBooleanProperty("at goal", this::isAtGoal, null);
+        builder.addDoubleProperty("target V", () -> getController().calculate(getMeasurement()), null);
+    }
+}

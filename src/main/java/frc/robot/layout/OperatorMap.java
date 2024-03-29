@@ -3,12 +3,12 @@ package frc.robot.layout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.core.MAXSwerve.MAXSwerve;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.*;
@@ -18,6 +18,8 @@ import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.PivotMap;
 import frc.robot.RobotMap.ShooterMap;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.util.ActionSetpoint;
 import frc.robot.util.FlywheelLookupTable;
 
@@ -140,7 +142,7 @@ public abstract class OperatorMap extends CommandMap {
             var climber = Climber.getInstance();
             
             getClimbSequenceButton()
-                    .whileTrue(pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(climber.run(() -> 0.3)));
+                    .whileTrue(pivot.setPositionCommand(() -> PivotMap.PIVOT_AMP_ANGLE).andThen(climber.run(() -> 0.3)));
             getClimbSequenceButton().onFalse(climber.run(() -> -0.3));
         }
 
@@ -148,15 +150,15 @@ public abstract class OperatorMap extends CommandMap {
 
             Shooter shooter = Shooter.getInstance();
             Pivot pivot = Pivot.getInstance();
-            getSubwooferShotButton().onTrue(pivot.updatePosition(() -> ActionSetpoint.SUBWOOFER_SHOT.getAngle()));
+            getSubwooferShotButton().onTrue(pivot.setPositionCommand(() -> ActionSetpoint.SUBWOOFER_SHOT.getAngle()));
             getSubwooferShotButton()
                     .onTrue(shooter.setFlywheelVelocityCommand(() -> ActionSetpoint.SUBWOOFER_SHOT.getRPM()));
-            getPodiumShotButton().onTrue(pivot.updatePosition(() -> ActionSetpoint.PODIUM_SHOT.getAngle()));
+            getPodiumShotButton().onTrue(pivot.setPositionCommand(() -> ActionSetpoint.PODIUM_SHOT.getAngle()));
             getPodiumShotButton().onTrue(shooter.setFlywheelVelocityCommand(() -> ActionSetpoint.PODIUM_SHOT.getRPM()));
-            getSubwooferShotButton().onFalse(pivot.updatePosition(() -> 0.0));
-            getSubwooferShotButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
-            getPodiumShotButton().onFalse(pivot.updatePosition(() -> 0.0));
-            getPodiumShotButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0));
+            getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> 0.0));
+            getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
+            getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> 0.0));
+            getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
 
         }
 
@@ -182,41 +184,51 @@ public abstract class OperatorMap extends CommandMap {
                     .get(poseEstimator.getDistanceToPose(speakerTarget.get().getTranslation()));
 
             getSpeakerShotAlignButton().whileTrue(
-                    pivot.updatePosition(() -> getSpeakerActionSetpoint.get().getAngle())
+                    pivot.setPositionCommand(() -> getSpeakerActionSetpoint.get().getAngle())
                             .alongWith(
                                     shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
 
             getSpeakerShotAlignButton()
-                    .onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+                    .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
 
             Supplier<ActionSetpoint> getFerryActionSetpoint = () -> ferryLookupTable.get(poseEstimator.getDistanceToPose(ferryTarget.get().getTranslation()));
             
             getFerryShotAlignButton().whileTrue(
-                    pivot.updatePosition(() -> getFerryActionSetpoint.get().getAngle())
+                    pivot.setPositionCommand(() -> getFerryActionSetpoint.get().getAngle())
                             .alongWith(
                                     shooter.setFlywheelVelocityCommand(() -> getFerryActionSetpoint.get().getRPM())
                             ));
 
-            getFerryShotAlignButton().onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+            getFerryShotAlignButton().onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
             getAmpAlignButton().onTrue(
-                    pivot.updatePosition(() -> PivotMap.PIVOT_AMP_ANGLE)
+                    pivot.setPositionCommand(() -> PivotMap.PIVOT_AMP_ANGLE)
                             .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED))
                             );
 
             getAmpAlignButton()
-                    .onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+                    .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
-            getStageAlignButton().onTrue(pivot.updatePosition(() -> PivotMap.PIVOT_TRAP_ANGLE)
+            getStageAlignButton().onTrue(pivot.setPositionCommand(() -> PivotMap.PIVOT_TRAP_ANGLE)
                     .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
             getStageAlignButton()
-                    .onFalse(shooter.setFlywheelVelocityCommand(() -> 0.0).alongWith(pivot.updatePosition(() -> -1.0)));
+                    .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
                 
 
 
             // getEjectButton().whileTrue(new InstantCommand(() ->
             // feeder.setFeederState(FeederDirection.REVERSE)).alongWith(intake.se));
+
+            // TODO: Make a button mapped to this
+            var shooterIntakeCommand = new ParallelCommandGroup(
+                new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.REVERSE)),
+                shooter.setFlywheelVelocityCommand(() -> ShooterMap.SHOOTER_INTAKE_SPEED),
+                    pivot.setPositionCommand(() -> PivotMap.PIVOT_INTAKE_ANGLE)
+            ).until(() -> Feeder.getInstance().isNoteLoaded() && !Feeder.getInstance().getUpperBeamBreak())
+                    .andThen(new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED)))
+                    .andThen(shooter.stopFlywheelCommand())
+                    .andThen(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
         }
 
     }
@@ -225,8 +237,8 @@ public abstract class OperatorMap extends CommandMap {
         if (Config.Subsystems.PIVOT_ENABLED) {
             Pivot pivot = Pivot.getInstance();
 
-            getPivotRaiseButton().onTrue(pivot.updatePosition(() -> (PivotMap.PIVOT_AMP_ANGLE + 40.0)));
-            getPivotLowerButton().onTrue(pivot.updatePosition(() -> -1.0));
+            getPivotRaiseButton().onTrue(pivot.setPositionCommand(() -> (PivotMap.PIVOT_AMP_ANGLE)));
+            getPivotLowerButton().onTrue(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
         }
     }
 

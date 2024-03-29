@@ -3,6 +3,7 @@ package frc.robot;
 import frc.robot.core.util.controllers.BoardController;
 import frc.robot.core.util.controllers.ButtonMap;
 import frc.robot.core.util.controllers.Xbox;
+import frc.robot.subsystems.pivot.PivotHardware;
 
 public class Config {
 
@@ -13,6 +14,9 @@ public class Config {
         // TODO: check if this actually works
         public static final boolean VISION_ENABLED = true;
         public static final boolean PIVOT_ENABLED = true;
+
+        public static final PivotHardware.PivotHardwareType PIVOT_HARDWARE_TYPE = PivotHardware.PivotHardwareType.SINGLE_ACTUATOR;
+
         public static final boolean INTAKE_ENABLED = true;
         public static final boolean FEEDER_ENABLED = true;
 

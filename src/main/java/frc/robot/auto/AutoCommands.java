@@ -3,13 +3,10 @@ package frc.robot.auto;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import frc.robot.Config;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.ShooterMap;
@@ -17,15 +14,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Feeder.FeederDirection;
 import frc.robot.util.FlywheelLookupTable;
 import frc.robot.subsystems.PoseEstimator;
 
-import java.sql.Driver;
 import java.util.function.Supplier;
 
 public class AutoCommands {
@@ -55,7 +50,7 @@ public class AutoCommands {
                                 () -> lookupTable.get(poseEstimator.getDistanceToPose(getTarget.get().getTranslation()))
                                                 .getRPM()));
 
-                NamedCommands.registerCommand("Pivot", pivot.updatePosition(
+                NamedCommands.registerCommand("Pivot", pivot.setPositionCommand(
                                 () -> lookupTable.get(poseEstimator.getDistanceToPose(getTarget.get().getTranslation()))
                                                 .getAngle()));
 

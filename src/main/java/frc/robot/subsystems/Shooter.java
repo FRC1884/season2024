@@ -111,6 +111,16 @@ public class Shooter extends SubsystemBase {
 
     }
 
+    public void setFlywheelVelocity(double v) {
+        leadVel = v;
+        followVel = v;
+    }
+
+    public void stopFlywheel() {
+        leadVel = 0;
+        followVel = 0;
+    }
+
     public Command setFlywheelVelocityCommand(Supplier<Double> v) {
         return new RunCommand(
                 () -> {
