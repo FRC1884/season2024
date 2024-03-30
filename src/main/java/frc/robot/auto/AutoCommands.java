@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
@@ -14,10 +15,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Feeder.FeederDirection;
+import frc.robot.subsystems.Intake.IntakeDirection;
 import frc.robot.util.FlywheelLookupTable;
 import frc.robot.subsystems.PoseEstimator;
 
@@ -38,13 +41,26 @@ public class AutoCommands {
                 Shooter shooter = Shooter.getInstance();
                 Feeder feeder = Feeder.getInstance();
                 Drivetrain drivetrain = Drivetrain.getInstance();
+                Vision vision = Vision.getInstance();
+                Intake intake = Intake.getInstance();
 
                 NamedCommands.registerCommand("Print", Commands.print("woo something happened"));
 
                 NamedCommands.registerCommand("Intake", new IntakeUntilLoadedCommand());
 
-                NamedCommands.registerCommand("Intake To Shooter", new SequentialCommandGroup(new IntakeUntilLoadedCommand(), new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD),
-                                                Feeder.getInstance())));
+                NamedCommands.registerCommand("Feed On", new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD),
+                                                Feeder.getInstance()));
+
+                NamedCommands.registerCommand("Feed Off", new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED),
+                                                Feeder.getInstance()));
+
+                NamedCommands.registerCommand("Intake On", new InstantCommand(() -> intake.setIntakeState(IntakeDirection.FORWARD),
+                                                Intake.getInstance()));
+
+                NamedCommands.registerCommand("Intake Off", new InstantCommand(() -> intake.setIntakeState(IntakeDirection.STOPPED),
+                                                Intake.getInstance()));
+
+                
 
                 NamedCommands.registerCommand("SpoolShooter", shooter.setFlywheelVelocityCommand(
                                 () -> lookupTable.get(poseEstimator.getDistanceToPose(getTarget.get().getTranslation()))
@@ -57,12 +73,12 @@ public class AutoCommands {
                 NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
                                 new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD),
                                                 Feeder.getInstance()),
-                                new WaitCommand(0.3),
+                                new WaitCommand(0.5),
                                 new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED),
                                                 Feeder.getInstance())));
 
-                NamedCommands.registerCommand("VisionIntake", new IntakeUntilLoadedCommand()
-                                .raceWith(Vision.getInstance().PIDtoNoteRobotRelativeCommand()));
+                NamedCommands.registerCommand("VisionIntake", vision.PIDtoNoteRobotRelativeCommand()
+                        .until(drivetrain::isPastCenterline));
 
                 NamedCommands.registerCommand("SpeakerAlign", new SequentialCommandGroup(
                         new RepeatCommand(new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(() -> getTarget.get())).

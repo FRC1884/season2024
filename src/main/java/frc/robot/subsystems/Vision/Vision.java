@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -33,6 +34,7 @@ public class Vision extends SubsystemBase {
   private boolean apriltagLimelightConnected = false;
   private boolean NNLimelightConnected = false;
 
+
   private double photonTimestamp;
   private PhotonCamera photonCam_1;
   private boolean photon1HasTargets;
@@ -44,6 +46,9 @@ public class Vision extends SubsystemBase {
   private PhotonCamera photonCam_3;
   private boolean photon3HasTargets;
 
+  private int primaryAprilTagID;
+  private int primaryCameraNum;
+
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
   private double detectVerticalOffset = 0;
@@ -53,14 +58,14 @@ public class Vision extends SubsystemBase {
   private Pose2d targetRobotRelativePose;
   private Pose2d noteFieldRelativePose;
   private Pose2d noteRobotRelativePose;
-  private ShuffleboardTab tab = Shuffleboard.getTab("Driver Cam");
+  private ShuffleboardTab tab = Shuffleboard.getTab("Vision Data");
 
   //Pose Filtering
   private Pose2d filteredVisionPose;
   private LinearFilter xFilter; 
   private LinearFilter yFilter; 
   private LinearFilter thetaFilter; 
-  private boolean isBotPoseChanged;
+  private boolean isVisionEstimatePoseChanged;
 
   // testing
   private final DecimalFormat df = new DecimalFormat();
@@ -74,6 +79,8 @@ public class Vision extends SubsystemBase {
 
   // TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
   private Vision() {
+    primaryAprilTagID = -1;
+    primaryCameraNum = -1;
     setName("Vision");
     botPose = new Pose2d();
     estimatePose = new Pose2d();
@@ -88,7 +95,7 @@ public class Vision extends SubsystemBase {
     xFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
     yFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
     thetaFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
-    isBotPoseChanged = false;
+    isVisionEstimatePoseChanged = false;
 
     // Changes vision mode between limelight and photonvision for easy switching
     if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE) {
@@ -143,11 +150,16 @@ public class Vision extends SubsystemBase {
 
     // printing purposes
     df.setMaximumFractionDigits(2);
+
+    ShuffleboardTab visionTab = Shuffleboard.getTab("Vision Subsystem");
+    visionTab.add(this);
   }
 
   @Override
   public void periodic() {
-    isBotPoseChanged = false;
+    isVisionEstimatePoseChanged = false;
+    primaryAprilTagID = -1;
+    primaryCameraNum = -1;
     /*Ensures empty json not fed to pipeline*/
     apriltagLimelightConnected =
         !NetworkTableInstance.getDefault()
@@ -174,192 +186,17 @@ public class Vision extends SubsystemBase {
             LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
                 + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
         botPose = estimatePose;
-        isBotPoseChanged = true;
+        isVisionEstimatePoseChanged = true;
       }
     }
-
-    // Photonvision Result
-    // The documentation for this is here:
-    // https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
-    // The example code was missing, and we came up with this: 
-    // NOTE - PHOTONVISON GIVES POSES WITH BLUE ALLIANCE AS THE ORIGN ALWAYS!!!
-
-    if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_TWO_ENABLED) {
-
-      var result_1 = photonCam_1.getLatestResult();
-      photon1HasTargets = result_1.hasTargets();
-
-      var result_2 = photonCam_2.getLatestResult();
-      photon2HasTargets = result_2.hasTargets();
-
-      var result_3 = new PhotonPipelineResult();
-      if (VisionConfig.IS_PHOTON_THREE_ENABLED){
-        result_3 = photonCam_3.getLatestResult();
-        photon3HasTargets = result_3.hasTargets();
-      }
-
-      /* Case 1
-       * if only the first camera has a multi tag pose, use its estimate
-       */
-      if (VisionConfig.IS_PHOTON_THREE_ENABLED && result_3.getMultiTagResult().estimatedPose.isPresent){
-        photonTimestamp = result_3.getTimestampSeconds();
-        Transform3d fieldToCamera = result_3.getMultiTagResult().estimatedPose.best;
-        Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_3_CAM_TO_ROBOT);
-        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
-        botPose = botPose3d.toPose2d();
-        isBotPoseChanged = true;
-        photon2HasTargets = false;
-        photon1HasTargets = false;
-      }
-       else if (result_1.getMultiTagResult().estimatedPose.isPresent){
-        photonTimestamp = result_1.getTimestampSeconds();
-        Transform3d fieldToCamera = result_1.getMultiTagResult().estimatedPose.best;
-        Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
-        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
-        botPose = botPose3d.toPose2d();
-        isBotPoseChanged = true;
-        photon2HasTargets = false;
-        photon3HasTargets = false;
-      }
-      /* Case 2
-       * if only the second camera has a multi tag pose, use its estimate
-       */
-      else if (result_2.getMultiTagResult().estimatedPose.isPresent){
-        photonTimestamp = result_2.getTimestampSeconds();
-        Transform3d fieldToCamera = result_2.getMultiTagResult().estimatedPose.best;
-        Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_2_CAM_TO_ROBOT);
-        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
-        botPose = botPose3d.toPose2d();
-        isBotPoseChanged = true;
-        photon1HasTargets = false;
-        photon3HasTargets = false;
-      }
-      /* Case 3
-       * if both cameras have a single tag pose, use whichever camera is closer to the AprilTag
-       */
-      else if (photon1HasTargets && photon2HasTargets){
-         PhotonTrackedTarget target_1 = result_1.getBestTarget();
-         PhotonTrackedTarget target_2 = result_2.getBestTarget();
-
-         if (target_1.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF && target_2.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF) {
-          Transform3d bestCameraToTarget1 = target_1.getBestCameraToTarget();
-          Transform3d bestCameraToTarget2 = target_2.getBestCameraToTarget();
-          
-          double target_1_distance = getTargetDistance(bestCameraToTarget1);
-          double target_2_distance = getTargetDistance(bestCameraToTarget2);
-
-          if (target_1_distance < target_2_distance){
-            photonTimestamp = result_1.getTimestampSeconds();
-            Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
-            Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget1, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
-            botPose = currentPose3d.toPose2d();
-            isBotPoseChanged = true;
-            photon2HasTargets = false;
-            photon3HasTargets = false;
-          }
-          else {
-            photonTimestamp = result_2.getTimestampSeconds();
-            Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_2.getFiducialId()).get();
-            Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget2, tagPose, VisionConfig.PHOTON_2_CAM_TO_ROBOT);
-            botPose = currentPose3d.toPose2d();
-            isBotPoseChanged = true;
-            photon1HasTargets = false;
-            photon3HasTargets = false;
-          }
-         }
-         else {
-          photon1HasTargets = false;
-          photon2HasTargets = false;
-         }
-      }
-      /* Case 4
-       * if only the first camera has a single tag pose, use it if it is below a certain ambuguity threshold
-       */
-      else if (photon1HasTargets){
-        PhotonTrackedTarget target_1 = result_1.getBestTarget();
-        if (target_1.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
-          photonTimestamp = result_1.getTimestampSeconds();
-          Transform3d bestCameraToTarget = target_1.getBestCameraToTarget();
-          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_1.getFiducialId()).get();
-          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
-          botPose = currentPose3d.toPose2d();
-          isBotPoseChanged = true;
-        }
-        else {
-          photon1HasTargets = false;
-        }
-      }   
-      else if (photon2HasTargets){
-        PhotonTrackedTarget target_2 = result_2.getBestTarget();
-        if (target_2.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
-          photonTimestamp = result_2.getTimestampSeconds();
-          Transform3d bestCameraToTarget = target_2.getBestCameraToTarget();
-          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_2.getFiducialId()).get();
-          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_2_CAM_TO_ROBOT);
-          botPose = currentPose3d.toPose2d();
-          isBotPoseChanged = true;
-        }
-        else {
-          photon2HasTargets = false;
-        }
-      }
-      else if (photon3HasTargets){
-        PhotonTrackedTarget target_3 = result_3.getBestTarget();
-        if (target_3.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
-          photonTimestamp = result_1.getTimestampSeconds();
-          Transform3d bestCameraToTarget = target_3.getBestCameraToTarget();
-          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target_3.getFiducialId()).get();
-          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_3_CAM_TO_ROBOT);
-          botPose = currentPose3d.toPose2d();
-          isBotPoseChanged = true;
-        }
-        else {
-          photon3HasTargets = false;
-        }
-      } 
-      else {
-        photon1HasTargets = false;
-        photon2HasTargets = false;
-        photon3HasTargets = false;
-      }
-    } 
     
-    //Case if there is only one PhotonVision Camera connected
-    else if (!VisionConfig.IS_PHOTON_TWO_ENABLED && VisionConfig.IS_PHOTON_VISION_ENABLED) {
-      var result = photonCam_1.getLatestResult();
-      photon1HasTargets = result.hasTargets();
-
-      if (result.getMultiTagResult().estimatedPose.isPresent){
-        photonTimestamp = result.getTimestampSeconds();
-        Transform3d fieldToCamera = result.getMultiTagResult().estimatedPose.best;
-        Transform3d fieldCamToRobot = fieldToCamera.plus(VisionConfig.PHOTON_1_CAM_TO_ROBOT);
-        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
-        botPose = botPose3d.toPose2d();
-        isBotPoseChanged = true;
-      }
-      else if (photon1HasTargets) {
-        PhotonTrackedTarget target = result.getBestTarget();
-        if (target.getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF){
-          photonTimestamp = result.getTimestampSeconds();
-
-          Transform3d bestCameraToTarget = target.getBestCameraToTarget();
-          Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
-          Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, VisionConfig.PHOTON_1_CAM_TO_ROBOT);
-          botPose = currentPose3d.toPose2d();
-          isBotPoseChanged = true;
-        }
-        else {
-          photon1HasTargets = false;
-        }
-      }
-      else {
-        photon1HasTargets = false;
-      }
+    Pose2d latestVisionPose = getCameraPrioritizedPose();
+    if(latestVisionPose != null){
+      botPose = latestVisionPose;
     }
-
 
     // Filtering x, y and theta
-    if(isBotPoseChanged){
+    if(isVisionEstimatePoseChanged){
       filteredVisionPose = new Pose2d(xFilter.calculate(botPose.getX()), 
                                       yFilter.calculate(botPose.getY()), 
                                       Rotation2d.fromDegrees(thetaFilter.calculate(botPose.getRotation().getDegrees())));
@@ -399,6 +236,88 @@ public class Vision extends SubsystemBase {
   
   }
 
+  public Pose2d getCameraPrioritizedPose(){
+    Pose2d newBotPose = null;
+
+    PhotonPipelineResult[] cameras = {photonCam_3.getLatestResult(), 
+                                      photonCam_1.getLatestResult(), 
+                                      photonCam_2.getLatestResult()
+                                    };
+    
+    Transform3d[] camToRobotArray = {VisionConfig.PHOTON_3_CAM_TO_ROBOT, VisionConfig.PHOTON_1_CAM_TO_ROBOT, VisionConfig.PHOTON_2_CAM_TO_ROBOT};
+    PhotonPipelineResult selectedCameraResult = null;
+    double lowestAmbiguity = 1;
+    int chosenCameraNum = 0;
+    boolean bestCaseIsMultiTag = false;
+
+    // go through the cameras and select the one with multi target and lowest ambiguity
+    for(int i = 0; i < cameras.length; i++){
+      if (cameras[i] != null && cameras[i].hasTargets()) { // if the camera is enabled and has a target, consider it
+        if (cameras[i].getMultiTagResult().estimatedPose.isPresent && // if the camera has a multi tag pose
+            cameras[i].getBestTarget().getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF) { // and the ambiguity is low enough
+            
+              // Get the ambiguity value of the camera
+              double ambiguity = cameras[i].getBestTarget().getPoseAmbiguity();
+              // Check if the ambiguity value is lower than the current lowest ambiguity
+              
+              if (ambiguity < lowestAmbiguity) {
+                // Update the selected camera and lowest ambiguity value
+                selectedCameraResult = cameras[i];
+                lowestAmbiguity = ambiguity;
+                bestCaseIsMultiTag = true;
+                chosenCameraNum = i;
+              }
+            }
+          }
+        }
+
+      //if we didn't get a camera with a multi tag pose, we will use the camera with the lowest ambiguity
+      if (selectedCameraResult == null){
+        for (PhotonPipelineResult camera : cameras) {
+          if (camera != null && camera.hasTargets()) { // if the camera is enabled and has a target, consider it
+            if (camera.getBestTarget().getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF) { // the ambiguity is low enough
+                
+                  // Get the ambiguity value of the camera
+                  double ambiguity = camera.getBestTarget().getPoseAmbiguity();
+                  // Check if the ambiguity value is lower than the current lowest ambiguity
+                  
+                  if (ambiguity < lowestAmbiguity) {
+                    // Update the selected camera and lowest ambiguity value
+                    selectedCameraResult = camera;
+                    lowestAmbiguity = ambiguity;
+                  }
+                }
+              }
+            }
+      }
+
+    // if a camera has been selected, we will use it to get the pose
+    if (selectedCameraResult != null){
+      photonTimestamp = selectedCameraResult.getTimestampSeconds();
+      PhotonTrackedTarget target = selectedCameraResult.getBestTarget();
+
+      if (bestCaseIsMultiTag) {
+        Transform3d fieldToCamera = selectedCameraResult.getMultiTagResult().estimatedPose.best;
+        Transform3d fieldCamToRobot = fieldToCamera.plus(camToRobotArray[chosenCameraNum]);
+        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
+        newBotPose = botPose3d.toPose2d();
+      } 
+      else {
+        Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+        Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
+        Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, 
+                            camToRobotArray[chosenCameraNum]); // this needs to be universalized, right now is fixed to photon 3
+        newBotPose = currentPose3d.toPose2d();
+      }
+
+      isVisionEstimatePoseChanged = true;
+      primaryAprilTagID = target.getFiducialId();
+      if(chosenCameraNum == 0) primaryCameraNum = 3; else if(chosenCameraNum == 1) primaryCameraNum = 1; else primaryCameraNum = 2;
+    }
+    return newBotPose;
+  }
+
+
   /**
    * 
    * @return whether the limelight currently sees a game piece
@@ -433,7 +352,14 @@ public class Vision extends SubsystemBase {
    * @return boolean if photonvision has targets
    */
   public boolean photonHasTargets() {
-    return photon1HasTargets||photon2HasTargets;
+    return photon1HasTargets||photon2HasTargets||photon3HasTargets;
+  }
+
+  /**
+   * @return boolean if bot pose has changed due to vision in the last refresh of periodic
+   */
+  public boolean isVisionEstimatePoseChanged(){
+    return isVisionEstimatePoseChanged;
   }
   
   /**
@@ -463,7 +389,7 @@ public class Vision extends SubsystemBase {
    * @return if vision should be trusted more than estimated pose
    */
   public boolean visionAccurate(Pose2d currentPose) {
-    return isValidPose() && (isInMap(currentPose) || multipleTargetsInView());
+    return isVisionEstimatePoseChanged && isInMap(currentPose);
   }
 
   /**
@@ -632,5 +558,71 @@ public class Vision extends SubsystemBase {
    */
   public Command PIDtoNoteRobotRelativeCommand(){
     return Drivetrain.getInstance().chasePoseRobotRelativeCommand(this::getRobotRelativeNotePose2d);
+  }
+
+  public int isTarget1(){
+    if (photon1HasTargets){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
+  public int isTarget2(){
+    if (photon2HasTargets){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
+  public int isTarget3(){
+    if (photon3HasTargets){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
+  public int isEstimate(){
+    if (isVisionEstimatePoseChanged){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
+  public int hasValidTargetsInt(){
+    if (photonHasTargets()){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    super.initSendable(builder);
+    builder.addBooleanProperty("Has valid AprilTag targets", () -> photonHasTargets(), null);
+    builder.addBooleanProperty("Has Vision Pose changed", () -> isVisionEstimatePoseChanged(), null);
+
+    builder.addBooleanProperty("cam 1 front has targets", () -> photon1HasTargets, null);
+    builder.addBooleanProperty("cam 2 back has targets", () -> photon2HasTargets, null);
+    builder.addBooleanProperty("cam 3 front laser has targets", () -> photon3HasTargets, null);
+    // integer for Graphing
+    builder.addIntegerProperty("Has valid AprilTag targets - int", () -> hasValidTargetsInt(), null);
+    builder.addIntegerProperty("Has Vision Pose changed - int", () -> isEstimate(), null);
+
+    builder.addIntegerProperty("cam 1 front has targets - int", () -> isTarget1(), null);
+    builder.addIntegerProperty("cam 2 back has targets - int", () -> isTarget2(), null);
+    builder.addIntegerProperty("cam 3 front laser has targets - int", () -> isTarget3(), null);
+    
+    builder.addIntegerProperty("Primary Tag Used For Odometry", ()->primaryAprilTagID, null);
+    builder.addIntegerProperty("Primary Camera Used For Odometry", ()->primaryCameraNum, null);
+    
+
+    
+
   }
 }

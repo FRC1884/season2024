@@ -94,6 +94,8 @@ public class RobotMap {
         public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
         public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
         public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
+        public static final double X_CENTERLINE_LIMIT_RED = 8.275 - 0.10;
+        public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 + 0.10;
     }
 
     public static class TankDriveMap {
@@ -163,12 +165,12 @@ public class RobotMap {
         public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y, new Rotation2d(-NN_LIME_YAW));
 
         // Photonvision
-        public static final double POSE_AMBIGUITY_CUTOFF = 0.25;
+        public static final double POSE_AMBIGUITY_CUTOFF = 0.18;
 
         public static final String POSE_PHOTON_1 = "photoncam-1";
         // Translation Values (location relative to robot center)
         public static final double CAM_1_X = 0.30726; // Forward: camera To Robot XMeters
-        public static final double CAM_1_Y = 0.17780 + 0.0127; // Left: camera To Robot YMeters
+        public static final double CAM_1_Y = - 0.17780 - 0.0127; // Left: camera To Robot YMeters
         public static final double CAM_1_Z = 0.156; // Up: camera To Robot ZMeters
 
         // Rotation mounting angles (roll-pitch-yaw) in RADIANS
@@ -200,12 +202,12 @@ public class RobotMap {
 
         // Translation Values (location relative to robot center)
         public static final double CAM_3_X = 0.30726; // Forward: camera To Robot XMeters
-        public static final double CAM_3_Y = -0.17780 + 0.0254; // Left: camera To Robot YMeters
+        public static final double CAM_3_Y = - 0.17780 + 0.0254; // Left: camera To Robot YMeters
         public static final double CAM_3_Z = 0.156; // Up: camera To Robot ZMeters
 
         // Rotation mounting angles (roll-pitch-yaw) in RADIANS
         public static final double CAM_3_ROLL_RADIANS = 0; // camera Roll Radians
-        public static final double CAM_3_PITCH_RADIANS = 0.191986; // camera Pitch Radians
+        public static final double CAM_3_PITCH_RADIANS = 0.174533; // camera Pitch Radians
         public static final double CAM_3_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
         public static final Transform3d PHOTON_3_ROBOT_TO_CAM = new Transform3d(CAM_3_X, CAM_3_Y, CAM_3_Z, new Rotation3d(CAM_3_ROLL_RADIANS, CAM_3_PITCH_RADIANS, CAM_3_YAW_RADIANS));

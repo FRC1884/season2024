@@ -49,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Config;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
@@ -73,6 +74,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     private ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain Debugging");
     GenericEntry targetAngleEntry = tab.add("Target Angle", 0).getEntry();
     GenericEntry currentAngleEntry = tab.add("Current Angle", 0).getEntry();
+    GenericEntry pastCenterLine = tab.add("Past centerline", false).getEntry();
     private double targetAngleTelemetry = 0;
 
     SwerveDriveOdometry odometry;
@@ -102,8 +104,6 @@ public abstract class MAXSwerve extends SubsystemBase {
         this.bl = bl;
         this.br = br;
 
-        //Zero Gyro
-        zeroGyroYaw();
 
         odometry = new SwerveDriveOdometry(
                 MaxSwerveConstants.kDriveKinematics,
@@ -171,6 +171,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         //resetOdometry(PoseEstimator.getInstance().getPosition()); //NEEDS MORE TESTING
         targetAngleEntry.setDouble(targetAngleTelemetry);
         currentAngleEntry.setDouble(getHeading() % 360);
+        pastCenterLine.setBoolean(isPastCenterline());
     }
 
     public SwerveModulePosition[] getModulePositions() {
@@ -581,19 +582,16 @@ public abstract class MAXSwerve extends SubsystemBase {
      * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
      *
      * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+     * @param limitReached a Boolean supplier that can cancel the command
      * @return command to PID align to a pose that is ROBOT RELATIVE
      */
-    public Command chasePoseRobotRelativeCommand(Supplier<Pose2d> target) {
+    public Command chasePoseRobotRelativeCommand(Supplier<Pose2d> target, BooleanSupplier limitReached) {
         TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
-        TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
-        //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
 
         ProfiledPIDController xController = new ProfiledPIDController(0.5, 0, 0, X_CONSTRAINTS);
-        ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0, Y_CONSTRAINTS);
         PIDController omegaPID = new PIDController(0.01, 0, 0);
 
-        xController.setTolerance(0.10);
-        yController.setTolerance(0.03);
+        xController.setTolerance(0.05);
         omegaPID.setTolerance(1.5);
         omegaPID.enableContinuousInput(-180, 180);
 
@@ -605,9 +603,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                         () -> {
 
                             double xSpeed = xController.calculate(0, target.get().getX());
-                            double ySpeed = yController.calculate(0, target.get().getY());
                             double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
-
                             this.drive(xSpeed, 0, omegaSpeed, false, true);
                         },
 
@@ -618,7 +614,50 @@ public abstract class MAXSwerve extends SubsystemBase {
                         },
 
                         () -> {
-                            return omegaPID.atSetpoint() && xController.atGoal() && yController.atGoal();
+                            return limitReached.getAsBoolean() || omegaPID.atSetpoint() && xController.atGoal();
+                        },
+                        this), Set.of(this)
+        );
+    }
+
+    /**
+     * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
+     *
+     * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+     * @return command to PID align to a pose that is ROBOT RELATIVE
+     */
+    public Command chasePoseRobotRelativeCommand(Supplier<Pose2d> target) {
+        //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+
+        PIDController xController = new PIDController(0.5, 0, 0);
+        PIDController omegaPID = new PIDController(0.01, 0, 0);
+
+        xController.setTolerance(0.5);
+        omegaPID.setTolerance(1.5);
+        omegaPID.enableContinuousInput(-180, 180);
+
+        return new DeferredCommand(() ->
+                new FunctionalCommand(
+                        () -> {
+                            // Init
+                        },
+                        () -> {
+
+                            double xSpeed = xController.calculate(0, target.get().getX());
+                            double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
+
+                            this.drive(xSpeed, 0, omegaSpeed, false, true);
+                        },
+
+                        interrupted -> {
+                            this.drive(0, 0, 0, false, true);
+                            omegaPID.close();
+                            xController.close();
+                            System.out.println("Aligned now");
+                        },
+
+                        () -> {
+                            return omegaPID.atSetpoint() && xController.atSetpoint();
                         },
                         this), Set.of(this)
         );
@@ -644,6 +683,25 @@ public abstract class MAXSwerve extends SubsystemBase {
     //     return navigate(getPose(), "NoNote");
     //   }
     // }
+
+    public boolean isPastCenterline(){
+        double xLimit = 0;
+        if(DriverStation.getAlliance().isPresent()){
+            if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
+                xLimit = Coordinates.X_CENTERLINE_LIMIT_BLUE;
+            }
+            else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
+                xLimit = Coordinates.X_CENTERLINE_LIMIT_RED;
+            }
+        }
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
+            return this.getPose().getX() > xLimit;
+        }
+        else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
+            return this.getPose().getX() < xLimit;
+        }
+        return false;
+    }   
 
     /**
      * Sets the wheels into an X formation to prevent movement.

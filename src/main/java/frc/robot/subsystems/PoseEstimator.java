@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -20,6 +21,9 @@ import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Vision.Vision;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 import java.util.function.Supplier;
 
@@ -47,6 +51,8 @@ public class PoseEstimator extends SubsystemBase {
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
   private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
   private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
+
+  private final DecimalFormat df = new DecimalFormat();
   
 
   private PoseEstimator() {
@@ -71,6 +77,10 @@ public class PoseEstimator extends SubsystemBase {
     
     //Kalman vision filter
     //visionKalmanFilter = new KalmanFilter<>(Nat.N1(), Nat.N2(), Nat.N3(), );
+
+     //poseEstimatePoseEntry = tab.addStringArray("Pose Estimator Pose", ).getEntry();
+    ShuffleboardTab poseEstimatorTab = Shuffleboard.getTab("PoseEstimator Subsystem");
+    poseEstimatorTab.add(this);
   }
 
   @Override
@@ -92,13 +102,15 @@ public class PoseEstimator extends SubsystemBase {
         addVisionMeasurement(tempEstimatePose, photonTimestamp);
         aprilTagTelemEntry.setBoolean(true);
       }
+      else{
+        aprilTagTelemEntry.setBoolean(false);
+      }
+
       if (enableVisionOverride.getBoolean(false)){
         addVisionMeasurement(tempEstimatePose, photonTimestamp);
         aprilTagTelemEntry.setBoolean(true);
       }
-      else{
-        aprilTagTelemEntry.setBoolean(false);
-      }
+      
     }
 
     //UNTESTED - ALWAYS SETS DRIVETRAIN ODOMETRY TO THE POSE-ESTIMATOR ODOMETRY
@@ -132,7 +144,6 @@ public class PoseEstimator extends SubsystemBase {
 
     double targetVectorLength = currentTranslation.getDistance(targetCoordinate.getTranslation());
     rToSpeaker.setDouble(targetVectorLength);
-
   }
   
   public Double getDistanceToPose(Translation2d pose) {
@@ -143,10 +154,15 @@ public class PoseEstimator extends SubsystemBase {
         return getPosition().getTranslation().getDistance(pose.get());
   }
 
+  // public Supplier<Double[]> doubleArrayPose(){
+  //   Supplier<Double[]> poseArray = () -> {BigDecimal.round(getPosition().getX()), getPosition().getY(), getPosition().getRotation().getDegrees()};
+  //   return poseArray;
+  // }
+
   /**
    * Helper method for comparing vision pose against odometry pose. Does not account for difference
-   * in rotation. Will return false vision if it sees no targets or if the vision estimated pose is
-   * too far from the odometry estimate
+   * in rotation. Will return false vision if there no targets or if the vision estimated pose is
+   * outside of field
    *
    * @return whether or not pose should be added to estimate or not
    */
@@ -283,6 +299,22 @@ public class PoseEstimator extends SubsystemBase {
 
   public Command tempResetOdometryCOmmand(){
     return new InstantCommand(() -> resetPoseEstimate(new Pose2d(2, 5.52, new Rotation2d(0))));
+  }
+
+  public int addedVisionMeasurement(){
+    if (aprilTagTelemEntry.getBoolean(false)){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    super.initSendable(builder);
+    builder.addBooleanProperty("Added vision measurement", () -> aprilTagTelemEntry.getBoolean(false), null);
+    builder.addIntegerProperty("Added vision measurement - int", () -> addedVisionMeasurement(), null);
   }
   
 }

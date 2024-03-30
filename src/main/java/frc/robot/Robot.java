@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
@@ -17,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision.Vision;
@@ -58,6 +59,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("field", m_field);
     
     if(Config.Subsystems.DRIVETRAIN_ENABLED){
+       //Zero Gyro
+      Drivetrain.getInstance().zeroGyroYaw();
       PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose()); 
     }
 
@@ -93,7 +96,13 @@ public class Robot extends TimedRobot {
       m_field.getObject("Filtered Vision Pose").setPose(Vision.getInstance().getFilterVisionPose());
     }
     
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+      m_field.getObject("target pose").setPose(pose);
+    });
 
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      m_field.getObject("path").setPoses(poses);
+    });
   }
 
   /**

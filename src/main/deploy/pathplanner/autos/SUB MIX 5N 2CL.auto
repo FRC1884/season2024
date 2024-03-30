@@ -5,7 +5,7 @@
       "x": 1.33,
       "y": 5.55
     },
-    "rotation": 179.99469134034814
+    "rotation": -179.99469134034814
   },
   "command": {
     "type": "sequential",
@@ -40,44 +40,25 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "race",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "MSWStart-BWNote.1"
-                            }
-                          }
-                        ]
+                        "name": "Intake On"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "Feed On"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "MSWStart-BWNote.1"
                       }
                     },
                     {
                       "type": "race",
                       "data": {
                         "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
-                          },
                           {
                             "type": "path",
                             "data": {
@@ -88,21 +69,9 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
                       "type": "race",
                       "data": {
                         "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
-                          },
                           {
                             "type": "path",
                             "data": {
@@ -113,40 +82,57 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
-                        "pathName": "TWNote-12CLNoteVI.1"
-                      }
-                    },
-                    {
-                      "type": "race",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "VisionIntake"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "2CLNote-AWLShot.1"
+                        "pathName": "TWNote-1CLNote.1"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "Feed Off"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "1CLNote-AWLShot.1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed On"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.4
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed Off"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "2CLNoteVI.1"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.4
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake Off"
                       }
                     }
                   ]
