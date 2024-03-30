@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -38,7 +37,8 @@ public class Feeder extends SubsystemBase {
 
     private Optional<CANSparkBase> feeder;
     private Optional<SparkPIDController> feedPID;
-    private Optional<DigitalInput> beamBreak;
+    private Optional<DigitalInput> lowerBeamBreak;
+    private Optional<DigitalInput> upperBeamBreak;
 
     private double feedVel;
 
@@ -64,20 +64,26 @@ public class Feeder extends SubsystemBase {
 
             motor.burnFlash();
 
-            var tab = Shuffleboard.getTab("Feeder");
-
-            tab.add(this);
-
-            beamBreak = Optional.of(new DigitalInput(FeederMap.BEAMBREAK));
+            lowerBeamBreak = Optional.of(new DigitalInput(FeederMap.LOWER_BEAMBREAK));
+            upperBeamBreak = Optional.of(new DigitalInput(FeederMap.UPPER_BEAMBREAK));
         } else {
             feeder = Optional.empty();
             feedPID = Optional.empty();
-            beamBreak = Optional.empty();
+            lowerBeamBreak = Optional.empty();
+            upperBeamBreak = Optional.empty();
         }
+
+        var tab = Shuffleboard.getTab("Feeder");
+
+        tab.add(this);
     }
 
     public boolean isNoteLoaded() {
-        return beamBreak.isPresent() ? !beamBreak.get().get() : true;
+        return status == NoteStatus.LOADED;
+    }
+
+    public boolean getUpperBeamBreak() {
+        return upperBeamBreak.isPresent() ? upperBeamBreak.get().get() : false;
     }
 
     public void setFeederState(FeederDirection direction) {
@@ -90,7 +96,6 @@ public class Feeder extends SubsystemBase {
         } else if (direction == FeederDirection.REVERSE) {
             feedVel = FeederMap.FEEDER_RPM * -1;
         }
-
     }
 
     private void updateSpeed() {
@@ -103,7 +108,7 @@ public class Feeder extends SubsystemBase {
 
     @Override
     public void periodic() {
-        status = (beamBreak.isPresent() && beamBreak.get().get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
+        status = (lowerBeamBreak.isPresent() && lowerBeamBreak.get().get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
         // System.out.println("Beambreak " + ((beamBreak.isPresent() ? beamBreak.get().get() : false) ? "TRUE" : "FALSE or OFF"));
         updateSpeed();
     }
@@ -116,8 +121,12 @@ public class Feeder extends SubsystemBase {
         builder.addDoubleProperty("feeder velocity", () -> feedVel, (v) -> feedVel = v);
         builder.addDoubleProperty("real feeder velo",
                 () -> feeder.map(canSparkBase -> canSparkBase.getEncoder().getVelocity()).orElse(0.0),
-                (d) -> {}
+                (d) -> {
+                }
         );
         builder.addBooleanProperty("has note", this::isNoteLoaded, null);
+        builder.addBooleanProperty("upper beam break", this::getUpperBeamBreak, null);
+
+        builder.addStringProperty("status", () -> status.toString(), null);
     }
 }
