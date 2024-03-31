@@ -175,8 +175,8 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     // 8.308467, 1.442593 and 1.451102
     // botPose
-    if(frc.robot.Config.Subsystems.DRIVETRAIN_ENABLED){
-    distanceToTag = Math.sqrt(Math.pow(8.308467 + Drivetrain.getInstance().getPose().getY(), 2) + (Math.pow(1.442593 + Drivetrain.getInstance().getPose().getX(), 2) + (Math.pow(1.451102, 2))));}
+    // TODO: Change photonCam_1 to different Cam numbers while testing
+    distanceToTag = getTargetDistance(photonCam_1.getLatestResult().getBestTarget().getBestCameraToTarget());
     tempCutOff = visionAmbiguity.getDouble(0.0);
 
     /*Ensures empty json not fed to pipeline*/
@@ -415,8 +415,8 @@ public class Vision extends SubsystemBase {
   /**
    * @return 3D distance to tag
    */
-  public double getTargetDistance(Transform3d robotToTarget) {
-    return Math.sqrt(Math.pow(robotToTarget.getX(),2) + Math.pow(robotToTarget.getY(),2) + Math.pow(robotToTarget.getZ(),2));
+  public double getTargetDistance(Transform3d cameraToTarget) {
+    return Math.sqrt(Math.pow(botPose.getX() + cameraToTarget.getX(),2) + Math.pow(botPose.getY() + cameraToTarget.getY(),2) + Math.pow(0.0 + cameraToTarget.getZ(),2));
   }
 
   // APRILTAG HELPER METHODS
