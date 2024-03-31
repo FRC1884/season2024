@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -118,7 +120,6 @@ public class RobotMap {
         public static final int DRIVER_JOYSTICK = 0;
         public static final int OPERATOR_JOYSTICK = 1;
     }
-
     public static class VisionConfig {
         public static final boolean DRIVER_CAMERA_ACTIVE = false;
         public static final boolean VISION_OVERRIDE_ENABLED = false;
@@ -165,7 +166,7 @@ public class RobotMap {
         public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y, new Rotation2d(-NN_LIME_YAW));
 
         // Photonvision
-        public static final double POSE_AMBIGUITY_CUTOFF = 0.18;
+        public static final double  POSE_AMBIGUITY_CUTOFF = 0.1;
 
         public static final String POSE_PHOTON_1 = "photoncam-1";
         // Translation Values (location relative to robot center)

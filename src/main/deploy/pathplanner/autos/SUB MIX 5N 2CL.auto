@@ -5,7 +5,7 @@
       "x": 1.33,
       "y": 5.55
     },
-    "rotation": -179.99469134034814
+    "rotation": 179.99469134034814
   },
   "command": {
     "type": "sequential",
@@ -34,7 +34,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
+                        "waitTime": 1.5
                       }
                     },
                     {
@@ -50,35 +50,45 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "MSWStart-BWNote.1"
                       }
                     },
                     {
-                      "type": "race",
+                      "type": "path",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "BWNote-MWNote.1"
-                            }
-                          }
-                        ]
+                        "pathName": "BWNote-MWNote.1"
                       }
                     },
                     {
-                      "type": "race",
+                      "type": "path",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "MWNote-TWNote.1"
-                            }
-                          }
-                        ]
+                        "pathName": "MWNote-TWNote.1"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed Off"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -90,7 +100,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Feed Off"
+                        "name": "VisionIntake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -115,18 +131,6 @@
                       "type": "named",
                       "data": {
                         "name": "Feed Off"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "2CLNoteVI.1"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.4
                       }
                     },
                     {

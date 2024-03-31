@@ -34,7 +34,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
+                        "waitTime": 1.5
                       }
                     },
                     {
@@ -64,7 +64,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "MSWStart-1CLNote.1"
+                        "pathName": "MSWStart-12CLNoteVI.1"
                       }
                     },
                     {

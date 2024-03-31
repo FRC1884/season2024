@@ -52,6 +52,11 @@ public class Vision extends SubsystemBase {
   private int primaryCameraNum;
   private double tempCutOff;
   private double ambiguityForCam;
+  private double ambiguityForCam1;
+  private double ambiguityForCam2;
+  private double ambiguityForCam3;
+  
+  private double distanceToTag;
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -84,8 +89,12 @@ public class Vision extends SubsystemBase {
 
   // TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
   private Vision() {
+    distanceToTag = -1;
     ambiguityForCam = -1;
-    tempCutOff = VisionConfig.POSE_AMBIGUITY_CUTOFF;
+    ambiguityForCam1 = -1;
+    ambiguityForCam2 = -1;
+    ambiguityForCam3 = -1;
+    tempCutOff = 0.1;
     primaryAprilTagID = -1;
     primaryCameraNum = -1;
     setName("Vision");
@@ -164,8 +173,12 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // 8.308467, 1.442593 and 1.451102
+    // botPose
+    if(frc.robot.Config.Subsystems.DRIVETRAIN_ENABLED){
+    distanceToTag = Math.sqrt(Math.pow(8.308467 + Drivetrain.getInstance().getPose().getY(), 2) + (Math.pow(1.442593 + Drivetrain.getInstance().getPose().getX(), 2) + (Math.pow(1.451102, 2))));}
     tempCutOff = visionAmbiguity.getDouble(0.0);
-    isVisionEstimatePoseChanged = false;
+
     /*Ensures empty json not fed to pipeline*/
     apriltagLimelightConnected =
         !NetworkTableInstance.getDefault()
@@ -251,7 +264,15 @@ public class Vision extends SubsystemBase {
                                       photonCam_1.getLatestResult(), 
                                       photonCam_2.getLatestResult()
                                     };
-    
+      
+      PhotonTrackedTarget a1 = photonCam_1.getLatestResult().getBestTarget();
+      PhotonTrackedTarget a2 = photonCam_2.getLatestResult().getBestTarget();
+      PhotonTrackedTarget a3 = photonCam_3.getLatestResult().getBestTarget();                            
+      if(a1 != null) ambiguityForCam1 = a1.getPoseAmbiguity();
+      if(a2 != null) ambiguityForCam2 = a2.getPoseAmbiguity();
+      if(a3 != null) ambiguityForCam3 = a3.getPoseAmbiguity();
+      isVisionEstimatePoseChanged = false; 
+
     Transform3d[] camToRobotArray = {VisionConfig.PHOTON_3_CAM_TO_ROBOT, VisionConfig.PHOTON_1_CAM_TO_ROBOT, VisionConfig.PHOTON_2_CAM_TO_ROBOT};
     PhotonPipelineResult selectedCameraResult = null;
     double lowestAmbiguity = 1;
@@ -291,6 +312,7 @@ public class Vision extends SubsystemBase {
                   
                   if (ambiguity < lowestAmbiguity) {
                     // Update the selected camera and lowest ambiguity value
+                    //if(cameras[0].getBestTarget().getBestCameraToTarget().getX() )
                     selectedCameraResult = cameras[i];
                     lowestAmbiguity = ambiguity;
                     chosenCameraNum = i;
@@ -301,7 +323,6 @@ public class Vision extends SubsystemBase {
       }
 
       //Area cutoff
-      // if(cameras[0].getBestTarget().getBestCameraToTarget().getX() )
 
     // if a camera has been selected, we will use it to get the pose
     if (selectedCameraResult != null && lowestAmbiguity < tempCutOff){
@@ -615,12 +636,6 @@ public class Vision extends SubsystemBase {
       return 0;
     }
   }
-  public double getTempCutOff(){
-    return tempCutOff;
-  }
-  public void setTempCutOff(double setter){
-    tempCutOff = setter;
-  }
 
   @Override
   public void initSendable(SendableBuilder builder){
@@ -642,6 +657,12 @@ public class Vision extends SubsystemBase {
     builder.addIntegerProperty("Primary Tag Used For Odometry", ()->primaryAprilTagID, null);
     builder.addIntegerProperty("Primary Camera Used For Odometry", ()->primaryCameraNum, null);
     builder.addDoubleProperty("Ambiguity For Cam In Use", ()-> ambiguityForCam, null);
+    
+    builder.addDoubleProperty("cam 1 front ambiguity", ()->ambiguityForCam1, null);
+    builder.addDoubleProperty("cam 2 back ambiguity", ()->ambiguityForCam2, null);
+    builder.addDoubleProperty("cam 3 laser ambiguity", ()-> ambiguityForCam3, null);
+    builder.addDoubleProperty("Distance to Tag", ()-> distanceToTag, null);
+
     
 
   }

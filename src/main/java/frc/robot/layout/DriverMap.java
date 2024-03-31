@@ -2,9 +2,12 @@ package frc.robot.layout;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Config;
 import frc.robot.RobotMap.Coordinates;
+import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.subsystems.Drivetrain;
@@ -66,7 +69,8 @@ public abstract class DriverMap extends CommandMap {
             //   "Go To Amp"));
 
             // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
-
+            // TODO DELETE ME!
+            getSlowModeToggleButton().toggleOnTrue(Commands.runOnce(() -> DriveMap.IS_SLOWMODE_ENABLED = !DriveMap.IS_SLOWMODE_ENABLED));
             getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand());
             getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
             getAmpAlignButton().onTrue(drivetrain.followPathCommand("Amp Align", false));
