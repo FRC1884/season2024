@@ -15,4 +15,7 @@ public interface PivotHardware {
     public double getEncoderPosition();
 
     public void zeroEncoder();
+
+    public double convertEncoderToAngle(double angle);
+    public double convertEncoderVelocityToAngularVelocity(double velocity);
 }

@@ -57,4 +57,14 @@ public class DualActuatorPivot implements PivotHardware {
     public double getEncoderPosition() {
         return encoder.get();
     }
+
+    @Override
+    public double convertEncoderToAngle(double encoderValue) {
+        return RobotMap.DoubleActuatorPivotMap.ENCODER_SCALE * (encoderValue + RobotMap.DoubleActuatorPivotMap.ENCODER_OFFSET);
+    }
+
+    @Override
+    public double convertEncoderVelocityToAngularVelocity(double velocity) {
+        return RobotMap.DoubleActuatorPivotMap.ENCODER_SCALE * velocity;
+    }
 }

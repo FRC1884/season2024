@@ -492,6 +492,16 @@ public class RobotMap {
                     default -> 0.01;
                 };
 
+        public static final double kG = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> 0;
+            default -> 4.0;
+        };
+
+        public static final double kV = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> 0;
+            default -> 0.0;
+        };
+
         public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> new TrapezoidProfile.Constraints(200, 100);
@@ -507,6 +517,8 @@ public class RobotMap {
         public static final int PIVOT_ID_LEADER = 32;
         public static final int PIVOT_ID_FOLLOWER = 31;
         public static final int ENCODER_PORT = 2;
+        public static double ENCODER_SCALE = 6.34184;
+        public static double ENCODER_OFFSET = -0.0243128;
     }
 
     public static class LEDMap {

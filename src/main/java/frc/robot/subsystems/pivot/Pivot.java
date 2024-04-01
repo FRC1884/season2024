@@ -1,5 +1,6 @@
 package frc.robot.subsystems.pivot;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -27,6 +28,8 @@ public class Pivot extends ProfiledPIDSubsystem {
         case NONE -> SimPivot.getInstance();
     };
 
+    private final ArmFeedforward pivotFeedforward = new ArmFeedforward(0, PivotMap.kG, PivotMap.kV, 0);
+
     private Pivot() {
         super(new ProfiledPIDController(PivotMap.kP, PivotMap.kI, PivotMap.kD, PivotMap.PROFILE_CONSTRAINTS));
 
@@ -42,7 +45,8 @@ public class Pivot extends ProfiledPIDSubsystem {
 
     @Override
     protected void useOutput(double v, TrapezoidProfile.State state) {
-        var feedforward = 0; //pivotFeedforward.calculate(state.position, state.velocity);
+        var feedforward = pivotFeedforward.calculate(hardware.convertEncoderToAngle(state.position),
+                hardware.convertEncoderVelocityToAngularVelocity(state.velocity));
 
         hardware.setVoltage(v + feedforward);
     }
