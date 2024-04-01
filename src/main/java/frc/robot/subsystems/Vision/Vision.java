@@ -6,6 +6,7 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,7 +25,9 @@ import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 import java.text.DecimalFormat;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -41,12 +44,15 @@ public class Vision extends SubsystemBase {
   private PhotonCamera photonCam_1;
   private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
+  private PhotonPoseEstimator photonEstimator_1;
 
   private PhotonCamera photonCam_2;
   private boolean photon2HasTargets;
+  private PhotonPoseEstimator photonEstimator_2;
 
   private PhotonCamera photonCam_3;
   private boolean photon3HasTargets;
+  private PhotonPoseEstimator photonEstimator_3;
 
   private int primaryAprilTagID;
   private int primaryCameraNum;
@@ -56,7 +62,8 @@ public class Vision extends SubsystemBase {
   private double ambiguityForCam2;
   private double ambiguityForCam3;
   
-  private double distanceToTag;
+  private double distToTagRelativeToRobot;
+  private double distToTagRelativeToCam;
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -89,7 +96,8 @@ public class Vision extends SubsystemBase {
 
   // TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
   private Vision() {
-    distanceToTag = -1;
+    distToTagRelativeToCam = -1;
+    distToTagRelativeToRobot = -1;
     ambiguityForCam = -1;
     ambiguityForCam1 = -1;
     ambiguityForCam2 = -1;
@@ -145,18 +153,24 @@ public class Vision extends SubsystemBase {
       } catch (Exception e) {
         System.out.println("Field layout not found");
       }
+      photonEstimator_1 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConfig.PHOTON_1_ROBOT_TO_CAM);
+      photonEstimator_1.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     //Code to make the second photon vision camera object if it is enabled
     if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_TWO_ENABLED) {
       photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       photon2HasTargets = false;
+      photonEstimator_2 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConfig.PHOTON_2_ROBOT_TO_CAM);
+      photonEstimator_2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     //Code to make the second photon vision camera object if it is enabled
     if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_THREE_ENABLED) {
       photonCam_3 = new PhotonCamera(VisionConfig.POSE_PHOTON_3);
       photon3HasTargets = false;
+      photonEstimator_3 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConfig.PHOTON_3_ROBOT_TO_CAM);
+      photonEstimator_3.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
     
 
@@ -175,8 +189,10 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     // 8.308467, 1.442593 and 1.451102
     // botPose
-    if(frc.robot.Config.Subsystems.DRIVETRAIN_ENABLED){
-    distanceToTag = Math.sqrt(Math.pow(8.308467 + Drivetrain.getInstance().getPose().getY(), 2) + (Math.pow(1.442593 + Drivetrain.getInstance().getPose().getX(), 2) + (Math.pow(1.451102, 2))));}
+    PhotonTrackedTarget target = photonCam_3.getLatestResult().getBestTarget();
+    if(target != null){
+    distToTagRelativeToRobot = getTargetDistanceFromRobot(target.getBestCameraToTarget());
+    distToTagRelativeToCam = getTargetDistanceFromCamera(target.getBestCameraToTarget(), 3);}
     tempCutOff = visionAmbiguity.getDouble(0.0);
 
     /*Ensures empty json not fed to pipeline*/
@@ -261,17 +277,17 @@ public class Vision extends SubsystemBase {
     Pose2d newBotPose = null;
 
     PhotonPipelineResult[] cameras = {photonCam_3.getLatestResult(), 
-                                      photonCam_1.getLatestResult(), 
-                                      photonCam_2.getLatestResult()
-                                    };
-      
-      PhotonTrackedTarget a1 = photonCam_1.getLatestResult().getBestTarget();
-      PhotonTrackedTarget a2 = photonCam_2.getLatestResult().getBestTarget();
-      PhotonTrackedTarget a3 = photonCam_3.getLatestResult().getBestTarget();                            
-      if(a1 != null) ambiguityForCam1 = a1.getPoseAmbiguity();
-      if(a2 != null) ambiguityForCam2 = a2.getPoseAmbiguity();
-      if(a3 != null) ambiguityForCam3 = a3.getPoseAmbiguity();
-      isVisionEstimatePoseChanged = false; 
+                                    photonCam_1.getLatestResult(), 
+                                    photonCam_2.getLatestResult()
+                                  };
+    PhotonTrackedTarget a1 = photonCam_1.getLatestResult().getBestTarget();
+    PhotonTrackedTarget a2 = photonCam_2.getLatestResult().getBestTarget();
+    PhotonTrackedTarget a3 = photonCam_3.getLatestResult().getBestTarget();        
+                        
+    if(a1 != null) ambiguityForCam1 = a1.getPoseAmbiguity();
+    if(a2 != null) ambiguityForCam2 = a2.getPoseAmbiguity();
+    if(a3 != null) ambiguityForCam3 = a3.getPoseAmbiguity();
+    isVisionEstimatePoseChanged = false; 
 
     Transform3d[] camToRobotArray = {VisionConfig.PHOTON_3_CAM_TO_ROBOT, VisionConfig.PHOTON_1_CAM_TO_ROBOT, VisionConfig.PHOTON_2_CAM_TO_ROBOT};
     PhotonPipelineResult selectedCameraResult = null;
@@ -282,8 +298,8 @@ public class Vision extends SubsystemBase {
     // go through the cameras and select the one with multi target and lowest ambiguity
     for(int i = 0; i < cameras.length; i++){
       if (cameras[i] != null && cameras[i].hasTargets()) { // if the camera is enabled and has a target, consider it
-        if (cameras[i].getMultiTagResult().estimatedPose.isPresent && cameras[i].getBestTarget().getPoseAmbiguity() != -1 && // if the camera has a multi tag pose
-            cameras[i].getBestTarget().getPoseAmbiguity() < tempCutOff) { // and the ambiguity is low enough
+        if (cameras[i].getMultiTagResult().estimatedPose.isPresent && ((cameras[i].getBestTarget().getPoseAmbiguity() >=0 && // if the camera has a multi tag pose
+            cameras[i].getBestTarget().getPoseAmbiguity() < tempCutOff) || i==0)) { // and the ambiguity is low enough
             
               // Get the ambiguity value of the camera
               double ambiguity = cameras[i].getBestTarget().getPoseAmbiguity();
@@ -295,6 +311,7 @@ public class Vision extends SubsystemBase {
                 lowestAmbiguity = ambiguity;
                 bestCaseIsMultiTag = true;
                 chosenCameraNum = i;
+
               }
             }
           }
@@ -304,7 +321,7 @@ public class Vision extends SubsystemBase {
       if (selectedCameraResult == null){
         for (int i = 0; i < cameras.length; i++) {
           if (cameras[i] != null && cameras[i].hasTargets()) { // if the camera is enabled and has a target, consider it
-            if (cameras[i].getBestTarget().getPoseAmbiguity() < tempCutOff && cameras[i].getBestTarget().getPoseAmbiguity() > 0) { // the ambiguity is low enough
+            if ((cameras[i].getBestTarget().getPoseAmbiguity() < tempCutOff && cameras[i].getBestTarget().getPoseAmbiguity() >= 0)||i==0) { // the ambiguity is low enough
                 
                   // Get the ambiguity value of the camera
                   double ambiguity = cameras[i].getBestTarget().getPoseAmbiguity();
@@ -353,6 +370,15 @@ public class Vision extends SubsystemBase {
     return newBotPose;
   }
 
+  /**
+   * Update all PhotonPoseEstimators
+   */
+  public void updateAllPhotonPoseEstimators(){
+    PhotonPoseEstimator[] photonPoseEstimators = {photonEstimator_1, photonEstimator_2, photonEstimator_3};
+    
+
+  }
+  
 
   /**
    * 
@@ -415,8 +441,17 @@ public class Vision extends SubsystemBase {
   /**
    * @return 3D distance to tag
    */
-  public double getTargetDistance(Transform3d robotToTarget) {
-    return Math.sqrt(Math.pow(robotToTarget.getX(),2) + Math.pow(robotToTarget.getY(),2) + Math.pow(robotToTarget.getZ(),2));
+  public double getTargetDistanceFromRobot(Transform3d targetPose) {
+    return Math.sqrt(Math.pow(targetPose.getX() + botPose.getX(),2) + Math.pow(targetPose.getY() + botPose.getY(),2) + Math.pow(targetPose.getZ(),2));
+  }
+
+ public double getTargetDistanceFromCamera(Transform3d targetPose, int camNum) {
+  Transform3d camPose;
+  if(camNum == 1){camPose = new Transform3d(VisionConfig.CAM_1_X,VisionConfig.CAM_1_Y ,VisionConfig.CAM_1_Z, new Rotation3d()); }
+  if(camNum == 2){camPose = new Transform3d(VisionConfig.CAM_2_X,VisionConfig.CAM_2_Y ,VisionConfig.CAM_2_Z, new Rotation3d()); }
+  if(camNum == 3){camPose = new Transform3d(VisionConfig.CAM_3_X,VisionConfig.CAM_3_Y ,VisionConfig.CAM_3_Z, new Rotation3d()); }
+  else camPose = new Transform3d(0.0,0.0,0.0,new Rotation3d());
+    return Math.sqrt(Math.pow(targetPose.getX() + (camPose.getX()+botPose.getX()),2) + Math.pow(targetPose.getY() + (camPose.getY()+botPose.getY()),2) + Math.pow(targetPose.getZ() + camPose.getZ(),2));
   }
 
   // APRILTAG HELPER METHODS
@@ -661,7 +696,8 @@ public class Vision extends SubsystemBase {
     builder.addDoubleProperty("cam 1 front ambiguity", ()->ambiguityForCam1, null);
     builder.addDoubleProperty("cam 2 back ambiguity", ()->ambiguityForCam2, null);
     builder.addDoubleProperty("cam 3 laser ambiguity", ()-> ambiguityForCam3, null);
-    builder.addDoubleProperty("Distance to Tag", ()-> distanceToTag, null);
+    builder.addDoubleProperty("Distance to Tag - Robot", ()-> distToTagRelativeToRobot, null);
+    builder.addDoubleProperty("Distance to Tag - Cam", ()-> distToTagRelativeToCam, null);
 
     
 

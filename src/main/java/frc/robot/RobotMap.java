@@ -3,11 +3,18 @@ package frc.robot;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.util.PIDConstants;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.util.FlywheelLookupTable;
 
@@ -138,7 +145,15 @@ public class RobotMap {
         public static final double FIELD_LENGTH_METERS = 16.54175;
         public static final double FIELD_WIDTH_METERS = 8.0137;
         public static final double VISION_X_MIN_CUTOFF = 3.0;
-        public static final double VISION_X_MAX_CUTOFF = 13.5;
+        public static final double VISION_X_MAX_CUTOFF = 13.5; 
+
+        //Noisy Distance Constanst
+        public static final double OV2311_NOISY_DISTANCE_METERS = 4.0;
+        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 7.5;
+        public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
+        public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
+        public static final double TAG_PRESENCE_WEIGHT = 10;
+        public static final double DISTANCE_WEIGHT = 7;
 
         // Limelight - units are meters
         public static final String POSE_LIMELIGHT = "limelight-pose";
@@ -224,9 +239,18 @@ public class RobotMap {
         public static final double kPositionStdDevTheta = 10;
 
         // Increase these numbers to trust global measurements from vision less.
-        public static final double kVisionStdDevX = 2.5;
-        public static final double kVisionStdDevY = 2.5;
-        public static final double kVisionStdDevTheta = 500;
+        public static final double kVisionStdDevX = 1;
+        public static final double kVisionStdDevY = 1;
+        public static final double kVisionStdDevTheta = 1 * Math.PI;
+        
+        public static final Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
+            .fill(
+                // if these numbers are less than one, multiplying will do bad things
+                kVisionStdDevX, // x
+                kVisionStdDevY, // y
+                kVisionStdDevTheta // theta
+            );
+;
     }
 
     public static class PrototypeMap {

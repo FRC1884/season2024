@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -26,6 +27,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
 
 /** Reports our expected, desired, and actual poses to dashboards */
 public class PoseEstimator extends SubsystemBase {
@@ -200,6 +203,47 @@ public class PoseEstimator extends SubsystemBase {
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
     poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
   }
+
+  // private Matrix<N3, N1> visionConfidenceCalculator(EstimatedRobotPose estimation, double noisyDistance) {
+  //   double smallestDistance = Double.POSITIVE_INFINITY;
+  //   for (var target : estimation.targetsUsed) {
+  //     var t3d = target.getBestCameraToTarget();
+  //     var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+  //     if (distance < smallestDistance)
+  //       smallestDistance = distance;
+  //   }
+  //   double poseAmbiguityFactor = estimation.targetsUsed.size() != 1
+  //       ? 1
+  //       : Math.max(
+  //           1,
+  //           (estimation.targetsUsed.get(0).getPoseAmbiguity()
+  //               + VisionConfig.POSE_AMBIGUITY_SHIFTER)
+  //               * VisionConfig.POSE_AMBIGUITY_MULTIPLIER);
+  //   double confidenceMultiplier = Math.max(
+  //       1,
+  //       (Math.max(
+  //           1,
+  //           Math.max(0, smallestDistance - noisyDistance)
+  //               * VisionConfig.DISTANCE_WEIGHT)
+  //           * poseAmbiguityFactor)
+  //           / (1
+  //               + ((estimation.targetsUsed.size() - 1) * VisionConfig.TAG_PRESENCE_WEIGHT)));
+
+  //   return VisionConfig.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
+  // }
+
+  // public void addVisionMeasureWithConfidence(PhotonRunnable estamator) {
+  //   var cameraPose = estamator.grabLatestEstimatedPose();
+  //   if (cameraPose != null) {
+  //     // New pose from vision
+  //     var pose2d = cameraPose.estimatedPose.toPose2d();
+  //     if (originPosition == kRedAllianceWallRightSide) {
+  //       pose2d = flipAlliance(pose2d);
+  //     }
+  //     poseEstimator.addVisionMeasurement(pose2d, cameraPose.timestampSeconds,
+  //         confidenceCalculator(cameraPose));
+  //   }
+  // }
 
   /**
    * Reset the pose estimator location and Drivetrain odometry - NEEDS TO BE TESTED
