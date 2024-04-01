@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -21,7 +22,9 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Vision.PhotonPoseTracker;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.RobotMap.VisionConfig;
 import frc.robot.auto.AutoCommands;
 
 /**
@@ -86,11 +89,18 @@ public class Robot extends TimedRobot {
       m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
       m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
       m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
+      
+      // Vision Poses with New Filtering
+      ArrayList<PhotonPoseTracker> trackers = Vision.getInstance().getPhotonPoseTrackers();
+      if(VisionConfig.IS_PHOTON_VISION_ENABLED) m_field.getObject("Vision Cam 1 Pose").setPose(trackers.get(0).getEstimatedVisionBotPose());
+      if(VisionConfig.IS_PHOTON_TWO_ENABLED) m_field.getObject("Vision Cam 2 Pose").setPose(trackers.get(1).getEstimatedVisionBotPose());
+      if(VisionConfig.IS_PHOTON_THREE_ENABLED) m_field.getObject("Vision Cam 3 Pose").setPose(trackers.get(2).getEstimatedVisionBotPose());
     }  
     if (Vision.getInstance().getNotePose2d() != null){
       m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
       
     }
+
 
     if (visionFilterEntry.getBoolean(false)){
       m_field.getObject("Filtered Vision Pose").setPose(Vision.getInstance().getFilterVisionPose());

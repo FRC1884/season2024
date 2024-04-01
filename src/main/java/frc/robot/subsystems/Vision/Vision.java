@@ -6,6 +6,7 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,8 +24,14 @@ import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonTargetSortMode;
 import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.proto.Photon;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -41,17 +48,28 @@ public class Vision extends SubsystemBase {
   private PhotonCamera photonCam_1;
   private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
+  private PhotonPoseEstimator photonEstimator_1;
 
   private PhotonCamera photonCam_2;
   private boolean photon2HasTargets;
+  private PhotonPoseEstimator photonEstimator_2;
 
   private PhotonCamera photonCam_3;
   private boolean photon3HasTargets;
+  private PhotonPoseEstimator photonEstimator_3;
+  
+  private ArrayList<PhotonPoseTracker> photonPoseTrackers;
 
   private int primaryAprilTagID;
   private int primaryCameraNum;
   private double tempCutOff;
   private double ambiguityForCam;
+  private double ambiguityForCam1;
+  private double ambiguityForCam2;
+  private double ambiguityForCam3;
+  
+  private double distToTagRelativeToRobot;
+  private double distToTagRelativeToCam;
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -84,15 +102,19 @@ public class Vision extends SubsystemBase {
 
   // TODO - see if adding setCameraPose_RobotSpace() is needed from LimelightHelpers
   private Vision() {
+    distToTagRelativeToCam = -1;
+    distToTagRelativeToRobot = -1;
     ambiguityForCam = -1;
-    tempCutOff = VisionConfig.POSE_AMBIGUITY_CUTOFF;
+    ambiguityForCam1 = -1;
+    ambiguityForCam2 = -1;
+    ambiguityForCam3 = -1;
+    tempCutOff = 0.1;
     primaryAprilTagID = -1;
     primaryCameraNum = -1;
     setName("Vision");
     botPose = new Pose2d();
     estimatePose = new Pose2d();
     noteFieldRelativePose = new Pose2d();
-    noteRobotRelativePose = new Pose2d();
     noteRobotRelativePose = new Pose2d();
     targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
@@ -136,18 +158,27 @@ public class Vision extends SubsystemBase {
       } catch (Exception e) {
         System.out.println("Field layout not found");
       }
+      photonEstimator_1 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConfig.PHOTON_1_ROBOT_TO_CAM);
+      photonEstimator_1.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_1, photonCam_1, VisionConfig.CAM_1_TYPE));
     }
 
     //Code to make the second photon vision camera object if it is enabled
     if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_TWO_ENABLED) {
       photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       photon2HasTargets = false;
+      photonEstimator_2 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConfig.PHOTON_2_ROBOT_TO_CAM);
+      photonEstimator_2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_2, photonCam_2, VisionConfig.CAM_2_TYPE));
     }
 
     //Code to make the second photon vision camera object if it is enabled
     if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_THREE_ENABLED) {
       photonCam_3 = new PhotonCamera(VisionConfig.POSE_PHOTON_3);
       photon3HasTargets = false;
+      photonEstimator_3 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConfig.PHOTON_3_ROBOT_TO_CAM);
+      photonEstimator_3.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_3, photonCam_3, VisionConfig.CAM_3_TYPE));
     }
     
 
@@ -164,8 +195,7 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    tempCutOff = visionAmbiguity.getDouble(0.0);
-    isVisionEstimatePoseChanged = false;
+    // 8.308467, 1.442593 and 1.451102
     /*Ensures empty json not fed to pipeline*/
     apriltagLimelightConnected =
         !NetworkTableInstance.getDefault()
@@ -196,9 +226,9 @@ public class Vision extends SubsystemBase {
       }
     }
 
-    Pose2d latestVisionPose = getCameraPrioritizedPose();
-    if(latestVisionPose != null){
-      botPose = latestVisionPose;
+    Pose2d currentVisionEstimate = getCameraPrioritizedPose();
+    if (currentVisionEstimate != null){
+      botPose = currentVisionEstimate;
     }
 
     // Filtering x, y and theta
@@ -242,16 +272,26 @@ public class Vision extends SubsystemBase {
     photon2HasTargets = photonCam_2.getLatestResult().hasTargets();
     photon3HasTargets = photonCam_3.getLatestResult().hasTargets();
 
+    //NEW VISION UPDATER
+    updateAllPhotonPoseTrackers();
   }
 
   public Pose2d getCameraPrioritizedPose(){
     Pose2d newBotPose = null;
 
-    PhotonPipelineResult[] cameras = {photonCam_3.getLatestResult(), 
-                                      photonCam_1.getLatestResult(), 
-                                      photonCam_2.getLatestResult()
-                                    };
-    
+    PhotonPipelineResult[] cameraResults = {photonCam_3.getLatestResult(), 
+                                    photonCam_1.getLatestResult(), 
+                                    photonCam_2.getLatestResult()
+                                  };
+    PhotonTrackedTarget a1 = photonCam_1.getLatestResult().getBestTarget();
+    PhotonTrackedTarget a2 = photonCam_2.getLatestResult().getBestTarget();
+    PhotonTrackedTarget a3 = photonCam_3.getLatestResult().getBestTarget();        
+                        
+    if(a1 != null) ambiguityForCam1 = a1.getPoseAmbiguity();
+    if(a2 != null) ambiguityForCam2 = a2.getPoseAmbiguity();
+    if(a3 != null) ambiguityForCam3 = a3.getPoseAmbiguity();
+    isVisionEstimatePoseChanged = false; 
+
     Transform3d[] camToRobotArray = {VisionConfig.PHOTON_3_CAM_TO_ROBOT, VisionConfig.PHOTON_1_CAM_TO_ROBOT, VisionConfig.PHOTON_2_CAM_TO_ROBOT};
     PhotonPipelineResult selectedCameraResult = null;
     double lowestAmbiguity = 1;
@@ -259,21 +299,22 @@ public class Vision extends SubsystemBase {
     boolean bestCaseIsMultiTag = false;
 
     // go through the cameras and select the one with multi target and lowest ambiguity
-    for(int i = 0; i < cameras.length; i++){
-      if (cameras[i] != null && cameras[i].hasTargets()) { // if the camera is enabled and has a target, consider it
-        if (cameras[i].getMultiTagResult().estimatedPose.isPresent && cameras[i].getBestTarget().getPoseAmbiguity() != -1 && // if the camera has a multi tag pose
-            cameras[i].getBestTarget().getPoseAmbiguity() < tempCutOff) { // and the ambiguity is low enough
+    for(int i = 0; i < cameraResults.length; i++){
+      if (cameraResults[i] != null && cameraResults[i].hasTargets()) { // if the camera is enabled and has a target, consider it
+        if (cameraResults[i].getMultiTagResult().estimatedPose.isPresent && ((cameraResults[i].getBestTarget().getPoseAmbiguity() >=0 && // if the camera has a multi tag pose
+            cameraResults[i].getBestTarget().getPoseAmbiguity() < tempCutOff) || i==0)) { // and the ambiguity is low enough
             
               // Get the ambiguity value of the camera
-              double ambiguity = cameras[i].getBestTarget().getPoseAmbiguity();
+              double ambiguity = cameraResults[i].getBestTarget().getPoseAmbiguity();
               // Check if the ambiguity value is lower than the current lowest ambiguity
               
               if (ambiguity < lowestAmbiguity) {
                 // Update the selected camera and lowest ambiguity value
-                selectedCameraResult = cameras[i];
+                selectedCameraResult = cameraResults[i];
                 lowestAmbiguity = ambiguity;
                 bestCaseIsMultiTag = true;
                 chosenCameraNum = i;
+
               }
             }
           }
@@ -281,17 +322,18 @@ public class Vision extends SubsystemBase {
 
       //if we didn't get a camera with a multi tag pose, we will use the camera with the lowest ambiguity
       if (selectedCameraResult == null){
-        for (int i = 0; i < cameras.length; i++) {
-          if (cameras[i] != null && cameras[i].hasTargets()) { // if the camera is enabled and has a target, consider it
-            if (cameras[i].getBestTarget().getPoseAmbiguity() < tempCutOff && cameras[i].getBestTarget().getPoseAmbiguity() > 0) { // the ambiguity is low enough
+        for (int i = 0; i < cameraResults.length; i++) {
+          if (cameraResults[i] != null && cameraResults[i].hasTargets()) { // if the camera is enabled and has a target, consider it
+            if ((cameraResults[i].getBestTarget().getPoseAmbiguity() < tempCutOff && cameraResults[i].getBestTarget().getPoseAmbiguity() >= 0)||i==0) { // the ambiguity is low enough
                 
                   // Get the ambiguity value of the camera
-                  double ambiguity = cameras[i].getBestTarget().getPoseAmbiguity();
+                  double ambiguity = cameraResults[i].getBestTarget().getPoseAmbiguity();
                   // Check if the ambiguity value is lower than the current lowest ambiguity
                   
                   if (ambiguity < lowestAmbiguity) {
                     // Update the selected camera and lowest ambiguity value
-                    selectedCameraResult = cameras[i];
+                    //if(cameras[0].getBestTarget().getBestCameraToTarget().getX() )
+                    selectedCameraResult = cameraResults[i];
                     lowestAmbiguity = ambiguity;
                     chosenCameraNum = i;
                   }
@@ -301,7 +343,6 @@ public class Vision extends SubsystemBase {
       }
 
       //Area cutoff
-      // if(cameras[0].getBestTarget().getBestCameraToTarget().getX() )
 
     // if a camera has been selected, we will use it to get the pose
     if (selectedCameraResult != null && lowestAmbiguity < tempCutOff){
@@ -332,6 +373,35 @@ public class Vision extends SubsystemBase {
     return newBotPose;
   }
 
+  /**
+   * Update all PhotonPoseTrackers 
+   */
+  public void updateAllPhotonPoseTrackers(){
+    
+    for(int i = 0; i < photonPoseTrackers.size(); i++){
+
+      photonPoseTrackers.get(i).setUpdatedStatus(false);
+      photonPoseTrackers.get(i).updateCameraPipelineResult();
+      PhotonPipelineResult latestResult = photonPoseTrackers.get(i).getPhotonPipelineResult();
+
+      if (latestResult.hasTargets() && (latestResult.targets.size() > 1
+          || latestResult.targets.get(0).getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF)) {
+          
+        final int c = i; 
+        photonPoseTrackers.get(i).photonPoseEstimator.update(latestResult).ifPresent(estimatedRobotPose -> {
+          Pose3d currentEstimatedPose = estimatedRobotPose.estimatedPose;
+          photonPoseTrackers.get(c).updateEstimatedBotPose(currentEstimatedPose.toPose2d(), 
+                                                          latestResult.getMultiTagResult().estimatedPose.isPresent);
+          photonPoseTrackers.get(c).setDistanceToBestTarget(get3dDistance(latestResult.getBestTarget().getBestCameraToTarget()));
+        });
+      }
+    }
+  }
+
+  public ArrayList<PhotonPoseTracker> getPhotonPoseTrackers(){
+    return photonPoseTrackers;
+  }
+  
 
   /**
    * 
@@ -394,8 +464,8 @@ public class Vision extends SubsystemBase {
   /**
    * @return 3D distance to tag
    */
-  public double getTargetDistance(Transform3d robotToTarget) {
-    return Math.sqrt(Math.pow(robotToTarget.getX(),2) + Math.pow(robotToTarget.getY(),2) + Math.pow(robotToTarget.getZ(),2));
+  public double get3dDistance(Transform3d targetPose) {
+    return Math.sqrt(Math.pow(targetPose.getX() + botPose.getX(),2) + Math.pow(targetPose.getY() + botPose.getY(),2) + Math.pow(targetPose.getZ(),2));
   }
 
   // APRILTAG HELPER METHODS
@@ -615,12 +685,6 @@ public class Vision extends SubsystemBase {
       return 0;
     }
   }
-  public double getTempCutOff(){
-    return tempCutOff;
-  }
-  public void setTempCutOff(double setter){
-    tempCutOff = setter;
-  }
 
   @Override
   public void initSendable(SendableBuilder builder){
@@ -642,6 +706,13 @@ public class Vision extends SubsystemBase {
     builder.addIntegerProperty("Primary Tag Used For Odometry", ()->primaryAprilTagID, null);
     builder.addIntegerProperty("Primary Camera Used For Odometry", ()->primaryCameraNum, null);
     builder.addDoubleProperty("Ambiguity For Cam In Use", ()-> ambiguityForCam, null);
+    
+    builder.addDoubleProperty("cam 1 front ambiguity", ()->ambiguityForCam1, null);
+    builder.addDoubleProperty("cam 2 back ambiguity", ()->ambiguityForCam2, null);
+    builder.addDoubleProperty("cam 3 laser ambiguity", ()-> ambiguityForCam3, null);
+    builder.addDoubleProperty("Distance to Tag - Robot", ()-> distToTagRelativeToRobot, null);
+    builder.addDoubleProperty("Distance to Tag - Cam", ()-> distToTagRelativeToCam, null);
+
     
 
   }
