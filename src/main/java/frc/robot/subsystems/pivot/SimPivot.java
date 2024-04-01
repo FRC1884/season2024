@@ -21,24 +21,4 @@ public class SimPivot implements PivotHardware {
     public void zeroEncoder() {
 
     }
-
-    @Override
-    public double getForwardLimit() {
-        return 0;
-    }
-
-    @Override
-    public void setForwardLimit(double limit) {
-
-    }
-
-    @Override
-    public double getReverseLimit() {
-        return 0;
-    }
-
-    @Override
-    public void setReverseLimit(double limit) {
-
-    }
 }

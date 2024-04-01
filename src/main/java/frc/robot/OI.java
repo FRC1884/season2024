@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.core.util.controllers.GameController;
 import frc.robot.layout.BoardOperatorMap;
+import frc.robot.layout.ChampsBoardOperator;
 import frc.robot.layout.TwoJoyStickDriverMap;
 import frc.robot.layout.TwoJoyStickOperatorMap;
 
@@ -38,7 +39,7 @@ public class OI {
 
     new TwoJoyStickDriverMap(driver).registerCommands();
     if(Config.Controllers.BOARD_OPERATOR_ENABLED){
-      new BoardOperatorMap(operator).registerCommands();
+      new ChampsBoardOperator(operator).registerCommands();
     }
     else if (Config.Controllers.JOYSTICK_OPERATOR_ENABLED){
       new TwoJoyStickOperatorMap(operator).registerCommands();

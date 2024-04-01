@@ -36,13 +36,13 @@ public class Pivot extends ProfiledPIDSubsystem {
         var tab = Shuffleboard.getTab("Pivot");
         tab.add(this);
 
-        setGoal(0);
+        setGoal(PivotMap.PIVOT_RESTING_ANGLE);
         enable();
     }
 
     @Override
     protected void useOutput(double v, TrapezoidProfile.State state) {
-        var feedforward = 0; // pivotFeedforward.calculate(state.position, state.velocity);
+        var feedforward = 0; //pivotFeedforward.calculate(state.position, state.velocity);
 
         hardware.setVoltage(v + feedforward);
     }
@@ -57,7 +57,7 @@ public class Pivot extends ProfiledPIDSubsystem {
     }
 
     public void setPosition(double setpoint) {
-        if (setpoint < PivotMap.LOWER_SETPOINT_LIMIT && setpoint > PivotMap.UPPER_SETPOINT_LIMIT)
+        if (setpoint > PivotMap.LOWER_SETPOINT_LIMIT && setpoint < PivotMap.UPPER_SETPOINT_LIMIT)
             getController().setGoal(setpoint);
     }
 
@@ -87,9 +87,6 @@ public class Pivot extends ProfiledPIDSubsystem {
                 (v) -> m_controller.setConstraints(new TrapezoidProfile.Constraints(v, m_controller.getConstraints().maxAcceleration)));
         builder.addDoubleProperty("max accel", () -> m_controller.getConstraints().maxAcceleration,
                 (v) -> m_controller.setConstraints(new TrapezoidProfile.Constraints(m_controller.getConstraints().maxVelocity, v)));
-
-        builder.addDoubleProperty("forward limit", hardware::getForwardLimit, hardware::setForwardLimit);
-        builder.addDoubleProperty("reverse limit", hardware::getReverseLimit, hardware::setReverseLimit);
 
         builder.addBooleanProperty("Zero Pivot", () -> false, (b) -> {
             if (b) hardware.zeroEncoder();

@@ -15,9 +15,4 @@ public interface PivotHardware {
     public double getEncoderPosition();
 
     public void zeroEncoder();
-
-    public double getForwardLimit();
-    public void setForwardLimit(double limit);
-    public double getReverseLimit();
-    public void setReverseLimit(double limit);
 }

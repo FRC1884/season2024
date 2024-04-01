@@ -126,6 +126,8 @@ public class Feeder extends SubsystemBase {
         );
         builder.addBooleanProperty("has note", this::isNoteLoaded, null);
         builder.addBooleanProperty("upper beam break", this::getUpperBeamBreak, null);
+        // builder.addBooleanProperty("lower beam break", () -> lowerBeamBreak.get().get(), null);
+
 
         builder.addStringProperty("status", () -> status.toString(), null);
     }

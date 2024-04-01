@@ -7,6 +7,12 @@ import frc.robot.subsystems.pivot.PivotHardware;
 
 public class Config {
 
+    enum RobotType {
+        DEV, COMP
+    }
+
+    public static final RobotType ROBOT_TYPE = RobotType.COMP;
+
     public static final class Subsystems {
         public static final boolean DRIVETRAIN_ENABLED = true;
         public static final boolean CLIMBER_ENABLED = false;
@@ -15,7 +21,7 @@ public class Config {
         public static final boolean VISION_ENABLED = true;
         public static final boolean PIVOT_ENABLED = true;
 
-        public static final PivotHardware.PivotHardwareType PIVOT_HARDWARE_TYPE = PivotHardware.PivotHardwareType.SINGLE_ACTUATOR;
+        public static final PivotHardware.PivotHardwareType PIVOT_HARDWARE_TYPE = PivotHardware.PivotHardwareType.DUAL_ACTUATOR;
 
         public static final boolean INTAKE_ENABLED = true;
         public static final boolean FEEDER_ENABLED = true;

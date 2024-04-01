@@ -121,12 +121,12 @@ public class AddressableLEDLights extends SubsystemBase {
     m_led.start();
   }
 
-  public Command setNoteStatusCommand(BooleanSupplier beamBroken) {
+  public Command setNoteStatusCommand(BooleanSupplier hasNote) {
     return (Commands.either(
-      setColorCommand(Color.kGreenYellow),
       setColorCommand(Color.kRed),
+      setColorCommand(Color.kGreenYellow),
 
-      () -> beamBroken.getAsBoolean()
+      () -> hasNote.getAsBoolean()
     )).repeatedly();
   }
 

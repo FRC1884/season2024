@@ -14,6 +14,8 @@ public class IntakeUntilLoadedCommand extends Command {
     public void initialize() {
         intake.setIntakeState(IntakeDirection.FORWARD);
         feeder.setFeederState(FeederDirection.FORWARD);
+
+        addRequirements(feeder, intake);
     }
 
     @Override

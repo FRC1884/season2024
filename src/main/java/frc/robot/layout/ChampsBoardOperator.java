@@ -6,39 +6,44 @@ import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
 import frc.robot.core.util.controllers.GameController;
 
-public class BoardOperatorMap extends OperatorMap {
-  public BoardOperatorMap(GameController controller) {
+public class ChampsBoardOperator extends OperatorMap {
+  public ChampsBoardOperator(GameController controller) {
     super(controller);
   }
 
   @Override
   JoystickButton getIntakeButton() {
-    return controller.getButton(Button.BUTTON_X);
+    return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
   @Override
   JoystickButton getOuttakeButton() {
-    return controller.getButton(Button.BUTTON_Y);
+    return controller.getButton(Button.BUTTON_X);
+  }
+
+  @Override
+  JoystickButton getSourceIntakeButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_2);
   }
 
   @Override
   JoystickButton getShootSpeakerButton() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getShootAmpButton() {
-    return controller.getButton(Button.BUTTON_B);
-  }
-
-  @Override
-  JoystickButton getAmpAlignButton() {
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
   }
 
   @Override
+  JoystickButton getShootAmpButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_10);
+  }
+
+  @Override
+  JoystickButton getAmpAlignButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_1);
+  }
+
+  @Override
   JoystickButton getChangeClimberLockStatusButton(){
-    return controller.getButton(Button.BUTTON_EXTRA_3);
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
@@ -53,12 +58,12 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getClimbSequenceButton() {
-    return controller.getButton(Button.BUTTON_TOUCHPAD);
+    return controller.getButton(Button.BUTTON_EXTRA_9);
   }
 
   @Override
   JoystickButton getLEDPatternOffButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_2);
+    return controller.getButton(Button.BUTTON_EXTRA_8);
   }
 
   @Override
@@ -78,27 +83,27 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getFerryShotAlignButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_10); //TODO: BIND TO ANOTHER BUTTON
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER); //TODO: BIND TO ANOTHER BUTTON
   }
 
   @Override
   JoystickButton getTrapButton() {
-    return controller.getButton(Button.BUTTON_START);
+    return controller.getButton(Button.BUTTON_EXTRA_7);
   }
 
   @Override
   JoystickButton getStageAlignButton() {
-    return controller.getButton(Button.BUTTON_OPTIONS);
+    return controller.getButton(Button.BUTTON_EXTRA_6);
   }
 
   @Override
   JoystickButton getAmplifyButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_1);
+    return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
   JoystickButton getCoopButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_2);
+    return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
@@ -128,18 +133,12 @@ public class BoardOperatorMap extends OperatorMap {
 
   @Override
   JoystickButton getSubwooferShotButton() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+    return controller.getButton(Button.BUTTON_START);
   }
 
   @Override
   JoystickButton getPodiumShotButton() {
-    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+    return controller.getButton(Button.BUTTON_TOUCHPAD);
 
-  }
-
-  @Override
-  JoystickButton getSourceIntakeButton() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getSourceIntakeButton'");
   }
 }

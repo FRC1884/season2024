@@ -48,30 +48,62 @@ public class RobotMap {
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         public static final class FrontLeft {
-            public static final int DRIVE_ID = 15;
-            public static final int ROTATOR_ID = 14;
+            public static final int DRIVE_ID = switch (Config.ROBOT_TYPE) {
+              case DEV -> 15;
+              case COMP -> 2;
+            };
+
+            public static final int ROTATOR_ID = switch (Config.ROBOT_TYPE) {
+              case DEV -> 14;
+              case COMP -> 1;
+            };
+
             public static final double ANGULAR_OFFSET = -Math.PI / 2;
             ;
         }
 
         /* Front Right Module - Module 1 */
         public static final class FrontRight {
-            public static final int DRIVE_ID = 11;
-            public static final int ROTATOR_ID = 10;
+          public static final int DRIVE_ID = switch (Config.ROBOT_TYPE) {
+            case DEV -> 11;
+            case COMP -> 6;
+          };
+
+          public static final int ROTATOR_ID = switch (Config.ROBOT_TYPE) {
+            case DEV -> 10;
+            case COMP -> 5;
+          };
+
             public static final double ANGULAR_OFFSET = 0;
         }
 
         /* Back Left Module - Module 2 */
         public static final class BackLeft {
-            public static final int DRIVE_ID = 17;
-            public static final int ROTATOR_ID = 16;
+          public static final int DRIVE_ID = switch (Config.ROBOT_TYPE) {
+            case DEV -> 17;
+            case COMP -> 4;
+          };
+
+          public static final int ROTATOR_ID = switch (Config.ROBOT_TYPE) {
+            case DEV -> 16;
+            case COMP -> 3;
+          };
+
             public static final double ANGULAR_OFFSET = Math.PI;
         }
 
         /* Back Right Module - Module 3 */
         public static final class BackRight {
-            public static final int DRIVE_ID = 13;
-            public static final int ROTATOR_ID = 12;
+            public static final int DRIVE_ID = switch (Config.ROBOT_TYPE) {
+              case DEV -> 13;
+              case COMP -> 8;
+            };
+
+            public static final int ROTATOR_ID = switch (Config.ROBOT_TYPE) {
+              case DEV -> 12;
+              case COMP -> 7;
+            };
+
             public static final double ANGULAR_OFFSET = Math.PI / 2;
         }
 
@@ -244,7 +276,10 @@ public class RobotMap {
     }
 
     public static class IntakeMap {
-        public static final int INTAKE_ID = 20;
+        public static final int INTAKE_ID = switch (Config.ROBOT_TYPE) { 
+          case DEV -> 20;
+          case COMP -> 23;
+        };
 
         public static final double INTAKE_FORWARD_SPEED = 1;
 
@@ -253,8 +288,16 @@ public class RobotMap {
 
     public static class ShooterMap {
 
-        public static final int TOP_SHOOTER = 30;
-        public static final int BOTTOM_SHOOTER = 31;
+        public static final int TOP_SHOOTER = switch (Config.ROBOT_TYPE) {
+          case DEV -> 30;
+          case COMP -> 33;
+        };
+      
+        public static final int BOTTOM_SHOOTER = switch (Config.ROBOT_TYPE) {
+          case DEV -> 31;
+          case COMP -> 34;
+        };
+        
         public static final double FLYWHEEL_RADIUS = 0.0508;
         public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
         public static final double AMP_SPEED = 600;
@@ -308,19 +351,24 @@ public class RobotMap {
     }
 
     public static class FeederMap {
-        public static final int FEEDER = 21;
+        public static final int FEEDER =  switch (Config.ROBOT_TYPE) {
+          case DEV -> 21;
+          case COMP -> 24;
+        };
+
         public static final PIDConstants FEEDER_PID = new PIDConstants(0.00036, 0, 0.015);
         public static final double FEEDER_FF = 0.00015;
         public static final double FEEDER_RAMP_RATE = 0.5;
         public static final double FEEDER_RPM = 3500 * 4; //multiplied by four to account for gear ratio
         public static final double FEEDER_RPM_SLOW = 1000 * 4;
+        
         public static final int LOWER_BEAMBREAK = 0;
         public static final int UPPER_BEAMBREAK = 1;
     }
 
     public static class ClimberMap {
-        public static final int LEADER_ID = 16;
-        public static final int FOLLOWER_ID = 17;
+        public static final int LEADER_ID = 21;
+        public static final int FOLLOWER_ID = 22;
 
         public static final int LIMIT_SWITCH = 5;
 
@@ -341,31 +389,31 @@ public class RobotMap {
         public static final double POSITION_TOLERANCE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> .1;
-                    default -> 0.5;
+                    default -> 0.002;
                 };
 
         public static final double VELOCITY_TOLERANCE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> .5;
-                    default -> 0.5;
+                    default -> 0.005;
                 };
 
         public static final double UPPER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -350 * 15 / 25;
-                    default -> 1;
+                    default -> 0.335;
                 };
 
         public static final double LOWER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0;
-                    default -> 0;
+                    default -> 0.07;
                 };
 
         public static final double PIVOT_AMP_ANGLE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -325 * 15 / 25;
-                    default -> 0;
+                    default -> -325 * 15 / 25;
                 };
 
         public static final double PIVOT_TRAP_ANGLE =
@@ -377,37 +425,37 @@ public class RobotMap {
         public static final double PIVOT_INTAKE_ANGLE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -100 * 15 / 25;
-                    default -> 0;
+                    default -> 0.3;
                 };
 
         public static final double PIVOT_RESTING_ANGLE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -1;
-                    default -> 0;
+                    default -> 0.1;
                 };
 
         public static final double kP =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 1.5;
-                    default -> 1.5;
+                    default -> 150;
                 };
 
         public static final double kI =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 3;
-                    default -> 3;
+                    default -> 20;
                 };
 
         public static final double kD =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.075;
-                    default -> 0.075;
+                    default -> 1;
                 };
 
         public static final double kIZone =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.5;
-                    default -> 0.5;
+                    default -> 0.01;
                 };
 
         public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS =
@@ -422,8 +470,8 @@ public class RobotMap {
     }
 
     public static class DoubleActuatorPivotMap {
-        public static final int PIVOT_ID_LEADER = 22;
-        public static final int PIVOT_ID_FOLLOWER = 23;
+        public static final int PIVOT_ID_LEADER = 32;
+        public static final int PIVOT_ID_FOLLOWER = 31;
         public static final int ENCODER_PORT = 2;
     }
 
@@ -431,6 +479,9 @@ public class RobotMap {
         public static final int BLINKIN_PWM_PORT = 0;
         public static final boolean BLINKIN_PWM = true;
         public static final boolean BLINKIN_ON_SPARK = false;
-        public static final int NUMBER_LEDS = 42;
+        public static final int NUMBER_LEDS = switch (Config.ROBOT_TYPE) {
+            case DEV -> 42;
+            case COMP -> 17*4 + 21 * 2;
+        };
     }
 }

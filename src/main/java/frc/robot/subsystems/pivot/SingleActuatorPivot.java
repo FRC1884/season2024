@@ -55,24 +55,4 @@ public class SingleActuatorPivot implements PivotHardware {
     public double getEncoderPosition() {
         return pivot.getEncoder().getPosition();
     }
-
-    @Override
-    public double getForwardLimit() {
-        return pivot.getSoftLimit(CANSparkMax.SoftLimitDirection.kForward);
-    }
-
-    @Override
-    public void setForwardLimit(double limit) {
-        pivot.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) limit);
-    }
-
-    @Override
-    public double getReverseLimit() {
-        return pivot.getSoftLimit(CANSparkMax.SoftLimitDirection.kReverse);
-    }
-
-    @Override
-    public void setReverseLimit(double limit) {
-        pivot.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float) limit);
-    }
 }

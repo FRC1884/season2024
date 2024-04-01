@@ -184,5 +184,6 @@ public class Shooter extends SubsystemBase {
         builder.addDoubleProperty("lookup angle", () -> getSetpoint.get().getAngle(), (d) -> {
         });
     }
+    
 
 }
