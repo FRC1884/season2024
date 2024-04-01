@@ -28,7 +28,7 @@ public class Pivot extends ProfiledPIDSubsystem {
         case NONE -> SimPivot.getInstance();
     };
 
-    private final ArmFeedforward pivotFeedforward = new ArmFeedforward(0, PivotMap.kG, PivotMap.kV, 0);
+    private ArmFeedforward pivotFeedforward = new ArmFeedforward(0, PivotMap.kG, PivotMap.kV, 0);
 
     private Pivot() {
         super(new ProfiledPIDController(PivotMap.kP, PivotMap.kI, PivotMap.kD, PivotMap.PROFILE_CONSTRAINTS));
@@ -89,6 +89,9 @@ public class Pivot extends ProfiledPIDSubsystem {
         builder.addDoubleProperty("kI", m_controller::getI, m_controller::setI);
         builder.addDoubleProperty("kD", m_controller::getD, m_controller::setD);
         builder.addDoubleProperty("kIZone", m_controller::getIZone, m_controller::setIZone);
+
+        builder.addDoubleProperty("kG", () -> pivotFeedforward.kg, (v) -> pivotFeedforward = new ArmFeedforward(0, v, pivotFeedforward.kv, 0));
+        builder.addDoubleProperty("kV", () -> pivotFeedforward.kv, (v) -> pivotFeedforward = new ArmFeedforward(0, pivotFeedforward.kg, v, 0));
 
         builder.addDoubleProperty("max velo", () -> m_controller.getConstraints().maxVelocity,
                 (v) -> m_controller.setConstraints(new TrapezoidProfile.Constraints(v, m_controller.getConstraints().maxAcceleration)));
