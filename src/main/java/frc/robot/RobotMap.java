@@ -423,25 +423,25 @@ public class RobotMap {
         public static final double POSITION_TOLERANCE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> .1;
-                    default -> 0.002;
+                    default -> 0.012;
                 };
 
         public static final double VELOCITY_TOLERANCE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> .5;
-                    default -> 0.005;
+                    default -> 0.031;
                 };
 
         public static final double UPPER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -350 * 15 / 25;
-                    default -> 0.335;
+                    default -> 1.932;
                 };
 
         public static final double LOWER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0;
-                    default -> 0.07;
+                    default -> 0.267;
                 };
 
         public static final double PIVOT_AMP_ANGLE =
@@ -459,13 +459,13 @@ public class RobotMap {
         public static final double PIVOT_INTAKE_ANGLE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -100 * 15 / 25;
-                    default -> 0.3;
+                    default -> 1.7;
                 };
 
         public static final double PIVOT_RESTING_ANGLE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -1;
-                    default -> 0.1;
+                    default -> 0.45;
                 };
 
         public static final double kP =
@@ -492,6 +492,16 @@ public class RobotMap {
                     default -> 0.01;
                 };
 
+        public static final double kG = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> 0;
+            default -> 4.0;
+        };
+
+        public static final double kV = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> 0;
+            default -> 0.0;
+        };
+
         public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> new TrapezoidProfile.Constraints(200, 100);
@@ -504,9 +514,14 @@ public class RobotMap {
     }
 
     public static class DoubleActuatorPivotMap {
+        // hardstop angle in degrees
+        public static final double HARDSTOP_ANGLE = 15.3;
+        public static final double HARDSTOP_ENCODER = 0.07;
         public static final int PIVOT_ID_LEADER = 32;
         public static final int PIVOT_ID_FOLLOWER = 31;
         public static final int ENCODER_PORT = 2;
+        public static double ENCODER_SCALE = 2 * Math.PI;
+        public static double ENCODER_OFFSET = (HARDSTOP_ANGLE / 360) - HARDSTOP_ENCODER ;
     }
 
     public static class LEDMap {
