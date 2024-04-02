@@ -163,10 +163,10 @@ public class RobotMap {
         public static final boolean DRIVER_CAMERA_ACTIVE = false;
         public static final boolean VISION_OVERRIDE_ENABLED = false;
         public static final boolean IS_LIMELIGHT_APRILTAG_MODE = false;
-        public static final boolean IS_PHOTON_VISION_ENABLED = true;
-        public static final boolean IS_PHOTON_TWO_ENABLED = true;
-        public static final boolean IS_PHOTON_THREE_ENABLED = true;
-        public static final boolean IS_NEURAL_NET_LIMELIGHT = true;
+        public static final boolean IS_PHOTON_VISION_ENABLED = false;
+        public static final boolean IS_PHOTON_TWO_ENABLED = false;
+        public static final boolean IS_PHOTON_THREE_ENABLED = false;
+        public static final boolean IS_NEURAL_NET_LIMELIGHT = false;
         public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
         
         public enum CAMERA_TYPE {

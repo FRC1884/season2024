@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Config;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
@@ -147,6 +148,7 @@ public class Vision extends SubsystemBase {
       }
 
     //Code to make the first photon vision camera object
+    photonPoseTrackers = new ArrayList<PhotonPoseTracker>();
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       //photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
@@ -195,6 +197,7 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if(Config.Subsystems.VISION_ENABLED){
     // 8.308467, 1.442593 and 1.451102
     /*Ensures empty json not fed to pipeline*/
     apriltagLimelightConnected =
@@ -226,6 +229,7 @@ public class Vision extends SubsystemBase {
       }
     }
 
+    
     Pose2d currentVisionEstimate = getCameraPrioritizedPose();
     if (currentVisionEstimate != null){
       botPose = currentVisionEstimate;
@@ -274,6 +278,7 @@ public class Vision extends SubsystemBase {
 
     //NEW VISION UPDATER
     updateAllPhotonPoseTrackers();
+  }
   }
 
   public Pose2d getCameraPrioritizedPose(){
