@@ -21,14 +21,4 @@ public class SimPivot implements PivotHardware {
     public void zeroEncoder() {
 
     }
-
-    @Override
-    public double convertEncoderToAngle(double angle) {
-        return angle;
-    }
-
-    @Override
-    public double convertEncoderVelocityToAngularVelocity(double velocity) {
-        return velocity;
-    }
 }

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Config;
 import frc.robot.RobotMap.PivotMap;
 
@@ -16,6 +17,8 @@ import java.util.function.Supplier;
 
 public class Pivot extends ProfiledPIDSubsystem {
     private static Pivot instance;
+
+
 
     public static Pivot getInstance() {
         if (instance == null) instance = new Pivot();
@@ -45,8 +48,7 @@ public class Pivot extends ProfiledPIDSubsystem {
 
     @Override
     protected void useOutput(double v, TrapezoidProfile.State state) {
-        var feedforward = pivotFeedforward.calculate(hardware.convertEncoderToAngle(state.position),
-                hardware.convertEncoderVelocityToAngularVelocity(state.velocity));
+        var feedforward = pivotFeedforward.calculate(state.position, state.velocity);
 
         hardware.setVoltage(v + feedforward);
     }

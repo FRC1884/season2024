@@ -47,11 +47,6 @@ public class SingleActuatorPivot implements PivotHardware {
     }
 
     @Override
-    public double convertEncoderToAngle(double angle) {
-        return angle;
-    }
-
-    @Override
     public void setVoltage(double voltage) {
         pivot.setVoltage(voltage);
     }
@@ -59,10 +54,5 @@ public class SingleActuatorPivot implements PivotHardware {
     @Override
     public double getEncoderPosition() {
         return pivot.getEncoder().getPosition();
-    }
-
-    @Override
-    public double convertEncoderVelocityToAngularVelocity(double velocity) {
-        return velocity;
     }
 }
