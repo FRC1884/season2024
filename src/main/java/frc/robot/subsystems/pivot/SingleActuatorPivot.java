@@ -33,11 +33,11 @@ public class SingleActuatorPivot implements PivotHardware {
         pivot.setSmartCurrentLimit(40);
 
         // TODO: test if the soft limits work at all
-        pivot.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float) PivotMap.UPPER_SETPOINT_LIMIT);
-        pivot.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) PivotMap.LOWER_SETPOINT_LIMIT);
+        // pivot.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float) PivotMap.UPPER_SETPOINT_LIMIT);
+        // pivot.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) PivotMap.LOWER_SETPOINT_LIMIT);
 
-        pivot.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        pivot.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        // pivot.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        // pivot.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
 
         pivot.burnFlash();
     }

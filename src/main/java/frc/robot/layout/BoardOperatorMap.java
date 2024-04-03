@@ -140,6 +140,6 @@ public class BoardOperatorMap extends OperatorMap {
   @Override
   JoystickButton getSourceIntakeButton() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getSourceIntakeButton'");
+    return null;
   }
 }

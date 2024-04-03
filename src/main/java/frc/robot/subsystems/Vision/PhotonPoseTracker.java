@@ -63,6 +63,10 @@ public class PhotonPoseTracker {
     public VisionConfig.CAMERA_TYPE getCameraType(){
       return cameraType;
     }
+
+    public String getCameraName(){
+      return photonCamera.getName();
+    }
   
     public boolean isMultiTagEstimate(){
       return isMultiTag;

@@ -189,8 +189,8 @@ public abstract class OperatorMap extends CommandMap {
                             .alongWith(
                                     shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
 
-            // getSpeakerShotAlignButton()
-                    // .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+            getSpeakerShotAlignButton()
+                    .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
 
             Supplier<ActionSetpoint> getFerryActionSetpoint = () -> ferryLookupTable.get(poseEstimator.getDistanceToPose(ferryTarget.get().getTranslation()));
@@ -208,13 +208,13 @@ public abstract class OperatorMap extends CommandMap {
                             .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.AMP_SPEED))
                             );
 
-            // getAmpAlignButton()
-                    // .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+            getAmpAlignButton()
+                    .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
             getStageAlignButton().onTrue(pivot.setPositionCommand(() -> PivotMap.PIVOT_TRAP_ANGLE)
                     .alongWith(shooter.setFlywheelVelocityCommand(() -> ShooterMap.TRAP_SPEED)));
-            // getStageAlignButton()
-                    // .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+            getStageAlignButton()
+                    .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
                 
 
 
@@ -236,8 +236,8 @@ public abstract class OperatorMap extends CommandMap {
                     .alongWith(shooter.stopFlywheelCommand()));
                     // .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
-            getSourceIntakeButton().whileTrue(shooterIntakeCommand).onFalse(new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED))
-            .alongWith(shooter.stopFlywheelCommand()));
+            //getSourceIntakeButton().whileTrue(shooterIntakeCommand).onFalse(new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED))
+             //.alongWith(shooter.stopFlywheelCommand()));
             // .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
         }
 

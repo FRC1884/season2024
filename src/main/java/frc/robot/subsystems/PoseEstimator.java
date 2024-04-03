@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -65,9 +66,10 @@ public class PoseEstimator extends SubsystemBase {
   private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
 
   private GenericEntry enableRetroVision = tab.add("Retro Vision Enabled", false).getEntry();
-  private GenericEntry enableNewVisionMethod = tab.add("New Vision Method Enabled", false).getEntry();
+  private GenericEntry enableNewVisionMethod = tab.add("New Vision Method Enabled", true).getEntry();
 
   private final DecimalFormat df = new DecimalFormat();
+  private Supplier<Pose2d> lastStoredPose = () -> new Pose2d();
   
 
   private PoseEstimator() {
@@ -374,6 +376,15 @@ public class PoseEstimator extends SubsystemBase {
     else{
       return 0;
     }
+  }
+
+  public Supplier<Pose2d> storeCurrentPose() {
+      lastStoredPose = () -> getPosition();
+      return lastStoredPose;
+  }
+  
+  public Supplier<Pose2d> getStoredPose() {
+    return lastStoredPose;
   }
 
   @Override

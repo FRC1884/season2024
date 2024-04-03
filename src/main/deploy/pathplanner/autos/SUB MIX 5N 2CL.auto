@@ -52,7 +52,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 0.3
                       }
                     },
                     {
@@ -76,7 +76,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 0.3
                       }
                     },
                     {
@@ -98,6 +98,12 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "VisionIntake"
@@ -113,6 +119,12 @@
                       "type": "path",
                       "data": {
                         "pathName": "1CLNote-AWLShot.1"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.2
                       }
                     },
                     {

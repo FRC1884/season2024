@@ -135,8 +135,8 @@ public class RobotMap {
         public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
         public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
         public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
-        public static final double X_CENTERLINE_LIMIT_RED = 8.275 - 0.10;
-        public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 + 0.10;
+        public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 1.0;
+        public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.0;
     }
 
     public static class TankDriveMap {
@@ -164,7 +164,7 @@ public class RobotMap {
         public static final boolean VISION_OVERRIDE_ENABLED = false;
         public static final boolean IS_LIMELIGHT_APRILTAG_MODE = false;
         public static final boolean IS_PHOTON_VISION_ENABLED = true;
-        public static final boolean IS_PHOTON_TWO_ENABLED = true;
+        public static final boolean IS_PHOTON_TWO_ENABLED = false;
         public static final boolean IS_PHOTON_THREE_ENABLED = true;
         public static final boolean IS_NEURAL_NET_LIMELIGHT = true;
         public static final double DIFFERENCE_CUTOFF_THRESHOLD = 1.5; // Max difference between vision and odometry pose
@@ -266,7 +266,7 @@ public class RobotMap {
 
         // Rotation mounting angles (roll-pitch-yaw) in RADIANS
         public static final double CAM_3_ROLL_RADIANS = 0; // camera Roll Radians
-        public static final double CAM_3_PITCH_RADIANS = 0.174533; // camera Pitch Radians
+        public static final double CAM_3_PITCH_RADIANS = 0.20944; // camera Pitch Radians
         public static final double CAM_3_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
         public static final Transform3d PHOTON_3_ROBOT_TO_CAM = new Transform3d(CAM_3_X, CAM_3_Y, CAM_3_Z, new Rotation3d(CAM_3_ROLL_RADIANS, CAM_3_PITCH_RADIANS, CAM_3_YAW_RADIANS));
@@ -350,10 +350,12 @@ public class RobotMap {
                 //  { 2.49, 3700, -52- 12},
                 //  { 2.90, 3800, -52- 12},
                 //  { 2.96, 4000, -30 - 12},
-                {3.48, 4000, -19 + 5},
-                {3.95, 4050, -10 + 5},
-                {4.43, 6000, -4},
-                {5.10, 6000, -2}
+                {3.48, 4000, -19},
+                {3.7, 6000, -16},
+                // {3.95, 6000, -12},
+                {4.03, 6000, -12},
+                {4.3, 6000, -10.5},
+                {4.6, 6000, -9}
         };
 
         public static final double[][] DUAL_ACTUATOR_VALUES = {
@@ -434,13 +436,13 @@ public class RobotMap {
 
         public static final double UPPER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
-                    case SINGLE_ACTUATOR -> -350 * 15 / 25;
+                    case SINGLE_ACTUATOR -> 0;
                     default -> 0.335;
                 };
 
         public static final double LOWER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
-                    case SINGLE_ACTUATOR -> 0;
+                    case SINGLE_ACTUATOR -> -350 * 15 / 25;
                     default -> 0.07;
                 };
 

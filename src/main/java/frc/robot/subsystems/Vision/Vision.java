@@ -25,7 +25,7 @@ import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-
+import java.util.function.BooleanSupplier;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonTargetSortMode;
@@ -146,7 +146,9 @@ public class Vision extends SubsystemBase {
         setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
       }
 
+    
     //Code to make the first photon vision camera object
+    photonPoseTrackers = new ArrayList<PhotonPoseTracker>();
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       //photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
@@ -226,17 +228,17 @@ public class Vision extends SubsystemBase {
       }
     }
 
-    Pose2d currentVisionEstimate = getCameraPrioritizedPose();
-    if (currentVisionEstimate != null){
-      botPose = currentVisionEstimate;
-    }
+    //Pose2d currentVisionEstimate = getCameraPrioritizedPose();
+    // if (currentVisionEstimate != null){
+    //   botPose = currentVisionEstimate;
+    // }
 
     // Filtering x, y and theta
-    if(isVisionEstimatePoseChanged){
-      filteredVisionPose = new Pose2d(xFilter.calculate(botPose.getX()), 
-                                      yFilter.calculate(botPose.getY()), 
-                                      Rotation2d.fromDegrees(thetaFilter.calculate(botPose.getRotation().getDegrees())));
-    }
+    // if(isVisionEstimatePoseChanged){
+    //   filteredVisionPose = new Pose2d(xFilter.calculate(botPose.getX()), 
+    //                                   yFilter.calculate(botPose.getY()), 
+    //                                   Rotation2d.fromDegrees(thetaFilter.calculate(botPose.getRotation().getDegrees())));
+    // }
 
     //Does math to see where the note is
     if (VisionConfig.IS_NEURAL_NET_LIMELIGHT && NNLimelightConnected) {
@@ -268,110 +270,107 @@ public class Vision extends SubsystemBase {
         noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
       }
     }
-    photon1HasTargets = photonCam_1.getLatestResult().hasTargets();
-    photon2HasTargets = photonCam_2.getLatestResult().hasTargets();
-    photon3HasTargets = photonCam_3.getLatestResult().hasTargets();
-
+    
     //NEW VISION UPDATER
     updateAllPhotonPoseTrackers();
   }
 
-  public Pose2d getCameraPrioritizedPose(){
-    Pose2d newBotPose = null;
+  // public Pose2d getCameraPrioritizedPose(){
+  //   Pose2d newBotPose = null;
 
-    PhotonPipelineResult[] cameraResults = {photonCam_3.getLatestResult(), 
-                                    photonCam_1.getLatestResult(), 
-                                    photonCam_2.getLatestResult()
-                                  };
-    PhotonTrackedTarget a1 = photonCam_1.getLatestResult().getBestTarget();
-    PhotonTrackedTarget a2 = photonCam_2.getLatestResult().getBestTarget();
-    PhotonTrackedTarget a3 = photonCam_3.getLatestResult().getBestTarget();        
-                        
-    if(a1 != null) ambiguityForCam1 = a1.getPoseAmbiguity();
-    if(a2 != null) ambiguityForCam2 = a2.getPoseAmbiguity();
-    if(a3 != null) ambiguityForCam3 = a3.getPoseAmbiguity();
-    isVisionEstimatePoseChanged = false; 
+  //   PhotonPipelineResult[] cameraResults = {photonCam_3.getLatestResult(), 
+  //                                   photonCam_1.getLatestResult(), 
+  //                                   photonCam_2.getLatestResult()
+  //                                 };
+  //   PhotonTrackedTarget a1 = photonCam_1.getLatestResult().getBestTarget();
+  //   PhotonTrackedTarget a2 = photonCam_2.getLatestResult().getBestTarget();
+  //   PhotonTrackedTarget a3 = photonCam_3.getLatestResult().getBestTarget();        
 
-    Transform3d[] camToRobotArray = {VisionConfig.PHOTON_3_CAM_TO_ROBOT, VisionConfig.PHOTON_1_CAM_TO_ROBOT, VisionConfig.PHOTON_2_CAM_TO_ROBOT};
-    PhotonPipelineResult selectedCameraResult = null;
-    double lowestAmbiguity = 1;
-    int chosenCameraNum = 0;
-    boolean bestCaseIsMultiTag = false;
+  //   if(a1 != null) ambiguityForCam1 = a1.getPoseAmbiguity();
+  //   if(a2 != null) ambiguityForCam2 = a2.getPoseAmbiguity();
+  //   if(a3 != null) ambiguityForCam3 = a3.getPoseAmbiguity();
+  //   isVisionEstimatePoseChanged = false; 
 
-    // go through the cameras and select the one with multi target and lowest ambiguity
-    for(int i = 0; i < cameraResults.length; i++){
-      if (cameraResults[i] != null && cameraResults[i].hasTargets()) { // if the camera is enabled and has a target, consider it
-        if (cameraResults[i].getMultiTagResult().estimatedPose.isPresent && ((cameraResults[i].getBestTarget().getPoseAmbiguity() >=0 && // if the camera has a multi tag pose
-            cameraResults[i].getBestTarget().getPoseAmbiguity() < tempCutOff) || i==0)) { // and the ambiguity is low enough
+  //   Transform3d[] camToRobotArray = {VisionConfig.PHOTON_3_CAM_TO_ROBOT, VisionConfig.PHOTON_1_CAM_TO_ROBOT, VisionConfig.PHOTON_2_CAM_TO_ROBOT};
+  //   PhotonPipelineResult selectedCameraResult = null;
+  //   double lowestAmbiguity = 1;
+  //   int chosenCameraNum = 0;
+  //   boolean bestCaseIsMultiTag = false;
+
+  //   // go through the cameras and select the one with multi target and lowest ambiguity
+  //   for(int i = 0; i < cameraResults.length; i++){
+  //     if (cameraResults[i] != null && cameraResults[i].hasTargets()) { // if the camera is enabled and has a target, consider it
+  //       if (cameraResults[i].getMultiTagResult().estimatedPose.isPresent && ((cameraResults[i].getBestTarget().getPoseAmbiguity() >=0 && // if the camera has a multi tag pose
+  //           cameraResults[i].getBestTarget().getPoseAmbiguity() < tempCutOff) || i==0)) { // and the ambiguity is low enough
             
-              // Get the ambiguity value of the camera
-              double ambiguity = cameraResults[i].getBestTarget().getPoseAmbiguity();
-              // Check if the ambiguity value is lower than the current lowest ambiguity
+  //             // Get the ambiguity value of the camera
+  //             double ambiguity = cameraResults[i].getBestTarget().getPoseAmbiguity();
+  //             // Check if the ambiguity value is lower than the current lowest ambiguity
               
-              if (ambiguity < lowestAmbiguity) {
-                // Update the selected camera and lowest ambiguity value
-                selectedCameraResult = cameraResults[i];
-                lowestAmbiguity = ambiguity;
-                bestCaseIsMultiTag = true;
-                chosenCameraNum = i;
+  //             if (ambiguity < lowestAmbiguity) {
+  //               // Update the selected camera and lowest ambiguity value
+  //               selectedCameraResult = cameraResults[i];
+  //               lowestAmbiguity = ambiguity;
+  //               bestCaseIsMultiTag = true;
+  //               chosenCameraNum = i;
 
-              }
-            }
-          }
-        }
+  //             }
+  //           }
+  //         }
+  //       }
 
-      //if we didn't get a camera with a multi tag pose, we will use the camera with the lowest ambiguity
-      if (selectedCameraResult == null){
-        for (int i = 0; i < cameraResults.length; i++) {
-          if (cameraResults[i] != null && cameraResults[i].hasTargets()) { // if the camera is enabled and has a target, consider it
-            if ((cameraResults[i].getBestTarget().getPoseAmbiguity() < tempCutOff && cameraResults[i].getBestTarget().getPoseAmbiguity() >= 0)||i==0) { // the ambiguity is low enough
+  //     //if we didn't get a camera with a multi tag pose, we will use the camera with the lowest ambiguity
+  //     if (selectedCameraResult == null){
+  //       for (int i = 0; i < cameraResults.length; i++) {
+  //         if (cameraResults[i] != null && cameraResults[i].hasTargets()) { // if the camera is enabled and has a target, consider it
+  //           if ((cameraResults[i].getBestTarget().getPoseAmbiguity() < tempCutOff && cameraResults[i].getBestTarget().getPoseAmbiguity() >= 0)||i==0) { // the ambiguity is low enough
                 
-                  // Get the ambiguity value of the camera
-                  double ambiguity = cameraResults[i].getBestTarget().getPoseAmbiguity();
-                  // Check if the ambiguity value is lower than the current lowest ambiguity
+  //                 // Get the ambiguity value of the camera
+  //                 double ambiguity = cameraResults[i].getBestTarget().getPoseAmbiguity();
+  //                 // Check if the ambiguity value is lower than the current lowest ambiguity
                   
-                  if (ambiguity < lowestAmbiguity) {
-                    // Update the selected camera and lowest ambiguity value
-                    //if(cameras[0].getBestTarget().getBestCameraToTarget().getX() )
-                    selectedCameraResult = cameraResults[i];
-                    lowestAmbiguity = ambiguity;
-                    chosenCameraNum = i;
-                  }
-                }
-              }
-            }
-      }
+  //                 if (ambiguity < lowestAmbiguity) {
+  //                   // Update the selected camera and lowest ambiguity value
+  //                   //if(cameras[0].getBestTarget().getBestCameraToTarget().getX() )
+  //                   selectedCameraResult = cameraResults[i];
+  //                   lowestAmbiguity = ambiguity;
+  //                   chosenCameraNum = i;
+  //                 }
+  //               }
+  //             }
+  //           }
+  //     }
 
       //Area cutoff
 
-    // if a camera has been selected, we will use it to get the pose
-    if (selectedCameraResult != null && lowestAmbiguity < tempCutOff){
-      photonTimestamp = selectedCameraResult.getTimestampSeconds();
-      PhotonTrackedTarget target = selectedCameraResult.getBestTarget();
+  //   // if a camera has been selected, we will use it to get the pose
+  //   if (selectedCameraResult != null && lowestAmbiguity < tempCutOff){
+  //     photonTimestamp = selectedCameraResult.getTimestampSeconds();
+  //     PhotonTrackedTarget target = selectedCameraResult.getBestTarget();
 
-      if (bestCaseIsMultiTag) {
-        Transform3d fieldToCamera = selectedCameraResult.getMultiTagResult().estimatedPose.best;
-        Transform3d fieldCamToRobot = fieldToCamera.plus(camToRobotArray[chosenCameraNum]);
-        Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
-        newBotPose = botPose3d.toPose2d();
-        ambiguityForCam = target.getPoseAmbiguity(); 
-      } 
-      else {
-        Transform3d bestCameraToTarget = target.getBestCameraToTarget();
-        Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
-        Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, 
-                            camToRobotArray[chosenCameraNum]); // this needs to be universalized, right now is fixed to photon 3
-        newBotPose = currentPose3d.toPose2d();
-        ambiguityForCam = target.getPoseAmbiguity(); 
-      }
+  //     if (bestCaseIsMultiTag) {
+  //       Transform3d fieldToCamera = selectedCameraResult.getMultiTagResult().estimatedPose.best;
+  //       Transform3d fieldCamToRobot = fieldToCamera.plus(camToRobotArray[chosenCameraNum]);
+  //       Pose3d botPose3d = new Pose3d(fieldCamToRobot.getX(), fieldCamToRobot.getY(), fieldCamToRobot.getZ(), fieldCamToRobot.getRotation());
+  //       newBotPose = botPose3d.toPose2d();
+  //       ambiguityForCam = target.getPoseAmbiguity(); 
+  //     } 
+  //     else {
+  //       Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+  //       Pose3d tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId()).get();
+  //       Pose3d currentPose3d = PhotonUtils.estimateFieldToRobotAprilTag(bestCameraToTarget, tagPose, 
+  //                           camToRobotArray[chosenCameraNum]); // this needs to be universalized, right now is fixed to photon 3
+  //       newBotPose = currentPose3d.toPose2d();
+  //       ambiguityForCam = target.getPoseAmbiguity(); 
+  //     }
 
-      isVisionEstimatePoseChanged = true;
-      primaryAprilTagID = target.getFiducialId();
-      if(chosenCameraNum == 0) primaryCameraNum = 3; else if(chosenCameraNum == 1) primaryCameraNum = 1; else primaryCameraNum = 2;
+  //     isVisionEstimatePoseChanged = true;
+  //     primaryAprilTagID = target.getFiducialId();
+  //     if(chosenCameraNum == 0) primaryCameraNum = 3; else if(chosenCameraNum == 1) primaryCameraNum = 1; else primaryCameraNum = 2;
       
-    }
-    return newBotPose;
-  }
+  //   }
+  //   return newBotPose;
+  // }
 
   /**
    * Update all PhotonPoseTrackers 
@@ -395,13 +394,16 @@ public class Vision extends SubsystemBase {
           photonPoseTrackers.get(c).setDistanceToBestTarget(get3dDistance(latestResult.getBestTarget().getBestCameraToTarget()));
         });
       }
-    }
+   }
   }
 
+  /**
+   * 
+   * @return The current arraylist of photon pose trackers
+   */
   public ArrayList<PhotonPoseTracker> getPhotonPoseTrackers(){
     return photonPoseTrackers;
   }
-  
 
   /**
    * 
@@ -639,10 +641,30 @@ public class Vision extends SubsystemBase {
 
   /**
    * Command that uses PID to drive to the note robot relative
-   * @return a PID command to drive onto a note robot relative
+   * @return a PID command to drive onto a note robot relative use x and omega only
    */
   public Command PIDtoNoteRobotRelativeCommand(){
     return Drivetrain.getInstance().chasePoseRobotRelativeCommand(this::getRobotRelativeNotePose2d);
+  }
+
+  /**
+   * @param limitReached a boolean supplier to create an end condition for the command
+   * Command that uses PID to drive to the note robot relative
+   * @return a PID command to drive onto a note robot relative using x and omega
+   */
+  public Command PIDtoNoteRobotRelativeCommand(BooleanSupplier limitReached){
+    System.out.println(limitReached.getAsBoolean());
+    return Drivetrain.getInstance().chasePoseRobotRelativeCommand(this::getRobotRelativeNotePose2d, limitReached);
+  }
+
+  /**
+   * @param limitReached a boolean supplier to create an end condition for the command
+   * Command that uses PID to drive to the note robot relative
+   * @return a PID command to drive onto a note robot relative using x and y only
+   */
+  public Command PIDtoNoteRobotRelativeCommand_XandYOnly(BooleanSupplier limitReached){
+    System.out.println(limitReached.getAsBoolean());
+    return Drivetrain.getInstance().chasePoseRobotRelativeCommand_YandXOnly(this::getRobotRelativeNotePose2d, limitReached);
   }
 
   public int isTarget1(){
@@ -686,6 +708,10 @@ public class Vision extends SubsystemBase {
     }
   }
 
+  public boolean hasNoteInSight() {
+    return detectTarget;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder){
     super.initSendable(builder);
@@ -712,8 +738,7 @@ public class Vision extends SubsystemBase {
     builder.addDoubleProperty("cam 3 laser ambiguity", ()-> ambiguityForCam3, null);
     builder.addDoubleProperty("Distance to Tag - Robot", ()-> distToTagRelativeToRobot, null);
     builder.addDoubleProperty("Distance to Tag - Cam", ()-> distToTagRelativeToCam, null);
-
     
-
+  
   }
 }

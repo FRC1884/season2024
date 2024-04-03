@@ -446,9 +446,9 @@
     {
       "timestamp": 0.8750624421002293,
       "command": {
-        "type": "named",
+        "type": "sequential",
         "data": {
-          "name": "Intake"
+          "commands": []
         }
       }
     }
