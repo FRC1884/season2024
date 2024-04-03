@@ -39,9 +39,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -49,10 +51,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Config;
 import frc.robot.RobotMap;
+import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
+import frc.robot.subsystems.Vision.Vision;
 
 import java.util.Optional;
 import java.util.Set;
@@ -77,6 +81,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     GenericEntry pastCenterLine = tab.add("Past centerline", false).getEntry();
     private double targetAngleTelemetry = 0;
 
+    private Pose2d lastStoredPose = new Pose2d();
+
     SwerveDriveOdometry odometry;
 
     //For Testing All functions
@@ -87,7 +93,6 @@ public abstract class MAXSwerve extends SubsystemBase {
             MAXSwerveModule fr,
             MAXSwerveModule bl,
             MAXSwerveModule br) {
-
         switch (RobotMap.DriveMap.GYRO_TYPE) {
             case NAVX:
                 gyro = new AHRS(SPI.Port.kMXP);
@@ -171,7 +176,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         //resetOdometry(PoseEstimator.getInstance().getPosition()); //NEEDS MORE TESTING
         targetAngleEntry.setDouble(targetAngleTelemetry);
         currentAngleEntry.setDouble(getHeading() % 360);
-        pastCenterLine.setBoolean(isPastCenterline());
+        //pastCenterLine.setBoolean(isPastCenterline());
     }
 
     public SwerveModulePosition[] getModulePositions() {
@@ -531,6 +536,10 @@ public abstract class MAXSwerve extends SubsystemBase {
                 false);
     }
 
+    public Command navigate(Supplier<Pose2d> targetPose) {
+        return navigate(targetPose, null);
+    }
+
     /**
      * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
      *
@@ -546,9 +555,9 @@ public abstract class MAXSwerve extends SubsystemBase {
         ProfiledPIDController yController = new ProfiledPIDController(0.1, 0, 0, Y_CONSTRAINTS);
         ProfiledPIDController omegaController = new ProfiledPIDController(0.01, 0, 0, OMEGA_CONSTRAINTS);
 
-        xController.setTolerance(0.3);
-        yController.setTolerance(0.3);
-        omegaController.setTolerance(Units.degreesToRadians(3));
+        xController.setTolerance(0.05);
+        yController.setTolerance(0.05);
+        omegaController.setTolerance(Units.degreesToRadians(1.5));
         omegaController.enableContinuousInput(-180, 180);
 
         return new DeferredCommand(() ->
@@ -559,9 +568,9 @@ public abstract class MAXSwerve extends SubsystemBase {
                                 },
                                 () -> {
 
-                                    double xSpeed = xController.calculate(this.getPose().getX(), target.get().getX());
-                                    double ySpeed = yController.calculate(this.getPose().getY(), target.get().getY());
-                                    double omegaSpeed = omegaController.calculate(this.getGyroYawDegrees(), target.get().getRotation().getDegrees());
+                                    double xSpeed = xController.calculate(PoseEstimator.getInstance().getEstimatedPose().getX(), target.get().getX());
+                                    double ySpeed = yController.calculate(PoseEstimator.getInstance().getEstimatedPose().getY(), target.get().getY());
+                                    double omegaSpeed = omegaController.calculate(PoseEstimator.getInstance().getEstimatedPose().getRotation().getDegrees(), target.get().getRotation().getDegrees());
 
                                     this.drive(xSpeed, ySpeed, omegaSpeed, true, true);
                                 },
@@ -632,7 +641,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         PIDController xController = new PIDController(0.5, 0, 0);
         PIDController omegaPID = new PIDController(0.01, 0, 0);
 
-        xController.setTolerance(0.5);
+        xController.setTolerance(0.01);
         omegaPID.setTolerance(1.5);
         omegaPID.enableContinuousInput(-180, 180);
 
@@ -661,6 +670,132 @@ public abstract class MAXSwerve extends SubsystemBase {
                         },
                         this), Set.of(this)
         );
+    }
+
+    /**
+     * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
+     *
+     * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+     * @return command to PID align to a pose that is ROBOT RELATIVE
+     */
+    public Command chasePoseRobotRelativeCommand_YandXOnly(Supplier<Pose2d> target, BooleanSupplier limitReached) {
+        //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+
+        TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+        TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+
+        ProfiledPIDController xController = new ProfiledPIDController(0.3, 0, 0, X_CONSTRAINTS);
+        ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0.01, Y_CONSTRAINTS);
+
+        xController.setTolerance(0.03);
+        yController.setTolerance(0.03);
+
+        return new DeferredCommand(() ->
+                new FunctionalCommand(
+                        () -> {
+                            // Init
+                        },
+                        () -> {
+
+                            double xSpeed = xController.calculate(0, target.get().getX());
+                            double ySpeed = yController.calculate(0, target.get().getY());
+
+                            this.drive(xSpeed, ySpeed, 0, false, true);
+                        },
+
+                        interrupted -> {
+                            this.drive(0, 0, 0, false, true);
+                            System.out.println("Aligned now");
+                        },
+
+                        () -> {
+                            return limitReached.getAsBoolean() || xController.atSetpoint() && yController.atSetpoint();
+                        },
+                        this), Set.of(this)
+        );
+    }
+
+    /**
+     * Command to go to a pose using a Trapezoidal PID profile for increased accuracy compared to a pure on the fly
+     *
+     * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+     * @return command to PID align to a pose that is ROBOT RELATIVE
+     */
+    public Command chasePoseRobotRelativeCommand_Y_WithXSupplier(Supplier<Pose2d> target, Supplier<Double> xSpeed, BooleanSupplier limitReached) {
+        //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
+
+        TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+
+        ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0.01, Y_CONSTRAINTS);
+
+        yController.setTolerance(0.03);
+
+        return new DeferredCommand(() ->
+                new FunctionalCommand(
+                        () -> {
+                            // Init
+                        },
+                        () -> {
+
+                            double ySpeed = yController.calculate(0, target.get().getY());
+
+                            this.drive(xSpeed.get(), ySpeed, 0, false, true);
+                        },
+
+                        interrupted -> {
+                            this.drive(0, 0, 0, false, true);
+                            System.out.println("Aligned now");
+                        },
+
+                        () -> {
+                            return limitReached.getAsBoolean() || yController.atSetpoint();
+                        },
+                        this), Set.of(this)
+        );
+    }
+
+
+
+    public Command chasePoseRobotRelativeAndReturnCommand(Supplier<Pose2d> target, BooleanSupplier limitReached) {
+        return chasePoseRobotRelativeCommand(target, limitReached).beforeStarting(
+            Commands.runOnce(() -> lastStoredPose = getPose()
+        ).andThen(
+            onTheFlyPathCommand(
+                () -> new Pose2d(
+                    lastStoredPose.getX(),
+                    lastStoredPose.getY(),
+                    lastStoredPose.getRotation()
+                )
+            )
+        ));
+    }
+
+    public Command setLastPoseCommand(Supplier<Pose2d> poseToGo){
+        return new InstantCommand(() -> setLastPose(poseToGo.get()));
+    }
+
+    public void setLastPose(Pose2d poseToGo){
+        lastStoredPose = poseToGo;
+    }
+
+    public Pose2d getLastPose2d(){
+        return lastStoredPose; 
+    }
+
+
+
+    public Command intakeAndYoYoToLastPose(){
+        return new DeferredCommand(() -> 
+            new SequentialCommandGroup(
+                setLastPoseCommand(this::getPose),
+                new PrintCommand("Last pose set"),
+                chasePoseRobotRelativeCommand(() -> Vision.getInstance().getRobotRelativeNotePose2d())
+                .raceWith(new IntakeUntilLoadedCommand()),
+                new PrintCommand("Intake Finished"),
+                chasePoseCommand(this::getLastPose2d)
+            ),
+        Set.of(this));
+        
     }
 
     /**

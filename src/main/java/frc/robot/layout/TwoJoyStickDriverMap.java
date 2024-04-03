@@ -57,7 +57,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
   
   @Override
   public JoystickButton getTestButton() {
-    return controller.getButton(Button.BUTTON_B);
+    return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override

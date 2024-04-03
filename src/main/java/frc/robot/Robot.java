@@ -92,9 +92,21 @@ public class Robot extends TimedRobot {
       
       // Vision Poses with New Filtering
       ArrayList<PhotonPoseTracker> trackers = Vision.getInstance().getPhotonPoseTrackers();
-      if(VisionConfig.IS_PHOTON_VISION_ENABLED) m_field.getObject("Vision Cam 1 Pose").setPose(trackers.get(0).getEstimatedVisionBotPose());
-      if(VisionConfig.IS_PHOTON_TWO_ENABLED) m_field.getObject("Vision Cam 2 Pose").setPose(trackers.get(1).getEstimatedVisionBotPose());
-      if(VisionConfig.IS_PHOTON_THREE_ENABLED) m_field.getObject("Vision Cam 3 Pose").setPose(trackers.get(2).getEstimatedVisionBotPose());
+      for(PhotonPoseTracker t : trackers){
+        switch(t.getCameraName()){
+          case VisionConfig.POSE_PHOTON_1:
+            if(VisionConfig.IS_PHOTON_VISION_ENABLED) 
+              m_field.getObject("Vision Cam 1 Pose").setPose(t.getEstimatedVisionBotPose());
+          case VisionConfig.POSE_PHOTON_2:
+            if(VisionConfig.IS_PHOTON_TWO_ENABLED) 
+              m_field.getObject("Vision Cam 2 Pose").setPose(t.getEstimatedVisionBotPose());
+          case VisionConfig.POSE_PHOTON_3:
+            if(VisionConfig.IS_PHOTON_THREE_ENABLED)
+              m_field.getObject("Vision Cam 3 Pose").setPose(t.getEstimatedVisionBotPose());
+        }
+
+      }
+      
     }  
     if (Vision.getInstance().getNotePose2d() != null){
       m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());

@@ -5,13 +5,15 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.RobotMap.VisionConfig;
 
 public class PhotonPoseTracker {
 
     public PhotonPoseEstimator photonPoseEstimator;
     private PhotonCamera photonCamera;
-    private boolean hasUpdated;
+    private boolean hasUpdatedPoseEstimate;
     private PhotonPipelineResult photonPipelineResult;
     private Pose2d estimatedVisionBotPose;
     private double visionEstimateTimestamp;
@@ -22,7 +24,7 @@ public class PhotonPoseTracker {
   
     public PhotonPoseTracker(PhotonPoseEstimator photonPoseEstimator, PhotonCamera photonCamera, VisionConfig.CAMERA_TYPE cameraType) {
       this.photonPoseEstimator = photonPoseEstimator;
-      this.hasUpdated = false;
+      this.hasUpdatedPoseEstimate = false;
       this.photonCamera = photonCamera;
       estimatedVisionBotPose = new Pose2d();
       this.cameraType = cameraType;
@@ -32,6 +34,7 @@ public class PhotonPoseTracker {
     public void updateCameraPipelineResult(){
       photonPipelineResult = photonCamera.getLatestResult();
       visionEstimateTimestamp = photonPipelineResult.getTimestampSeconds();
+      hasUpdatedPoseEstimate = false;
     }
   
     public PhotonPipelineResult getPhotonPipelineResult(){
@@ -39,21 +42,25 @@ public class PhotonPoseTracker {
     }
   
     public void setUpdatedStatus(boolean updateStatus){
-      hasUpdated = updateStatus; 
+      hasUpdatedPoseEstimate = updateStatus; 
     }
   
     public double getCurrentTimestamp(){
       return visionEstimateTimestamp;
     }
   
-    public void updateEstimatedBotPose(Pose2d currentVisionPose, boolean isMultiTag){
-      estimatedVisionBotPose = currentVisionPose;
-      hasUpdated = true;
-      this.isMultiTag = isMultiTag;
+    public void updateEstimatedBotPose(){
+      photonPoseEstimator.update(photonPipelineResult).ifPresent(estimatedRobotPose -> {
+          Pose3d currentEstimatedPose = estimatedRobotPose.estimatedPose;
+          estimatedVisionBotPose = currentEstimatedPose.toPose2d();
+          isMultiTag = photonPipelineResult.getMultiTagResult().estimatedPose.isPresent;
+          setDistanceToBestTarget(get3dDistance(photonPipelineResult.getBestTarget().getBestCameraToTarget()));
+          hasUpdatedPoseEstimate = true;
+        });
     }
   
     public boolean hasUpdatedVisionEstimate() {
-      return hasUpdated;
+      return hasUpdatedPoseEstimate;
     }
   
     public Pose2d getEstimatedVisionBotPose(){
@@ -62,6 +69,10 @@ public class PhotonPoseTracker {
   
     public VisionConfig.CAMERA_TYPE getCameraType(){
       return cameraType;
+    }
+
+    public String getCameraName(){
+      return photonCamera.getName();
     }
   
     public boolean isMultiTagEstimate(){
@@ -75,5 +86,12 @@ public class PhotonPoseTracker {
     public double getDistanceToBestTarget() {
       return distanceToBestTarget;
     }
+
+    /**
+   * @return 3D distance to tag
+   */
+  public double get3dDistance(Transform3d targetPose) {
+    return Math.sqrt(Math.pow(targetPose.getX(),2) + Math.pow(targetPose.getY(),2) + Math.pow(targetPose.getZ(),2));
+  }
 }
   

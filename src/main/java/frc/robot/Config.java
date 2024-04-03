@@ -18,7 +18,7 @@ public class Config {
         public static final boolean CLIMBER_ENABLED = false;
         public static final boolean SHOOTER_ENABLED = true;
         // TODO: check if this actually works
-        public static final boolean VISION_ENABLED = false;
+        public static final boolean VISION_ENABLED = true;
         public static final boolean PIVOT_ENABLED = true;
 
         public static final PivotHardware.PivotHardwareType PIVOT_HARDWARE_TYPE = PivotHardware.PivotHardwareType.DUAL_ACTUATOR;

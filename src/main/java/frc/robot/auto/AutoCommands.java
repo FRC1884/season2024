@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
+import frc.robot.Commands.ShouldSkipNoteLogicCommand;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.ShooterMap;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -77,10 +78,18 @@ public class AutoCommands {
                                 new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED),
                                                 Feeder.getInstance())));
 
-                NamedCommands.registerCommand("VisionIntake", vision.PIDtoNoteRobotRelativeCommand()
-                        .until(drivetrain::isPastCenterline));
+                NamedCommands.registerCommand("VisionIntake", vision.PIDtoNoteRobotRelativeCommand(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
 
-                NamedCommands.registerCommand("SpeakerAlign", new SequentialCommandGroup(
+                // NamedCommands.registerCommand("VisionIntake XY", vision.PIDtoNoteRobotRelativeCommand_XandYOnly(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
+
+                // NamedCommands.registerCommand("VisionIntake XVel", drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
+                //                                                                 () -> drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
+
+                // extract gui composition to use just OptionalVisionIntakeCommand
+                NamedCommands.registerCommand("SkipNoteLogic", new ShouldSkipNoteLogicCommand());
+                NamedCommands.registerCommand("Backtrack", drivetrain.navigate(() -> poseEstimator.getStoredPose().get()));
+
+                NamedCommands.registerCommand("AlignToSpeaker", new SequentialCommandGroup(
                         new RepeatCommand(new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(() -> getTarget.get())).
                         until(() -> drivetrain.atSpeakerAlignAngle())),
                         new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(null))));
