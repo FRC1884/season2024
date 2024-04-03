@@ -6,6 +6,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -94,6 +95,9 @@ public class Pivot extends ProfiledPIDSubsystem {
 
         builder.addDoubleProperty("kG", () -> pivotFeedforward.kg, (v) -> pivotFeedforward = new ArmFeedforward(0, v, pivotFeedforward.kv, 0));
         builder.addDoubleProperty("kV", () -> pivotFeedforward.kv, (v) -> pivotFeedforward = new ArmFeedforward(0, pivotFeedforward.kg, v, 0));
+
+
+        builder.addDoubleProperty("ff", () -> pivotFeedforward.calculate(getController().getSetpoint().position, getController().getSetpoint().velocity), null);
 
         builder.addDoubleProperty("max velo", () -> m_controller.getConstraints().maxVelocity,
                 (v) -> m_controller.setConstraints(new TrapezoidProfile.Constraints(v, m_controller.getConstraints().maxAcceleration)));

@@ -14,6 +14,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.Coordinates;
@@ -127,6 +128,14 @@ public class Shooter extends SubsystemBase {
                     leadVel = v.get();
                     followVel = v.get();
                 }, this);
+    }
+
+    public Command setFlywheelVelocityIndividuallyCommand(Supplier<Double> leadVelocity, Supplier<Double> followVelocity) {
+        return new RunCommand(
+            () -> {
+                leadVel = leadVelocity.get();
+                followVel = followVelocity.get();
+            }, this);
     }
 
     public Command stopFlywheelCommand() {

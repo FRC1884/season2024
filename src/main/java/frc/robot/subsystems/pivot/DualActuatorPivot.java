@@ -41,8 +41,8 @@ public class DualActuatorPivot implements PivotHardware {
         leader.setIdleMode(CANSparkMax.IdleMode.kBrake);
         follower.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        leader.setSmartCurrentLimit(30);
-        follower.setSmartCurrentLimit(30);
+        leader.setSmartCurrentLimit(60);
+        follower.setSmartCurrentLimit(60);
 
         leader.burnFlash();
         follower.burnFlash();

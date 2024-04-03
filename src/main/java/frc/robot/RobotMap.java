@@ -334,7 +334,12 @@ public class RobotMap {
         
         public static final double FLYWHEEL_RADIUS = 0.0508;
         public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
-        public static final double AMP_SPEED = 600;
+        public static final double AMP_SPEED_FOLLOW = 600;
+        public static final double AMP_SPEED_LEAD = switch (Config.ROBOT_TYPE) {
+            case COMP -> 300;
+            case DEV -> 600;
+        };
+        
         public static final double TRAP_SPEED = 3000;
         public static final double SHOOTER_INTAKE_SPEED = -1000;
 
@@ -423,7 +428,7 @@ public class RobotMap {
         public static final double POSITION_TOLERANCE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> .1;
-                    default -> 0.012;
+                    default -> 0.005;
                 };
 
         public static final double VELOCITY_TOLERANCE =
@@ -435,19 +440,19 @@ public class RobotMap {
         public static final double UPPER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -350 * 15 / 25;
-                    default -> 1.932;
+                    default -> 2.01;
                 };
 
         public static final double LOWER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0;
-                    default -> 0.267;
+                    default -> 0.28;
                 };
 
         public static final double PIVOT_AMP_ANGLE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -325 * 15 / 25;
-                    default -> -325 * 15 / 25;
+                    default -> 1.85;
                 };
 
         public static final double PIVOT_TRAP_ANGLE =
@@ -471,41 +476,41 @@ public class RobotMap {
         public static final double kP =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 1.5;
-                    default -> 150;
+                    default -> 25;
                 };
 
         public static final double kI =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 3;
-                    default -> 20;
+                    default -> 3.5;
                 };
 
         public static final double kD =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.075;
-                    default -> 1;
+                    default -> 0;
                 };
 
         public static final double kIZone =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.5;
-                    default -> 0.01;
+                    default -> 0.05;
                 };
 
         public static final double kG = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> 0;
-            default -> 4.0;
+            default -> 0.62;
         };
 
         public static final double kV = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> 0;
-            default -> 0.0;
+            default -> 0.55;
         };
 
         public static final TrapezoidProfile.Constraints PROFILE_CONSTRAINTS =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> new TrapezoidProfile.Constraints(200, 100);
-                    default -> new TrapezoidProfile.Constraints(200, 100);
+                    default -> new TrapezoidProfile.Constraints(200, 1);
                 };
     }
 
@@ -515,8 +520,8 @@ public class RobotMap {
 
     public static class DoubleActuatorPivotMap {
         // hardstop angle in degrees
-        public static final double HARDSTOP_ANGLE = 15.3;
-        public static final double HARDSTOP_ENCODER = 0.07;
+        public static final double HARDSTOP_ANGLE = 13.2;
+        public static final double HARDSTOP_ENCODER = 0.056;
         public static final int PIVOT_ID_LEADER = 32;
         public static final int PIVOT_ID_FOLLOWER = 31;
         public static final int ENCODER_PORT = 2;
