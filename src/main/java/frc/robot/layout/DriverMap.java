@@ -84,7 +84,7 @@ public abstract class DriverMap extends CommandMap {
             getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand_XandYOnly(Feeder.getInstance()::isNoteLoaded));
 
             getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
-            getAmpAlignButton().onTrue(drivetrain.pathFindThenFollowPathCommand("Amp Align"));
+            getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Amp Align"));
             
             SequentialCommandGroup visionIntakeCommand = new VisionIntakeThenReturnCommand();
             
@@ -92,8 +92,8 @@ public abstract class DriverMap extends CommandMap {
             // getTestButton().whileTrue(drivetrain.chasePoseRobotRelativeAndReturnCommand(vision::getRobotRelativeNotePose2d,
             //     Feeder.getInstance()::isNoteLoaded
             // ).alongWith(new IntakeUntilLoadedCommand()));
-            getTestButton().whileTrue(drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
-            () -> drivetrain::getChassisSpeeds.vxMetersPerSecond, Feeder.getInstance()::isNoteLoaded));
+            // getTestButton().whileTrue(drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
+            // () -> drivetrain::getChassisSpeeds.vxMetersPerSecond, Feeder.getInstance()::isNoteLoaded));
 
 
         }

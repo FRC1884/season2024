@@ -16,29 +16,29 @@
     },
     {
       "anchor": {
-        "x": 5.911259946826221,
-        "y": 1.7915464909731151
+        "x": 6.630739424103669,
+        "y": 0.7612043754757987
       },
       "prevControl": {
-        "x": 4.837319863318973,
-        "y": 1.6355039147370192
+        "x": 5.55679934059642,
+        "y": 0.6051617992397027
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Vision Intake Low Note"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 240.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.5,
     "rotation": 180.0,
     "rotateFast": false
   },

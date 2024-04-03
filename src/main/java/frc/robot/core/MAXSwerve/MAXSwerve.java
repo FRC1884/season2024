@@ -127,7 +127,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                         MaxSwerveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig(true, true) // Default path replanning config. See the API for the
+                        new ReplanningConfig(true, true, 0.6, 0.2) // Default path replanning config. See the API for the
                         // options
                         // here
                 ), getShouldFlip(), this);
@@ -551,8 +551,8 @@ public abstract class MAXSwerve extends SubsystemBase {
         TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
         TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(1, 1.5);
 
-        ProfiledPIDController xController = new ProfiledPIDController(0.1, 0, 0, X_CONSTRAINTS);
-        ProfiledPIDController yController = new ProfiledPIDController(0.1, 0, 0, Y_CONSTRAINTS);
+        ProfiledPIDController xController = new ProfiledPIDController(0.5, 0, 0, X_CONSTRAINTS);
+        ProfiledPIDController yController = new ProfiledPIDController(0.3, 0, 0.01, Y_CONSTRAINTS);
         ProfiledPIDController omegaController = new ProfiledPIDController(0.01, 0, 0, OMEGA_CONSTRAINTS);
 
         xController.setTolerance(0.05);

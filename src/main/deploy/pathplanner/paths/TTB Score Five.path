@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.2228368163728565,
-        "y": 1.7089357153187112
+        "x": 6.630739424103669,
+        "y": 0.7612043754757987
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.387041801830552,
-        "y": 2.5992962973717297
+        "x": 4.7949444095613645,
+        "y": 1.6515649575288172
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Vision Intake Low Note"
     },
     {
       "anchor": {
@@ -25,14 +25,14 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TTB Shot Four"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 240.0

@@ -80,10 +80,10 @@ public class AutoCommands {
 
                 NamedCommands.registerCommand("VisionIntake", vision.PIDtoNoteRobotRelativeCommand(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
 
-                // NamedCommands.registerCommand("VisionIntake XY", vision.PIDtoNoteRobotRelativeCommand_XandYOnly(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
+                NamedCommands.registerCommand("VisionIntake XY", vision.PIDtoNoteRobotRelativeCommand_XandYOnly(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
 
-                // NamedCommands.registerCommand("VisionIntake XVel", drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
-                //                                                                 () -> drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
+                NamedCommands.registerCommand("VisionIntake XVel", drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
+                                                                                 () -> 1.5, () -> false).raceWith(new IntakeUntilLoadedCommand()));
 
                 // extract gui composition to use just OptionalVisionIntakeCommand
                 NamedCommands.registerCommand("SkipNoteLogic", new ShouldSkipNoteLogicCommand());

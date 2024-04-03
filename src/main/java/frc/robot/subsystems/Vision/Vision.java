@@ -629,7 +629,7 @@ public class Vision extends SubsystemBase {
     for (int i = 0; i < photonPoseTrackers.size(); i++){
       final int c = i;
       builder.addDoubleProperty(photonPoseTrackers.get(c).getCameraName() + " Distance to best target", () -> photonPoseTrackers.get(c).getDistanceToBestTarget(), null);
-      builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Distance to best target", () -> photonPoseTrackers.get(c).hasUpdatedVisionEstimate(), null);
+      builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Has updated vision estimate", () -> photonPoseTrackers.get(c).hasUpdatedVisionEstimate(), null);
       builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Is MultiTag", () -> photonPoseTrackers.get(c).isMultiTagEstimate(), null);
     }
   

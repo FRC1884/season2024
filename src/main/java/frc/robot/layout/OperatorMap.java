@@ -222,24 +222,19 @@ public abstract class OperatorMap extends CommandMap {
             // feeder.setFeederState(FeederDirection.REVERSE)).alongWith(inta));
 
             // TODO: Make a button mapped to this
-            var rasieShooter = 
+            var raiseShooter = 
                 new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.REVERSE)).alongWith(
                 shooter.setFlywheelVelocityCommand(() -> ShooterMap.SHOOTER_INTAKE_SPEED)).alongWith(
                     pivot.setPositionCommand(() -> PivotMap.PIVOT_INTAKE_ANGLE));
             
             
-            var shooterIntakeCommand = rasieShooter.until(() -> 
-                 Feeder.getInstance().isNoteLoaded() && Feeder.getInstance().getUpperBeamBreak()
-            )
-                   .andThen(new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED))
-                    .alongWith(shooter.stopFlywheelCommand())
-                    .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
-
-            getSourceIntakeButton().onTrue(rasieShooter);
-            
-            //.onFalse(new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED))
-            // .alongWith(shooter.stopFlywheelCommand())
-            // .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+            getSourceIntakeButton().onTrue(raiseShooter.until(() -> Feeder.getInstance().isNoteLoaded() && Feeder.getInstance().getUpperBeamBreak()).andThen(new ParallelCommandGroup(
+                new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED)),
+                shooter.stopFlywheelCommand(),
+                pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE))
+            )).onFalse(new InstantCommand(() -> Feeder.getInstance().setFeederState(FeederDirection.STOPPED))
+            .alongWith(shooter.stopFlywheelCommand())
+             .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
         }
 
     }

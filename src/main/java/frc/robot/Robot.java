@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -64,6 +65,7 @@ public class Robot extends TimedRobot {
     if(Config.Subsystems.DRIVETRAIN_ENABLED){
        //Zero Gyro
       Drivetrain.getInstance().zeroGyroYaw();
+      Drivetrain.getInstance().setGyroYaw(Units.radiansToDegrees(RobotMap.DriveMap.GYRO_OFFSET_RADIANS));
       PoseEstimator.getInstance().resetPoseEstimate(Drivetrain.getInstance().getPose()); 
     }
 
@@ -96,13 +98,13 @@ public class Robot extends TimedRobot {
         switch(t.getCameraName()){
           case VisionConfig.POSE_PHOTON_1:
             if(VisionConfig.IS_PHOTON_VISION_ENABLED) 
-              m_field.getObject("Vision Cam 1 Pose").setPose(t.getEstimatedVisionBotPose());
+              m_field.getObject("Cam 1 Front Pose").setPose(t.getEstimatedVisionBotPose());
           case VisionConfig.POSE_PHOTON_2:
             if(VisionConfig.IS_PHOTON_TWO_ENABLED) 
-              m_field.getObject("Vision Cam 2 Pose").setPose(t.getEstimatedVisionBotPose());
+              m_field.getObject("Cam 2 Back Pose").setPose(t.getEstimatedVisionBotPose());
           case VisionConfig.POSE_PHOTON_3:
             if(VisionConfig.IS_PHOTON_THREE_ENABLED)
-              m_field.getObject("Vision Cam 3 Pose").setPose(t.getEstimatedVisionBotPose());
+              m_field.getObject("Laser cam Pose").setPose(t.getEstimatedVisionBotPose());
         }
 
       }
