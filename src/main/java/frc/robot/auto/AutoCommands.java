@@ -89,7 +89,7 @@ public class AutoCommands {
                 NamedCommands.registerCommand("SkipNoteLogic", new ShouldSkipNoteLogicCommand());
                 NamedCommands.registerCommand("Backtrack", drivetrain.navigate(() -> poseEstimator.getStoredPose().get()));
 
-                NamedCommands.registerCommand("SpeakerAlign", new SequentialCommandGroup(
+                NamedCommands.registerCommand("AlignToSpeaker", new SequentialCommandGroup(
                         new RepeatCommand(new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(() -> getTarget.get())).
                         until(() -> drivetrain.atSpeakerAlignAngle())),
                         new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(null))));

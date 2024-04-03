@@ -92,8 +92,8 @@ public abstract class DriverMap extends CommandMap {
             // getTestButton().whileTrue(drivetrain.chasePoseRobotRelativeAndReturnCommand(vision::getRobotRelativeNotePose2d,
             //     Feeder.getInstance()::isNoteLoaded
             // ).alongWith(new IntakeUntilLoadedCommand()));
-            // getTestButton().whileTrue(drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
-            // () -> drivetrain.getChassisSpeeds().vxMetersPerSecond, Feeder.getInstance()::isNoteLoaded));
+            getTestButton().whileTrue(drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
+            () -> drivetrain::getChassisSpeeds.vxMetersPerSecond, Feeder.getInstance()::isNoteLoaded));
 
 
         }

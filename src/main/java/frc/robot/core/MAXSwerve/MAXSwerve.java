@@ -681,11 +681,14 @@ public abstract class MAXSwerve extends SubsystemBase {
     public Command chasePoseRobotRelativeCommand_YandXOnly(Supplier<Pose2d> target, BooleanSupplier limitReached) {
         //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
 
-        PIDController xController = new PIDController(0.5, 0, 0);
-        PIDController yController = new PIDController(0.5, 0, 0);
+        TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+        TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
 
-        xController.setTolerance(0.01);
-        yController.setTolerance(0.01);
+        ProfiledPIDController xController = new ProfiledPIDController(0.3, 0, 0, X_CONSTRAINTS);
+        ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0.01, Y_CONSTRAINTS);
+
+        xController.setTolerance(0.03);
+        yController.setTolerance(0.03);
 
         return new DeferredCommand(() ->
                 new FunctionalCommand(
@@ -702,8 +705,6 @@ public abstract class MAXSwerve extends SubsystemBase {
 
                         interrupted -> {
                             this.drive(0, 0, 0, false, true);
-                            xController.close();
-                            yController.close();
                             System.out.println("Aligned now");
                         },
 
@@ -723,9 +724,11 @@ public abstract class MAXSwerve extends SubsystemBase {
     public Command chasePoseRobotRelativeCommand_Y_WithXSupplier(Supplier<Pose2d> target, Supplier<Double> xSpeed, BooleanSupplier limitReached) {
         //TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(1, 1.5);
 
-        PIDController yController = new PIDController(0.5, 0, 0);
+        TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
 
-        yController.setTolerance(0.01);
+        ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0.01, Y_CONSTRAINTS);
+
+        yController.setTolerance(0.03);
 
         return new DeferredCommand(() ->
                 new FunctionalCommand(
@@ -733,13 +736,14 @@ public abstract class MAXSwerve extends SubsystemBase {
                             // Init
                         },
                         () -> {
+
                             double ySpeed = yController.calculate(0, target.get().getY());
+
                             this.drive(xSpeed.get(), ySpeed, 0, false, true);
                         },
 
                         interrupted -> {
                             this.drive(0, 0, 0, false, true);
-                            yController.close();
                             System.out.println("Aligned now");
                         },
 

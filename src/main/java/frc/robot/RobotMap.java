@@ -135,7 +135,7 @@ public class RobotMap {
         public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
         public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
         public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
-        public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 1.0;
+        public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 0.0;
         public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.0;
     }
 
@@ -343,17 +343,17 @@ public class RobotMap {
         public static final double FLYWHEEL_RAMP_RATE = 0.5;
 
         public static final double[][] SINGLE_ACTUATOR_VALUES = {
-                {1, 2600, -115 - 10},
-                {1.45, 2600, -87 - 10},
-                {1.95, 2600, -67},
-                {2.47, 3000, -52 + 5},
+                {1, 2600, -75},
+                {1.45, 2600, -58.2},
+                {1.95, 2600, -40.2},
+                {2.47, 3000, -28.2},
                 //  { 2.49, 3700, -52- 12},
                 //  { 2.90, 3800, -52- 12},
                 //  { 2.96, 4000, -30 - 12},
-                {3.48, 4000, -19},
+                {3.40, 5000, -19},
                 {3.7, 6000, -16},
                 // {3.95, 6000, -12},
-                {4.03, 6000, -12},
+                {4.03, 6000, -14},
                 {4.3, 6000, -10.5},
                 {4.6, 6000, -9}
         };
