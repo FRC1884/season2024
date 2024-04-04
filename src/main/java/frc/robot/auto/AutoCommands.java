@@ -22,6 +22,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Feeder.FeederDirection;
 import frc.robot.subsystems.Intake.IntakeDirection;
+import frc.robot.util.ActionSetpoint;
 import frc.robot.util.FlywheelLookupTable;
 import frc.robot.subsystems.PoseEstimator;
 
@@ -61,8 +62,6 @@ public class AutoCommands {
                 NamedCommands.registerCommand("Intake Off", new InstantCommand(() -> intake.setIntakeState(IntakeDirection.STOPPED),
                                                 Intake.getInstance()));
 
-                
-
                 NamedCommands.registerCommand("SpoolShooter", shooter.setFlywheelVelocityCommand(
                                 () -> lookupTable.get(poseEstimator.getDistanceToPose(getTarget.get().getTranslation()))
                                                 .getRPM()));
@@ -78,12 +77,12 @@ public class AutoCommands {
                                 new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED),
                                                 Feeder.getInstance())));
 
-                NamedCommands.registerCommand("VisionIntake", vision.PIDtoNoteRobotRelativeCommand(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
+                NamedCommands.registerCommand("VisionIntake", vision.PIDtoNoteRobotRelativeCommand().raceWith(new IntakeUntilLoadedCommand()));
 
                 NamedCommands.registerCommand("VisionIntake XY", vision.PIDtoNoteRobotRelativeCommand_XandYOnly(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
 
-                NamedCommands.registerCommand("VisionIntake XVel", drivetrain.chasePoseRobotRelativeCommand_Y_WithXSupplier(vision::getRobotRelativeNotePose2d, 
-                                                                                 () -> 1.5, () -> false).raceWith(new IntakeUntilLoadedCommand()));
+                NamedCommands.registerCommand("VisionIntake XVel", drivetrain.chasePoseRobotRelativeCommand_Theta_WithXSupplier(vision::getRobotRelativeNotePose2d, 
+                                                                                 () -> drivetrain.getChassisSpeeds().vxMetersPerSecond, () -> false).raceWith(new IntakeUntilLoadedCommand()).withTimeout(1.5));
 
                 // extract gui composition to use just OptionalVisionIntakeCommand
                 NamedCommands.registerCommand("SkipNoteLogic", new ShouldSkipNoteLogicCommand());

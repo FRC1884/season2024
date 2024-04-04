@@ -81,7 +81,7 @@ public abstract class DriverMap extends CommandMap {
             // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
             // TODO DELETE ME!
             getSlowModeToggleButton().toggleOnTrue(Commands.runOnce(() -> DriveMap.IS_SLOWMODE_ENABLED = !DriveMap.IS_SLOWMODE_ENABLED));
-            getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand_XandYOnly(Feeder.getInstance()::isNoteLoaded));
+            getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand());
 
             getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
             getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Amp Align"));

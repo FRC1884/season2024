@@ -654,8 +654,13 @@ public abstract class MAXSwerve extends SubsystemBase {
 
                             double xSpeed = xController.calculate(0, target.get().getX());
                             double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
-
-                            this.drive(xSpeed, 0, omegaSpeed, false, true);
+                            
+                            if (!omegaPID.atSetpoint()){
+                                this.drive(xSpeed, 0, omegaSpeed, false, true);
+                            }
+                            else{
+                                this.drive(xSpeed, 0, 0, false, true);
+                            }
                         },
 
                         interrupted -> {
@@ -726,7 +731,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
         TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
 
-        ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0.01, Y_CONSTRAINTS);
+        ProfiledPIDController yController = new ProfiledPIDController(0.5, 0, 0.02, Y_CONSTRAINTS);
 
         yController.setTolerance(0.03);
 
@@ -748,7 +753,51 @@ public abstract class MAXSwerve extends SubsystemBase {
                         },
 
                         () -> {
-                            return limitReached.getAsBoolean() || yController.atSetpoint();
+                            return limitReached.getAsBoolean();
+                        },
+                        this), Set.of(this)
+        );
+    }
+
+    /**
+     * Command to go to a pose using a PID profile for increased accuracy compared to a pure on the fly
+     *
+     * @param targetPose the Supplier<Pose2d> that the robot should drive to ROBOT RELATIVE
+     * @return command to PID align to a pose that is ROBOT RELATIVE
+     */
+    public Command chasePoseRobotRelativeCommand_Theta_WithXSupplier(Supplier<Pose2d> target, Supplier<Double> xSpeed, BooleanSupplier limitReached) {
+
+        PIDController omegaPID = new PIDController(0.01, 0, 0);
+
+        omegaPID.setTolerance(1.5);
+        omegaPID.enableContinuousInput(-180, 180);
+
+
+        return new DeferredCommand(() ->
+                new FunctionalCommand(
+                        () -> {
+                            // Init
+                        },
+                        () -> {
+
+                            double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
+                            if (!omegaPID.atSetpoint()){
+                                this.drive(xSpeed.get(), 0, omegaSpeed, false, true);
+                            }
+                            else {
+                                this.drive(xSpeed.get(), 0, 0, false, true);
+                            }
+                            
+                        },
+
+                        interrupted -> {
+                            this.drive(0, 0, 0, false, true);
+                            omegaPID.close();
+                            System.out.println("Aligned now");
+                        },
+
+                        () -> {
+                            return limitReached.getAsBoolean();
                         },
                         this), Set.of(this)
         );

@@ -18,6 +18,7 @@ public class PhotonPoseTracker {
     private Pose2d estimatedVisionBotPose;
     private double visionEstimateTimestamp;
     private double distanceToBestTarget;
+    private double noisyDistanceMeters;
   
     private VisionConfig.CAMERA_TYPE cameraType;
     private boolean isMultiTag;
@@ -29,6 +30,21 @@ public class PhotonPoseTracker {
       estimatedVisionBotPose = new Pose2d();
       this.cameraType = cameraType;
       isMultiTag = false;
+      distanceToBestTarget = 0;
+      noisyDistanceMeters = 0;
+      switch (cameraType) { 
+        case OV2311:
+            noisyDistanceMeters = VisionConfig.OV2311_NOISY_DISTANCE_METERS;
+            break;
+        case OV9281:
+            noisyDistanceMeters = VisionConfig.OV9281_NOISY_DISTANCE_METERS;
+            break;
+        case TELEPHOTO_OV9281:
+            noisyDistanceMeters = VisionConfig.TELEPHOTO_NOISY_DISTANCE_METERS;
+            break;
+        default:
+            break; 
+          }
     }
   
     public void updateCameraPipelineResult(){
@@ -51,12 +67,15 @@ public class PhotonPoseTracker {
   
     public void updateEstimatedBotPose(){
       photonPoseEstimator.update(photonPipelineResult).ifPresent(estimatedRobotPose -> {
-          Pose3d currentEstimatedPose = estimatedRobotPose.estimatedPose;
-          estimatedVisionBotPose = currentEstimatedPose.toPose2d();
-          isMultiTag = photonPipelineResult.getMultiTagResult().estimatedPose.isPresent;
-          setDistanceToBestTarget(get3dDistance(photonPipelineResult.getBestTarget().getBestCameraToTarget()));
-          hasUpdatedPoseEstimate = true;
+        Pose3d currentEstimatedPose = estimatedRobotPose.estimatedPose;
+        estimatedVisionBotPose = currentEstimatedPose.toPose2d();
+        isMultiTag = photonPipelineResult.getMultiTagResult().estimatedPose.isPresent;
+        setDistanceToBestTarget(get3dDistance(photonPipelineResult.getBestTarget().getBestCameraToTarget()));
+        
         });
+        if (distanceToBestTarget < noisyDistanceMeters){
+          hasUpdatedPoseEstimate = true;
+        }
     }
   
     public boolean hasUpdatedVisionEstimate() {

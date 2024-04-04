@@ -194,9 +194,9 @@ public class RobotMap {
         public static final double VISION_X_MAX_CUTOFF = 13.5; 
 
         //Noisy Distance Constanst
-        public static final double OV2311_NOISY_DISTANCE_METERS = 3.4;
+        public static final double OV2311_NOISY_DISTANCE_METERS = 3.6;
         public static final double OV9281_NOISY_DISTANCE_METERS = 3.5;
-        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 8.0;
+        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 5.0;
         public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
         public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
         public static final double TAG_PRESENCE_WEIGHT = 10;
@@ -244,7 +244,7 @@ public class RobotMap {
         public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y, new Rotation2d(-NN_LIME_YAW));
 
         // Photonvision
-        public static final double  POSE_AMBIGUITY_CUTOFF = 0.2;
+        public static final double  POSE_AMBIGUITY_CUTOFF = 0.6;
 
         public static final String POSE_PHOTON_1 = "photoncam-1";
         public static final CAMERA_TYPE CAM_1_TYPE = CAMERA_TYPE.OV2311;
@@ -394,9 +394,10 @@ public class RobotMap {
                 {2.96, 5600, 0.575},
                 {3.57, 5600, 0.518},
                 {3.87, 5900, 0.495},
-                {4.43, 6200, 0.475},
+                {4.43, 6500, 0.482},
                 {5.02, 6600, 0.461},
-                {5.41, 6550, 0.452}
+                {5.41, 6550, 0.452},
+                {8.00, 6550, 0.452}
         };
 
         public static final double[][] SPEAKER_SHOT_VALUES = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
