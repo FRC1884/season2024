@@ -68,6 +68,12 @@
                       }
                     },
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "1CLNoteShot.1"
@@ -101,6 +107,12 @@
                       "type": "named",
                       "data": {
                         "name": "VisionIntake XVel"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake"
                       }
                     },
                     {

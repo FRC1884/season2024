@@ -176,7 +176,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         //resetOdometry(PoseEstimator.getInstance().getPosition()); //NEEDS MORE TESTING
         targetAngleEntry.setDouble(targetAngleTelemetry);
         currentAngleEntry.setDouble(getHeading() % 360);
-        //pastCenterLine.setBoolean(isPastCenterline());
+        pastCenterLine.setBoolean(isPastCenterline());
     }
 
     public SwerveModulePosition[] getModulePositions() {
