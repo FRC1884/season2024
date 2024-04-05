@@ -140,6 +140,6 @@ public class BoardOperatorMap extends OperatorMap {
   @Override
   JoystickButton getSourceIntakeButton() {
     // TODO Auto-generated method stub
-    return null;
+    return controller.getButton(Button.BUTTON_START);
   }
 }

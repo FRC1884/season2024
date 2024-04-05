@@ -39,7 +39,7 @@ public class OI {
 
     new TwoJoyStickDriverMap(driver).registerCommands();
     if(Config.Controllers.BOARD_OPERATOR_ENABLED){
-      new ChampsBoardOperator(operator).registerCommands();
+      new BoardOperatorMap(operator).registerCommands();
     }
     else if (Config.Controllers.JOYSTICK_OPERATOR_ENABLED){
       new TwoJoyStickOperatorMap(operator).registerCommands();

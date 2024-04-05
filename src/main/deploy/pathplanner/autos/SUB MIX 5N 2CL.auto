@@ -38,18 +38,6 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake On"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed On"
-                      }
-                    },
-                    {
                       "type": "wait",
                       "data": {
                         "waitTime": 0.3
@@ -80,12 +68,6 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed Off"
-                      }
-                    },
-                    {
                       "type": "wait",
                       "data": {
                         "waitTime": 0.5
@@ -106,7 +88,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "VisionIntake"
+                        "name": "VisionIntake XVel"
                       }
                     },
                     {
@@ -128,27 +110,9 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed On"
-                      }
-                    },
-                    {
                       "type": "wait",
                       "data": {
                         "waitTime": 0.4
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed Off"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Off"
                       }
                     }
                   ]

@@ -781,22 +781,24 @@ public abstract class MAXSwerve extends SubsystemBase {
                         () -> {
 
                             double omegaSpeed = omegaPID.calculate(0, target.get().getRotation().getDegrees());
-                            if (!omegaPID.atSetpoint()){
+                            if (!omegaPID.atSetpoint()) {
                                 this.drive(xSpeed.get(), 0, omegaSpeed, false, true);
                             }
                             else {
                                 this.drive(xSpeed.get(), 0, 0, false, true);
+                                omegaPID.close();
                             }
                             
                         },
 
                         interrupted -> {
-                            this.drive(0, 0, 0, false, true);
+                            this.drive(0, 0, 0, false, false);
                             omegaPID.close();
                             System.out.println("Aligned now");
                         },
 
                         () -> {
+                            System.out.println(limitReached.getAsBoolean());
                             return limitReached.getAsBoolean();
                         },
                         this), Set.of(this)
@@ -868,7 +870,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     //   }
     // }
 
-    public boolean isPastCenterline(){
+    public boolean isPastCenterline() {
         double xLimit = 0;
         if(DriverStation.getAlliance().isPresent()){
             if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){

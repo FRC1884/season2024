@@ -18,13 +18,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Pivot"
+                  "name": "SpoolShooter"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SpoolShooter"
+                  "name": "Pivot"
                 }
               },
               {
@@ -92,9 +92,15 @@
                       }
                     },
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake Off"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
-                        "pathName": "TWNote-1CLNoteVI"
+                        "pathName": "TWNote-3CLNoteVI"
                       }
                     },
                     {
@@ -110,45 +116,21 @@
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "named",
                       "data": {
-                        "waitTime": 0.3
+                        "name": "Intake"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "1CLNoteShot"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
+                        "pathName": "3CLNoteShot"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Feed On"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.4
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed Off"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Off"
+                        "name": "Shoot"
                       }
                     }
                   ]

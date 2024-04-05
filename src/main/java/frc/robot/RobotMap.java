@@ -142,7 +142,7 @@ public class RobotMap {
         public static final Pose2d RED_AMP = new Pose2d(14.68, 7.52, new Rotation2d(Math.PI / 2));
         public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
         public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
-        public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 0.0;
+        public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 0.15;
         public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.0;
     }
 
@@ -194,7 +194,7 @@ public class RobotMap {
         public static final double VISION_X_MAX_CUTOFF = 13.5; 
 
         //Noisy Distance Constanst
-        public static final double OV2311_NOISY_DISTANCE_METERS = 3.6;
+        public static final double OV2311_NOISY_DISTANCE_METERS = 4.0;
         public static final double OV9281_NOISY_DISTANCE_METERS = 3.5;
         public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 5.0;
         public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
@@ -392,7 +392,8 @@ public class RobotMap {
                 {1.979, 5600, 0.70},
                 {2.492, 5600, 0.63},
                 {2.96, 5600, 0.575},
-                {3.57, 5600, 0.518},
+                {3.26, 5600, 0.56},
+                {3.57, 5600, 0.538},
                 {3.87, 5900, 0.495},
                 {4.43, 6500, 0.482},
                 {5.02, 6600, 0.461},
@@ -507,7 +508,7 @@ public class RobotMap {
         public static final double kI =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 3;
-                    default -> 5;
+                    default -> 20;
                 };
 
         public static final double kD =
@@ -519,7 +520,7 @@ public class RobotMap {
         public static final double kIZone =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.5;
-                    default -> 0.05;
+                    default -> 0.2;
                 };
 
         public static final double kG = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
