@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.33,
-      "y": 5.55
+      "x": 0.3965785503387451,
+      "y": 4.0273118019104
     },
     "rotation": 179.99469134034814
   },
@@ -32,75 +32,21 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 1.5
+                        "pathName": "CLSRCStart-SWShot"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake On"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed On"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
+                        "name": "Shoot"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "SUBStart-BWNote"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "BWNote-MWNote"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "MWNote-TWNote"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed Off"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "TWNote-1CLNoteVI"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.2
+                        "pathName": "SWShot-5CLNoteVI"
                       }
                     },
                     {
@@ -110,45 +56,51 @@
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "named",
                       "data": {
-                        "waitTime": 0.3
+                        "name": "Intake with Timeout"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "1CLNoteShot"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
+                        "pathName": "5CLNoteShot"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Feed On"
+                        "name": "Shoot"
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 0.4
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed Off"
+                        "pathName": "SWShot-3CLNoteVI"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake Off"
+                        "name": "VisionIntake XVel"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake with Timeout"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "3CLNoteShot-SWShot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
                       }
                     }
                   ]

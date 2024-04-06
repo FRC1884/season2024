@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
@@ -49,17 +50,22 @@ public class AutoCommands {
                 NamedCommands.registerCommand("Print", Commands.print("woo something happened"));
 
                 NamedCommands.registerCommand("Intake", new IntakeUntilLoadedCommand());
+                NamedCommands.registerCommand("Intake with Timeout", new IntakeUntilLoadedCommand().withTimeout(0.5));
 
-                NamedCommands.registerCommand("Feed On", new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD),
+                NamedCommands.registerCommand("Feed On",
+                                new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD),
                                                 Feeder.getInstance()));
 
-                NamedCommands.registerCommand("Feed Off", new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED),
+                NamedCommands.registerCommand("Feed Off",
+                                new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED),
                                                 Feeder.getInstance()));
 
-                NamedCommands.registerCommand("Intake On", new InstantCommand(() -> intake.setIntakeState(IntakeDirection.FORWARD),
+                NamedCommands.registerCommand("Intake On",
+                                new InstantCommand(() -> intake.setIntakeState(IntakeDirection.FORWARD),
                                                 Intake.getInstance()));
 
-                NamedCommands.registerCommand("Intake Off", new InstantCommand(() -> intake.setIntakeState(IntakeDirection.STOPPED),
+                NamedCommands.registerCommand("Intake Off",
+                                new InstantCommand(() -> intake.setIntakeState(IntakeDirection.STOPPED),
                                                 Intake.getInstance()));
 
                 NamedCommands.registerCommand("SpoolShooter", shooter.setFlywheelVelocityCommand(
@@ -77,22 +83,30 @@ public class AutoCommands {
                                 new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED),
                                                 Feeder.getInstance())));
 
-                NamedCommands.registerCommand("VisionIntake", vision.PIDtoNoteRobotRelativeCommand().raceWith(new IntakeUntilLoadedCommand()));
+                NamedCommands.registerCommand("VisionIntake",
+                                vision.PIDtoNoteRobotRelativeCommand().raceWith(new IntakeUntilLoadedCommand()));
 
-                NamedCommands.registerCommand("VisionIntake XY", vision.PIDtoNoteRobotRelativeCommand_XandYOnly(drivetrain::isPastCenterline).raceWith(new IntakeUntilLoadedCommand()));
+                NamedCommands.registerCommand("VisionIntake XY",
+                                vision.PIDtoNoteRobotRelativeCommand_XandYOnly(drivetrain::isPastCenterline)
+                                                .raceWith(new IntakeUntilLoadedCommand()));
 
-                NamedCommands.registerCommand("VisionIntake XVel", drivetrain.chasePoseRobotRelativeCommand_Theta_WithXSupplier(vision::getRobotRelativeNotePose2d, 
-                                                                                 () -> drivetrain.getChassisSpeeds().vxMetersPerSecond, () -> drivetrain.isPastCenterline()).raceWith(new IntakeUntilLoadedCommand()).withTimeout(1.5));
+                NamedCommands.registerCommand("VisionIntake XVel",
+                                        new ConditionalCommand(drivetrain.chasePoseRobotRelativeCommand_Theta_WithXSupplier(
+                                                                vision::getRobotRelativeNotePose2d,
+                                                                () -> drivetrain.getChassisSpeeds().vxMetersPerSecond,
+                                                                () -> drivetrain.isPastCenterline())
+                                                .raceWith(new IntakeUntilLoadedCommand()).withTimeout(1.5), new InstantCommand(), () -> Vision.getInstance().gamePieceDetected()));
 
                 // extract gui composition to use just OptionalVisionIntakeCommand
                 NamedCommands.registerCommand("SkipNoteLogic", new ShouldSkipNoteLogicCommand());
-                NamedCommands.registerCommand("Backtrack", drivetrain.navigate(() -> poseEstimator.getStoredPose().get()));
+                NamedCommands.registerCommand("Backtrack",
+                                drivetrain.navigate(() -> poseEstimator.getStoredPose().get()));
 
                 NamedCommands.registerCommand("AlignToSpeaker", new SequentialCommandGroup(
-                        new RepeatCommand(new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(() -> getTarget.get())).
-                        until(() -> drivetrain.atSpeakerAlignAngle())),
-                        new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(null))));
-
+                                new RepeatCommand(new InstantCommand(
+                                                () -> drivetrain.setSpeakerAlignAngle(() -> getTarget.get()))
+                                                .until(() -> drivetrain.atSpeakerAlignAngle())),
+                                new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(null))));
 
                 // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
                 // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));
