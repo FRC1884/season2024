@@ -17,6 +17,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Config.RobotType;
+import frc.robot.util.ActionSetpoint;
+import frc.robot.util.ActionSetpointBuilder;
 import frc.robot.util.FlywheelLookupTable;
 
 @SuppressWarnings("ALL")
@@ -143,7 +145,7 @@ public class RobotMap {
         public static final Pose2d RED_SOURCE = new Pose2d(1.14, 1.00, Rotation2d.fromDegrees(-120));
         public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
         public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 0.15;
-        public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.0;
+        public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.15;
     }
 
     public static class TankDriveMap {
@@ -194,8 +196,8 @@ public class RobotMap {
         public static final double VISION_X_MAX_CUTOFF = 13.5; 
 
         //Noisy Distance Constanst
-        public static final double OV2311_NOISY_DISTANCE_METERS = 4.0;
-        public static final double OV9281_NOISY_DISTANCE_METERS = 3.5;
+        public static final double OV2311_NOISY_DISTANCE_METERS = 4.5;
+        public static final double OV9281_NOISY_DISTANCE_METERS = 4.5;
         public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 5.0;
         public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
         public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
@@ -356,7 +358,7 @@ public class RobotMap {
         };
         
         public static final double FLYWHEEL_RADIUS = 0.0508;
-        public static final double FLYWHEEL_VELOCITY_TOLERANCE = 50;
+        public static final double FLYWHEEL_VELOCITY_TOLERANCE = 100;
         public static final double AMP_SPEED_FOLLOW = 600;
         public static final double AMP_SPEED_LEAD = switch (Config.ROBOT_TYPE) {
             case COMP -> 300;
@@ -407,7 +409,14 @@ public class RobotMap {
         };
 
         public static final double[][] FERRY_SHOT_VALUES = {
-                {0, 0, 0}
+                {9.584,4000, 1},
+                {7.99, 4000,1},
+                {10.5, 4000, 0.9}
+        };
+
+        public static final ActionSetpoint SUBWOOFER_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> new ActionSetpointBuilder(2600, 1).build();
+            default -> new ActionSetpointBuilder(5600, 0.9).build();
         };
 
         public static final FlywheelLookupTable SPEAKER_LOOKUP_TABLE = new FlywheelLookupTable(SPEAKER_SHOT_VALUES);
@@ -454,13 +463,13 @@ public class RobotMap {
         public static final double POSITION_TOLERANCE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> .1;
-                    default -> 0.005;
+                    default -> 0.05;
                 };
 
         public static final double VELOCITY_TOLERANCE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> .5;
-                    default -> 0.031;
+                    default -> 0.1;
                 };
 
         public static final double UPPER_SETPOINT_LIMIT =
@@ -502,30 +511,30 @@ public class RobotMap {
         public static final double kP =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 1.5;
-                    default -> 25;
+                    default -> 30;
                 };
 
         public static final double kI =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 3;
-                    default -> 20;
+                    default -> 30;
                 };
 
         public static final double kD =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.075;
-                    default -> 0;
+                    default -> 0.05;
                 };
 
         public static final double kIZone =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.5;
-                    default -> 0.2;
+                    default -> 0.08;
                 };
 
         public static final double kG = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> 0;
-            default -> 0.62;
+            default -> 1.3;
         };
 
         public static final double kV = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {

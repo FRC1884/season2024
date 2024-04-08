@@ -10,9 +10,9 @@ public class MaxSwerveConstants {
   public static final double kMaxSpeedMetersPerSecond = 4.8;
   public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-  public static final double kDirectionSlewRate = 2.0; // radians per second
-  public static final double kMagnitudeSlewRate = 50; // percent per second (1 = 100%)
-  public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
+  public static final double kDirectionSlewRate = 10; // radians per second
+  public static final double kMagnitudeSlewRate = 10; // percent per second (1 = 100%)
+  public static final double kRotationalSlewRate = 10; // percent per second (1 = 100%)
 
   // Chassis configuration
   public static final double kTrackWidth = 0.6 /*Units.inchesToMeters(26.5)*/;

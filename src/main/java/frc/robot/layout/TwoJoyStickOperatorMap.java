@@ -1,6 +1,6 @@
 package frc.robot.layout;
 
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
@@ -27,27 +27,27 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  public JoystickButton getIntakeButton() {
+  public Trigger getIntakeButton() {
     return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
-  JoystickButton getShootSpeakerButton() {
+  Trigger getShootSpeakerButton() {
     return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
-  JoystickButton getShootAmpButton() {
+  Trigger getShootAmpButton() {
     return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
   @Override
-  JoystickButton getOuttakeButton() {
+  Trigger getOuttakeButton() {
     return controller.getButton(Button.BUTTON_SHARE);
   }
 
   @Override
-  JoystickButton getAmpAlignButton() {
+  Trigger getAmpAlignButton() {
     return controller.getButton(Button.BUTTON_X);
   }
 
@@ -57,17 +57,17 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getLEDPatternOffButton() {
+  Trigger getLEDPatternOffButton() {
     return null;
   }
 
   @Override
-  JoystickButton getChangeClimberLockStatusButton(){
+  Trigger getChangeClimberLockStatusButton(){
     return null;
   }
 
   @Override
-  JoystickButton getFerryShotAlignButton() {
+  Trigger getFerryShotAlignButton() {
     return null;
   }
 
@@ -82,7 +82,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getEjectButton() {
+  Trigger getEjectButton() {
     return null;
   }
 
@@ -92,65 +92,65 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getSpeakerShotAlignButton() {
+  Trigger getSpeakerShotAlignButton() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  JoystickButton getPivotRaiseButton() {
+  Trigger getPivotRaiseButton() {
     return null;
   }
 
   @Override
-  JoystickButton getPivotLowerButton() {
+  Trigger getPivotLowerButton() {
     return null;
   }
 
   @Override
-  JoystickButton getTrapButton() {
+  Trigger getTrapButton() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  JoystickButton getStageAlignButton() {
+  Trigger getStageAlignButton() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  JoystickButton getAmplifyButton() {
+  Trigger getAmplifyButton() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  JoystickButton getCoopButton() {
+  Trigger getCoopButton() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  JoystickButton getClimbSequenceButton() {
+  Trigger getClimbSequenceButton() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  JoystickButton getSubwooferShotButton() {
+  Trigger getSubwooferShotButton() {
     // TODO Auto-generated method stub
     throw new Error("Unimplemented method 'getSubwooferShotButton'");
   }
 
   @Override
-  JoystickButton getPodiumShotButton() {
+  Trigger getPodiumShotButton() {
     // TODO Auto-generated method stub
     throw new Error("Unimplemented method 'getAmpShotButton'");
   }
 
   @Override
-  JoystickButton getSourceIntakeButton() {
+  Trigger getSourceIntakeButton() {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getSourceIntakeButton'");
   }

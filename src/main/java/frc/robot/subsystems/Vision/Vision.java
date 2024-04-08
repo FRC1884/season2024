@@ -281,6 +281,8 @@ public class Vision extends SubsystemBase {
 
       if (latestResult.hasTargets() && (latestResult.targets.size() > 1
           || latestResult.targets.get(0).getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF)) {
+            var tag = latestResult.targets.get(0);
+            System.out.println(photonPoseTrackers.get(i).getCameraName() + " " + tag.getFiducialId() + " " + tag.getAlternateCameraToTarget().getX());
         photonPoseTrackers.get(i).updateEstimatedBotPose();
       }
     }

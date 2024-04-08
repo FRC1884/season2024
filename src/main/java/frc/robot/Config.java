@@ -15,7 +15,7 @@ public class Config {
 
     public static final class Subsystems {
         public static final boolean DRIVETRAIN_ENABLED = true;
-        public static final boolean CLIMBER_ENABLED = false;
+        public static final boolean CLIMBER_ENABLED = true;
         public static final boolean SHOOTER_ENABLED = true;
         // TODO: check if this actually works
         public static final boolean VISION_ENABLED = true;

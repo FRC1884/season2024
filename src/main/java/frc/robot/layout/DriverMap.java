@@ -1,12 +1,15 @@
 package frc.robot.layout;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Config;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.Commands.OptionalVisionIntakeCommand;
@@ -15,15 +18,20 @@ import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.util.controllers.CommandMap;
 import frc.robot.core.util.controllers.GameController;
+import frc.robot.subsystems.AddressableLEDLights;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake.IntakeDirection;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.pivot.Pivot;
 
 import java.util.function.Supplier;
 
 import javax.swing.DefaultFocusManager;
+
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTypeResolverBuilder;
 
 public abstract class DriverMap extends CommandMap {
 
@@ -38,23 +46,23 @@ public abstract class DriverMap extends CommandMap {
 
     abstract double getSwerveRot();
 
-    abstract JoystickButton getAmpAlignButton();
+    abstract Trigger getSlowModeToggleButton();
 
-    abstract JoystickButton getSlowModeToggleButton();
+    abstract Trigger getArcingButton();
 
-    abstract JoystickButton getArcingButton();
+    abstract Trigger getFerryArcButton();
 
-    abstract JoystickButton getTestButton();
+    abstract Trigger getTestButton();
 
-    abstract JoystickButton getFollowAprilTagButton();
+    abstract Trigger getFollowAprilTagButton();
 
-    abstract JoystickButton getFollowNoteButton();
+    abstract Trigger getFollowNoteButton();
 
-    abstract JoystickButton getZeroGyroButton();
+    abstract Trigger getZeroGyroButton();
 
-    abstract JoystickButton getNavigateAndAllignAmpButton();
+    abstract Trigger getNavigateAndAllignAmpButton();
 
-    abstract JoystickButton getNavigateAndAllignStageButton();
+    abstract Trigger getNavigateAndAllignStageButton();
 
     private void registerDrivetrain() {
         if (Config.Subsystems.DRIVETRAIN_ENABLED) {
@@ -74,6 +82,7 @@ public abstract class DriverMap extends CommandMap {
                     : Coordinates.RED_SPEAKER.getTranslation();
 
             getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, getTarget));
+            getFerryArcButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, () -> getTarget.get(), () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? -30 : -15)));
 
             // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
             //   "Go To Amp"));
@@ -81,11 +90,8 @@ public abstract class DriverMap extends CommandMap {
             // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Stage"));
             // TODO DELETE ME!
             getSlowModeToggleButton().toggleOnTrue(Commands.runOnce(() -> DriveMap.IS_SLOWMODE_ENABLED = !DriveMap.IS_SLOWMODE_ENABLED));
-            // getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand());
+            getFollowNoteButton().whileTrue(vision.PIDtoNoteRobotRelativeCommand());
 
-
-            getFollowNoteButton().whileTrue( drivetrain.chasePoseRobotRelativeCommand_Theta_WithXSupplier(vision::getRobotRelativeNotePose2d, 
-            () -> drivetrain.getChassisSpeeds().vxMetersPerSecond, () -> drivetrain.isPastCenterline()).raceWith(new IntakeUntilLoadedCommand()).withTimeout(1.5));
 
             getZeroGyroButton().onTrue(drivetrain.zeroYawCommand());
             getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Amp Align"));
@@ -103,8 +109,22 @@ public abstract class DriverMap extends CommandMap {
         }
     }
 
+    private void registerLEDs() {
+        var lights = AddressableLEDLights.getInstance();
+
+        getArcingButton().whileTrue(Commands.either(
+            lights.setBlinkingCommand(Color.kIndigo, Color.kBlue, 5.0), 
+            lights.setAlingmentNoteStatusCommand(() -> !Feeder.getInstance().isNoteLoaded()), 
+            () -> {
+                System.out.println(Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity());
+                return Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity();
+            }
+            ).repeatedly());
+    }
+
     @Override
     public void registerCommands() {
         registerDrivetrain();
+        registerLEDs();
     }
 }

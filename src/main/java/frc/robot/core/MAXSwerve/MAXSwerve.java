@@ -155,7 +155,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride() {
-        if(Drivetrain.getInstance().getSpeakerAlignAngle() != null) {
+        if (Drivetrain.getInstance().getSpeakerOverride()) {
             return Optional.of(Drivetrain.getInstance().getSpeakerAlignAngle());
         }
         else {
@@ -299,6 +299,34 @@ public abstract class MAXSwerve extends SubsystemBase {
                                     Translation2d currentTranslation = this.getPose().getTranslation();
                                     Translation2d targetVector = currentTranslation.minus(target.get());
                                     Rotation2d targetAngle = targetVector.getAngle();
+                                    double newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
+                                    this.drive(xSpeed.get(), ySpeed.get(),
+                                            newSpeed, true, true);
+
+                                },
+                                interrupted -> {
+                                    pid.close();
+                                    this.drive(0.0, 0.0, 0.0, true, true);
+                                },
+                                pid::atSetpoint,
+                                this)), Set.of(this)
+        );
+    }
+
+    public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Rotation2d> rotOffset) {
+        PIDController pid = new PIDController(0.01, 0, 0);
+        pid.setTolerance(1.5);
+        pid.enableContinuousInput(-180, 180);
+        return new DeferredCommand(() ->
+                new RepeatCommand(
+                        new FunctionalCommand(
+                                () -> {
+                                    // Init
+                                },
+                                () -> {
+                                    Translation2d currentTranslation = this.getPose().getTranslation();
+                                    Translation2d targetVector = currentTranslation.minus(target.get());
+                                    Rotation2d targetAngle = targetVector.getAngle().rotateBy(rotOffset.get());
                                     double newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
                                     this.drive(xSpeed.get(), ySpeed.get(),
                                             newSpeed, true, true);

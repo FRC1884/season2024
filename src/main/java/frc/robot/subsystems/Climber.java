@@ -46,24 +46,15 @@ public class Climber extends SubsystemBase {
 
         leaderMotor = new CANSparkMax(RobotMap.ClimberMap.LEADER_ID, MotorType.kBrushless);
         followerMotor = new CANSparkMax(RobotMap.ClimberMap.FOLLOWER_ID, MotorType.kBrushless);
-        var pidL = leaderMotor.getPIDController();
-            pidL.setP(ShooterMap.FLYWHEEL_PID.kP);
-            pidL.setI(ShooterMap.FLYWHEEL_PID.kI);
-            pidL.setD(ShooterMap.FLYWHEEL_PID.kD);
-            pidL.setFF(ShooterMap.FLYWHEEL_FF);
-        var pidF = followerMotor.getPIDController();
-            pidF.setP(ShooterMap.FLYWHEEL_PID.kP);
-            pidF.setI(ShooterMap.FLYWHEEL_PID.kI);
-            pidF.setD(ShooterMap.FLYWHEEL_PID.kD);
-            pidF.setFF(ShooterMap.FLYWHEEL_FF);
+
         leaderMotor.restoreFactoryDefaults();
         followerMotor.restoreFactoryDefaults();
 
         leaderMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
         followerMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
 
-        leaderMotor.setSmartCurrentLimit(30);
-        followerMotor.setSmartCurrentLimit(30);
+        leaderMotor.setSmartCurrentLimit(40);
+        followerMotor.setSmartCurrentLimit(40);
 
         // leaderMotor.setInverted(false);
 

@@ -105,8 +105,10 @@ public class AutoCommands {
                 NamedCommands.registerCommand("AlignToSpeaker", new SequentialCommandGroup(
                                 new RepeatCommand(new InstantCommand(
                                                 () -> drivetrain.setSpeakerAlignAngle(() -> getTarget.get()))
-                                                .until(() -> drivetrain.atSpeakerAlignAngle())),
+                                                .until(() -> drivetrain.getSpeakerOverride())),
                                 new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(null))));
+
+                NamedCommands.registerCommand("End AlignToSpeaker", new InstantCommand(() -> drivetrain.setSpeakerOverride(false)));
 
                 // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
                 // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));
