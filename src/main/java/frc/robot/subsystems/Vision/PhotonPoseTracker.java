@@ -11,14 +11,20 @@ import frc.robot.RobotMap.VisionConfig;
 
 public class PhotonPoseTracker {
 
+    //Photonvision variables
     public PhotonPoseEstimator photonPoseEstimator;
     private PhotonCamera photonCamera;
-    private boolean hasUpdatedPoseEstimate;
     private PhotonPipelineResult photonPipelineResult;
+
+    //local variables
+    private boolean hasUpdatedPoseEstimate;
     private Pose2d estimatedVisionBotPose;
     private double visionEstimateTimestamp;
     private double distanceToBestTarget;
     private double noisyDistanceMeters;
+    private Pose3d visionPose3d;
+    private double targetAmbiguity;
+    private double currentConfidenceMultiplier;
   
     private VisionConfig.CAMERA_TYPE cameraType;
     private boolean isMultiTag;
@@ -28,6 +34,7 @@ public class PhotonPoseTracker {
       this.hasUpdatedPoseEstimate = false;
       this.photonCamera = photonCamera;
       estimatedVisionBotPose = new Pose2d();
+      visionPose3d = new Pose3d();
       this.cameraType = cameraType;
       isMultiTag = false;
       distanceToBestTarget = 0;
@@ -67,8 +74,8 @@ public class PhotonPoseTracker {
   
     public void updateEstimatedBotPose(){
       photonPoseEstimator.update(photonPipelineResult).ifPresent(estimatedRobotPose -> {
-        Pose3d currentEstimatedPose = estimatedRobotPose.estimatedPose;
-        estimatedVisionBotPose = currentEstimatedPose.toPose2d();
+        visionPose3d = estimatedRobotPose.estimatedPose;
+        estimatedVisionBotPose = visionPose3d.toPose2d();
         isMultiTag = photonPipelineResult.getMultiTagResult().estimatedPose.isPresent;
         setDistanceToBestTarget(get3dDistance(photonPipelineResult.getBestTarget().getBestCameraToTarget()));
         
@@ -84,6 +91,10 @@ public class PhotonPoseTracker {
   
     public Pose2d getEstimatedVisionBotPose(){
       return estimatedVisionBotPose;
+    }
+
+    public Pose3d get3dEstimatedVisionPose(){
+      return visionPose3d;
     }
   
     public VisionConfig.CAMERA_TYPE getCameraType(){

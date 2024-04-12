@@ -199,9 +199,9 @@ public abstract class OperatorMap extends CommandMap {
                             .alongWith(
                                     shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
 
-            getSpeakerShotAlignButton()
-                    .onFalse(shooter.stopFlywheelCommand()
-                            .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+        //     getSpeakerShotAlignButton()
+        //             .onFalse(shooter.stopFlywheelCommand()
+        //                     .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
             Supplier<ActionSetpoint> getFerryActionSetpoint = () -> ferryLookupTable
                     .get(poseEstimator.getDistanceToPose(ferryTarget.get().getTranslation()));
@@ -257,6 +257,8 @@ public abstract class OperatorMap extends CommandMap {
 
     }
 
+
+    //currently doesn't do anything cuz not registered cuz pivot gonna kill bot when climbing
     private void registerPivot() {
         if (Config.Subsystems.PIVOT_ENABLED) {
             Pivot pivot = Pivot.getInstance();
@@ -315,7 +317,8 @@ public abstract class OperatorMap extends CommandMap {
         registerFeeder();
         registerClimber();
         registerShooter();
-        registerPivot();
+        //TODO: Remove due to climber possibly running when moving joystick
+        //registerPivot(); 
         registerLEDs();
         registerComplexCommands();
 

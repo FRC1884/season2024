@@ -68,6 +68,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     private double currentRotation = 0.0;
     private double currentTranslationDir = 0.0;
     private double currentTranslationMag = 0.0;
+    
 
     private SlewRateLimiter magLimiter = new SlewRateLimiter(MaxSwerveConstants.kMagnitudeSlewRate);
     private SlewRateLimiter rotLimiter = new SlewRateLimiter(MaxSwerveConstants.kRotationalSlewRate);
@@ -87,6 +88,10 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     //For Testing All functions
     private double startTime, currentTime;
+    
+    //Target Override
+    private Rotation2d speakerAlignAngle;
+    private boolean speakerOverride = false;
 
     public MAXSwerve(
             MAXSwerveModule fl,
@@ -156,12 +161,44 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     public Optional<Rotation2d> getRotationTargetOverride() {
         if (Drivetrain.getInstance().getSpeakerOverride()) {
-            return Optional.of(Drivetrain.getInstance().getSpeakerAlignAngle());
+            return Optional.of(getSpeakerAlignAngle());
         }
         else {
             return Optional.empty();
         }
     }
+
+    public void setSpeakerAlignAngle(Supplier<Pose2d> target) {
+        if (target != null) {
+          this.speakerAlignAngle = this.getPose().getTranslation()
+            .minus(target.get().getTranslation()).getAngle().plus(Rotation2d.fromDegrees(180));
+            speakerOverride = true;
+        } else {
+          this.speakerAlignAngle = null;
+        }
+      }
+    
+      public boolean atSpeakerAlignAngle() {
+        if (Math.abs(speakerAlignAngle.getDegrees()
+            - this.getPose().getRotation().getDegrees()) < DriveMap.SPEAKER_ALIGN_TOLERANCE) {
+              speakerOverride = false;
+          return true;
+        } else {
+          return false;
+        }
+      }
+    
+      public Rotation2d getSpeakerAlignAngle() {
+        return speakerAlignAngle;
+      }
+    
+      public boolean getSpeakerOverride() {
+        return speakerOverride;
+      }
+    
+      public void setSpeakerOverride(boolean state) {
+        this.speakerOverride = state;
+      }
 
     @Override
     public void periodic() {
@@ -286,8 +323,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     }
 
     public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target) {
-        PIDController pid = new PIDController(0.01, 0, 0);
-        pid.setTolerance(1.5);
+        PIDController pid = new PIDController(0.02, 0, 0.001);
+        pid.setTolerance(1.0);
         pid.enableContinuousInput(-180, 180);
         return new DeferredCommand(() ->
                 new RepeatCommand(
@@ -314,8 +351,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     }
 
     public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Rotation2d> rotOffset) {
-        PIDController pid = new PIDController(0.01, 0, 0);
-        pid.setTolerance(1.5);
+        PIDController pid = new PIDController(0.02, 0, 0.001);
+        pid.setTolerance(1.0);
         pid.enableContinuousInput(-180, 180);
         return new DeferredCommand(() ->
                 new RepeatCommand(
@@ -382,7 +419,8 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     public void startingOdometry(Pose2d startingPose) {
         //PoseEstimator.getInstance().resetPoseEstimate(startingPose);
-        PoseEstimator.getInstance().resetPoseEstimate(new Pose2d(startingPose.getX(), startingPose.getY(), this.getYawRot2d()));
+        PoseEstimator.getInstance().resetPoseEstimate(new Pose2d(startingPose.getX(), startingPose.getY(), startingPose.getRotation()));
+        this.setGyroYaw(startingPose.getRotation().getDegrees());
     }
 
     public Command followPathCommand(String pathName, boolean isFirstPath) {
@@ -516,8 +554,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     }
 
     public Command alignCommand(Supplier<Translation2d> target) {
-        PIDController pid = new PIDController(0.01, 0, 0);
-        pid.setTolerance(1.5);
+        PIDController pid = new PIDController(0.02, 0, 0);
+        pid.setTolerance(1.0);
         pid.enableContinuousInput(-180, 180);
         return new DeferredCommand(() ->
                 new FunctionalCommand(

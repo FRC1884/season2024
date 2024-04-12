@@ -176,35 +176,4 @@ public class Drivetrain extends MAXSwerve {
 
   }
 
-  public void setSpeakerAlignAngle(Supplier<Pose2d> target) {
-    if (target != null) {
-      this.speakerAlignAngle = this.getPose().getTranslation()
-        .minus(target.get().getTranslation()).getAngle().plus(Rotation2d.fromDegrees(180));
-        speakerOverride = true;
-    } else {
-      this.speakerAlignAngle = null;
-    }
-  }
-
-  public boolean atSpeakerAlignAngle() {
-    if (Math.abs(speakerAlignAngle.getDegrees()
-        - this.getPose().getRotation().getDegrees()) < DriveMap.SPEAKER_ALIGN_TOLERANCE) {
-          speakerOverride = false;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public Rotation2d getSpeakerAlignAngle() {
-    return speakerAlignAngle;
-  }
-
-  public boolean getSpeakerOverride() {
-    return speakerOverride;
-  }
-
-  public void setSpeakerOverride(boolean state) {
-    this.speakerOverride = state;
-  }
 }

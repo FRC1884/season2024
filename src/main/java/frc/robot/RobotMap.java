@@ -195,12 +195,13 @@ public class RobotMap {
         public static final double VISION_X_MIN_CUTOFF = 3.0;
         public static final double VISION_X_MAX_CUTOFF = 13.5; 
 
-        //Noisy Distance Constanst
-        public static final double OV2311_NOISY_DISTANCE_METERS = 4.5;
+        //PhotonVision Noisy Pose Tuning Constanst
+        public static final double OV2311_NOISY_DISTANCE_METERS = 3.5;
         public static final double OV9281_NOISY_DISTANCE_METERS = 4.5;
-        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 5.0;
+        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 6.0;
         public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
         public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
+        public static final double POSE_AMBIGUITY_CUTOFF = 0.3;
         public static final double TAG_PRESENCE_WEIGHT = 10;
         public static final double DISTANCE_WEIGHT = 7;
 
@@ -245,9 +246,6 @@ public class RobotMap {
 
         public static final Transform2d NN_LIME_TO_ROBOT_2D = new Transform2d(-NN_LIME_X, -NN_LIME_Y, new Rotation2d(-NN_LIME_YAW));
 
-        // Photonvision
-        public static final double  POSE_AMBIGUITY_CUTOFF = 0.6;
-
         public static final String POSE_PHOTON_1 = "photoncam-1";
         public static final CAMERA_TYPE CAM_1_TYPE = CAMERA_TYPE.OV2311;
 
@@ -258,7 +256,7 @@ public class RobotMap {
 
         // Rotation mounting angles (roll-pitch-yaw) in RADIANS
         public static final double CAM_1_ROLL_RADIANS = Config.ROBOT_TYPE == RobotType.DEV ? Math.PI : 0; // camera Roll Radians
-        public static final double CAM_1_PITCH_RADIANS = 0.4887; // camera Pitch Radians
+        public static final double CAM_1_PITCH_RADIANS = -0.4887; // camera Pitch Radians
         public static final double CAM_1_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
         public static final Transform3d PHOTON_1_ROBOT_TO_CAM = new Transform3d(CAM_1_X, CAM_1_Y, CAM_1_Z, new Rotation3d(CAM_1_ROLL_RADIANS, CAM_1_PITCH_RADIANS, CAM_1_YAW_RADIANS));
@@ -274,7 +272,7 @@ public class RobotMap {
 
         // Rotation mounting angles (roll-pitch-yaw) in RADIANS
         public static final double CAM_2_ROLL_RADIANS = Config.ROBOT_TYPE == RobotType.DEV ? Math.PI : 0; // camera Roll Radians
-        public static final double CAM_2_PITCH_RADIANS = 0.4887; // camera Pitch Radians
+        public static final double CAM_2_PITCH_RADIANS = -0.4887; // camera Pitch Radians
         public static final double CAM_2_YAW_RADIANS = Math.PI; // camera Yaw Radians
 
 
@@ -291,7 +289,7 @@ public class RobotMap {
 
         // Rotation mounting angles (roll-pitch-yaw) in RADIANS
         public static final double CAM_3_ROLL_RADIANS = 0; // camera Roll Radians
-        public static final double CAM_3_PITCH_RADIANS = 0.20944; // camera Pitch Radians
+        public static final double CAM_3_PITCH_RADIANS = -0.20944; // camera Pitch Radians
         public static final double CAM_3_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
         public static final Transform3d PHOTON_3_ROBOT_TO_CAM = new Transform3d(CAM_3_X, CAM_3_Y, CAM_3_Z, new Rotation3d(CAM_3_ROLL_RADIANS, CAM_3_PITCH_RADIANS, CAM_3_YAW_RADIANS));
@@ -389,18 +387,23 @@ public class RobotMap {
         };
 
         public static final double[][] DUAL_ACTUATOR_VALUES = {
-                {0.912, 5600, 0.9},
-                {1.471, 5600, 0.77},
-                {1.979, 5600, 0.70},
+                // {0.912, 5600, 0.9},
+                // {1.471, 5600, 0.77},
+                // {1.979, 5600, 0.70},
+                {1.2, 5600, 0.92},
+                {1.61, 5600, 0.83},
+                {1.98, 5600, 0.75},
                 {2.492, 5600, 0.63},
                 {2.96, 5600, 0.575},
                 {3.26, 5600, 0.56},
                 {3.57, 5600, 0.538},
                 {3.87, 5900, 0.475},
                 {4.43, 6500, 0.482},
-                {5.02, 6600, 0.461},
-                {5.41, 6550, 0.452},
-                {8.00, 6550, 0.452}
+                {4.51, 6500, 0.46},
+                {5.58, 6550, 0.428},
+                // {5.02, 6600, 0.461},
+                // {5.41, 6550, 0.452},
+                // {8.00, 6550, 0.452}
         };
 
         public static final double[][] SPEAKER_SHOT_VALUES = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {

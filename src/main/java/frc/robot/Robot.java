@@ -88,38 +88,23 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     if(Config.Subsystems.DRIVETRAIN_ENABLED) {
-      m_field.getObject("Odometry Pose").setPose(Drivetrain.getInstance().getPose());
+      m_field.setRobotPose(Drivetrain.getInstance().getPose());
       m_field.getObject("Vision Pose").setPose(Vision.getInstance().visionBotPose());
       m_field.getObject("PoseEstimate Pose").setPose(PoseEstimator.getInstance().getPosition());
       
       // Vision Poses with New Filtering
       ArrayList<PhotonPoseTracker> trackers = Vision.getInstance().getPhotonPoseTrackers();
-      for(PhotonPoseTracker t : trackers){
-        switch(t.getCameraName()){
-          case VisionConfig.POSE_PHOTON_1:
-            if(VisionConfig.IS_PHOTON_VISION_ENABLED) 
-              m_field.getObject("Cam 1 Front Pose").setPose(t.getEstimatedVisionBotPose());
-          case VisionConfig.POSE_PHOTON_2:
-            if(VisionConfig.IS_PHOTON_TWO_ENABLED) 
-              m_field.getObject("Cam 2 Back Pose").setPose(t.getEstimatedVisionBotPose());
-          case VisionConfig.POSE_PHOTON_3:
-            if(VisionConfig.IS_PHOTON_THREE_ENABLED)
-              m_field.getObject("Laser cam Pose").setPose(t.getEstimatedVisionBotPose());
-        }
-
+      for(PhotonPoseTracker t : trackers){    
+           m_field.getObject(t.getCameraName() + " Pose").setPose(t.getEstimatedVisionBotPose());
       }
-      
-    }  
+
+
+  
     if (Vision.getInstance().getNotePose2d() != null){
       m_field.getObject("Note Pose").setPose(Vision.getInstance().getNotePose2d());
       
     }
 
-
-    if (visionFilterEntry.getBoolean(false)){
-      m_field.getObject("Filtered Vision Pose").setPose(Vision.getInstance().getFilterVisionPose());
-    }
-    
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
       m_field.getObject("target pose").setPose(pose);
     });
@@ -127,6 +112,7 @@ public class Robot extends TimedRobot {
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
       m_field.getObject("path").setPoses(poses);
     });
+    }
   }
 
   /**

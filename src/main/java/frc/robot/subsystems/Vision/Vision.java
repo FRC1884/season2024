@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -58,7 +59,9 @@ public class Vision extends SubsystemBase {
   private boolean photon3HasTargets;
   private PhotonPoseEstimator photonEstimator_3;
 
+  //Photonvision data
   private ArrayList<PhotonPoseTracker> photonPoseTrackers;
+  private ArrayList<StructPublisher<Pose3d>> pose3DPublishers;
 
   private int primaryAprilTagID;
   private int primaryCameraNum;
@@ -150,11 +153,10 @@ public class Vision extends SubsystemBase {
 
     // Code to make the first photon vision camera object
     photonPoseTrackers = new ArrayList<PhotonPoseTracker>();
+    pose3DPublishers = new ArrayList<StructPublisher<Pose3d>>();
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
       // photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
-      photon1HasTargets = false;
-
       try {
         aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       } catch (Exception e) {
@@ -164,26 +166,27 @@ public class Vision extends SubsystemBase {
           VisionConfig.PHOTON_1_ROBOT_TO_CAM);
       photonEstimator_1.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_1, photonCam_1, VisionConfig.CAM_1_TYPE));
+      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_1.getName(), Pose3d.struct).publish());
     }
 
     // Code to make the second photon vision camera object if it is enabled
     if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_TWO_ENABLED) {
       photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
-      photon2HasTargets = false;
       photonEstimator_2 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VisionConfig.PHOTON_2_ROBOT_TO_CAM);
       photonEstimator_2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_2, photonCam_2, VisionConfig.CAM_2_TYPE));
+      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_2.getName(), Pose3d.struct).publish());
     }
 
     // Code to make the second photon vision camera object if it is enabled
     if (VisionConfig.IS_PHOTON_VISION_ENABLED && VisionConfig.IS_PHOTON_THREE_ENABLED) {
       photonCam_3 = new PhotonCamera(VisionConfig.POSE_PHOTON_3);
-      photon3HasTargets = false;
       photonEstimator_3 = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VisionConfig.PHOTON_3_ROBOT_TO_CAM);
       photonEstimator_3.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_3, photonCam_3, VisionConfig.CAM_3_TYPE));
+      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_3.getName(), Pose3d.struct).publish());
     }
 
     if (VisionConfig.DRIVER_CAMERA_ACTIVE) {
@@ -195,6 +198,7 @@ public class Vision extends SubsystemBase {
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Vision Subsystem");
     visionTab.add(this);
+
   }
 
   @Override
@@ -282,9 +286,9 @@ public class Vision extends SubsystemBase {
       if (latestResult.hasTargets() && (latestResult.targets.size() > 1
           || latestResult.targets.get(0).getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF)) {
             var tag = latestResult.targets.get(0);
-            System.out.println(photonPoseTrackers.get(i).getCameraName() + " " + tag.getFiducialId() + " " + tag.getAlternateCameraToTarget().getX());
         photonPoseTrackers.get(i).updateEstimatedBotPose();
       }
+      pose3DPublishers.get(i).set(photonPoseTrackers.get(i).get3dEstimatedVisionPose());
     }
   }
 

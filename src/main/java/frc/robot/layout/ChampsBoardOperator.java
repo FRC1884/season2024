@@ -108,12 +108,12 @@ public class ChampsBoardOperator extends OperatorMap {
 
   @Override
   Trigger getPivotRaiseButton() {
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) < -0.9);
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > -0.9);
   }
 
   @Override
   Trigger getPivotLowerButton() {
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) < 0.9);
   }
 
   @Override
