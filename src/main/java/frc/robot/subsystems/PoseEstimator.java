@@ -94,7 +94,7 @@ public class PoseEstimator extends SubsystemBase {
     }
     // TODO Photonvision mode - Needs editing and filtering
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) { 
-      if(enableNewVisionMethod.getBoolean(false)){
+      if(enableNewVisionMethod.getBoolean(true)){
         ArrayList<PhotonPoseTracker> photonPoseTrackers = Vision.getInstance().getPhotonPoseTrackers(); 
         for (int i = 0; i < photonPoseTrackers.size(); i++){
           if (photonPoseTrackers.get(i).hasUpdatedVisionEstimate()){
