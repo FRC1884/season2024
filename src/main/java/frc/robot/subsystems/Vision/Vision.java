@@ -47,32 +47,19 @@ public class Vision extends SubsystemBase {
 
   private double photonTimestamp;
   private PhotonCamera photonCam_1;
-  private boolean photon1HasTargets;
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator photonEstimator_1;
 
   private PhotonCamera photonCam_2;
-  private boolean photon2HasTargets;
   private PhotonPoseEstimator photonEstimator_2;
 
   private PhotonCamera photonCam_3;
-  private boolean photon3HasTargets;
   private PhotonPoseEstimator photonEstimator_3;
 
   //Photonvision data
   private ArrayList<PhotonPoseTracker> photonPoseTrackers;
   private ArrayList<StructPublisher<Pose3d>> pose3DPublishers;
 
-  private int primaryAprilTagID;
-  private int primaryCameraNum;
-  private double tempCutOff;
-  private double ambiguityForCam;
-  private double ambiguityForCam1;
-  private double ambiguityForCam2;
-  private double ambiguityForCam3;
-
-  private double distToTagRelativeToRobot;
-  private double distToTagRelativeToCam;
 
   // For Note detection in the future
   private double detectHorizontalOffset = 0;
@@ -84,17 +71,10 @@ public class Vision extends SubsystemBase {
   private Pose2d noteFieldRelativePose;
   private Pose2d noteRobotRelativePose;
   private ShuffleboardTab tab = Shuffleboard.getTab("Vision Data");
-  private GenericEntry visionAmbiguity = tab.add("Vision Ambiguity", VisionConfig.POSE_AMBIGUITY_CUTOFF).getEntry();
 
-  // Pose Filtering
-  private Pose2d filteredVisionPose;
-  private LinearFilter xFilter;
-  private LinearFilter yFilter;
-  private LinearFilter thetaFilter;
+  // FOR LIMELIGHT MODE ONLY
   private boolean isVisionEstimatePoseChanged;
 
-  // testing
-  private final DecimalFormat df = new DecimalFormat();
 
   private static Vision instance;
 
@@ -107,16 +87,7 @@ public class Vision extends SubsystemBase {
   // TODO - see if adding setCameraPose_RobotSpace() is needed from
   // LimelightHelpers
   private Vision() {
-    distToTagRelativeToCam = -1;
-    distToTagRelativeToRobot = -1;
-    ambiguityForCam = -1;
-    ambiguityForCam1 = -1;
-    ambiguityForCam2 = -1;
-    ambiguityForCam3 = -1;
-    tempCutOff = 0.1;
-    primaryAprilTagID = -1;
-    primaryCameraNum = -1;
-    setName("Vision");
+
     botPose = new Pose2d();
     estimatePose = new Pose2d();
     noteFieldRelativePose = new Pose2d();
@@ -124,12 +95,6 @@ public class Vision extends SubsystemBase {
     targetRobotRelativePose = new Pose2d();
     photonTimestamp = 0.0;
     limeLatency = 0.0;
-
-    // Creates Filters for x, y and Theta
-    xFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
-    yFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
-    thetaFilter = LinearFilter.movingAverage(VisionConfig.MOVING_AVG_TAPS);
-    isVisionEstimatePoseChanged = false;
 
     // Changes vision mode between limelight and photonvision for easy switching
     if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE) {
@@ -151,7 +116,7 @@ public class Vision extends SubsystemBase {
       setLimelightPipeline(VisionConfig.NN_LIMELIGHT, VisionConfig.NOTE_DETECTOR_PIPELINE);
     }
 
-    // Code to make the first photon vision camera object
+    /*Code to make the first photon vision camera object/* */
     photonPoseTrackers = new ArrayList<PhotonPoseTracker>();
     pose3DPublishers = new ArrayList<StructPublisher<Pose3d>>();
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) { // Configure photonvision camera
@@ -189,13 +154,6 @@ public class Vision extends SubsystemBase {
       pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_3.getName(), Pose3d.struct).publish());
     }
 
-    if (VisionConfig.DRIVER_CAMERA_ACTIVE) {
-      tab.addCamera("Driver Camera", "Drive cam", VisionConfig.DRIVER_CAM_STREAM);
-    }
-
-    // printing purposes
-    df.setMaximumFractionDigits(2);
-
     ShuffleboardTab visionTab = Shuffleboard.getTab("Vision Subsystem");
     visionTab.add(this);
 
@@ -203,72 +161,74 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     if (Config.Subsystems.VISION_ENABLED) {
-      // 8.308467, 1.442593 and 1.451102
-      /* Ensures empty json not fed to pipeline */
-      apriltagLimelightConnected = !NetworkTableInstance.getDefault()
+      if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE) {
+        /* Ensures empty json not fed to pipeline */
+        apriltagLimelightConnected = !NetworkTableInstance.getDefault()
           .getTable(VisionConfig.POSE_LIMELIGHT)
           .getEntry("json")
           .getString("")
           .equals("");
+        if (apriltagLimelightConnected){
+          jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
 
-      NNLimelightConnected = !NetworkTableInstance.getDefault()
-          .getTable(VisionConfig.NN_LIMELIGHT)
-          .getEntry("json")
-          .getString("")
-          .equals("");
+          estimatePose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
 
-      if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE && apriltagLimelightConnected) {
-        jsonResults = LimelightHelpers.getLatestResults(VisionConfig.POSE_LIMELIGHT);
-
-        estimatePose = LimelightHelpers.getBotPose2d_wpiBlue(VisionConfig.POSE_LIMELIGHT);
-
-        if (visionAccurate(estimatePose)) {
-          // Blue alliance means origin is bottom right of the field
-          limeLatency = LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
-              + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
-          botPose = estimatePose;
-          isVisionEstimatePoseChanged = true;
+          if (visionAccurate(estimatePose)) {
+            // Blue alliance means origin is bottom right of the field
+            limeLatency = LimelightHelpers.getLatency_Pipeline(VisionConfig.POSE_LIMELIGHT)
+                + LimelightHelpers.getLatency_Capture(VisionConfig.POSE_LIMELIGHT);
+            botPose = estimatePose;
+            isVisionEstimatePoseChanged = true;
+        }
         }
       }
 
       // Does math to see where the note is
-      if (VisionConfig.IS_NEURAL_NET_LIMELIGHT && NNLimelightConnected) {
-        detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
-        detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
-        // var rrResults = detectJsonResults.targetingResults.targets_Retro[0];
+      if (VisionConfig.IS_NEURAL_NET_LIMELIGHT) {
+        NNLimelightConnected = !NetworkTableInstance.getDefault()
+          .getTable(VisionConfig.NN_LIMELIGHT)
+          .getEntry("json")
+          .getString("")
+          .equals("");
+        if (NNLimelightConnected){
+          detectTarget = LimelightHelpers.getTV(VisionConfig.NN_LIMELIGHT);
+          detectJsonResults = LimelightHelpers.getLatestResults(VisionConfig.NN_LIMELIGHT);
+          // var rrResults = detectJsonResults.targetingResults.targets_Retro[0];
 
-        if (detectTarget) {
-          detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); // HAD TO NEGATIVE TO MAKE CCW
-                                                                                       // POSITIVE
-          detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
-          double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_Z, VisionConfig.NN_LIME_PITCH, 0,
-              detectVerticalOffset);
-          // Note: limelight is already CCW positive, so tx does not have to be * -1
-          Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
+          if (detectTarget) {
+            detectHorizontalOffset = -LimelightHelpers.getTX(VisionConfig.NN_LIMELIGHT); // HAD TO NEGATIVE TO MAKE CCW
+                                                                                        // POSITIVE
+            detectVerticalOffset = LimelightHelpers.getTY(VisionConfig.NN_LIMELIGHT);
+            double targetDist = targetDistanceMetersCamera(VisionConfig.NN_LIME_Z, VisionConfig.NN_LIME_PITCH, 0,
+                detectVerticalOffset);
+            // Note: limelight is already CCW positive, so tx does not have to be * -1
+            Translation2d camToTargTrans = estimateCameraToTargetTranslation(targetDist, detectHorizontalOffset);
 
-          // Code for robot relative note tracking
-          Transform2d robotToNoteTransform = VisionConfig.NN_ROBOT_TO_LIME_2D
-              .plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
-          Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle()
-              .plus(new Rotation2d(Math.PI));
-          noteRobotRelativePose = new Pose2d(robotToNoteTransform.getTranslation(), targetAngleRobotRelative);
+            // Code for robot relative note tracking
+            Transform2d robotToNoteTransform = VisionConfig.NN_ROBOT_TO_LIME_2D
+                .plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
+            Rotation2d targetAngleRobotRelative = robotToNoteTransform.getTranslation().getAngle()
+                .plus(new Rotation2d(Math.PI));
+            noteRobotRelativePose = new Pose2d(robotToNoteTransform.getTranslation(), targetAngleRobotRelative);
 
-          // Code for field relative note tracking
-          Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
+            // Code for field relative note tracking
+            Pose2d currentBotPoseFieldRelative = PoseEstimator.getInstance().getPosition();
 
-          Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);
-          noteFieldRelativePose = camPoseFieldRelative
-              .plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
-          Translation2d currentBotTranslation = currentBotPoseFieldRelative.getTranslation();
-          Translation2d targetVector = currentBotTranslation.minus(noteFieldRelativePose.getTranslation());
-          Rotation2d targetAngle = targetVector.getAngle();
-
-          noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
+            Pose2d camPoseFieldRelative = currentBotPoseFieldRelative.plus(VisionConfig.NN_ROBOT_TO_LIME_2D);
+            noteFieldRelativePose = camPoseFieldRelative
+                .plus(new Transform2d(camToTargTrans, Rotation2d.fromDegrees(0.0)));
+            Translation2d currentBotTranslation = currentBotPoseFieldRelative.getTranslation();
+            Translation2d targetVector = currentBotTranslation.minus(noteFieldRelativePose.getTranslation());
+            Rotation2d targetAngle = targetVector.getAngle();
+            
+            noteFieldRelativePose = new Pose2d(noteFieldRelativePose.getTranslation(), targetAngle);
+          }
         }
       }
 
-      // NEW VISION UPDATER
+      /* Photonvision update method*/
       updateAllPhotonPoseTrackers();
     }
   }
@@ -299,6 +259,34 @@ public class Vision extends SubsystemBase {
     return photonPoseTrackers;
   }
 
+  /*
+   * Sendable with useful photonvision telemetry
+   */
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+
+    for (int i = 0; i < photonPoseTrackers.size(); i++) {
+      final int c = i;
+      builder.addDoubleProperty(photonPoseTrackers.get(c).getCameraName() + " Distance to best target",
+          () -> photonPoseTrackers.get(c).getDistanceToBestTarget(), null);
+      builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Has updated vision estimate",
+          () -> photonPoseTrackers.get(c).hasUpdatedVisionEstimate(), null);
+      builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Is MultiTag",
+          () -> photonPoseTrackers.get(c).isMultiTagEstimate(), null);
+      builder.addIntegerProperty(photonPoseTrackers.get(c).getCameraName() + "Accepted new 3d Pose",
+          () -> { return photonPoseTrackers.get(c).hasValidPose() ? 1 : 0; }, null);
+    }
+
+    builder.addBooleanProperty("VISION ACCURATE?", () -> {
+      for (int i = 0; i < photonPoseTrackers.size(); i++) {
+        final int c = i;
+        if (photonPoseTrackers.get(c).hasValidPose()) return true;
+      }
+      return false;
+    }, null);
+  }
+
   /**
    * 
    * @return whether the limelight currently sees a game piece
@@ -326,13 +314,6 @@ public class Vision extends SubsystemBase {
    */
   public double getPhotonTimestamp() {
     return photonTimestamp;
-  }
-
-  /**
-   * @return boolean if photonvision has targets
-   */
-  public boolean photonHasTargets() {
-    return photon1HasTargets || photon2HasTargets || photon3HasTargets;
   }
 
   /**
@@ -383,9 +364,6 @@ public class Vision extends SubsystemBase {
     if (VisionConfig.IS_LIMELIGHT_APRILTAG_MODE) {
       return LimelightHelpers.getTV(VisionConfig.POSE_LIMELIGHT);
     }
-    if (VisionConfig.IS_PHOTON_VISION_ENABLED) {
-      return photonHasTargets();
-    }
     return false;
   }
 
@@ -415,10 +393,6 @@ public class Vision extends SubsystemBase {
     return botPose;
   }
 
-  public Pose2d getFilterVisionPose() {
-    return filteredVisionPose;
-
-  }
 
   /**
    * @return the total latency of the limelight camera
@@ -585,114 +559,5 @@ public class Vision extends SubsystemBase {
         limitReached);
   }
 
-  public int isTarget1() {
-    if (photon1HasTargets) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  public int isTarget2() {
-    if (photon2HasTargets) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  public int isTarget3() {
-    if (photon3HasTargets) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  public int isEstimate() {
-    if (isVisionEstimatePoseChanged) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  public int hasValidTargetsInt() {
-    if (photonHasTargets()) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  public boolean hasNoteInSight() {
-    return detectTarget;
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-
-    // builder.addBooleanProperty("Has valid AprilTag targets", () ->
-    // photonHasTargets(), null);
-    // builder.addBooleanProperty("Has Vision Pose changed", () ->
-    // isVisionEstimatePoseChanged(), null);
-
-    // builder.addBooleanProperty("cam 1 front has targets", () ->
-    // photon1HasTargets, null);
-    // builder.addBooleanProperty("cam 2 back has targets", () -> photon2HasTargets,
-    // null);
-    // builder.addBooleanProperty("cam 3 front laser has targets", () ->
-    // photon3HasTargets, null);
-    // // integer for Graphing
-    // builder.addIntegerProperty("Has valid AprilTag targets - int", () ->
-    // hasValidTargetsInt(), null);
-    // builder.addIntegerProperty("Has Vision Pose changed - int", () ->
-    // isEstimate(), null);
-
-    // builder.addIntegerProperty("cam 1 front has targets - int", () ->
-    // isTarget1(), null);
-    // builder.addIntegerProperty("cam 2 back has targets - int", () -> isTarget2(),
-    // null);
-    // builder.addIntegerProperty("cam 3 front laser has targets - int", () ->
-    // isTarget3(), null);
-
-    // builder.addIntegerProperty("Primary Tag Used For Odometry",
-    // ()->primaryAprilTagID, null);
-    // builder.addIntegerProperty("Primary Camera Used For Odometry",
-    // ()->primaryCameraNum, null);
-    // builder.addDoubleProperty("Ambiguity For Cam In Use", ()-> ambiguityForCam,
-    // null);
-
-    // builder.addDoubleProperty("cam 1 front ambiguity", ()->ambiguityForCam1,
-    // null);
-    // builder.addDoubleProperty("cam 2 back ambiguity", ()->ambiguityForCam2,
-    // null);
-    // builder.addDoubleProperty("cam 3 laser ambiguity", ()-> ambiguityForCam3,
-    // null);
-    // builder.addDoubleProperty("Distance to Tag - Robot", ()->
-    // distToTagRelativeToRobot, null);
-    // builder.addDoubleProperty("Distance to Tag - Cam", ()->
-    // distToTagRelativeToCam, null);
-
-    for (int i = 0; i < photonPoseTrackers.size(); i++) {
-      final int c = i;
-      builder.addDoubleProperty(photonPoseTrackers.get(c).getCameraName() + " Distance to best target",
-          () -> photonPoseTrackers.get(c).getDistanceToBestTarget(), null);
-      builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Has updated vision estimate",
-          () -> photonPoseTrackers.get(c).hasUpdatedVisionEstimate(), null);
-      builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Is MultiTag",
-          () -> photonPoseTrackers.get(c).isMultiTagEstimate(), null);
-      builder.addIntegerProperty(photonPoseTrackers.get(c).getCameraName() + "Accepted new 3d Pose",
-          () -> { return photonPoseTrackers.get(c).hasValidPose() ? 1 : 0; }, null);
-    }
-
-    builder.addBooleanProperty("VISION ACCURATE?", () -> {
-      for (int i = 0; i < photonPoseTrackers.size(); i++) {
-        final int c = i;
-        if (photonPoseTrackers.get(c).hasValidPose()) return true;
-      }
-      return false;
-    }, null);
-  }
+  
 }

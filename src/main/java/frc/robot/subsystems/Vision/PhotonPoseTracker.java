@@ -62,19 +62,7 @@ public class PhotonPoseTracker {
       hasUpdatedPoseEstimate = false;
       hasValidPose = false;
     }
-  
-    public PhotonPipelineResult getPhotonPipelineResult(){
-      return photonPipelineResult;
-    }
-  
-    public void setUpdatedStatus(boolean updateStatus){
-      hasUpdatedPoseEstimate = updateStatus; 
-    }
-  
-    public double getCurrentTimestamp(){
-      return visionEstimateTimestamp;
-    }
-  
+
     public void updateEstimatedBotPose(){
       photonPoseEstimator.update(photonPipelineResult).ifPresent(estimatedRobotPose -> {
         visionPose3d = estimatedRobotPose.estimatedPose;
@@ -88,6 +76,18 @@ public class PhotonPoseTracker {
         }
     }
   
+    public PhotonPipelineResult getPhotonPipelineResult(){
+      return photonPipelineResult;
+    }
+  
+    public void setUpdatedStatus(boolean updateStatus){
+      hasUpdatedPoseEstimate = updateStatus; 
+    }
+  
+    public double getCurrentTimestamp(){
+      return visionEstimateTimestamp;
+    }
+
     public boolean hasUpdatedVisionEstimate() {
       return hasUpdatedPoseEstimate;
     }
