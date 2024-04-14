@@ -1051,7 +1051,7 @@ public abstract class MAXSwerve extends SubsystemBase {
                 ((AHRS) gyro).setAngleAdjustment(degrees);
                 break;
             case PIGEON:
-                ((Pigeon2) gyro).setYaw(0);
+                ((Pigeon2) gyro).setYaw(degrees);
                 break;
             default:
                 break;
