@@ -162,11 +162,17 @@ public abstract class OperatorMap extends CommandMap {
             getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
 
-            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
-            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
+            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.PODIUM_SETPOINT.getAngle()));
+            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.PODIUM_SETPOINT.getRPM()));
 
             getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
+
+            getSpeakerShotAlignButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.BACK_PODIUM_SETPOINT.getAngle()));
+            getSpeakerShotAlignButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.BACK_PODIUM_SETPOINT.getRPM()));
+
+            getSpeakerShotAlignButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
+            getSpeakerShotAlignButton().onFalse(shooter.stopFlywheelCommand());
 
         }
 
@@ -182,7 +188,9 @@ public abstract class OperatorMap extends CommandMap {
                     && (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
                             : Coordinates.RED_SPEAKER;
 
-            Supplier<Pose2d> ferryTarget = () -> new Pose2d(0, 0, new Rotation2d(0)); // TODO: Find Target Pose
+        //     Supplier<Pose2d> ferryTarget = () -> DriverStation.getAlliance().isPresent()
+        //     && (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_FERRY
+        //             : Coordinates.RED_FERRY;
 
             PoseEstimator poseEstimator = PoseEstimator.getInstance();
 
@@ -191,28 +199,33 @@ public abstract class OperatorMap extends CommandMap {
             Supplier<ActionSetpoint> getSpeakerActionSetpoint = () -> speakerLookupTable
                     .get(poseEstimator.getDistanceToPose(speakerTarget.get().getTranslation()));
 
-            getSpeakerShotAlignButton().whileTrue(
-                    pivot.setPositionCommand(() -> getSpeakerActionSetpoint.get().getAngle())
-                            .alongWith(
-                                    shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
+            // getSpeakerShotAlignButton().whileTrue(
+            //         pivot.setPositionCommand(() -> getSpeakerActionSetpoint.get().getAngle())
+            //                 .alongWith(
+            //                         shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
 
-        //     getSpeakerShotAlignButton()
-        //             .onFalse(shooter.stopFlywheelCommand()
-        //                     .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+            //     getSpeakerShotAlignButton()
+            //     .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
-            Supplier<ActionSetpoint> getFerryActionSetpoint = () -> ferryLookupTable
-                    .get(poseEstimator.getDistanceToPose(ferryTarget.get().getTranslation()));
+        //     Supplier<ActionSetpoint> getFerryActionSetpoint = () -> ferryLookupTable
+        //             .get(poseEstimator.getDistanceToPose(ferryTarget.get().getTranslation()));
 
-            getFerryShotAlignButton()
-                    .onTrue(new InstantCommand(() -> System.out.println(getFerryActionSetpoint.get().getRPM())))
-                    .whileTrue(
-                            pivot.setPositionCommand(() -> getFerryActionSetpoint.get().getAngle())
-                                    .alongWith(
-                                            shooter.setFlywheelVelocityCommand(
-                                                    () -> getFerryActionSetpoint.get().getRPM())));
+        //     getFerryShotAlignButton()
+        //             .onTrue(new InstantCommand(() -> System.out.println(getFerryActionSetpoint.get().getRPM())))
+        //             .whileTrue(
+        //                     pivot.setPositionCommand(() -> getFerryActionSetpoint.get().getAngle())
+        //                             .alongWith(
+        //                                     shooter.setFlywheelVelocityCommand(
+        //                                             () -> getFerryActionSetpoint.get().getRPM())));
 
-            getFerryShotAlignButton().onFalse(shooter.stopFlywheelCommand()
-                    .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+        //     getFerryShotAlignButton().onFalse(shooter.stopFlywheelCommand()
+        //             .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
+
+        getFerryShotAlignButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.FERRY_SETPOINT.getAngle()));
+        getFerryShotAlignButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT.getRPM()));
+
+        getFerryShotAlignButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
+        getFerryShotAlignButton().onFalse(shooter.stopFlywheelCommand());
 
             getAmpAlignButton().onTrue(
                     pivot.setPositionCommand(() -> PivotMap.PIVOT_AMP_ANGLE)

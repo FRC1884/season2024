@@ -81,9 +81,10 @@ public abstract class DriverMap extends CommandMap {
                     ? Coordinates.BLUE_SPEAKER.getTranslation()
                     : Coordinates.RED_SPEAKER.getTranslation();
 
-            getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, getTarget));
-            //getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, getTarget, ));
-            getFerryArcButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, () -> getTarget.get(), () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? -30 : -15)));
+            //getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, getTarget));
+            getArcingButton().whileTrue(drivetrain.lockAngleWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? 180 : 0)));
+            // getFerryArcButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, () -> getTarget.get(), () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? -30 : -15)));
+            getFerryArcButton().whileTrue(drivetrain.lockAngleWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? -70 : 0)));
 
             // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
             //   "Go To Amp"));

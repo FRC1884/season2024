@@ -140,15 +140,16 @@ public class PoseEstimator extends SubsystemBase {
 
     }
 
-    //UNTESTED - ALWAYS SETS DRIVETRAIN ODOMETRY TO THE POSE-ESTIMATOR ODOMETRY
-    //NOT GREAT FOR ERROR CHECKING POSE ESTIMATOR! - SET TO FALSE
-    if (VisionConfig.VISION_OVERRIDE_ENABLED) {
-      drivetrain.resetOdometry(getPosition());
-    }
+    
 
     // Update for telemetry
     setEstimatedPose(getPosition());
     setOdometryPose(drivetrain.getPose());
+
+    //Override Drivetrain with pose estimate pose
+    if (VisionConfig.VISION_OVERRIDE_ENABLED) {
+      drivetrain.resetOdometry(getPosition());
+    }
 
     double xDiff = estimatePose.getX() - odometryPose.getX();
     double yDiff = estimatePose.getY() - odometryPose.getY();
@@ -157,9 +158,9 @@ public class PoseEstimator extends SubsystemBase {
     yPoseDiffEntry.setDouble(yDiff);
     totalDiffEntry.setDouble(Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)));
 
-    double xAvg = (estimatePose.getX() + odometryPose.getX()) / 2;
-    double yAvg = (estimatePose.getY() + odometryPose.getY()) / 2;
-    drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
+    // // double xAvg = (estimatePose.getX() + odometryPose.getX()) / 2;
+    // double yAvg = (estimatePose.getY() + odometryPose.getY()) / 2;
+    // drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
 
     Translation2d currentTranslation = getPosition().getTranslation();
 

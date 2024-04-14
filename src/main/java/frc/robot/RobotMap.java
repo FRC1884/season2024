@@ -146,6 +146,8 @@ public class RobotMap {
         public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
         public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 0.15;
         public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.15;
+        public static final Pose2d RED_FERRY = new Pose2d(14.68, 5, new Rotation2d(Math.PI / 2));
+        public static final Pose2d BLUE_FERRY = new Pose2d(1.79, 5, new Rotation2d(-Math.PI / 2));
     }
 
     public static class TankDriveMap {
@@ -196,15 +198,15 @@ public class RobotMap {
         public static final double VISION_X_MAX_CUTOFF = 13.5; 
 
         //PhotonVision Noisy Pose Tuning Constanst
-        public static final double OV2311_NOISY_DISTANCE_METERS = 3.0;
+        public static final double OV2311_NOISY_DISTANCE_METERS = 3.2;
         public static final double OV9281_NOISY_DISTANCE_METERS = 4.5;
         public static final double VISION_OFFSET_DISTANCE = 4.2;
         public static final double MAX_ANGLE_DIFF_DEGREES = 0.2;
 
-        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 6.0;
+        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 6.5;
         public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
         public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
-        public static final double POSE_AMBIGUITY_CUTOFF = 0.3;
+        public static final double POSE_AMBIGUITY_CUTOFF = 0.6; //TODO: 0.3
         public static final double TAG_PRESENCE_WEIGHT = 10;
         public static final double DISTANCE_WEIGHT = 7;
 
@@ -415,9 +417,9 @@ public class RobotMap {
         };
 
         public static final double[][] FERRY_SHOT_VALUES = {
-                {9.584,4000, 1},
-                {7.99, 4000,1},
-                {10.5, 4000, 0.9}
+                {9.584,6500, 1},
+                {7.99, 6500,1},
+                {10.5, 6500, 0.9}
         };
 
         public static final ActionSetpoint SUBWOOFER_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
@@ -427,7 +429,17 @@ public class RobotMap {
 
         public static final ActionSetpoint PODIUM_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> new ActionSetpointBuilder(2600, 1).build();
-            default -> new ActionSetpointBuilder(5900, 0.475).build();
+            default -> new ActionSetpointBuilder(5900, 0.65).build();
+        };
+
+        public static final ActionSetpoint BACK_PODIUM_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> new ActionSetpointBuilder(2600, 1).build();
+            default -> new ActionSetpointBuilder(6500, 0.46).build();
+        };
+
+        public static final ActionSetpoint FERRY_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
+            default -> new ActionSetpointBuilder(4000, 1).build();
         };
 
         public static final FlywheelLookupTable SPEAKER_LOOKUP_TABLE = new FlywheelLookupTable(SPEAKER_SHOT_VALUES);

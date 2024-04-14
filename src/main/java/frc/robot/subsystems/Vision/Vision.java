@@ -285,7 +285,6 @@ public class Vision extends SubsystemBase {
 
       if (latestResult.hasTargets() && (latestResult.targets.size() > 1
           || latestResult.targets.get(0).getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF)) {
-            var tag = latestResult.targets.get(0);
         photonPoseTrackers.get(i).updateEstimatedBotPose();
       }
       pose3DPublishers.get(i).set(photonPoseTrackers.get(i).get3dEstimatedVisionPose());
@@ -633,6 +632,7 @@ public class Vision extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
+
     // builder.addBooleanProperty("Has valid AprilTag targets", () ->
     // photonHasTargets(), null);
     // builder.addBooleanProperty("Has Vision Pose changed", () ->
@@ -683,7 +683,16 @@ public class Vision extends SubsystemBase {
           () -> photonPoseTrackers.get(c).hasUpdatedVisionEstimate(), null);
       builder.addBooleanProperty(photonPoseTrackers.get(c).getCameraName() + " Is MultiTag",
           () -> photonPoseTrackers.get(c).isMultiTagEstimate(), null);
+      builder.addIntegerProperty(photonPoseTrackers.get(c).getCameraName() + "Accepted new 3d Pose",
+          () -> { return photonPoseTrackers.get(c).hasValidPose() ? 1 : 0; }, null);
     }
 
+    builder.addBooleanProperty("VISION ACCURATE?", () -> {
+      for (int i = 0; i < photonPoseTrackers.size(); i++) {
+        final int c = i;
+        if (photonPoseTrackers.get(c).hasValidPose()) return true;
+      }
+      return false;
+    }, null);
   }
 }

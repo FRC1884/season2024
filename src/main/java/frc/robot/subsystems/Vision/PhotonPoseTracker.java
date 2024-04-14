@@ -28,6 +28,7 @@ public class PhotonPoseTracker {
   
     private VisionConfig.CAMERA_TYPE cameraType;
     private boolean isMultiTag;
+    private boolean hasValidPose;
   
     public PhotonPoseTracker(PhotonPoseEstimator photonPoseEstimator, PhotonCamera photonCamera, VisionConfig.CAMERA_TYPE cameraType) {
       this.photonPoseEstimator = photonPoseEstimator;
@@ -39,6 +40,7 @@ public class PhotonPoseTracker {
       isMultiTag = false;
       distanceToBestTarget = 0;
       noisyDistanceMeters = 0;
+      hasValidPose = false;
       switch (cameraType) { 
         case OV2311:
             noisyDistanceMeters = VisionConfig.OV2311_NOISY_DISTANCE_METERS;
@@ -58,6 +60,7 @@ public class PhotonPoseTracker {
       photonPipelineResult = photonCamera.getLatestResult();
       visionEstimateTimestamp = photonPipelineResult.getTimestampSeconds();
       hasUpdatedPoseEstimate = false;
+      hasValidPose = false;
     }
   
     public PhotonPipelineResult getPhotonPipelineResult(){
@@ -78,7 +81,7 @@ public class PhotonPoseTracker {
         estimatedVisionBotPose = visionPose3d.toPose2d();
         isMultiTag = photonPipelineResult.getMultiTagResult().estimatedPose.isPresent;
         setDistanceToBestTarget(get3dDistance(photonPipelineResult.getBestTarget().getBestCameraToTarget()));
-        
+        hasValidPose = true;
         });
         if (distanceToBestTarget < noisyDistanceMeters){
           hasUpdatedPoseEstimate = true;
@@ -87,6 +90,10 @@ public class PhotonPoseTracker {
   
     public boolean hasUpdatedVisionEstimate() {
       return hasUpdatedPoseEstimate;
+    }
+
+    public boolean hasValidPose(){
+      return hasValidPose;
     }
   
     public Pose2d getEstimatedVisionBotPose(){

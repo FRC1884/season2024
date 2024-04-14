@@ -329,7 +329,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target) {
         PIDController pid = new PIDController(0.02, 0, 0.001);
-        pid.setTolerance(1.0);
+        pid.setTolerance(1.5);
         pid.enableContinuousInput(-180, 180);
         return new DeferredCommand(() ->
                 new RepeatCommand(
@@ -357,7 +357,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
     public Command alignWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Rotation2d> rotOffset) {
         PIDController pid = new PIDController(0.02, 0, 0.001);
-        pid.setTolerance(1.0);
+        pid.setTolerance(1.5);
         pid.enableContinuousInput(-180, 180);
         return new DeferredCommand(() ->
                 new RepeatCommand(
@@ -382,6 +382,33 @@ public abstract class MAXSwerve extends SubsystemBase {
                                 this)), Set.of(this)
         );
     }
+
+    public Command lockAngleWhileDrivingCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Rotation2d> targetRotation) {
+        PIDController pid = new PIDController(0.02, 0, 0.001);
+        pid.setTolerance(1.5);
+        pid.enableContinuousInput(-180, 180);
+        return new DeferredCommand(() ->
+                new RepeatCommand(
+                        new FunctionalCommand(
+                                () -> {
+                                    // Init
+                                },
+                                () -> {
+                                    Rotation2d targetAngle = targetRotation.get();
+                                    double newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
+                                    this.drive(xSpeed.get(), ySpeed.get(),
+                                            newSpeed, true, true);
+
+                                },
+                                interrupted -> {
+                                    pid.close();
+                                    this.drive(0.0, 0.0, 0.0, true, true);
+                                },
+                                pid::atSetpoint,
+                                this)), Set.of(this)
+        );
+    }
+
 
     public Command alignWhileDrivingCommand_VisionAngle(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Pose2d> visionPose, Supplier<Double> distanceToTag) {
         PIDController pid = new PIDController(0.02, 0, 0.001);
