@@ -308,7 +308,7 @@ public class RobotMap {
         // Increase these numbers to trust global measurements from vision less.
         public static final double kVisionStdDevX = 2;
         public static final double kVisionStdDevY = 2;
-        public static final double kVisionStdDevTheta = 1 * Math.PI;
+        public static final double kVisionStdDevTheta = 1; //* Math.PI;
         
         public static final Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
             .fill(
