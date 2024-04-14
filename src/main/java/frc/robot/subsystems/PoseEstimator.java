@@ -12,33 +12,19 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotMap;
 import frc.robot.RobotMap.Coordinates;
-import frc.robot.RobotMap.DriveMap;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Vision.PhotonPoseTracker;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.RobotMap.VisionConfig;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.function.Supplier;
-
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonPipelineResult;
-
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
 
 /** Reports our expected, desired, and actual poses to dashboards */
 public class PoseEstimator extends SubsystemBase {
