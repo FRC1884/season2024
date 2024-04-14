@@ -532,24 +532,5 @@
       "timestamp": 1.9051455831760264
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 1.9051455831760264,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AlignToSpeaker"
-        }
-      }
-    },
-    {
-      "timestamp": 0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "End AlignToSpeaker"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }

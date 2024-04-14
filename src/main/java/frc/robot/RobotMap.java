@@ -196,7 +196,7 @@ public class RobotMap {
         public static final double VISION_X_MAX_CUTOFF = 13.5; 
 
         //PhotonVision Noisy Pose Tuning Constanst
-        public static final double OV2311_NOISY_DISTANCE_METERS = 3.5;
+        public static final double OV2311_NOISY_DISTANCE_METERS = 3.0;
         public static final double OV9281_NOISY_DISTANCE_METERS = 4.5;
         public static final double VISION_OFFSET_DISTANCE = 4.2;
         public static final double MAX_ANGLE_DIFF_DEGREES = 0.2;

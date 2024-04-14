@@ -93,7 +93,7 @@ public class AutoCommands {
                 NamedCommands.registerCommand("VisionIntake XVel",
                                         new ConditionalCommand(drivetrain.chasePoseRobotRelativeCommand_Theta_WithXSupplier(
                                                                 vision::getRobotRelativeNotePose2d,
-                                                                () -> -0.4,
+                                                                () -> drivetrain.getChassisSpeeds().vxMetersPerSecond,
                                                                 () -> drivetrain.isPastCenterline())
                                                 .raceWith(new IntakeUntilLoadedCommand()).withTimeout(1.5), new InstantCommand(), () -> Vision.getInstance().gamePieceDetected()));
 
