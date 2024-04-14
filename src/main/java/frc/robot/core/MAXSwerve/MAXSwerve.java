@@ -151,7 +151,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     public double getGyroYawDegrees() {
         switch (RobotMap.DriveMap.GYRO_TYPE) {
             case NAVX:
-                return -Double.valueOf(((AHRS) gyro).getYaw()); //Must be negative to CCW is positive
+                //return -Double.valueOf(((AHRS) gyro).getYaw()); //Must be negative to CCW is positive
+                
             case PIGEON:
                 return ((Pigeon2) gyro).getYaw();
             default:
@@ -364,6 +365,39 @@ public abstract class MAXSwerve extends SubsystemBase {
                                     Translation2d currentTranslation = this.getPose().getTranslation();
                                     Translation2d targetVector = currentTranslation.minus(target.get());
                                     Rotation2d targetAngle = targetVector.getAngle().rotateBy(rotOffset.get());
+                                    double newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
+                                    this.drive(xSpeed.get(), ySpeed.get(),
+                                            newSpeed, true, true);
+
+                                },
+                                interrupted -> {
+                                    pid.close();
+                                    this.drive(0.0, 0.0, 0.0, true, true);
+                                },
+                                pid::atSetpoint,
+                                this)), Set.of(this)
+        );
+    }
+
+    public Command alignWhileDrivingCommand_VisionAngle(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Pose2d> visionPose) {
+        PIDController pid = new PIDController(0.02, 0, 0.001);
+        pid.setTolerance(0.5);
+        pid.enableContinuousInput(-180, 180);
+        return new DeferredCommand(() ->
+                new RepeatCommand(
+                        new FunctionalCommand(
+                                () -> {
+                                    // Init
+                                },
+                                () -> {
+                                    Translation2d currentTranslation = this.getPose().getTranslation();
+                                    Translation2d targetVector = currentTranslation.minus(target.get());
+                                    Rotation2d targetAngle = targetVector.getAngle();
+                                    Rotation2d visionAngle = visionPose.get().getRotation();
+                                    double angle_difference = visionAngle.getDegrees() - this.getGyroYawDegrees();
+                                    if (Math.abs(angle_difference) > 0.2){
+                                        
+                                    }
                                     double newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
                                     this.drive(xSpeed.get(), ySpeed.get(),
                                             newSpeed, true, true);

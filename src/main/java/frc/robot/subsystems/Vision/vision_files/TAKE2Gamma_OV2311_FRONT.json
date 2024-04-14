@@ -1,0 +1,15 @@
+{
+ "camera": "unknown",
+ "platform":  "unknown",
+ "avg_reprojection_error": 0.471087290304984,
+ "camera_matrix": [
+  [900.796607, 0.000000, 826.849264],
+  [0.000000, 899.198477, 680.288147],
+  [0.000000, 0.000000, 1.000000]
+],
+ "distortion_coefficients":
+  [0.045776, -0.086826, -0.000031, 0.000237, 0.026531 ],
+ "distortion_model": "rectilinear",
+ "img_size": [1600, 1200],
+ "calibration_time": "2024-04-14T09:41:01.606400600"
+}
