@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.core.util.CTREConfigs;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Feeder.FeederDirection;
 import frc.robot.subsystems.Vision.PhotonPoseTracker;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.RobotMap.VisionConfig;
@@ -165,6 +167,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
+    if (Config.Subsystems.SHOOTER_ENABLED && Config.Subsystems.INTAKE_ENABLED && Config.Subsystems.PIVOT_ENABLED){
+      Shooter.getInstance().stopFlywheelCommand();
+      Feeder.getInstance().setFeederState(FeederDirection.STOPPED);
+    }
   }
 
   /** This function is called periodically during operator control. */

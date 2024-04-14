@@ -425,6 +425,11 @@ public class RobotMap {
             default -> new ActionSetpointBuilder(5600, 0.9).build();
         };
 
+        public static final ActionSetpoint PODIUM_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> new ActionSetpointBuilder(2600, 1).build();
+            default -> new ActionSetpointBuilder(5900, 0.475).build();
+        };
+
         public static final FlywheelLookupTable SPEAKER_LOOKUP_TABLE = new FlywheelLookupTable(SPEAKER_SHOT_VALUES);
 
         public static final FlywheelLookupTable FERRY_LOOKUP_TABLE = new FlywheelLookupTable(FERRY_SHOT_VALUES);

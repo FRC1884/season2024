@@ -157,19 +157,16 @@ public abstract class OperatorMap extends CommandMap {
             Shooter shooter = Shooter.getInstance();
             Pivot pivot = Pivot.getInstance();
             getSubwooferShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
-            getSubwooferShotButton()
-                    .whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
+            getSubwooferShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
 
             getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
 
-            // getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> 0.0));
-            // getPodiumShotButton().onTrue(pivot.setPositionCommand(() ->
-            // ActionSetpoint.PODIUM_SHOT.getAngle()));
-            // getPodiumShotButton().onTrue(shooter.setFlywheelVelocityCommand(() ->
-            // ActionSetpoint.PODIUM_SHOT.getRPM()));
+            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
+            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
 
-            // getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
+            getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
+            getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
 
         }
 
