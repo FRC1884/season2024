@@ -55,6 +55,7 @@ import frc.robot.RobotMap;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.DriveMap;
+import frc.robot.RobotMap.VisionConfig;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Vision.Vision;
@@ -149,6 +150,8 @@ public abstract class MAXSwerve extends SubsystemBase {
                 : Rotation2d.fromDegrees(getGyroYawDegrees());
     }
 
+    // Must use .getAngle() for NavX in order for the applied offest to work properly
+    // for automatically setting the gyro angle at the start of autos
     public double getGyroYawDegrees() {
         switch (RobotMap.DriveMap.GYRO_TYPE) {
             case NAVX:
@@ -380,7 +383,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         );
     }
 
-    public Command alignWhileDrivingCommand_VisionAngle(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Pose2d> visionPose) {
+    public Command alignWhileDrivingCommand_VisionAngle(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Pose2d> visionPose, Supplier<Double> distanceToTag) {
         PIDController pid = new PIDController(0.02, 0, 0.001);
         pid.setTolerance(0.5);
         pid.enableContinuousInput(-180, 180);
@@ -395,9 +398,12 @@ public abstract class MAXSwerve extends SubsystemBase {
                                     Translation2d targetVector = currentTranslation.minus(target.get());
                                     Rotation2d targetAngle = targetVector.getAngle();
                                     Rotation2d visionAngle = visionPose.get().getRotation();
+
                                     double angle_difference = visionAngle.getDegrees() - this.getGyroYawDegrees();
-                                    if (Math.abs(angle_difference) > 0.2){
-                                        
+
+                                    if (Math.abs(angle_difference) > VisionConfig.MAX_ANGLE_DIFF_DEGREES && distanceToTag.get() > VisionConfig.VISION_OFFSET_DISTANCE){
+                                        Rotation2d angleOffset = this.getPose().getRotation().minus(visionAngle);
+                                        targetAngle.rotateBy(angleOffset);
                                     }
                                     double newSpeed = pid.calculate(this.getGyroYawDegrees() + 180, targetAngle.getDegrees() + DriveMap.SPEAKER_ALIGN_OFFSET);
                                     this.drive(xSpeed.get(), ySpeed.get(),
@@ -1041,7 +1047,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     }
 
     /**
-     * set the yaw of the gyro in degrees
+     * set the yaw of the gyro in degrees 
      *
      * @param degrees
      */

@@ -82,6 +82,7 @@ public abstract class DriverMap extends CommandMap {
                     : Coordinates.RED_SPEAKER.getTranslation();
 
             getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, getTarget));
+            //getArcingButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, getTarget, ));
             getFerryArcButton().whileTrue(drivetrain.alignWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, () -> getTarget.get(), () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? -30 : -15)));
 
             // getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
