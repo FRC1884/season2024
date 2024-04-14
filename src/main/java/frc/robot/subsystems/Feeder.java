@@ -3,135 +3,132 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Config;
 import frc.robot.RobotMap.FeederMap;
+
+import java.util.Optional;
 
 public class Feeder extends SubsystemBase {
     private static Feeder instance;
-    private boolean isDisabled = false;
-    private ShuffleboardTab feederTab = Shuffleboard.getTab("Feeder Tab");
-    private GenericEntry hasNoteEntry = feederTab.add("Has Note", false).getEntry();
 
     public static Feeder getInstance() {
-        if(instance == null) instance = new Feeder();
+        if (instance == null) instance = new Feeder();
         return instance;
     }
 
-    public static enum NoteStatus {
+    public enum NoteStatus {
         EMPTY, LOADED
     }
 
-    public static enum FeederDirection{
+    public enum FeederDirection {
         FORWARD, FORWARD_SLOW, REVERSE, STOPPED
     }
 
     private NoteStatus status = NoteStatus.EMPTY;
 
-    
-    private CANSparkBase feeder;
-    private SparkPIDController feedPID;
-    private DigitalInput beamBreak;
+
+    private Optional<CANSparkBase> feeder;
+    private Optional<SparkPIDController> feedPID;
+    private Optional<DigitalInput> lowerBeamBreak;
+    private Optional<DigitalInput> upperBeamBreak;
 
     private double feedVel;
 
     private Feeder() {
-        if (FeederMap.FEEDER != -1){
+        super();
 
-            setName("Feeder");
-            feeder = new CANSparkFlex(FeederMap.FEEDER, MotorType.kBrushless);
-            feeder.setIdleMode(IdleMode.kBrake);
-            feedPID = feeder.getPIDController();
-            feedPID.setP(FeederMap.FEEDER_PID.kP);
-            feedPID.setI(FeederMap.FEEDER_PID.kI);
-            feedPID.setD(FeederMap.FEEDER_PID.kD);
-            feedPID.setFF(FeederMap.FEEDER_FF);
+        if (Config.Subsystems.FEEDER_ENABLED) {
+            feeder = Optional.of(new CANSparkMax(FeederMap.FEEDER, MotorType.kBrushless));
 
-            feeder.setClosedLoopRampRate(FeederMap.FEEDER_RAMP_RATE);
-            feeder.setInverted(false);
-            feeder.burnFlash();
+            var motor = feeder.get();
+            motor.setIdleMode(IdleMode.kBrake);
 
-            var tab = Shuffleboard.getTab("Feeder");
+            feedPID = Optional.of(motor.getPIDController());
 
-            tab.add(this);
-            
-            beamBreak = new DigitalInput(FeederMap.BEAMBREAK);
+            var motorPID = feedPID.get();
+            motorPID.setP(FeederMap.FEEDER_PID.kP);
+            motorPID.setI(FeederMap.FEEDER_PID.kI);
+            motorPID.setD(FeederMap.FEEDER_PID.kD);
+            motorPID.setFF(FeederMap.FEEDER_FF);
+
+            motor.setClosedLoopRampRate(FeederMap.FEEDER_RAMP_RATE);
+            motor.setInverted(false);
+
+            motor.burnFlash();
+
+            lowerBeamBreak = Optional.of(new DigitalInput(FeederMap.LOWER_BEAMBREAK));
+            upperBeamBreak = Optional.of(new DigitalInput(FeederMap.UPPER_BEAMBREAK));
+        } else {
+            feeder = Optional.empty();
+            feedPID = Optional.empty();
+            lowerBeamBreak = Optional.empty();
+            upperBeamBreak = Optional.empty();
         }
+
+        var tab = Shuffleboard.getTab("Feeder");
+
+        tab.add(this);
     }
 
-    public boolean isNoteLoaded(){
-        //Once tripped
-        return (status == NoteStatus.LOADED);
+    public boolean isNoteLoaded() {
+        return status == NoteStatus.LOADED;
     }
 
-    public void runFeeder(){
-        feedVel = FeederMap.FEEDER_RPM;
+    public boolean getUpperBeamBreak() {
+        return upperBeamBreak.isPresent() ? upperBeamBreak.get().get() : false;
     }
 
-    public void setFeederState(FeederDirection direction){
-        // switch (direction){
-        //     case FORWARD:
-        //     {feedVel = ShooterMap.FEEDER_RPM;
-        //     System.out.println("Hello");
-        //     }
-        //     case REVERSE:
-        //     feedVel = -ShooterMap.FEEDER_RPM;
-        //     case STOPPED:
-        //     feedVel = 0;
-        // }
-
-        if(direction == FeederDirection.FORWARD){
+    public void setFeederState(FeederDirection direction) {
+        if (direction == FeederDirection.FORWARD) {
             feedVel = FeederMap.FEEDER_RPM;
-        }
-        else if (direction == FeederDirection.STOPPED){
+        } else if (direction == FeederDirection.STOPPED) {
             feedVel = 0;
-        }
-        else if (direction == FeederDirection.FORWARD_SLOW){
+        } else if (direction == FeederDirection.FORWARD_SLOW) {
             feedVel = FeederMap.FEEDER_RPM_SLOW;
-        }
-        else if (direction == FeederDirection.REVERSE){
+        } else if (direction == FeederDirection.REVERSE) {
             feedVel = FeederMap.FEEDER_RPM * -1;
         }
-
     }
 
-    private void updateMotors() {
-        if (feeder != null) {
+    private void updateSpeed() {
+        if (feeder.isPresent() && feedPID.isPresent()) {
             if (feedVel != 0) {
-                feedPID.setReference(feedVel, ControlType.kVelocity);
-            } else
-                feeder.set(0);
+                feedPID.get().setReference(feedVel, ControlType.kVelocity);
+            } else feeder.get().set(0);
         }
     }
 
     @Override
     public void periodic() {
-        status = (beamBreak.get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
-        updateMotors();
-        if (status == NoteStatus.LOADED){
-            hasNoteEntry.setBoolean(true);
-        }
-        else{
-            hasNoteEntry.setBoolean(false);
-        }
+        status = (lowerBeamBreak.isPresent() && lowerBeamBreak.get().get()) ? NoteStatus.EMPTY : NoteStatus.LOADED;
+        // System.out.println("Beambreak " + ((beamBreak.isPresent() ? beamBreak.get().get() : false) ? "TRUE" : "FALSE or OFF"));
+        updateSpeed();
     }
 
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty("feeder velocity", () -> feedVel, (v) -> feedVel = v);
-        builder.addDoubleProperty("real feeder velo", () -> feeder.getEncoder().getVelocity(), (d) -> {
-        });
-        builder.addBooleanProperty("HasNote", () -> isNoteLoaded(), null);
-       
+        super.initSendable(builder);
 
+        builder.addDoubleProperty("feeder velocity", () -> feedVel, (v) -> feedVel = v);
+        builder.addDoubleProperty("real feeder velo",
+                () -> feeder.map(canSparkBase -> canSparkBase.getEncoder().getVelocity()).orElse(0.0),
+                (d) -> {
+                }
+        );
+        builder.addBooleanProperty("has note", this::isNoteLoaded, null);
+        builder.addBooleanProperty("upper beam break", this::getUpperBeamBreak, null);
+        // builder.addBooleanProperty("lower beam break", () -> lowerBeamBreak.get().get(), null);
+
+
+        builder.addStringProperty("status", () -> status.toString(), null);
     }
 }

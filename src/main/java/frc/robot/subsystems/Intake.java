@@ -8,95 +8,70 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Config;
 import frc.robot.RobotMap.IntakeMap;
+
+import java.util.Optional;
 
 public class Intake extends SubsystemBase {
     private static Intake instance;
 
     public static Intake getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new Intake();
         }
+
         return instance;
-        
+
     }
 
-    public static enum IntakeDirection {
+    public enum IntakeDirection {
         FORWARD, REVERSE, STOPPED
     }
 
-    public static enum IntakeStatus {
-        EMPTY, LOADED
-    }
+    private final Optional<CANSparkMax> intake;
 
-    private CANSparkMax intake;
-    
-
-    private IntakeStatus status = IntakeStatus.EMPTY;
     private IntakeDirection direction = IntakeDirection.STOPPED;
 
     private Intake() {
-        setName("Intake");
-        intake = new CANSparkMax(IntakeMap.INTAKE_ID, MotorType.kBrushless);
+        super();
 
-        intake.restoreFactoryDefaults();
-        intake.setInverted(false);
-        intake.setSmartCurrentLimit(20);
-        intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        intake.burnFlash();
+        if (Config.Subsystems.INTAKE_ENABLED) {
+            intake = Optional.of(new CANSparkMax(IntakeMap.INTAKE_ID, MotorType.kBrushless));
 
-        var tab = Shuffleboard.getTab("Intake");
+            var motor = intake.get();
 
-        tab.addString("status", () -> status.toString());
-        tab.addString("direction", () -> direction.toString());
-
-        tab.add(this);
+            motor.restoreFactoryDefaults();
+            motor.setInverted(true);
+            motor.setSmartCurrentLimit(20);
+            motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            motor.burnFlash();
+        } else {
+            intake = Optional.empty();
+        }
     }
 
     private void setSpeed(double intakeSpeed) {
-        intake.set(intakeSpeed);
+        intake.ifPresent(canSparkMax -> canSparkMax.set(intakeSpeed));
     }
 
     /**
      * Sets the intake state to the given direction
-     * 
+     *
      * @param direction the direction to set the intake to
-     * @return the command to set the intake state
      */
     public void setIntakeState(IntakeDirection direction) {
         if (direction == IntakeDirection.FORWARD) {
             this.direction = IntakeDirection.FORWARD;
-        } 
-        else if(direction == IntakeDirection.STOPPED){
+        } else if (direction == IntakeDirection.STOPPED) {
             this.direction = IntakeDirection.STOPPED;
-        }
-        else if(direction == IntakeDirection.REVERSE){
+        } else if (direction == IntakeDirection.REVERSE) {
             this.direction = IntakeDirection.REVERSE;
         }
-        //else if (direction == IntakeDirection.REVERSE) {
-        //     return new InstantCommand(() -> this.direction = (this.direction == IntakeDirection.STOPPED) ? IntakeDirection.REVERSE : IntakeDirection.STOPPED);
-        // } else {
-        //     return new InstantCommand(() -> this.direction = IntakeDirection.STOPPED);
-        // }
     }
-
-    public Command intakeUntilLoadedCommand() {
-        return new FunctionalCommand(
-                () -> direction = IntakeDirection.FORWARD,
-                () -> {
-                },
-                (interrupt) -> {
-                    if (!interrupt)
-                        direction = IntakeDirection.STOPPED;
-                },
-                () -> status == IntakeStatus.LOADED,
-                this);
-    }
-
 
     @Override
     public void periodic() {
-
         if (direction == IntakeDirection.FORWARD) {
             setSpeed(IntakeMap.INTAKE_FORWARD_SPEED);
         } else if (direction == IntakeDirection.REVERSE) {
@@ -106,15 +81,16 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public void setIntake(boolean isOn){
-        if(isOn) direction = IntakeDirection.FORWARD;
+    public void toggleIntake(boolean isOn) {
+        if (isOn) direction = IntakeDirection.FORWARD;
         else direction = IntakeDirection.STOPPED;
     }
 
-
     @Override
-    public void initSendable(SendableBuilder builder){
-        builder.addBooleanProperty("Intake On", () -> (direction==IntakeDirection.FORWARD), this::setIntake);
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.addBooleanProperty("intake on", () -> (direction == IntakeDirection.FORWARD), this::toggleIntake);
+        builder.addStringProperty("status", () -> direction.toString(), (x) -> {});
     }
-    
 }

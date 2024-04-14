@@ -1,6 +1,6 @@
 package frc.robot.layout;
 
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.core.util.controllers.ButtonMap.Axis;
 import frc.robot.core.util.controllers.ButtonMap.Button;
@@ -12,28 +12,33 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  JoystickButton getIntakeButton() {
+  Trigger getIntakeButton() {
     return controller.getButton(Button.BUTTON_X);
   }
 
   @Override
-  JoystickButton getOuttakeButton() {
+  Trigger getOuttakeButton() {
     return controller.getButton(Button.BUTTON_Y);
   }
 
   @Override
-  JoystickButton getShootSpeakerButton() {
+  Trigger getShootSpeakerButton() {
     return controller.getButton(Button.BUTTON_A);
   }
 
   @Override
-  JoystickButton getShootAmpButton() {
+  Trigger getShootAmpButton() {
     return controller.getButton(Button.BUTTON_B);
   }
 
   @Override
-  JoystickButton getAmpAlignButton() {
+  Trigger getAmpAlignButton() {
     return controller.getButton(Button.BUTTON_LEFT_BUMPER);
+  }
+
+  @Override
+  Trigger getChangeClimberLockStatusButton(){
+    return controller.getButton(Button.BUTTON_EXTRA_3);
   }
 
   @Override
@@ -42,49 +47,18 @@ public class BoardOperatorMap extends OperatorMap {
   }
 
   @Override
-  double getManualClimberAxis(){
+  double getManualClimberAxis() {
     return controller.getAxis(Axis.AXIS_LEFT_X);
   }
 
   @Override
-  JoystickButton getManualShootButton() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getClimbSequenceButton()
-  {
+  Trigger getClimbSequenceButton() {
     return controller.getButton(Button.BUTTON_TOUCHPAD);
   }
 
   @Override
-  JoystickButton getLEDPatternOneButton() {
-    return controller.getButton(Button.BUTTON_A);
-  }
-
-  @Override
-  JoystickButton getLEDPatternTwoButton() {
-    return controller.getButton(Button.BUTTON_B);
-  }
-
-  @Override
-  JoystickButton getLEDPatternOffButton() {
+  Trigger getLEDPatternOffButton() {
     return controller.getButton(Button.BUTTON_EXTRA_2);
-  }
-
-  @Override
-  JoystickButton getLEDPatternThreeButton() {
-    return controller.getButton(Button.BUTTON_X);
-  }
-
-  @Override
-  JoystickButton getLEDPatternFourButton() {
-    return controller.getButton(Button.BUTTON_Y);
-  }
-
-  @Override
-  JoystickButton getLEDPatternFiveButton() {
-    return controller.getButton(Button.BUTTON_EXTRA_10);
   }
 
   @Override
@@ -92,59 +66,80 @@ public class BoardOperatorMap extends OperatorMap {
     return controller.getAxis(Axis.AXIS_LEFT_X);
   }
 
-  
   @Override
   double getLEDAxis2() {
     return controller.getAxis(Axis.AXIS_LEFT_Y);
   }
 
   @Override
-  JoystickButton getArcButton() {
+  Trigger getSpeakerShotAlignButton() {
     return controller.getButton(Button.BUTTON_SHARE);
   }
 
   @Override
-  JoystickButton getTrapButton() {
+  Trigger getFerryShotAlignButton() {
+    return controller.getButton(Button.BUTTON_EXTRA_10); //TODO: BIND TO ANOTHER BUTTON
+  }
+
+  @Override
+  Trigger getTrapButton() {
     return controller.getButton(Button.BUTTON_START);
   }
 
   @Override
-  JoystickButton getStageAlignButton() {
+  Trigger getStageAlignButton() {
     return controller.getButton(Button.BUTTON_OPTIONS);
   }
 
   @Override
-  JoystickButton getAmplifyButton() {
+  Trigger getAmplifyButton() {
     return controller.getButton(Button.BUTTON_EXTRA_1);
   }
 
   @Override
-  JoystickButton getCoopButton() {
+  Trigger getCoopButton() {
     return controller.getButton(Button.BUTTON_EXTRA_2);
   }
 
   @Override
-  Trigger getPivotRaiseButton(){
-    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
-  }
-
-  @Override
-  Trigger getPivotLowerButton(){
+  Trigger getPivotRaiseButton() {
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) < -0.9);
   }
 
   @Override
-  Trigger getClimberRaiseButton(){
+  Trigger getPivotLowerButton() {
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_X) > 0.9);
+  }
+
+  @Override
+  Trigger getClimberRaiseButton() {
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_Y) > 0.9);
   }
 
-   @Override
-  Trigger getClimberLowerButton(){
+  @Override
+  Trigger getClimberLowerButton() {
     return new Trigger(() -> controller.getAxis(Axis.AXIS_LEFT_Y) < -0.9);
   }
 
   @Override
-  JoystickButton getEjectButton(){
+  Trigger getEjectButton() {
     return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  Trigger getSubwooferShotButton() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+  }
+
+  @Override
+  Trigger getPodiumShotButton() {
+    return controller.getButton(Button.BUTTON_RIGHT_BUMPER);
+
+  }
+
+  @Override
+  Trigger getSourceIntakeButton() {
+    // TODO Auto-generated method stub
+    return controller.getButton(Button.BUTTON_START);
   }
 }

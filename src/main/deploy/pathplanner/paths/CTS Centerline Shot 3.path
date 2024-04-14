@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.892901996680798,
+        "y": 6.674761229655645
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.754709087664568,
+        "y": 6.252528376310915
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.7542008047390127,
+        "y": 5.876190398329744
+      },
+      "prevControl": {
+        "x": 4.405908034901532,
+        "y": 6.096485800074819
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CTS Centerline Shot 2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -174.12,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 178.85,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

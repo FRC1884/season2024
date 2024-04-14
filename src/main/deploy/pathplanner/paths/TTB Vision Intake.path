@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4324283942685536,
+        "y": 3.9302476829149002
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.423249419195842,
+        "y": 2.8471286243349403
+      },
+      "isLocked": false,
+      "linkedName": "TTB Shot Four"
+    },
+    {
+      "anchor": {
+        "x": 6.630739424103669,
+        "y": 0.7612043754757987
+      },
+      "prevControl": {
+        "x": 5.55679934059642,
+        "y": 0.6051617992397027
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Vision Intake Low Note"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 240.0
+  },
+  "goalEndState": {
+    "velocity": 1.5,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 150.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

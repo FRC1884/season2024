@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.976958421819838,
-        "y": 5.6212015419751244
+        "x": 3.1174884603692163,
+        "y": 5.58606903233778
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2967352387956081,
-        "y": 3.9818099296078797
+        "x": 0.060960121920242624,
+        "y": 3.724046021558519
       },
       "isLocked": false,
       "linkedName": "TTB Shot Three"
@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 2.3725109148331507,
-        "y": 3.9899110208875244
+        "y": 3.989911020887525
       },
       "nextControl": null,
       "isLocked": false,
@@ -72,7 +72,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 240.0

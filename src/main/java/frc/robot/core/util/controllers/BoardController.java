@@ -20,6 +20,15 @@ public class BoardController implements ButtonMap {  //TODO Auto-generated const
       map.put(Button.BUTTON_TOUCHPAD, 10);
       map.put(Button.BUTTON_EXTRA_1, 11);
       map.put(Button.BUTTON_EXTRA_2, 12);
+      map.put(Button.BUTTON_EXTRA_3, 13);
+      map.put(Button.BUTTON_EXTRA_4, 14);
+      map.put(Button.BUTTON_EXTRA_5, 15);
+      map.put(Button.BUTTON_EXTRA_6, 16);
+      map.put(Button.BUTTON_EXTRA_7, 17);
+      map.put(Button.BUTTON_EXTRA_8, 18);
+      map.put(Button.BUTTON_EXTRA_9, 19);
+      map.put(Button.BUTTON_EXTRA_10, 20);
+      
   
       return map;
   }
