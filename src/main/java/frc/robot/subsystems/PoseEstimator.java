@@ -64,6 +64,7 @@ public class PoseEstimator extends SubsystemBase {
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
   private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
   private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
+  private GenericEntry enableVisionRotOverride = tab.add("Vision Rot override enabled", true).getEntry();
 
   private GenericEntry enableRetroVision = tab.add("Retro Vision Enabled", false).getEntry();
   private GenericEntry enableNewVisionMethod = tab.add("New Vision Method Enabled", true).getEntry();
@@ -386,6 +387,10 @@ public class PoseEstimator extends SubsystemBase {
   
   public Supplier<Pose2d> getStoredPose() {
     return lastStoredPose;
+  }
+
+  public Supplier<Boolean> getRotOverride() {
+    return () -> enableVisionOverride.getBoolean(true);
   }
 
   @Override
