@@ -383,7 +383,7 @@ public abstract class MAXSwerve extends SubsystemBase {
         );
     }
 
-    public Command alignWhileDrivingCommand_VisionAngle(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Pose2d> visionPose, Supplier<Double> distanceToTag) {
+    public Command alignWhileDrivingCommand_VisionAngle(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Translation2d> target, Supplier<Pose2d> visionPose, Supplier<Double> distanceToSpeaker) {
         PIDController pid = new PIDController(0.02, 0, 0.001);
         pid.setTolerance(0.5);
         pid.enableContinuousInput(-180, 180);
@@ -401,7 +401,7 @@ public abstract class MAXSwerve extends SubsystemBase {
 
                                     double angle_difference = visionAngle.getDegrees() - this.getGyroYawDegrees();
 
-                                    if (Math.abs(angle_difference) > VisionConfig.MAX_ANGLE_DIFF_DEGREES && distanceToTag.get() > VisionConfig.VISION_OFFSET_DISTANCE){
+                                    if (Math.abs(angle_difference) > VisionConfig.MAX_ANGLE_DIFF_DEGREES && distanceToSpeaker.get() > VisionConfig.VISION_OFFSET_DISTANCE){
                                         Rotation2d angleOffset = this.getPose().getRotation().minus(visionAngle);
                                         targetAngle.rotateBy(angleOffset);
                                     }

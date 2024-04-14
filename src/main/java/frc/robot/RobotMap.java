@@ -146,6 +146,8 @@ public class RobotMap {
         public static final Pose2d RED_STAGE = new Pose2d(13, 2, Rotation2d.fromDegrees(120));
         public static final double X_CENTERLINE_LIMIT_RED = 8.275 + 0.15;
         public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.15;
+        public static final Pose2d RED_Ferry = new Pose2d(13, 6, new Rotation2d(Math.PI / 2));
+        public static final Pose2d BLUE_Ferry = new Pose2d(3, 6, new Rotation2d(-Math.PI / 2));
     }
 
     public static class TankDriveMap {

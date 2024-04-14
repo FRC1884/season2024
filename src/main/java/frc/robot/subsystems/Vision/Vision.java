@@ -285,7 +285,6 @@ public class Vision extends SubsystemBase {
 
       if (latestResult.hasTargets() && (latestResult.targets.size() > 1
           || latestResult.targets.get(0).getPoseAmbiguity() < VisionConfig.POSE_AMBIGUITY_CUTOFF)) {
-            var tag = latestResult.targets.get(0);
         photonPoseTrackers.get(i).updateEstimatedBotPose();
       }
       pose3DPublishers.get(i).set(photonPoseTrackers.get(i).get3dEstimatedVisionPose());

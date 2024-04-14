@@ -162,8 +162,8 @@ public abstract class OperatorMap extends CommandMap {
             getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
 
-            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
-            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
+            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.PODIUM_SETPOINT.getAngle()));
+            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.PODIUM_SETPOINT.getRPM()));
 
             getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
@@ -182,7 +182,8 @@ public abstract class OperatorMap extends CommandMap {
                     && (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_SPEAKER
                             : Coordinates.RED_SPEAKER;
 
-            Supplier<Pose2d> ferryTarget = () -> new Pose2d(0, 0, new Rotation2d(0)); // TODO: Find Target Pose
+            Supplier<Pose2d> ferryTarget = () -> DriverStation.getAlliance().isPresent() && (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Coordinates.BLUE_Ferry
+                            : Coordinates.RED_Ferry;
 
             PoseEstimator poseEstimator = PoseEstimator.getInstance();
 
