@@ -158,7 +158,7 @@ public abstract class OperatorMap extends CommandMap {
             Pivot pivot = Pivot.getInstance();
             getSubwooferShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
             getSubwooferShotButton()
-                    .onTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
+                    .whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
 
             getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
