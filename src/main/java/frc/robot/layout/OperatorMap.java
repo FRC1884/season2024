@@ -276,10 +276,28 @@ public abstract class OperatorMap extends CommandMap {
             lights.setBlinkingCommand(Color.kIndigo, Color.kBlue, 5.0), 
             lights.setAlingmentNoteStatusCommand(() -> !Feeder.getInstance().isNoteLoaded()), 
             () -> {
-                System.out.println(Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity());
+//                System.out.println(Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity());
                 return Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity();
             }
             ).repeatedly());
+
+        getPodiumShotButton().whileTrue(Commands.either(
+                lights.setBlinkingCommand(Color.kIndigo, Color.kBlue, 5.0),
+                lights.setAlingmentNoteStatusCommand(() -> !Feeder.getInstance().isNoteLoaded()),
+                () -> {
+//                System.out.println(Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity());
+                    return Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity();
+                }
+        ).repeatedly());
+
+        getSpeakerShotAlignButton().whileTrue(Commands.either(
+                lights.setBlinkingCommand(Color.kIndigo, Color.kBlue, 5.0),
+                lights.setAlingmentNoteStatusCommand(() -> !Feeder.getInstance().isNoteLoaded()),
+                () -> {
+//                System.out.println(Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity());
+                    return Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity();
+                }
+        ).repeatedly());
 
         getAmplifyButton().onTrue(
                 lights.getAmplifyPatternCommand()
