@@ -151,8 +151,7 @@ public abstract class MAXSwerve extends SubsystemBase {
     public double getGyroYawDegrees() {
         switch (RobotMap.DriveMap.GYRO_TYPE) {
             case NAVX:
-                //return -Double.valueOf(((AHRS) gyro).getYaw()); //Must be negative to CCW is positive
-                
+                return -Double.valueOf(((AHRS) gyro).getYaw()); //Must be negative to CCW is positive
             case PIGEON:
                 return ((Pigeon2) gyro).getYaw();
             default:
