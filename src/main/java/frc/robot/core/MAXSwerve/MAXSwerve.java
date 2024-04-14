@@ -15,6 +15,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -151,7 +152,8 @@ public abstract class MAXSwerve extends SubsystemBase {
     public double getGyroYawDegrees() {
         switch (RobotMap.DriveMap.GYRO_TYPE) {
             case NAVX:
-                return -Double.valueOf(((AHRS) gyro).getYaw()); //Must be negative to CCW is positive
+                //return -Double.valueOf(((AHRS) gyro).getYaw()); //Must be negative to CCW is positive
+                return MathUtil.inputModulus(((AHRS) gyro).getAngle(), -180, 180);
             case PIGEON:
                 return ((Pigeon2) gyro).getYaw();
             default:
