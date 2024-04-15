@@ -29,6 +29,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+/** Class that processes data from our limelight for game piece tracking and robot pose from photonvision*/
 public class Vision extends SubsystemBase {
   private Pose2d botPose;
   private Pose2d estimatePose;
@@ -47,12 +48,12 @@ public class Vision extends SubsystemBase {
   private PhotonCamera photonCam_3;
   private PhotonPoseEstimator photonEstimator_3;
 
-  //Photonvision data
+  //Photonvision arraylists
   private ArrayList<PhotonPoseTracker> photonPoseTrackers;
   private ArrayList<StructPublisher<Pose3d>> pose3DPublishers;
 
 
-  // For Note detection in the future
+  // For Note detection
   private double detectHorizontalOffset = 0;
   private double detectVerticalOffset = 0;
 
@@ -61,7 +62,6 @@ public class Vision extends SubsystemBase {
   private Pose2d targetRobotRelativePose;
   private Pose2d noteFieldRelativePose;
   private Pose2d noteRobotRelativePose;
-  private ShuffleboardTab tab = Shuffleboard.getTab("Vision Data");
 
   // FOR LIMELIGHT MODE ONLY
   private boolean isVisionEstimatePoseChanged;
@@ -112,7 +112,6 @@ public class Vision extends SubsystemBase {
     pose3DPublishers = new ArrayList<StructPublisher<Pose3d>>();
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) { // Configure photonvision camera
       photonCam_1 = new PhotonCamera(VisionConfig.POSE_PHOTON_1);
-      // photonCam_2 = new PhotonCamera(VisionConfig.POSE_PHOTON_2);
       try {
         aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       } catch (Exception e) {
@@ -122,7 +121,7 @@ public class Vision extends SubsystemBase {
           VisionConfig.PHOTON_1_ROBOT_TO_CAM);
       photonEstimator_1.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_1, photonCam_1, VisionConfig.CAM_1_TYPE));
-      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_1.getName(), Pose3d.struct).publish());
+      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_1.getName() + " 3D Pose", Pose3d.struct).publish());
     }
 
     // Code to make the second photon vision camera object if it is enabled
@@ -132,7 +131,7 @@ public class Vision extends SubsystemBase {
           VisionConfig.PHOTON_2_ROBOT_TO_CAM);
       photonEstimator_2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_2, photonCam_2, VisionConfig.CAM_2_TYPE));
-      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_2.getName(), Pose3d.struct).publish());
+      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_2.getName() + " 3D Pose", Pose3d.struct).publish());
     }
 
     // Code to make the second photon vision camera object if it is enabled
@@ -142,7 +141,7 @@ public class Vision extends SubsystemBase {
           VisionConfig.PHOTON_3_ROBOT_TO_CAM);
       photonEstimator_3.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       photonPoseTrackers.add(new PhotonPoseTracker(photonEstimator_3, photonCam_3, VisionConfig.CAM_3_TYPE));
-      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_3.getName(), Pose3d.struct).publish());
+      pose3DPublishers.add(NetworkTableInstance.getDefault().getStructTopic(photonCam_3.getName() + " 3D Pose", Pose3d.struct).publish());
     }
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Vision Subsystem");

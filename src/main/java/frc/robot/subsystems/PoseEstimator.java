@@ -26,7 +26,7 @@ import frc.robot.subsystems.Vision.Vision;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-/** Reports our expected, desired, and actual poses to dashboards */
+/** Class that updates our odometry pose using correction from vision and drivetrain odometry*/
 public class PoseEstimator extends SubsystemBase {
   private static PoseEstimator instance;
 
@@ -46,7 +46,6 @@ public class PoseEstimator extends SubsystemBase {
   private ShuffleboardTab tab = Shuffleboard.getTab("Odometry Data");
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
   private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
-  private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
   private GenericEntry enableNewVisionMethod = tab.add("New Vision Method Enabled", true).getEntry();
 
   private Supplier<Pose2d> lastStoredPose = () -> new Pose2d();
@@ -94,11 +93,13 @@ public class PoseEstimator extends SubsystemBase {
     }
     // TODO Photonvision mode - Needs editing and filtering
     if (VisionConfig.IS_PHOTON_VISION_ENABLED) { 
-      if(enableNewVisionMethod.getBoolean(true)){
+      if (enableNewVisionMethod.getBoolean(true)){
+        aprilTagTelemEntry.setBoolean(false);
         ArrayList<PhotonPoseTracker> photonPoseTrackers = Vision.getInstance().getPhotonPoseTrackers(); 
         for (int i = 0; i < photonPoseTrackers.size(); i++){
           if (photonPoseTrackers.get(i).hasUpdatedVisionEstimate()){
             addVisionMeasureWithDynamicConfidence(photonPoseTrackers.get(i));
+            aprilTagTelemEntry.setBoolean(true);
           }
         }
       }
@@ -111,8 +112,10 @@ public class PoseEstimator extends SubsystemBase {
     //Override Drivetrain with pose estimate pose
     if (VisionConfig.VISION_OVERRIDE_ENABLED) {
       drivetrain.resetOdometry(getPosition());
-    }
+    } 
 
+
+    //Math to update the distance the 2D speaker setpoint
     Translation2d currentTranslation = getPosition().getTranslation();
 
     if (DriverStation.getAlliance().isEmpty()) {
@@ -125,6 +128,9 @@ public class PoseEstimator extends SubsystemBase {
     rToSpeaker.setDouble(targetVectorLength);
   }
 
+  /*Method that calculates a dynamic confidence to the current vision pose used to adjust odometry
+   * @param 
+  */
   private Matrix<N3, N1> visionConfidenceCalculator(PhotonPoseTracker photonPoseTracker) {
     double noisyDistanceMeters = VisionConfig.OV2311_NOISY_DISTANCE_METERS;
 
@@ -162,6 +168,9 @@ public class PoseEstimator extends SubsystemBase {
     return PoseConfig.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
   }
 
+  /**
+   * @param photonPoseTracker the PhotonPoseTracker object for the current camera
+   */
   public void addVisionMeasureWithDynamicConfidence(PhotonPoseTracker photonPoseTracker) {
     poseEstimator.addVisionMeasurement(photonPoseTracker.getEstimatedVisionBotPose(), photonPoseTracker.getCurrentTimestamp(), visionConfidenceCalculator(photonPoseTracker));
   }
@@ -339,10 +348,6 @@ public class PoseEstimator extends SubsystemBase {
   
   public Supplier<Pose2d> getStoredPose() {
     return lastStoredPose;
-  }
-
-  public Supplier<Boolean> getRotOverride() {
-    return () -> enableVisionOverride.getBoolean(true);
   }
 
   @Override
