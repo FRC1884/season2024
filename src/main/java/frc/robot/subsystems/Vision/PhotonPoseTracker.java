@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.RobotMap.VisionConfig;
 
+/** Helper class that simplifies the process of updating and storing poses from PhotonVision*/
 public class PhotonPoseTracker {
 
     //Photonvision variables
@@ -23,8 +24,6 @@ public class PhotonPoseTracker {
     private double distanceToBestTarget;
     private double noisyDistanceMeters;
     private Pose3d visionPose3d;
-    private double targetAmbiguity;
-    private double currentConfidenceMultiplier;
   
     private VisionConfig.CAMERA_TYPE cameraType;
     private boolean isMultiTag;
@@ -62,19 +61,7 @@ public class PhotonPoseTracker {
       hasUpdatedPoseEstimate = false;
       hasValidPose = false;
     }
-  
-    public PhotonPipelineResult getPhotonPipelineResult(){
-      return photonPipelineResult;
-    }
-  
-    public void setUpdatedStatus(boolean updateStatus){
-      hasUpdatedPoseEstimate = updateStatus; 
-    }
-  
-    public double getCurrentTimestamp(){
-      return visionEstimateTimestamp;
-    }
-  
+
     public void updateEstimatedBotPose(){
       photonPoseEstimator.update(photonPipelineResult).ifPresent(estimatedRobotPose -> {
         visionPose3d = estimatedRobotPose.estimatedPose;
@@ -88,6 +75,18 @@ public class PhotonPoseTracker {
         }
     }
   
+    public PhotonPipelineResult getPhotonPipelineResult(){
+      return photonPipelineResult;
+    }
+  
+    public void setUpdatedStatus(boolean updateStatus){
+      hasUpdatedPoseEstimate = updateStatus; 
+    }
+  
+    public double getCurrentTimestamp(){
+      return visionEstimateTimestamp;
+    }
+
     public boolean hasUpdatedVisionEstimate() {
       return hasUpdatedPoseEstimate;
     }

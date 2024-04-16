@@ -172,7 +172,7 @@ public class RobotMap {
     }
     public static class VisionConfig {
         public static final boolean DRIVER_CAMERA_ACTIVE = false;
-        public static final boolean VISION_OVERRIDE_ENABLED = false;
+        public static final boolean VISION_OVERRIDE_ENABLED = true;
         public static final boolean IS_LIMELIGHT_APRILTAG_MODE = false;
         public static final boolean IS_PHOTON_VISION_ENABLED = true;
         public static final boolean IS_PHOTON_TWO_ENABLED = true;

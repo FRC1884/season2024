@@ -12,35 +12,21 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotMap;
 import frc.robot.RobotMap.Coordinates;
-import frc.robot.RobotMap.DriveMap;
 import frc.robot.RobotMap.PoseConfig;
 import frc.robot.RobotMap.VisionConfig;
 import frc.robot.core.MAXSwerve.MaxSwerveConstants;
 import frc.robot.subsystems.Vision.PhotonPoseTracker;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.RobotMap.VisionConfig;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonPipelineResult;
-
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
-
-/** Reports our expected, desired, and actual poses to dashboards */
+/** Class that updates our odometry pose using correction from vision and drivetrain odometry*/
 public class PoseEstimator extends SubsystemBase {
   private static PoseEstimator instance;
 
@@ -58,18 +44,10 @@ public class PoseEstimator extends SubsystemBase {
   //private final KalmanFilter<N1, N1, N1> visionKalmanFilter;
 
   private ShuffleboardTab tab = Shuffleboard.getTab("Odometry Data");
-  private GenericEntry xPoseDiffEntry = tab.add("XOdom Diff", 0).getEntry();
-  private GenericEntry yPoseDiffEntry = tab.add("YODom Diff", 0).getEntry();
-  private GenericEntry totalDiffEntry = tab.add("totalDiff", 0).getEntry();
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
   private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
-  private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
-  private GenericEntry enableVisionRotOverride = tab.add("Vision Rot override enabled", true).getEntry();
-
-  private GenericEntry enableRetroVision = tab.add("Retro Vision Enabled", false).getEntry();
   private GenericEntry enableNewVisionMethod = tab.add("New Vision Method Enabled", true).getEntry();
 
-  private final DecimalFormat df = new DecimalFormat();
   private Supplier<Pose2d> lastStoredPose = () -> new Pose2d();
   
 
@@ -114,34 +92,18 @@ public class PoseEstimator extends SubsystemBase {
       }
     }
     // TODO Photonvision mode - Needs editing and filtering
-    if (VisionConfig.IS_PHOTON_VISION_ENABLED && tempEstimatePose != null) { 
-      double photonTimestamp = Vision.getInstance().getPhotonTimestamp();
-
-      if (enableRetroVision.getBoolean(false) && isEstimateReady(tempEstimatePose)) { // Does making so many bot pose variables impact accuracy?
-        addVisionMeasurement(tempEstimatePose, photonTimestamp);
-        aprilTagTelemEntry.setBoolean(true);
-      }
-      else if(enableNewVisionMethod.getBoolean(false)){
+    if (VisionConfig.IS_PHOTON_VISION_ENABLED) { 
+      if (enableNewVisionMethod.getBoolean(true)){
+        aprilTagTelemEntry.setBoolean(false);
         ArrayList<PhotonPoseTracker> photonPoseTrackers = Vision.getInstance().getPhotonPoseTrackers(); 
         for (int i = 0; i < photonPoseTrackers.size(); i++){
           if (photonPoseTrackers.get(i).hasUpdatedVisionEstimate()){
             addVisionMeasureWithDynamicConfidence(photonPoseTrackers.get(i));
+            aprilTagTelemEntry.setBoolean(true);
           }
         }
       }
-      else{
-        aprilTagTelemEntry.setBoolean(false);
-      }
-
-      if (enableVisionOverride.getBoolean(false)){
-        addVisionMeasurement(tempEstimatePose, photonTimestamp);
-        aprilTagTelemEntry.setBoolean(true);
-      }
-      
-
     }
-
-    
 
     // Update for telemetry
     setEstimatedPose(getPosition());
@@ -150,19 +112,10 @@ public class PoseEstimator extends SubsystemBase {
     //Override Drivetrain with pose estimate pose
     if (VisionConfig.VISION_OVERRIDE_ENABLED) {
       drivetrain.resetOdometry(getPosition());
-    }
+    } 
 
-    double xDiff = estimatePose.getX() - odometryPose.getX();
-    double yDiff = estimatePose.getY() - odometryPose.getY();
 
-    xPoseDiffEntry.setDouble(xDiff);
-    yPoseDiffEntry.setDouble(yDiff);
-    totalDiffEntry.setDouble(Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)));
-
-    // // double xAvg = (estimatePose.getX() + odometryPose.getX()) / 2;
-    // double yAvg = (estimatePose.getY() + odometryPose.getY()) / 2;
-    // drivetrain.resetOdometry(new Pose2d(xAvg, yAvg, drivetrain.getYawRot2d()));
-
+    //Math to update the distance the 2D speaker setpoint
     Translation2d currentTranslation = getPosition().getTranslation();
 
     if (DriverStation.getAlliance().isEmpty()) {
@@ -173,6 +126,53 @@ public class PoseEstimator extends SubsystemBase {
 
     double targetVectorLength = currentTranslation.getDistance(targetCoordinate.getTranslation());
     rToSpeaker.setDouble(targetVectorLength);
+  }
+
+  /*Method that calculates a dynamic confidence to the current vision pose used to adjust odometry
+   * @param 
+  */
+  private Matrix<N3, N1> visionConfidenceCalculator(PhotonPoseTracker photonPoseTracker) {
+    double noisyDistanceMeters = VisionConfig.OV2311_NOISY_DISTANCE_METERS;
+
+    switch (photonPoseTracker.getCameraType()) { 
+      case OV2311:
+          noisyDistanceMeters = VisionConfig.OV2311_NOISY_DISTANCE_METERS;
+          break;
+      case OV9281:
+          noisyDistanceMeters = VisionConfig.OV9281_NOISY_DISTANCE_METERS;
+          break;
+      case TELEPHOTO_OV9281:
+          noisyDistanceMeters = VisionConfig.TELEPHOTO_NOISY_DISTANCE_METERS;
+          break;
+      default:
+          break;
+  }
+
+    double poseAmbiguityFactor = photonPoseTracker.isMultiTagEstimate()
+        ? 1
+        : Math.max(
+            1,
+            (photonPoseTracker.getPhotonPipelineResult().getBestTarget().getPoseAmbiguity()
+                + VisionConfig.POSE_AMBIGUITY_SHIFTER) * VisionConfig.POSE_AMBIGUITY_MULTIPLIER);
+    
+    double confidenceMultiplier = Math.max(
+        1,
+        (Math.max(
+            1,
+            Math.max(0, photonPoseTracker.getDistanceToBestTarget() - noisyDistanceMeters)
+                * VisionConfig.DISTANCE_WEIGHT)
+            * poseAmbiguityFactor)
+            / (1
+                + ((photonPoseTracker.getPhotonPipelineResult().getTargets().size() - 1) * VisionConfig.TAG_PRESENCE_WEIGHT)));
+
+    return PoseConfig.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
+  }
+
+  /**
+   * @param photonPoseTracker the PhotonPoseTracker object for the current camera
+   */
+  public void addVisionMeasureWithDynamicConfidence(PhotonPoseTracker photonPoseTracker) {
+    poseEstimator.addVisionMeasurement(photonPoseTracker.getEstimatedVisionBotPose(), photonPoseTracker.getCurrentTimestamp(), visionConfidenceCalculator(photonPoseTracker));
   }
   
   public Double getDistanceToPose(Translation2d pose) {
@@ -230,46 +230,7 @@ public class PoseEstimator extends SubsystemBase {
     poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
   }
 
-  private Matrix<N3, N1> visionConfidenceCalculator(PhotonPoseTracker photonPoseTracker) {
-    double noisyDistanceMeters = VisionConfig.OV2311_NOISY_DISTANCE_METERS;
 
-    switch (photonPoseTracker.getCameraType()) { 
-      case OV2311:
-          noisyDistanceMeters = VisionConfig.OV2311_NOISY_DISTANCE_METERS;
-          break;
-      case OV9281:
-          noisyDistanceMeters = VisionConfig.OV9281_NOISY_DISTANCE_METERS;
-          break;
-      case TELEPHOTO_OV9281:
-          noisyDistanceMeters = VisionConfig.TELEPHOTO_NOISY_DISTANCE_METERS;
-          break;
-      default:
-          break;
-  }
-
-    double poseAmbiguityFactor = photonPoseTracker.isMultiTagEstimate()
-        ? 1
-        : Math.max(
-            1,
-            (photonPoseTracker.getPhotonPipelineResult().getBestTarget().getPoseAmbiguity()
-                + VisionConfig.POSE_AMBIGUITY_SHIFTER) * VisionConfig.POSE_AMBIGUITY_MULTIPLIER);
-    
-    double confidenceMultiplier = Math.max(
-        1,
-        (Math.max(
-            1,
-            Math.max(0, photonPoseTracker.getDistanceToBestTarget() - noisyDistanceMeters)
-                * VisionConfig.DISTANCE_WEIGHT)
-            * poseAmbiguityFactor)
-            / (1
-                + ((photonPoseTracker.getPhotonPipelineResult().getTargets().size() - 1) * VisionConfig.TAG_PRESENCE_WEIGHT)));
-
-    return PoseConfig.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
-  }
-
-  public void addVisionMeasureWithDynamicConfidence(PhotonPoseTracker photonPoseTracker) {
-    poseEstimator.addVisionMeasurement(photonPoseTracker.getEstimatedVisionBotPose(), photonPoseTracker.getCurrentTimestamp(), visionConfidenceCalculator(photonPoseTracker));
-  }
 
   /**
    * Reset the pose estimator location and Drivetrain odometry - NEEDS TO BE TESTED
@@ -387,10 +348,6 @@ public class PoseEstimator extends SubsystemBase {
   
   public Supplier<Pose2d> getStoredPose() {
     return lastStoredPose;
-  }
-
-  public Supplier<Boolean> getRotOverride() {
-    return () -> enableVisionOverride.getBoolean(true);
   }
 
   @Override

@@ -23,7 +23,7 @@ public class ShouldSkipNoteLogicCommand extends Command {
     @Override
     public void initialize() {
         poseEstimator.storeCurrentPose();
-        noteSeen = vision.hasNoteInSight();
+        noteSeen = vision.gamePieceDetected();
         // finalPose = vision.hasNoteInSight() ? vision.getNotePose2d() : startingPose;
     }
 
