@@ -155,19 +155,19 @@ public abstract class OperatorMap extends CommandMap {
             Shooter shooter = Shooter.getInstance();
             Pivot pivot = Pivot.getInstance();
             getSubwooferShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
-            //getSubwooferShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
+            getSubwooferShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
 
             getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
 
             getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.PODIUM_SETPOINT.getAngle()));
-            //getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.PODIUM_SETPOINT.getRPM()));
+            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.PODIUM_SETPOINT.getRPM()));
 
             getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
 
             getBackPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.BACK_PODIUM_SETPOINT.getAngle()));
-            //getBackPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.BACK_PODIUM_SETPOINT.getRPM()));
+            getBackPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.BACK_PODIUM_SETPOINT.getRPM()));
 
             getBackPodiumShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getBackPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
@@ -199,9 +199,8 @@ public abstract class OperatorMap extends CommandMap {
 
             getSpeakerShotAlignButton().whileTrue(
                     pivot.setPositionCommand(() -> getSpeakerActionSetpoint.get().getAngle())
-                        //     .alongWith(
-                        //             shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
-            );
+                            .alongWith(
+                                    shooter.setFlywheelVelocityCommand(() -> getSpeakerActionSetpoint.get().getRPM())));
 
                 getSpeakerShotAlignButton()
                 .onFalse(shooter.stopFlywheelCommand().alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
@@ -221,7 +220,7 @@ public abstract class OperatorMap extends CommandMap {
         //             .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
         getFerryShotAlignButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.FERRY_SETPOINT.getAngle()));
-       // getFerryShotAlignButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT.getRPM()));
+        getFerryShotAlignButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT.getRPM()));
 
         getFerryShotAlignButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
         getFerryShotAlignButton().onFalse(shooter.stopFlywheelCommand());
