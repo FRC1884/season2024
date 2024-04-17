@@ -290,11 +290,11 @@ public class RobotMap {
         // Translation Values (location relative to robot center)
         public static final double CAM_3_X = Config.ROBOT_TYPE == RobotType.DEV ? 0.30726 : 0.319; // Forward: camera To Robot XMeters
         public static final double CAM_3_Y = Config.ROBOT_TYPE == RobotType.DEV ? - 0.17780 + 0.0254 : -0.038; // Left: camera To Robot YMeters
-        public static final double CAM_3_Z = Config.ROBOT_TYPE == RobotType.DEV ? 0.156 : 0.117 + 0.066; // Up: camera To Robot ZMeters
+        public static final double CAM_3_Z = Config.ROBOT_TYPE == RobotType.DEV ? 0.156 : 0.118 + 0.066; // Up: camera To Robot ZMeters
 
         // Rotation mounting angles (roll-pitch-yaw) in RADIANS
         public static final double CAM_3_ROLL_RADIANS = 0; // camera Roll Radians
-        public static final double CAM_3_PITCH_RADIANS = -0.20944; // camera Pitch Radians
+        public static final double CAM_3_PITCH_RADIANS = -0.244; // camera Pitch Radians
         public static final double CAM_3_YAW_RADIANS = 0.0; // camera Yaw Radians, +CCW
 
         public static final Transform3d PHOTON_3_ROBOT_TO_CAM = new Transform3d(CAM_3_X, CAM_3_Y, CAM_3_Z, new Rotation3d(CAM_3_ROLL_RADIANS, CAM_3_PITCH_RADIANS, CAM_3_YAW_RADIANS));

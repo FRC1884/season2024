@@ -62,7 +62,7 @@ public class TwoJoyStickOperatorMap extends OperatorMap {
   }
 
   @Override
-  Trigger getChangeClimberLockStatusButton(){
+  Trigger getBackPodiumShotButton(){
     return null;
   }
 

@@ -46,6 +46,11 @@ public class PoseEstimator extends SubsystemBase {
   private ShuffleboardTab tab = Shuffleboard.getTab("Odometry Data");
   private GenericEntry rToSpeaker = tab.add("Distance to Speaker", 0).getEntry();
   private GenericEntry aprilTagTelemEntry = tab.add("Has AprilTag Telemetry", false).getEntry();
+  private GenericEntry enableVisionOverride = tab.add("Vision override enabled", false).getEntry();
+  private GenericEntry enableVisionRotOverride = tab.add("Vision Rot override enabled", true).getEntry();
+  private GenericEntry enableVisionCommands = tab.add("Vision Commands Enabled", true).getEntry();
+
+  private GenericEntry enableRetroVision = tab.add("Retro Vision Enabled", false).getEntry();
   private GenericEntry enableNewVisionMethod = tab.add("New Vision Method Enabled", true).getEntry();
 
   private Supplier<Pose2d> lastStoredPose = () -> new Pose2d();
@@ -350,6 +355,15 @@ public class PoseEstimator extends SubsystemBase {
     return lastStoredPose;
   }
 
+  public Supplier<Boolean> getRotOverride() {
+    return () -> enableVisionOverride.getBoolean(true);
+  }
+
+  public Supplier<Boolean> getVisionCommandEnabled() {
+    return () -> enableVisionCommands.getBoolean(true);
+  }
+
+  
   @Override
   public void initSendable(SendableBuilder builder){
     super.initSendable(builder);

@@ -42,7 +42,7 @@ public class ChampsBoardOperator extends OperatorMap {
   }
 
   @Override
-  Trigger getChangeClimberLockStatusButton(){
+  Trigger getBackPodiumShotButton(){
     return controller.getButton(Button.BUTTON_Y);
   }
 
