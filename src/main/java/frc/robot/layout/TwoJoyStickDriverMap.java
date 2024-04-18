@@ -81,7 +81,7 @@ public class TwoJoyStickDriverMap extends DriverMap {
 
   @Override
   public Trigger getNavigateAndAllignStageButton() {
-    return controller.getButton(Button.BUTTON_A);
+    return new Trigger(() -> controller.getAxis(Axis.AXIS_RIGHT_TRIGGER) > 0.5);
   }
 
   @Override

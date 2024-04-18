@@ -448,6 +448,24 @@ public abstract class MAXSwerve extends SubsystemBase {
         };
     }
 
+    /**
+     * Reversed supplier for source only
+    */
+    public BooleanSupplier getShouldFlipReversed() {
+        return () -> {
+            // Boolean supplier that controls when the path will be mirrored for the red alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Blue;
+            }
+
+            return false;
+        };
+    }
+
     public void startingOdometry(Pose2d startingPose) {
         //PoseEstimator.getInstance().resetPoseEstimate(startingPose);
         PoseEstimator.getInstance().resetPoseEstimate(new Pose2d(startingPose.getX(), startingPose.getY(), startingPose.getRotation()));
@@ -576,6 +594,47 @@ public abstract class MAXSwerve extends SubsystemBase {
                 this // Reference to drive subsystem to set requirements
         );
     }
+
+    /**
+     * Command to pathfind to a path - NEEDS TO BE TESTED, also, does it need to be a proxy?
+     *
+     * @param pathName name of the path that the robot will pathfind to
+     * @return command to generate a path to the starting pose of a premade path and then to follow that path
+     */
+
+     public Command pathFindThenFollowPath_REVERSED_Command(String pathName) {
+        return new PathfindThenFollowPathHolonomic(
+                PathPlannerPath.fromPathFile(pathName),
+                new PathConstraints(
+                        RobotMap.SwervePathFollowConstants.MAX_VELOCITY,
+                        RobotMap.SwervePathFollowConstants.MAX_ACCELERATION,
+                        RobotMap.SwervePathFollowConstants.MAX_ANG_VELOCITY,
+                        RobotMap.SwervePathFollowConstants.MAX_ANG_ACCELERATION),
+                this::getPose,
+                this::getChassisSpeeds,
+                this::driveWithChassisSpeeds,
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live
+                        // in
+                        // your Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        4.5, // Max module speed, in m/s
+                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig(true, true) // Default path replanning config. See the API for the
+                        // options
+                        // here
+                ),
+                1.0, // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate. Optional
+
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+                getShouldFlipReversed(),
+
+                this // Reference to drive subsystem to set requirements
+        );
+    }
+
 
     public Command navigateAndAlignCommand(String pathName, Supplier<Translation2d> target) {
         return new SequentialCommandGroup(

@@ -323,8 +323,7 @@ public abstract class OperatorMap extends CommandMap {
 
         getIntakeButton().whileTrue(lights.setAlingmentNoteStatusCommand(() -> !feeder.isNoteLoaded()).repeatedly());
 
-        getClimberLowerButton().whileTrue(lights.setGBFlagCommand());
-
+        // getClimberLowerButton().whileTrue(lights.setGBFlagCommand());
         // will get canceled on both triggers until the rising edge is detected
         // lights.setDefaultCommand(lights.getCoOpPatternCommand());
         lights.setDefaultCommand(lights.setNoteStatusCommand(feeder::isNoteLoaded));

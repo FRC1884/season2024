@@ -50,12 +50,6 @@
                       }
                     },
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "SUBStart-BWNote"

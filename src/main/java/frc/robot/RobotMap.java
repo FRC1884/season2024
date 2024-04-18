@@ -200,10 +200,11 @@ public class RobotMap {
         //PhotonVision Noisy Pose Tuning Constanst
         public static final double OV2311_NOISY_DISTANCE_METERS = 3.2;
         public static final double OV9281_NOISY_DISTANCE_METERS = 4.5;
+        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 6.5;
+        
         public static final double VISION_OFFSET_DISTANCE = 4.2;
         public static final double MAX_ANGLE_DIFF_DEGREES = 0.2;
-
-        public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 6.5;
+   
         public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
         public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
         public static final double POSE_AMBIGUITY_CUTOFF = 0.6; //TODO: 0.3
@@ -406,6 +407,7 @@ public class RobotMap {
                 {4.43, 6500, 0.482},
                 {4.51, 6500, 0.46},
                 {5.58, 6550, 0.428},
+                {6.58, 6550, 0.419}
                 // {5.02, 6600, 0.461},
                 // {5.41, 6550, 0.452},
                 // {8.00, 6550, 0.452}
@@ -439,7 +441,7 @@ public class RobotMap {
 
         public static final ActionSetpoint FERRY_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
-            default -> new ActionSetpointBuilder(4000, 1).build();
+            default -> new ActionSetpointBuilder(5100, 1).build();
         };
 
         public static final FlywheelLookupTable SPEAKER_LOOKUP_TABLE = new FlywheelLookupTable(SPEAKER_SHOT_VALUES);
@@ -504,7 +506,7 @@ public class RobotMap {
         public static final double LOWER_SETPOINT_LIMIT =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0;
-                    default -> 0.267;
+                    default -> 0.267; //0.259
                 };
 
         public static final double PIVOT_AMP_ANGLE =
@@ -579,7 +581,7 @@ public class RobotMap {
     public static class DoubleActuatorPivotMap {
         // hardstop angle in degrees
         public static final double HARDSTOP_ANGLE = 13.2;
-        public static final double HARDSTOP_ENCODER = 0.056;
+        public static final double HARDSTOP_ENCODER = 0.0595; //0.056
         public static final int PIVOT_ID_LEADER = 32;
         public static final int PIVOT_ID_FOLLOWER = 31;
         public static final int ENCODER_PORT = 2;

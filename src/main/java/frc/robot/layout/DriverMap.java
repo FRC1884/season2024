@@ -95,6 +95,8 @@ public abstract class DriverMap extends CommandMap {
 
                 getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand(
                     "Go To Amp"));
+                
+                getNavigateAndAllignStageButton().whileTrue(drivetrain.pathFindThenFollowPath_REVERSED_Command("Source Align"));
             }
             else {
                 getArcingButton().whileTrue(drivetrain.lockAngleWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, 
@@ -102,8 +104,8 @@ public abstract class DriverMap extends CommandMap {
 
                 getFerryArcButton().whileTrue(drivetrain.lockAngleWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, 
                     () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? 
-                    Rotation2d.fromRadians(2.716).rotateBy(Rotation2d.fromDegrees(-30)).getDegrees():
-                    Rotation2d.fromRadians(0.446).rotateBy(Rotation2d.fromDegrees(-15)).getDegrees())));
+                    Rotation2d.fromRadians(2.716).rotateBy(Rotation2d.fromDegrees(-22)).getDegrees(): //-30
+                    Rotation2d.fromRadians(0.446).rotateBy(Rotation2d.fromDegrees(-7)).getDegrees()))); //-15
 
                 getNavigateAndAllignAmpButton().whileTrue(drivetrain.lockAngleWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, 
                 () -> Rotation2d.fromDegrees(90)));

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4231162965297699,
-      "y": 4.068273544311523
+      "x": 0.445,
+      "y": 7.34
     },
     "rotation": 179.99469134034814
   },
@@ -34,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CLSRCStart-SWShot"
+                        "pathName": "AMPStart-AWShot"
                       }
                     },
                     {
@@ -52,7 +52,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "SWShot-5CLNoteVI"
+                        "pathName": "AWShot-2CLNoteVI"
                       }
                     },
                     {
@@ -70,43 +70,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "5CLNoteShot"
+                        "pathName": "2CLNoteShot"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
                         "waitTime": 0.3
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "SWShot-4CLNoteVI"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "VisionIntake XVel"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake with Timeout"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "4CLNoteShot"
                       }
                     },
                     {
