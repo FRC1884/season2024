@@ -26,6 +26,7 @@ import frc.robot.util.ActionSetpoint;
 import frc.robot.util.FlywheelLookupTable;
 
 import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 public abstract class OperatorMap extends CommandMap {
 
@@ -101,14 +102,19 @@ public abstract class OperatorMap extends CommandMap {
 
     private void registerFeeder() {
         Feeder feeder = Feeder.getInstance();
+        Pivot pivot = Pivot.getInstance();
 
         var feederForward = new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD));
         var feederReverse = new InstantCommand(() -> feeder.setFeederState(FeederDirection.REVERSE));
         var feederStop = new InstantCommand(() -> feeder.setFeederState(FeederDirection.STOPPED));
         var feederSlow = new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD_SLOW));
+        BooleanSupplier pivotReady = pivot::isAtGoal;
 
-        getShootSpeakerButton().whileTrue(feederForward);
-        getShootSpeakerButton().onFalse(feederStop);
+        // if (pivotReady.getAsBoolean()){ //ONLY USE DURING PRACTICE MATCHES!!!
+                getShootSpeakerButton().whileTrue(feederForward);
+                getShootSpeakerButton().onFalse(feederStop);
+        // }
+
 
         getShootAmpButton().whileTrue(feederSlow);
         getShootAmpButton().onFalse(feederStop);
@@ -154,14 +160,14 @@ public abstract class OperatorMap extends CommandMap {
 
             Shooter shooter = Shooter.getInstance();
             Pivot pivot = Pivot.getInstance();
-            getSubwooferShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
-            getSubwooferShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
+            getSubwooferShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.FERRY_SETPOINT_3500_06.getAngle()));
+            getSubwooferShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT_3500_06.getRPM()));
 
             getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
 
-            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.PODIUM_SETPOINT.getAngle()));
-            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.PODIUM_SETPOINT.getRPM()));
+            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.FERRY_SETPOINT_3500_07.getAngle()));
+            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT_3500_07.getRPM()));
 
             getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
@@ -303,7 +309,7 @@ public abstract class OperatorMap extends CommandMap {
                 lights.setAlingmentNoteStatusCommand(() -> !Feeder.getInstance().isNoteLoaded()),
                 () -> {
 //                System.out.println(Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity());
-                    return Pivot.getInstance().isAtGoal() && Shooter.getInstance().getFlywheelIsAtVelocity();
+                    return Shooter.getInstance().isReadyToShoot();
                 }
         ).repeatedly());
 

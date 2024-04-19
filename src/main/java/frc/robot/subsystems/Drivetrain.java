@@ -4,9 +4,13 @@ import static frc.robot.core.TalonSwerve.SwerveConstants.*;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotMap.DriveMap;
 import frc.robot.core.MAXSwerve.MAXSwerve;
@@ -43,6 +47,7 @@ public class Drivetrain extends MAXSwerve {
   private Rotation2d speakerAlignAngle;
   public Rotation2d noteAlignAngle;
   private boolean speakerOverride = false;
+  private double blueFerryOffset, redFerryOffset;
 
   /**
    * <b>Use this to access the subsystem using its static instance.</b><br>
@@ -84,6 +89,8 @@ public class Drivetrain extends MAXSwerve {
             DriveMap.BackRight.DRIVE_ID,
             DriveMap.BackRight.ROTATOR_ID,
             DriveMap.BackRight.ANGULAR_OFFSET));
+    var tab = Shuffleboard.getTab("Drivetrain");
+    tab.add(this);
   }
 
   /**
@@ -175,5 +182,29 @@ public class Drivetrain extends MAXSwerve {
     super.periodic();
 
   }
+
+  public double getBlueFerryOffset() {
+    return blueFerryOffset;
+  }
+
+  public double getRedFerryOffset() {
+    return redFerryOffset;
+  }
+
+  public void setBlueFerryOffset(double ferryOffset) {
+    blueFerryOffset = ferryOffset;
+  }
+
+  public void setRedFerryOffset(double ferryOffset) {
+    redFerryOffset = ferryOffset;
+  }
+
+  @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.addDoubleProperty("Blue Ferry Offset", this::getBlueFerryOffset, this::setBlueFerryOffset);
+        builder.addDoubleProperty("Red Ferry Offset", this::getRedFerryOffset, this::setRedFerryOffset);
+    }
 
 }

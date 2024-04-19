@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.Coordinates;
 import frc.robot.RobotMap.ShooterMap;
+import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.util.ActionSetpoint;
 import frc.robot.util.FlywheelLookupTable;
 
@@ -150,6 +151,14 @@ public class Shooter extends SubsystemBase {
                 && Math.abs(bot.get().getEncoder().getVelocity() - followVel) < ShooterMap.FLYWHEEL_VELOCITY_TOLERANCE;
     }
 
+    public boolean getFlyWheelAtVelocity_MoreTolerance(){
+        return Math.abs(top.get().getEncoder().getVelocity() - leadVel) < ShooterMap.FLYWHEEL_VELOCITY_TOLERANCE + 100
+                && Math.abs(bot.get().getEncoder().getVelocity() - followVel) < ShooterMap.FLYWHEEL_VELOCITY_TOLERANCE + 100; 
+    }
+
+    public boolean isReadyToShoot(){
+        return getFlyWheelAtVelocity_MoreTolerance() && Pivot.getInstance().isAtGoal(); 
+    }
 
     @Override
     public void periodic() {
@@ -192,6 +201,7 @@ public class Shooter extends SubsystemBase {
         });
         builder.addDoubleProperty("lookup angle", () -> getSetpoint.get().getAngle(), (d) -> {
         });
+        builder.addBooleanProperty("Ready To Shoot", this::isReadyToShoot, null);
     }
     
 

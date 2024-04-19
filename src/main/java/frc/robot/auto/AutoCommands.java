@@ -1,5 +1,6 @@
 package frc.robot.auto;
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Commands.IntakeUntilLoadedCommand;
 import frc.robot.Commands.ShouldSkipNoteLogicCommand;
 import frc.robot.RobotMap.Coordinates;
+import frc.robot.RobotMap.PivotMap;
 import frc.robot.RobotMap.ShooterMap;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -76,6 +78,8 @@ public class AutoCommands {
                                 () -> lookupTable.get(poseEstimator.getDistanceToPose(getTarget.get().getTranslation()))
                                                 .getAngle()));
 
+                NamedCommands.registerCommand("SetPivot AmpAngle", pivot.setPositionCommand(() -> PivotMap.AMP_AUTO_SHOT_ANGLE));
+
                 NamedCommands.registerCommand("Shoot", new SequentialCommandGroup(
                                 new InstantCommand(() -> feeder.setFeederState(FeederDirection.FORWARD),
                                                 Feeder.getInstance()),
@@ -109,6 +113,8 @@ public class AutoCommands {
                                 new InstantCommand(() -> drivetrain.setSpeakerAlignAngle(null))));
 
                 NamedCommands.registerCommand("End AlignToSpeaker", new InstantCommand(() -> drivetrain.setSpeakerOverride(false)));
+
+                NamedCommands.registerCommand("Amp snatch shot", drivetrain.onTheFlyPathCommand(() -> Coordinates.AMP_SNATCH_SHOT));
 
                 // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
                 // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));

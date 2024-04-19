@@ -148,6 +148,7 @@ public class RobotMap {
         public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.15;
         public static final Pose2d RED_FERRY = new Pose2d(14.68, 5, new Rotation2d(Math.PI / 2));
         public static final Pose2d BLUE_FERRY = new Pose2d(1.79, 5, new Rotation2d(-Math.PI / 2));
+        public static final Pose2d AMP_SNATCH_SHOT = new Pose2d(2.67, 6.2, Rotation2d.fromDegrees(-162.72));
     }
 
     public static class TankDriveMap {
@@ -198,7 +199,7 @@ public class RobotMap {
         public static final double VISION_X_MAX_CUTOFF = 13.5; 
 
         //PhotonVision Noisy Pose Tuning Constanst
-        public static final double OV2311_NOISY_DISTANCE_METERS = 3.2;
+        public static final double OV2311_NOISY_DISTANCE_METERS = 3.65;
         public static final double OV9281_NOISY_DISTANCE_METERS = 4.5;
         public static final double TELEPHOTO_NOISY_DISTANCE_METERS = 6.5;
         
@@ -363,10 +364,10 @@ public class RobotMap {
         
         public static final double FLYWHEEL_RADIUS = 0.0508;
         public static final double FLYWHEEL_VELOCITY_TOLERANCE = 100;
-        public static final double AMP_SPEED_FOLLOW = 600;
+        public static final double AMP_SPEED_FOLLOW = 660;
         public static final double AMP_SPEED_LEAD = switch (Config.ROBOT_TYPE) {
             case COMP -> 300;
-            case DEV -> 600;
+            case DEV -> 660;
         };
         
         public static final double TRAP_SPEED = 3000;
@@ -403,11 +404,11 @@ public class RobotMap {
                 {2.96, 5600, 0.575},
                 {3.26, 5600, 0.56},
                 {3.57, 5600, 0.538},
-                {3.87, 5900, 0.475},
-                {4.43, 6500, 0.482},
-                {4.51, 6500, 0.46},
-                {5.58, 6550, 0.428},
-                {6.58, 6550, 0.419}
+                {3.87 + .01, 5900, 0.475},
+                {4.43 + .01, 6500, 0.482},
+                {4.51 + .01, 6500, 0.46},
+                {5.58 + .01, 6550, 0.428},
+                {6.58 + .01, 6550, 0.428}
                 // {5.02, 6600, 0.461},
                 // {5.41, 6550, 0.452},
                 // {8.00, 6550, 0.452}
@@ -441,8 +442,19 @@ public class RobotMap {
 
         public static final ActionSetpoint FERRY_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
-            default -> new ActionSetpointBuilder(5100, 1).build();
+            default -> new ActionSetpointBuilder(4500, 0.8).build();
         };
+
+        public static final ActionSetpoint FERRY_SETPOINT_3500_07 = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
+            default -> new ActionSetpointBuilder(4000, 0.7).build();
+        };
+
+        public static final ActionSetpoint FERRY_SETPOINT_3500_06 = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
+            default -> new ActionSetpointBuilder(3500, 0.6).build();
+        };
+
 
         public static final FlywheelLookupTable SPEAKER_LOOKUP_TABLE = new FlywheelLookupTable(SPEAKER_SHOT_VALUES);
 
@@ -533,6 +545,11 @@ public class RobotMap {
                     default -> 0.45;
                 };
 
+        public static final double AMP_AUTO_SHOT_ANGLE = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> -1;
+            default -> 0.50;
+        };
+
         public static final double kP =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 1.5;
@@ -542,7 +559,7 @@ public class RobotMap {
         public static final double kI =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 3;
-                    default -> 30;
+                    default -> 12;
                 };
 
         public static final double kD =
@@ -554,7 +571,7 @@ public class RobotMap {
         public static final double kIZone =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> 0.5;
-                    default -> 0.08;
+                    default -> 0.2;
                 };
 
         public static final double kG = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
@@ -586,7 +603,7 @@ public class RobotMap {
         public static final int PIVOT_ID_FOLLOWER = 31;
         public static final int ENCODER_PORT = 2;
         public static double ENCODER_SCALE = 2 * Math.PI;
-        public static double ENCODER_OFFSET = (HARDSTOP_ANGLE / 360) - HARDSTOP_ENCODER ;
+        public static double ENCODER_OFFSET = (HARDSTOP_ANGLE / 360) - HARDSTOP_ENCODER;
     }
 
     public static class LEDMap {

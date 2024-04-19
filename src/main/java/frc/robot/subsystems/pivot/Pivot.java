@@ -107,7 +107,7 @@ public class Pivot extends ProfiledPIDSubsystem {
             if (b) hardware.zeroEncoder();
         });
 
-        builder.addBooleanProperty("at goal", this::isAtGoal, null);
+        builder.addBooleanProperty("Pivot at goal", this::isAtGoal, null);
         builder.addDoubleProperty("target V", () -> getController().calculate(getMeasurement()), null);
     }
 }

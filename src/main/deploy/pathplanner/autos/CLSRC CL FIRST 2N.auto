@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4231162965297699,
-      "y": 4.068273544311523
+      "x": 1.4295927286148071,
+      "y": 1.5324854850769043
     },
     "rotation": 179.99469134034814
   },
@@ -34,25 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CLSRCStart-SWShot"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "SWShot-5CLNoteVI"
+                        "pathName": "CLSRC-CL-FIRST-INT1"
                       }
                     },
                     {

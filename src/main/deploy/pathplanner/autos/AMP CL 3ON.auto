@@ -80,6 +80,12 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "Feed On"
@@ -122,9 +128,15 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
-                        "name": "Feed On"
+                        "name": "Shoot"
                       }
                     }
                   ]

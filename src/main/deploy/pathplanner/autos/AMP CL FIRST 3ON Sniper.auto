@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4231162965297699,
-      "y": 4.068273544311523
+      "x": 1.4490835666656494,
+      "y": 7.321262836456299
     },
-    "rotation": 179.99469134034814
+    "rotation": 179.99984796050427
   },
   "command": {
     "type": "sequential",
@@ -34,25 +34,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "CLSRCStart-SWShot"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
+                        "pathName": "AMP-CL-FIRST-INT1"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "SWShot-5CLNoteVI"
+                        "name": "Feed Off"
                       }
                     },
                     {
@@ -70,7 +58,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "5CLNoteShot"
+                        "pathName": "1CLNoteShotSniper"
                       }
                     },
                     {
@@ -82,13 +70,25 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "Feed On"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.6
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "SWShot-4CLNoteVI"
+                        "pathName": "AWShot-2CLNoteVISniper"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed Off"
                       }
                     },
                     {
@@ -106,7 +106,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "4CLNoteShot"
+                        "pathName": "2CLNoteShotSniper"
                       }
                     },
                     {
