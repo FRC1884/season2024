@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4490835666656494,
-      "y": 7.321262836456299
+      "x": 1.4295927286148071,
+      "y": 1.5324854850769043
     },
-    "rotation": 179.99984796050427
+    "rotation": 179.99469134034814
   },
   "command": {
     "type": "sequential",
@@ -34,13 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "AMP-CL-FIRST-INT1"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed Off"
+                        "pathName": "CLSRC-CL-SECOND-FIRST"
                       }
                     },
                     {
@@ -58,25 +52,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "1CLNoteShotSniper"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.4
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "AWShot-2CLNoteVISniper"
+                        "pathName": "SWShot-4CLNoteVI"
                       }
                     },
                     {
@@ -94,43 +70,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "2CLNoteShotSniper"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.4
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "AMP-CL-FIRST-SNATCH"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "VisionIntake ConstXVel"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake with Timeout"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Amp snatch shot"
+                        "pathName": "4CLNoteShot"
                       }
                     },
                     {
@@ -143,6 +83,24 @@
                       "type": "named",
                       "data": {
                         "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CLRC-Vision-Intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "VisionIntake ConstXVel"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake with Timeout"
                       }
                     }
                   ]

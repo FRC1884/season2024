@@ -40,7 +40,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "VisionIntake XVel"
+                        "name": "VisionIntake ConstXVel"
                       }
                     },
                     {
@@ -76,7 +76,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "VisionIntake XVel"
+                        "name": "VisionIntake ConstXVel"
                       }
                     },
                     {
@@ -101,6 +101,24 @@
                       "type": "named",
                       "data": {
                         "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CLRC-Vision-Intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "VisionIntake ConstXVel"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake with Timeout"
                       }
                     }
                   ]

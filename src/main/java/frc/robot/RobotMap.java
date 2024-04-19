@@ -1,13 +1,9 @@
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-
 import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -148,7 +144,8 @@ public class RobotMap {
         public static final double X_CENTERLINE_LIMIT_BLUE = 8.275 - 0.15;
         public static final Pose2d RED_FERRY = new Pose2d(14.68, 5, new Rotation2d(Math.PI / 2));
         public static final Pose2d BLUE_FERRY = new Pose2d(1.79, 5, new Rotation2d(-Math.PI / 2));
-        public static final Pose2d AMP_SNATCH_SHOT = new Pose2d(2.67, 6.2, Rotation2d.fromDegrees(-162.72));
+        public static final Pose2d AMP_SNATCH_SHOT_BLUE = new Pose2d(2.67, 6.2, Rotation2d.fromDegrees(-162.72));
+        public static final Pose2d AMP_SNATCH_SHOT_RED = new Pose2d(16.54175 - 2.67, 6.2, Rotation2d.fromDegrees(-17.28));
     }
 
     public static class TankDriveMap {
@@ -312,7 +309,7 @@ public class RobotMap {
         // Increase these numbers to trust global measurements from vision less.
         public static final double kVisionStdDevX = 2;
         public static final double kVisionStdDevY = 2;
-        public static final double kVisionStdDevTheta = 1; //* Math.PI;
+        public static final double kVisionStdDevTheta = 1 * Math.PI;
         
         public static final Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
             .fill(
@@ -445,7 +442,7 @@ public class RobotMap {
             default -> new ActionSetpointBuilder(4500, 0.8).build();
         };
 
-        public static final ActionSetpoint FERRY_SETPOINT_3500_07 = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+        public static final ActionSetpoint FERRY_SETPOINT_4000_07 = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
             default -> new ActionSetpointBuilder(4000, 0.7).build();
         };
@@ -453,6 +450,11 @@ public class RobotMap {
         public static final ActionSetpoint FERRY_SETPOINT_3500_06 = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
             case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
             default -> new ActionSetpointBuilder(3500, 0.6).build();
+        };
+
+        public static final ActionSetpoint STAGE_FERRY_SETPOINT = switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
+            case SINGLE_ACTUATOR -> new ActionSetpointBuilder(6500, 1).build();
+            default -> new ActionSetpointBuilder(4000, 0.7).build();
         };
 
 
@@ -524,7 +526,7 @@ public class RobotMap {
         public static final double PIVOT_AMP_ANGLE =
                 switch (Config.Subsystems.PIVOT_HARDWARE_TYPE) {
                     case SINGLE_ACTUATOR -> -325 * 15 / 25;
-                    default -> 1.85;
+                    default -> 1.8;
                 };
 
         public static final double PIVOT_TRAP_ANGLE =

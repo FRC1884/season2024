@@ -46,7 +46,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "VisionIntake ConstXVel"
+                        "name": "VisionIntake XVel"
                       }
                     },
                     {
@@ -58,31 +58,43 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "1CLNoteShotSniper"
+                        "pathName": "1CLNoteShot"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.4
+                        "waitTime": 0.3
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "Feed On"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.6
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "AWShot-2CLNoteVISniper"
+                        "pathName": "AWShot-2CLNoteVI"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "VisionIntake ConstXVel"
+                        "name": "Feed Off"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "VisionIntake XVel"
                       }
                     },
                     {
@@ -94,13 +106,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "2CLNoteShotSniper"
+                        "pathName": "2CLNoteShot"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.4
+                        "waitTime": 0.3
                       }
                     },
                     {
@@ -112,13 +124,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "AMP-CL-FIRST-SNATCH"
+                        "pathName": "AMP-CL-NEAR-FIRST-SNATCH"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "VisionIntake ConstXVel"
+                        "name": "VisionIntake XVel"
                       }
                     },
                     {

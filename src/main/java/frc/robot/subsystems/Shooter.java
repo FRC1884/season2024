@@ -67,7 +67,7 @@ public class Shooter extends SubsystemBase {
 
             var motor = top.get();
 
-            motor.restoreFactoryDefaults();
+            // motor.restoreFactoryDefaults();
 
             motor.setIdleMode(IdleMode.kCoast);
             var pid = motor.getPIDController();
@@ -88,7 +88,7 @@ public class Shooter extends SubsystemBase {
 
             var motor = bot.get();
 
-            motor.restoreFactoryDefaults();
+            // motor.restoreFactoryDefaults();
 
             motor.setIdleMode(IdleMode.kCoast);
             var pid = motor.getPIDController();

@@ -47,8 +47,8 @@ public class Climber extends SubsystemBase {
         leaderMotor = new CANSparkMax(RobotMap.ClimberMap.LEADER_ID, MotorType.kBrushless);
         followerMotor = new CANSparkMax(RobotMap.ClimberMap.FOLLOWER_ID, MotorType.kBrushless);
 
-        leaderMotor.restoreFactoryDefaults();
-        followerMotor.restoreFactoryDefaults();
+        // leaderMotor.restoreFactoryDefaults();
+        // followerMotor.restoreFactoryDefaults();
 
         leaderMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
         followerMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);

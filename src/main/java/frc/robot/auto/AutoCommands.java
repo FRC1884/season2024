@@ -40,6 +40,11 @@ public class AutoCommands {
                                 && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
                                                 ? Coordinates.BLUE_SPEAKER
                                                 : Coordinates.RED_SPEAKER;
+                
+                Supplier<Pose2d> snatchTarget = () -> DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+                                ? Coordinates.AMP_SNATCH_SHOT_BLUE
+                                : Coordinates.AMP_SNATCH_SHOT_RED;
 
                 PoseEstimator poseEstimator = PoseEstimator.getInstance();
                 Pivot pivot = Pivot.getInstance();
@@ -101,6 +106,13 @@ public class AutoCommands {
                                                                 () -> drivetrain.isPastCenterline())
                                                 .raceWith(new IntakeUntilLoadedCommand()).withTimeout(1.5), new InstantCommand(), () -> Vision.getInstance().gamePieceDetected()));
 
+                NamedCommands.registerCommand("VisionIntake ConstXVel",
+                drivetrain.chasePoseRobotRelativeCommand_Theta_WithXSupplier(
+                                        vision::getRobotRelativeNotePose2d,
+                                        () -> -0.4,
+                                        () -> drivetrain.isPastCenterline())
+                        .raceWith(new IntakeUntilLoadedCommand()).withTimeout(1.8));
+
                 // extract gui composition to use just OptionalVisionIntakeCommand
                 NamedCommands.registerCommand("SkipNoteLogic", new ShouldSkipNoteLogicCommand());
                 NamedCommands.registerCommand("Backtrack",
@@ -114,7 +126,7 @@ public class AutoCommands {
 
                 NamedCommands.registerCommand("End AlignToSpeaker", new InstantCommand(() -> drivetrain.setSpeakerOverride(false)));
 
-                NamedCommands.registerCommand("Amp snatch shot", drivetrain.onTheFlyPathCommand(() -> Coordinates.AMP_SNATCH_SHOT));
+                NamedCommands.registerCommand("Amp snatch shot", drivetrain.onTheFlyPathCommand(snatchTarget));
 
                 // NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
                 // NamedCommands.registerCommand("SpoolShooter", new PrintCommand("Spooling"));

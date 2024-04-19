@@ -99,8 +99,8 @@ public abstract class DriverMap extends CommandMap {
                 
                 getFerryArcButton().whileTrue(drivetrain.lockAngleWhileDrivingCommand(this::getSwerveXSpeed, this::getSwerveYSpeed, 
                     () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue? 
-                    Rotation2d.fromRadians(2.716 - 0.30 - Math.PI).getDegrees(): //-30
-                    Rotation2d.fromRadians(0.446 + 0.3 - Math.PI).getDegrees()))); //-15
+                    Rotation2d.fromRadians(blueFerryOffset.get() - Math.PI).getDegrees(): //2.716 - 0.30 - Math.PI
+                    Rotation2d.fromRadians(0.2 - Math.PI).getDegrees()))); //0.446 + 0.3 - Math.PI
 
                 getNavigateAndAllignAmpButton().whileTrue(drivetrain.pathFindThenFollowPathCommand("Go To Amp"));
                 //getNavigateAndAllignAmpButton().whileTrue(drivetrain.onTheFlyPathCommand(() -> Coordinates.BLUE_AMP));

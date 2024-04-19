@@ -160,14 +160,15 @@ public abstract class OperatorMap extends CommandMap {
 
             Shooter shooter = Shooter.getInstance();
             Pivot pivot = Pivot.getInstance();
-            getSubwooferShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.FERRY_SETPOINT_3500_06.getAngle()));
-            getSubwooferShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT_3500_06.getRPM()));
+            getSubwooferShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getAngle()));
+            getSubwooferShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.SUBWOOFER_SETPOINT.getRPM()));
 
             getSubwooferShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getSubwooferShotButton().onFalse(shooter.stopFlywheelCommand());
 
-            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.FERRY_SETPOINT_3500_07.getAngle()));
-            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT_3500_07.getRPM()));
+            //THIS ONE WORKED FOR FERRYING
+            getPodiumShotButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.PODIUM_SETPOINT.getAngle()));
+            getPodiumShotButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.PODIUM_SETPOINT.getRPM()));
 
             getPodiumShotButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
             getPodiumShotButton().onFalse(shooter.stopFlywheelCommand());
@@ -225,8 +226,8 @@ public abstract class OperatorMap extends CommandMap {
         //     getFerryShotAlignButton().onFalse(shooter.stopFlywheelCommand()
         //             .alongWith(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE)));
 
-        getFerryShotAlignButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.FERRY_SETPOINT.getAngle()));
-        getFerryShotAlignButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.FERRY_SETPOINT.getRPM()));
+        getFerryShotAlignButton().whileTrue(pivot.setPositionCommand(() -> ShooterMap.STAGE_FERRY_SETPOINT.getAngle()));
+        getFerryShotAlignButton().whileTrue(shooter.setFlywheelVelocityCommand(() -> ShooterMap.STAGE_FERRY_SETPOINT.getRPM()));
 
         getFerryShotAlignButton().onFalse(pivot.setPositionCommand(() -> PivotMap.PIVOT_RESTING_ANGLE));
         getFerryShotAlignButton().onFalse(shooter.stopFlywheelCommand());

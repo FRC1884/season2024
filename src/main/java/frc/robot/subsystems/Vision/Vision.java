@@ -266,6 +266,8 @@ public class Vision extends SubsystemBase {
           () -> photonPoseTrackers.get(c).isMultiTagEstimate(), null);
       builder.addIntegerProperty(photonPoseTrackers.get(c).getCameraName() + "Accepted new 3d Pose",
           () -> { return photonPoseTrackers.get(c).hasValidPose() ? 1 : 0; }, null);
+    //   builder.addIntegerProperty(photonPoseTrackers.get(c).getCameraName() + " Fiducial IDs", 
+    //       () -> photonPoseTrackers.get(c).getPhotonPipelineResult().getBestTarget().getFiducialId(), null);
     }
 
     builder.addBooleanProperty("VISION ACCURATE?", () -> {
